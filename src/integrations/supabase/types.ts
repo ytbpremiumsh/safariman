@@ -14,16 +14,124 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      participants: {
+        Row: {
+          achievements: string
+          birth_date: string
+          category: Database["public"]["Enums"]["program_category"]
+          city: string
+          created_at: string
+          cv_url: string | null
+          education: string
+          email: string
+          essay_contribution: string
+          essay_dream: string
+          essay_worthy: string
+          full_name: string
+          gender: string
+          id: string
+          occupation: string
+          organization_experience: string | null
+          photo_url: string | null
+          reason: string
+          social_media: string | null
+          status: Database["public"]["Enums"]["participant_status"]
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          achievements: string
+          birth_date: string
+          category: Database["public"]["Enums"]["program_category"]
+          city: string
+          created_at?: string
+          cv_url?: string | null
+          education: string
+          email: string
+          essay_contribution: string
+          essay_dream: string
+          essay_worthy: string
+          full_name: string
+          gender: string
+          id?: string
+          occupation: string
+          organization_experience?: string | null
+          photo_url?: string | null
+          reason: string
+          social_media?: string | null
+          status?: Database["public"]["Enums"]["participant_status"]
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          achievements?: string
+          birth_date?: string
+          category?: Database["public"]["Enums"]["program_category"]
+          city?: string
+          created_at?: string
+          cv_url?: string | null
+          education?: string
+          email?: string
+          essay_contribution?: string
+          essay_dream?: string
+          essay_worthy?: string
+          full_name?: string
+          gender?: string
+          id?: string
+          occupation?: string
+          organization_experience?: string | null
+          photo_url?: string | null
+          reason?: string
+          social_media?: string | null
+          status?: Database["public"]["Enums"]["participant_status"]
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      participant_status:
+        | "pending"
+        | "reviewed"
+        | "interview"
+        | "accepted"
+        | "rejected"
+      program_category: "fully_funded" | "partial_funded" | "self_funded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +258,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      participant_status: [
+        "pending",
+        "reviewed",
+        "interview",
+        "accepted",
+        "rejected",
+      ],
+      program_category: ["fully_funded", "partial_funded", "self_funded"],
+    },
   },
 } as const
