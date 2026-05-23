@@ -7,10 +7,11 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 // createServerFn agar tidak bisa dipanggil/spam dari luar app.
 // Browser memanggil via useServerFn; server tetap memvalidasi input ketat.
 
-type Event = "pendaftaran" | "berkas";
+type Event = "pendaftaran" | "berkas" | "essay";
 const TPL_KEY: Record<Event, string> = {
   pendaftaran: "wa_template_pendaftaran",
   berkas: "wa_template_berkas",
+  essay: "wa_template_essay",
 };
 
 const KATEGORI_LABEL: Record<string, string> = {
@@ -20,7 +21,7 @@ const KATEGORI_LABEL: Record<string, string> = {
 };
 
 const inputSchema = z.object({
-  event: z.enum(["pendaftaran", "berkas"]),
+  event: z.enum(["pendaftaran", "berkas", "essay"]),
   code: z
     .string()
     .trim()
