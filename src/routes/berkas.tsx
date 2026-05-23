@@ -172,24 +172,9 @@ function BerkasPage() {
                 </div>
               </div>
 
-              <Section title="Pilih Kategori Program">
-                <div className="grid sm:grid-cols-3 gap-3">
-                  {CATS.map((c) => (
-                    <button
-                      key={c.v} type="button"
-                      onClick={() => set("category", c.v)}
-                      className={`text-left rounded-2xl border-2 p-4 transition ${
-                        d.category === c.v
-                          ? "border-accent bg-accent/10 shadow-gold"
-                          : "border-border hover:border-accent/50"
-                      }`}
-                    >
-                      <div className="font-display text-lg font-semibold">{c.t}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{c.d}</div>
-                    </button>
-                  ))}
-                </div>
-              </Section>
+              <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
+                Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
+              </div>
 
               <Section title="Upload Berkas">
                 <div className="grid sm:grid-cols-2 gap-5">
