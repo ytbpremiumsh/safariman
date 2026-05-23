@@ -241,7 +241,7 @@ function Quota() {
                 <p className="text-white/70 mt-1">Kuota: 3 Orang Berprestasi</p>
               </div>
               <div className="text-right">
-                <div className="font-display text-4xl sm:text-5xl font-semibold text-gradient-gold">GRATIS TOTAL</div>
+                <div className="font-display text-4xl sm:text-5xl font-semibold text-gradient-gold">{"\n"}</div>
               </div>
             </div>
 
