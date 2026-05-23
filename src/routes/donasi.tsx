@@ -100,63 +100,77 @@ function DonasiPage() {
               Tunaikan <span className="text-gradient-gold">Kontribusi Kebaikan</span>
             </h1>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Kontribusi peserta akan digunakan untuk mendukung <strong className="text-foreground">operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an</strong>, dan keberlangsungan dakwah <strong className="text-foreground">Safar Iman</strong>. Bukan keuntungan — semata wujud kolaborasi pemuda dalam kebaikan.
+              Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">kegiatan sosial, berbagi makanan, dan wakaf Al-Qur'an</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-3 mb-8">
+          <div className="grid sm:grid-cols-2 gap-3 mb-10">
             {[
               { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Setiap mushaf yang dibagikan menjadi amal jariyah." },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan." },
-              { i: Users, t: "Operasional Program", d: "Mendukung keberlangsungan kegiatan dakwah." },
             ].map((b) => (
-              <div key={b.t} className="rounded-2xl bg-card border border-border p-4">
-                <div className="size-9 rounded-xl bg-emerald/10 grid place-items-center mb-2">
-                  <b.i className="size-4 text-emerald" />
+              <div key={b.t} className="rounded-2xl bg-card border border-border p-5">
+                <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
+                  <b.i className="size-5 text-emerald" />
                 </div>
                 <div className="font-semibold text-sm">{b.t}</div>
-                <div className="text-xs text-muted-foreground mt-1">{b.d}</div>
+                <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{b.d}</div>
               </div>
             ))}
           </div>
 
           {/* Benefit included with donation */}
-          <div className="mb-8">
-            <div className="text-center mb-5">
+          <div className="mb-10">
+            <div className="text-center mb-6">
               <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent font-bold bg-accent/10 px-3 py-1.5 rounded-full">
                 <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
               </span>
             </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="bg-card border border-border rounded-2xl p-5 hover-lift">
-                <div className="size-11 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-3">
-                  <GraduationCap className="size-5 text-accent" />
+
+            <div className="grid sm:grid-cols-2 gap-5">
+              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col">
+                <div className="size-12 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-4">
+                  <GraduationCap className="size-6 text-accent" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
-                <h4 className="font-display text-lg font-semibold mt-1 leading-snug">
+                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
                   Fiqh Umrah Praktis: Dari Niat hingga Tahallul
                 </h4>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Panduan lengkap manasik umrah bersama ustadz pembimbing — dari persiapan hingga pulang. Termasuk e-sertifikat resmi.
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  Panduan lengkap manasik umrah bersama ustadz pembimbing — dari persiapan hingga pulang.
                 </p>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-5 hover-lift">
-                <div className="size-11 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-3">
-                  <MapPin className="size-5 text-emerald-deep" />
+              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col">
+                <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-4">
+                  <MapPin className="size-6 text-emerald-deep" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
-                <h4 className="font-display text-lg font-semibold mt-1 leading-snug">
+                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
                   Jejak Cahaya: Makkah & Madinah
                 </h4>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi, pelajaran yang membekas.
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi.
+                </p>
+              </div>
+
+              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col sm:col-span-2">
+                <div className="size-12 rounded-xl bg-emerald/10 grid place-items-center mb-4">
+                  <Users className="size-6 text-emerald" />
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Operasional Program</div>
+                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
+                  Dukungan Keberlangsungan Safar Iman
+                </h4>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  Kontribusi ini turut menjaga keberlangsungan kegiatan, pembimbingan, dan ekosistem komunitas Safar Iman bagi generasi berikutnya.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald" /> E-Sertifikat
+                <CheckCircle2 className="size-3.5 text-emerald" /> E-Sertifikat Resmi
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <CheckCircle2 className="size-3.5 text-emerald" /> Akses Rekaman Permanen
