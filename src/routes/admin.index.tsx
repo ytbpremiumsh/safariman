@@ -390,6 +390,7 @@ function AdminDashboard() {
                       className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary capitalize"
                     >Template {k}</button>
                   ))}
+                  <button
                     disabled={waSending || !waMsg.trim()}
                     onClick={() => sendWa(detail.whatsapp, waMsg)}
                     className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-emerald-deep"
