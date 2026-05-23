@@ -73,6 +73,8 @@ function AdminDashboard() {
   const [templates, setTemplates] = useState<Record<string, string>>({});
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
+  const [countdownTarget, setCountdownTarget] = useState("");
+  const [savingCountdown, setSavingCountdown] = useState(false);
 
   useEffect(() => {
     (async () => {
