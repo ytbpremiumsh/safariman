@@ -81,9 +81,13 @@ function Nav() {
         </div>
         {open && (
           <div className="bg-white rounded-2xl mt-2 p-4 md:hidden animate-fade-up shadow-lg ring-1 ring-black/5">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
-            ))}
+            {links.map((l) =>
+              l.href.startsWith("/") ? (
+                <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</Link>
+              ) : (
+                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
+              )
+            )}
             <Link to="/daftar" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
             </Link>
