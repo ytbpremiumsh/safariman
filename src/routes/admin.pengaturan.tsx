@@ -218,6 +218,57 @@ function PengaturanPage() {
           Webhook mencocokkan invoice ID Mayar dengan peserta dan memperbarui status donasi.
         </div>
       </div>
+
+      {/* Webhook Secrets */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="size-4 text-accent" />
+          <div className="font-semibold">Webhook Secrets (Keamanan Endpoint Publik)</div>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Rahasia ini memverifikasi bahwa request webhook benar-benar berasal dari Mayar / MPWA, bukan attacker.
+          Buat string acak yang panjang (minimal 32 karakter), simpan di sini, lalu daftarkan nilai yang sama pada masing-masing dashboard.
+        </p>
+
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">Mayar Webhook Secret</label>
+          <Input
+            type="password"
+            value={mayarWebhookSecret}
+            onChange={(e) => setMayarWebhookSecret(e.target.value)}
+            placeholder="String acak panjang untuk HMAC signature Mayar"
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Di dashboard Mayar, set <strong>Webhook Secret</strong> dengan nilai yang sama. Mayar akan mengirim header <code>x-mayar-signature</code> berisi HMAC-SHA256 dari body.
+          </p>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          <label className="text-xs font-medium text-muted-foreground">MPWA Webhook Secret</label>
+          <Input
+            type="password"
+            value={mpwaWebhookSecret}
+            onChange={(e) => setMpwaWebhookSecret(e.target.value)}
+            placeholder="String acak panjang untuk header X-MPWA-Secret"
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            URL webhook MPWA: <code className="break-all">{mpwaWebhookUrl}?secret=YOUR_SECRET</code>{" "}
+            <button onClick={() => copy(`${mpwaWebhookUrl}?secret=${encodeURIComponent(mpwaWebhookSecret)}`, "URL Webhook MPWA")} className="text-accent underline ml-1">
+              salin URL+secret
+            </button>
+          </p>
+        </div>
+
+        <button
+          onClick={saveSecrets}
+          disabled={savingSecrets}
+          className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+        >
+          {savingSecrets ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Simpan Webhook Secrets
+        </button>
+      </div>
     </AdminShell>
   );
 }
