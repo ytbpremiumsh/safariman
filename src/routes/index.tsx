@@ -53,9 +53,13 @@ function Nav() {
             <img src={logoSafarIman} alt="Safar Iman" className="h-9 sm:h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm text-foreground/80">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</a>
-            ))}
+            {links.map((l) =>
+              l.href.startsWith("/") ? (
+                <Link key={l.href} to={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</Link>
+              ) : (
+                <a key={l.href} href={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</a>
+              )
+            )}
           </nav>
           <Link
             to="/daftar"
