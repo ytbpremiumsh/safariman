@@ -204,6 +204,7 @@ function Benefits() {
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{b.d}</p>
             </div>
           ))}
+        </div>
       </div>
     </section>
   );
