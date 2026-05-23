@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
-type Status = "pending" | "approved" | "rejected" | "shortlisted";
+type Status = "pending" | "reviewed" | "interview" | "accepted" | "rejected";
 type Category = "fully_funded" | "partial_funded" | "self_funded";
 
 type Participant = {
@@ -52,9 +52,10 @@ const CAT_LABEL: Record<Category, string> = {
 
 const STATUS_COLOR: Record<Status, string> = {
   pending: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
-  approved: "bg-emerald/15 text-emerald border-emerald/30",
+  reviewed: "bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/30",
+  interview: "bg-accent/20 text-accent border-accent/40",
+  accepted: "bg-emerald/15 text-emerald border-emerald/30",
   rejected: "bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30",
-  shortlisted: "bg-accent/20 text-accent border-accent/40",
 };
 
 function AdminDashboard() {
@@ -98,7 +99,7 @@ function AdminDashboard() {
   const stats = useMemo(() => ({
     total: rows.length,
     pending: rows.filter((r) => r.status === "pending").length,
-    approved: rows.filter((r) => r.status === "approved").length,
+    accepted: rows.filter((r) => r.status === "accepted").length,
     rejected: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
