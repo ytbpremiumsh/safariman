@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen, KeyRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen, KeyRound, Image as ImageIcon, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
