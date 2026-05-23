@@ -4,6 +4,7 @@ import {
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
+  Instagram, Mail, Phone, MapPinned,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,12 +38,12 @@ export const Route = createFileRoute("/")({
 function Nav() {
   const [open, setOpen] = useState(false);
   const links = [
-    { href: "/tentang", label: "Tentang" },
     { href: "#program", label: "Program" },
     { href: "#kuota", label: "Kuota" },
     { href: "#timeline", label: "Timeline" },
     { href: "#galeri", label: "Galeri" },
     { href: "#faq", label: "FAQ" },
+    { href: "/tentang", label: "Tentang" },
   ];
   return (
     <header className="fixed top-0 inset-x-0 z-40">
@@ -52,9 +53,13 @@ function Nav() {
             <img src={logoSafarIman} alt="Safar Iman" className="h-9 sm:h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm text-foreground/80">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</a>
-            ))}
+            {links.map((l) =>
+              l.href.startsWith("/") ? (
+                <Link key={l.href} to={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</Link>
+              ) : (
+                <a key={l.href} href={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</a>
+              )
+            )}
           </nav>
           <Link
             to="/daftar"
@@ -76,9 +81,13 @@ function Nav() {
         </div>
         {open && (
           <div className="bg-white rounded-2xl mt-2 p-4 md:hidden animate-fade-up shadow-lg ring-1 ring-black/5">
-            {links.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
-            ))}
+            {links.map((l) =>
+              l.href.startsWith("/") ? (
+                <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</Link>
+              ) : (
+                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
+              )
+            )}
             <Link to="/daftar" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
             </Link>
@@ -568,45 +577,114 @@ function FinalCTA() {
 }
 
 function Footer() {
+  const socials = [
+    {
+      brand: "Safar Iman",
+      handle: "@safariman.id",
+      url: "https://instagram.com/safariman.id",
+    },
+    {
+      brand: "Hasanah Tour & Travel",
+      handle: "@hasanah.tours.travel",
+      url: "https://instagram.com/hasanah.tours.travel",
+    },
+    {
+      brand: "Hasanah Haji Umroh Semarang",
+      handle: "@hasanah.hajiumrohsemarang",
+      url: "https://instagram.com/hasanah.hajiumrohsemarang",
+    },
+    {
+      brand: "Prestasi Kita",
+      handle: "@prestasikita",
+      url: "https://instagram.com/prestasikita",
+    },
+  ];
   return (
-    <footer className="bg-emerald-deep text-white/80 py-14">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="size-10 rounded-xl bg-gradient-gold grid place-items-center">
-                <Sparkles className="size-4 text-emerald-deep" />
-              </div>
-              <div>
-                <div className="font-display text-xl text-white font-semibold">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-white/50">Hasanah × Prestasi</div>
-              </div>
+    <footer className="bg-emerald-deep text-white/80 pt-16 pb-8 relative overflow-hidden">
+      <IslamicPattern className="absolute inset-0 size-full text-white/5" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid md:grid-cols-12 gap-10">
+          {/* Brand */}
+          <div className="md:col-span-4">
+            <div className="bg-white inline-flex rounded-xl px-3 py-2 shadow-gold">
+              <img src={logoSafarIman} alt="Safar Iman" className="h-10 w-auto" />
             </div>
-            <p className="mt-4 text-sm text-white/60 max-w-sm">
-              Program Umrah Gratis untuk generasi muda berprestasi Indonesia.
+            <p className="mt-5 text-sm text-white/70 leading-relaxed max-w-sm">
+              Program Umrah Gratis untuk generasi muda berprestasi Indonesia — kolaborasi <strong className="text-white">Hasanah Tour & Travel</strong> × <strong className="text-white">Prestasi Kita</strong>.
             </p>
+            <div className="mt-5 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                <BadgeCheck className="size-3.5" /> Berizin Kemenag
+              </span>
+            </div>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-3">Navigasi</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#program" className="hover:text-accent">Program</a></li>
-              <li><a href="#kuota" className="hover:text-accent">Kuota</a></li>
-              <li><a href="#timeline" className="hover:text-accent">Timeline</a></li>
-              <li><a href="#faq" className="hover:text-accent">FAQ</a></li>
+
+          {/* Navigation */}
+          <div className="md:col-span-2">
+            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Navigasi</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><a href="#program" className="hover:text-accent transition-colors">Program</a></li>
+              <li><a href="#kuota" className="hover:text-accent transition-colors">Kuota</a></li>
+              <li><a href="#timeline" className="hover:text-accent transition-colors">Timeline</a></li>
+              <li><a href="#faq" className="hover:text-accent transition-colors">FAQ</a></li>
+              <li><Link to="/tentang" className="hover:text-accent transition-colors">Tentang</Link></li>
             </ul>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-3">Kontak</h4>
-            <ul className="space-y-2 text-sm">
-              <li>WhatsApp: +62 812-3456-7890</li>
-              <li>Email: hello@safariman.id</li>
-              <li>Instagram: @safariman.id</li>
+
+          {/* Kontak */}
+          <div className="md:col-span-3">
+            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Kontak</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-2.5">
+                <Phone className="size-4 text-accent shrink-0 mt-0.5" />
+                <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">+62 812-3456-7890</a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Mail className="size-4 text-accent shrink-0 mt-0.5" />
+                <a href="mailto:hello@safariman.id" className="hover:text-accent transition-colors">hello@safariman.id</a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <MapPinned className="size-4 text-accent shrink-0 mt-0.5" />
+                <span>Semarang, Indonesia</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Instagram */}
+          <div className="md:col-span-3">
+            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Ikuti Kami di Instagram</h4>
+            <ul className="space-y-2.5">
+              {socials.map((s) => (
+                <li key={s.handle}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 transition-colors"
+                  >
+                    <div className="size-8 rounded-lg bg-gradient-to-br from-pink-500 via-fuchsia-500 to-amber-400 grid place-items-center shrink-0">
+                      <Instagram className="size-4 text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs text-white/60 truncate">{s.brand}</div>
+                      <div className="text-sm text-white font-medium truncate group-hover:text-accent transition-colors">{s.handle}</div>
+                    </div>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
-        <div className="ornament-divider my-8" />
-        <div className="text-center text-xs text-white/50">
-          © {new Date().getFullYear()} Safar Iman — Hasanah × Prestasi Kita. Semua hak dilindungi.
+
+        <div className="ornament-divider my-10" />
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <div>© {new Date().getFullYear()} Safar Iman — Hasanah Tour & Travel × Prestasi Kita. Semua hak dilindungi.</div>
+          <div className="flex items-center gap-4">
+            <Link to="/tentang" className="hover:text-accent transition-colors">Tentang</Link>
+            <Link to="/daftar" className="hover:text-accent transition-colors">Daftar</Link>
+            <Link to="/admin/login" className="hover:text-accent transition-colors">Admin</Link>
+          </div>
         </div>
       </div>
     </footer>
