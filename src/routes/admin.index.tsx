@@ -98,6 +98,27 @@ function AdminDashboard() {
       ditolak: map.wa_template_ditolak ?? "",
       custom: map.wa_template_custom ?? "",
     });
+    // datetime-local needs "YYYY-MM-DDTHH:mm"
+    const raw = map.countdown_target ?? "";
+    if (raw) {
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) {
+        const pad = (n: number) => String(n).padStart(2, "0");
+        setCountdownTarget(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
+      }
+    }
+  };
+
+  const saveCountdown = async () => {
+    if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
+    setSavingCountdown(true);
+    const iso = new Date(countdownTarget).toISOString();
+    const { error } = await supabase.from("app_settings").upsert({
+      key: "countdown_target", value: iso, updated_at: new Date().toISOString(),
+    });
+    setSavingCountdown(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Waktu countdown disimpan");
   };
 
   const fillTemplate = (raw: string, p: Participant) => raw
