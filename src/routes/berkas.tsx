@@ -13,16 +13,24 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
 const linksSchema = z.object({
   identitas: urlSchema,
-  pengalaman_sosial: urlSchema,
-  skill: urlSchema,
   sertifikat: urlSchema,
   portofolio: urlSchema,
 });
+const textsSchema = z.object({
+  pengalaman_sosial: z.string().trim().min(30, "Pengalaman Sosial minimal 30 karakter").max(3000),
+  skill: z.string().trim().min(20, "Skill minimal 20 karakter").max(2000),
+});
 
+const MIN_ESSAY_WORDS = 50;
+const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
+const essayField = (label: string) =>
+  z.string().trim().max(3000).refine((v) => countWords(v) >= MIN_ESSAY_WORDS, {
+    message: `${label} minimal ${MIN_ESSAY_WORDS} kata`,
+  });
 const essaySchema = z.object({
-  essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
-  essay_dream: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
-  essay_contribution: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
+  essay_worthy: essayField("Essay 'Kenapa kamu layak dipilih'"),
+  essay_dream: essayField("Essay 'Apa impianmu setelah ke Tanah Suci'"),
+  essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
 });
 
 export const Route = createFileRoute("/berkas")({
@@ -48,15 +56,18 @@ function BerkasPage() {
   });
   const [links, setLinks] = useState({
     identitas: "",
-    pengalaman_sosial: "",
-    skill: "",
     sertifikat: "",
     portofolio: "",
+  });
+  const [texts, setTexts] = useState({
+    pengalaman_sosial: "",
+    skill: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
   const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
   const setLink = <K extends keyof typeof links>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
+  const setText = <K extends keyof typeof texts>(k: K, v: string) => setTexts((x) => ({ ...x, [k]: v }));
 
   const verify = async () => {
     const c = code.trim().toUpperCase();
@@ -80,17 +91,18 @@ function BerkasPage() {
 
   const submit = async () => {
     if (!participant) return;
-    const parsed = essaySchema.safeParse(d);
-    if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+    const parsedEssay = essaySchema.safeParse(d);
+    if (!parsedEssay.success) { toast.error(parsedEssay.error.issues[0].message); return; }
+    const parsedTexts = textsSchema.safeParse(texts);
+    if (!parsedTexts.success) { toast.error(parsedTexts.error.issues[0].message); return; }
     const parsedLinks = linksSchema.safeParse(links);
     if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
 
     setSubmitting(true);
     try {
-      // Simpan link identitas di photo_url, gabungan link berkas lain di cv_url (JSON)
       const cvPayload = JSON.stringify({
-        pengalaman_sosial: parsedLinks.data.pengalaman_sosial,
-        skill: parsedLinks.data.skill,
+        pengalaman_sosial: parsedTexts.data.pengalaman_sosial,
+        skill: parsedTexts.data.skill,
         sertifikat: parsedLinks.data.sertifikat,
         portofolio: parsedLinks.data.portofolio,
       });
@@ -99,9 +111,9 @@ function BerkasPage() {
         p_code: code.trim().toUpperCase(),
         p_cv_url: cvPayload,
         p_photo_url: parsedLinks.data.identitas,
-        p_essay_worthy: parsed.data.essay_worthy,
-        p_essay_dream: parsed.data.essay_dream,
-        p_essay_contribution: parsed.data.essay_contribution,
+        p_essay_worthy: parsedEssay.data.essay_worthy,
+        p_essay_dream: parsedEssay.data.essay_dream,
+        p_essay_contribution: parsedEssay.data.essay_contribution,
       });
       if (e3) throw e3;
       if (!ok) throw new Error("Kode tidak valid");
@@ -188,53 +200,63 @@ function BerkasPage() {
                 Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
               </div>
 
-              <Section title="Upload Berkas (Google Drive)">
+              <Section title="Data & Berkas Pendukung">
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
                   <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
                   <div>
-                    Upload semua berkas ke <strong>Google Drive</strong> kamu, lalu paste link nya di sini.
-                    Pastikan setting akses link <strong>"Anyone with the link can view"</strong>.
+                    Untuk berkas berupa file, upload dulu ke <strong>Google Drive</strong> kamu lalu paste link nya.
+                    Pastikan akses link <strong>"Anyone with the link can view"</strong>.
                   </div>
                 </div>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <LinkField
                     label="Identitas Diri"
-                    placeholder="KTP / KTM / Kartu Pelajar"
+                    hint="KTP / KTM / Kartu Pelajar"
                     value={links.identitas}
                     onChange={(v) => setLink("identitas", v)}
+                    required
                   />
-                  <LinkField
+                  <TextAreaField
                     label="Pengalaman Sosial"
-                    placeholder="Link Google Drive pengalaman sosial / organisasi"
-                    value={links.pengalaman_sosial}
-                    onChange={(v) => setLink("pengalaman_sosial", v)}
+                    hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu"
+                    value={texts.pengalaman_sosial}
+                    onChange={(v) => setText("pengalaman_sosial", v)}
+                    rows={4}
+                    required
                   />
-                  <LinkField
+                  <TextAreaField
                     label="Skill"
-                    placeholder="Link Google Drive daftar skill / kemampuan"
-                    value={links.skill}
-                    onChange={(v) => setLink("skill", v)}
+                    hint="Sebutkan skill / kemampuan yang kamu kuasai"
+                    value={texts.skill}
+                    onChange={(v) => setText("skill", v)}
+                    rows={3}
+                    required
                   />
                   <LinkField
                     label="Sertifikat Pendukung"
-                    placeholder="Link Google Drive kumpulan sertifikat"
+                    hint="Folder Google Drive berisi sertifikat-sertifikat kamu"
                     value={links.sertifikat}
                     onChange={(v) => setLink("sertifikat", v)}
+                    required
                   />
                   <LinkField
                     label="Portofolio Kegiatan"
-                    placeholder="Link Google Drive portofolio kegiatan"
+                    hint="Folder Google Drive berisi dokumentasi kegiatan kamu"
                     value={links.portofolio}
                     onChange={(v) => setLink("portofolio", v)}
+                    required
                   />
                 </div>
               </Section>
 
               <Section title="Essay Singkat">
+                <p className="text-xs text-muted-foreground -mt-2 mb-4">
+                  Semua essay <strong className="text-foreground">wajib diisi</strong>, minimal <strong className="text-foreground">{MIN_ESSAY_WORDS} kata</strong> per essay.
+                </p>
                 <div className="grid gap-5">
-                  <F label="Kenapa kamu layak dipilih?"><Textarea rows={4} value={d.essay_worthy} onChange={(e) => set("essay_worthy", e.target.value)} /></F>
-                  <F label="Apa impianmu setelah ke Tanah Suci?"><Textarea rows={4} value={d.essay_dream} onChange={(e) => set("essay_dream", e.target.value)} /></F>
-                  <F label="Bagaimana kontribusimu untuk umat?"><Textarea rows={4} value={d.essay_contribution} onChange={(e) => set("essay_contribution", e.target.value)} /></F>
+                  <EssayField label="Kenapa kamu layak dipilih?" value={d.essay_worthy} onChange={(v) => set("essay_worthy", v)} />
+                  <EssayField label="Apa impianmu setelah ke Tanah Suci?" value={d.essay_dream} onChange={(v) => set("essay_dream", v)} />
+                  <EssayField label="Bagaimana kontribusimu untuk umat?" value={d.essay_contribution} onChange={(v) => set("essay_contribution", v)} />
                 </div>
               </Section>
 
@@ -263,22 +285,52 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   );
 }
-function F({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className="space-y-1.5"><Label className="text-sm font-medium">{label}</Label>{children}</div>;
-}
-function LinkField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
+function FieldShell({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (
-    <F label={label}>
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <Label className="text-sm font-medium">
+          {label} {required && <span className="text-destructive">*</span>}
+        </Label>
+        {hint && <span className="text-xs text-muted-foreground">— {hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+function LinkField({ label, hint, value, onChange, required }: { label: string; hint?: string; value: string; onChange: (v: string) => void; required?: boolean }) {
+  return (
+    <FieldShell label={label} hint={hint} required={required}>
       <div className="relative">
         <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           type="url"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder="Link Google Drive"
           className="pl-9"
+          required={required}
         />
       </div>
-    </F>
+    </FieldShell>
+  );
+}
+function TextAreaField({ label, hint, value, onChange, rows = 4, required }: { label: string; hint?: string; value: string; onChange: (v: string) => void; rows?: number; required?: boolean }) {
+  return (
+    <FieldShell label={label} hint={hint} required={required}>
+      <Textarea rows={rows} value={value} onChange={(e) => onChange(e.target.value)} required={required} />
+    </FieldShell>
+  );
+}
+function EssayField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const words = countWords(value);
+  const ok = words >= MIN_ESSAY_WORDS;
+  return (
+    <FieldShell label={label} required>
+      <Textarea rows={5} value={value} onChange={(e) => onChange(e.target.value)} required />
+      <div className={`text-xs mt-1 ${ok ? "text-emerald" : "text-muted-foreground"}`}>
+        {words} / {MIN_ESSAY_WORDS} kata {ok && "✓"}
+      </div>
+    </FieldShell>
   );
 }
