@@ -44,8 +44,8 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
           if (p.payment_status === "paid") {
             return Response.json({ ok: true, alreadyPaid: true });
           }
-          // Reuse existing payment link kalau masih valid
-          if (p.payment_url && p.payment_status === "pending") {
+          // Reuse existing payment link kalau masih valid dan tidak di-force refresh
+          if (!force && p.payment_url && p.payment_status === "pending") {
             return Response.json({ ok: true, url: p.payment_url, reused: true });
           }
 
