@@ -230,6 +230,9 @@ function AdminDashboard() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
+            <button onClick={() => setWaOpen(true)} className="text-sm text-white/90 hover:text-white inline-flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-white/10">
+              <Settings className="size-4" /> <span className="hidden sm:inline">WA Setup</span>
+            </button>
             <Link to="/" className="text-sm text-white/70 hover:text-white flex items-center gap-1.5 px-3 py-2">
               <ArrowLeft className="size-4" /> <span className="hidden sm:inline">Beranda</span>
             </Link>
