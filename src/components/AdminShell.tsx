@@ -9,6 +9,7 @@ import {
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
