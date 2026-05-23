@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as EssayRouteImport } from './routes/essay'
 import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarRouteImport } from './routes/daftar'
@@ -40,6 +41,11 @@ const TentangRoute = TentangRouteImport.update({
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EssayRoute = EssayRouteImport.update({
+  id: '/essay',
+  path: '/essay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonasiRoute = DonasiRouteImport.update({
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
+  '/essay': typeof EssayRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
+  '/essay': typeof EssayRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
+  '/essay': typeof EssayRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/daftar-mandiri'
     | '/donasi'
+    | '/essay'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/daftar-mandiri'
     | '/donasi'
+    | '/essay'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/daftar'
     | '/daftar-mandiri'
     | '/donasi'
+    | '/essay'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   DaftarRoute: typeof DaftarRoute
   DaftarMandiriRoute: typeof DaftarMandiriRoute
   DonasiRoute: typeof DonasiRoute
+  EssayRoute: typeof EssayRoute
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/sukses'
       fullPath: '/sukses'
       preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/essay': {
+      id: '/essay'
+      path: '/essay'
+      fullPath: '/essay'
+      preLoaderRoute: typeof EssayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donasi': {
@@ -382,6 +402,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarRoute: DaftarRoute,
   DaftarMandiriRoute: DaftarMandiriRoute,
   DonasiRoute: DonasiRoute,
+  EssayRoute: EssayRoute,
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
