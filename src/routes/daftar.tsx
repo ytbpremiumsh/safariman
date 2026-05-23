@@ -341,6 +341,7 @@ function Step2Review({ data }: { data: FormData }) {
         <ReviewRow label="Kota" v={data.city} />
         <ReviewRow label="Pendidikan" v={data.education} />
         <ReviewRow label="Pekerjaan" v={data.occupation} />
+        <ReviewRow label="Instagram" v={data.instagram ? `@${data.instagram.replace(/^@/, "")}` : ""} />
       </div>
       <div className="mt-6 rounded-2xl bg-accent/10 border border-accent/30 p-4 text-sm text-muted-foreground">
         Setelah daftar, kamu akan mendapatkan <strong className="text-foreground">Kode Pendaftaran</strong>.
