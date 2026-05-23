@@ -319,6 +319,57 @@ function AdminDashboard() {
           </button>
         </div>
 
+        {/* Mayar payment settings */}
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <HeartHandshake className="size-4 text-accent" />
+            <div className="font-semibold text-sm">Pengaturan Pembayaran Mayar (Donasi Peserta Lolos)</div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            API Key didapat dari dashboard Mayar. Nominal & deskripsi akan tampil pada invoice peserta yang sudah dinyatakan <strong>lolos berkas administrasi</strong>.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Mayar API Key</label>
+              <Input
+                type="password"
+                value={mayarKey}
+                onChange={(e) => setMayarKey(e.target.value)}
+                placeholder="Bearer key dari dashboard Mayar"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Nominal Donasi (IDR)</label>
+              <Input
+                type="number"
+                min={1000}
+                value={mayarAmount}
+                onChange={(e) => setMayarAmount(e.target.value)}
+                placeholder="150000"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">Deskripsi (Tampil di Invoice)</label>
+            <textarea
+              value={mayarDesc}
+              onChange={(e) => setMayarDesc(e.target.value)}
+              rows={3}
+              className="w-full mt-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            />
+          </div>
+          <button
+            onClick={saveMayar}
+            disabled={savingMayar}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingMayar ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+            Simpan Pengaturan Mayar
+          </button>
+        </div>
+
+
+
         {/* Tabs + Filters */}
         <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
           <div className="flex flex-wrap gap-2">
