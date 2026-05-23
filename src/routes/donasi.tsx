@@ -147,7 +147,7 @@ function DonasiPage() {
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
                 <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
-                  Jejak Cahaya: Makkah & Madinah
+                  Jejak Cahaya: Makkah dan Madinah
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                   Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi.
