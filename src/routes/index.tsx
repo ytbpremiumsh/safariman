@@ -215,17 +215,6 @@ function Quota() {
     { icon: ShoppingBag, label: "Perlengkapan Lengkap" },
     { icon: MapPin, label: "City Tour Internasional" },
   ];
-  const tiers = [
-    {
-      name: "Fully Funded",
-      qty: "3 Orang",
-      price: "GRATIS TOTAL",
-      badge: "Most Competitive",
-      featured: true,
-      items: facilities.map((f) => f.label),
-    },
-    // Self Funded & Partial Funded disembunyikan
-  ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -235,71 +224,45 @@ function Quota() {
           subtitle="Program fully funded dengan fasilitas lengkap plus city tour internasional untuk pengalaman tak terlupakan."
         />
 
-        {/* Facilities strip — inspired by reference */}
-        <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 p-6 sm:p-8 shadow-gold">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-deep text-white px-4 py-1.5 text-sm font-semibold">
-              <Sparkles className="size-4 text-accent" /> Fasilitas
+        {/* Single facility card */}
+        <div className="relative mt-16 max-w-6xl mx-auto">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+            <span className="text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full bg-gradient-gold text-emerald-deep shadow-gold">
+              Most Competitive
             </span>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-11 gap-4">
-            {facilities.map((f) => (
-              <div key={f.label} className="flex flex-col items-center text-center gap-2 text-white">
-                <div className="size-12 rounded-full bg-white/20 backdrop-blur grid place-items-center ring-2 ring-white/40">
-                  <f.icon className="size-6" />
-                </div>
-                <span className="text-[11px] font-semibold leading-tight">{f.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-1 gap-7 mt-12 items-stretch max-w-2xl mx-auto">
-          {tiers.map((t, idx) => (
-            <div
-              key={t.name}
-              className={`relative rounded-3xl p-8 sm:p-10 flex flex-col animate-fade-up ${
-                t.featured
-                  ? "bg-gradient-emerald text-white shadow-emerald scale-100 lg:scale-105 ring-2 ring-accent animate-glow-pulse"
-                  : "bg-card border border-border shadow-soft hover-lift"
-              }`}
-              style={{ animationDelay: `${idx * 0.1}s` }}
-            >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className={`text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full ${
-                  t.featured ? "bg-gradient-gold text-emerald-deep" : "bg-secondary text-secondary-foreground"
-                }`}>
-                  {t.badge}
+          <div className="rounded-3xl bg-gradient-emerald text-white p-8 sm:p-10 shadow-emerald ring-2 ring-accent/40">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 text-white px-3 py-1 text-xs font-semibold mb-3">
+                  <Sparkles className="size-3.5 text-accent" /> Fasilitas Lengkap
                 </span>
+                <h3 className="font-display text-4xl sm:text-5xl font-semibold">Fully Funded</h3>
+                <p className="text-white/70 mt-1">Kuota: 3 Orang Berprestasi</p>
               </div>
-              <h3 className={`font-display text-3xl font-semibold ${t.featured ? "text-white" : ""}`}>{t.name}</h3>
-              <p className={`text-sm mt-1 ${t.featured ? "text-white/70" : "text-muted-foreground"}`}>Kuota: {t.qty}</p>
-              <div className="mt-6">
-                <div className={`font-display text-4xl font-semibold ${t.featured ? "text-gradient-gold" : "text-gradient-emerald"}`}>
-                  {t.price}
-                </div>
-                {"sub" in t && (t as { sub?: string }).sub && <span className={`text-sm ${t.featured ? "text-white/60" : "text-muted-foreground"}`}>{(t as { sub?: string }).sub}</span>}
+              <div className="text-right">
+                <div className="font-display text-4xl sm:text-5xl font-semibold text-gradient-gold">GRATIS TOTAL</div>
               </div>
-              <ul className="mt-7 space-y-3 flex-1">
-                {t.items.map((i) => (
-                  <li key={i} className={`flex items-start gap-3 text-sm ${t.featured ? "text-white/90" : "text-foreground"}`}>
-                    <CheckCircle2 className={`size-5 shrink-0 mt-0.5 ${t.featured ? "text-accent" : "text-emerald"}`} />
-                    {i}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/daftar"
-                className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-semibold transition ${
-                  t.featured
-                    ? "bg-gradient-gold text-emerald-deep hover-lift shadow-gold"
-                    : "bg-foreground text-background hover:opacity-90"
-                }`}
-              >
-                Pilih {t.name} <ArrowRight className="size-4" />
-              </Link>
             </div>
-          ))}
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-5 p-6 rounded-2xl bg-white/5 backdrop-blur ring-1 ring-white/10">
+              {facilities.map((f) => (
+                <div key={f.label} className="flex flex-col items-center text-center gap-2">
+                  <div className="size-14 rounded-full bg-gradient-gold grid place-items-center shadow-gold">
+                    <f.icon className="size-6 text-emerald-deep" />
+                  </div>
+                  <span className="text-xs font-semibold leading-tight text-white/90">{f.label}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/daftar"
+              className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-4 font-semibold shadow-gold hover-lift"
+            >
+              Daftar Fully Funded <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>
