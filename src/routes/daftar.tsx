@@ -88,12 +88,12 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       const row = rows?.[0];
       if (!row) throw new Error("Tidak ada respons dari server");
       setCode(row.registration_code);
-      // Auto-kirim notifikasi WhatsApp (fire & forget)
-      fetch("/api/public/wa-notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: "pendaftaran", code: row.registration_code }),
-      }).catch(() => {});
+      // Auto-kirim notifikasi WhatsApp (fire & forget) via server function
+      import("@/lib/wa-notify.functions")
+        .then(({ notifyWaEvent }) =>
+          notifyWaEvent({ data: { event: "pendaftaran", code: row.registration_code } }),
+        )
+        .catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
       toast.success("Pendaftaran berhasil! Notifikasi WA sedang dikirim ✨");
     } catch (e) {
