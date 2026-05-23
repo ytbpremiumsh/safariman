@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const { code } = (await request.json()) as { code?: string };
+          const { code, force } = (await request.json()) as { code?: string; force?: boolean };
           if (!code || code.length < 4) {
             return Response.json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
           }
