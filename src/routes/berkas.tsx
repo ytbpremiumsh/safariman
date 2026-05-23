@@ -188,10 +188,45 @@ function BerkasPage() {
                 Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
               </div>
 
-              <Section title="Upload Berkas">
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <FileField label="CV (PDF, max 5MB)" file={cv} setFile={setCv} accept="application/pdf" />
-                  <FileField label="Foto (JPG/PNG, max 5MB)" file={photo} setFile={setPhoto} accept="image/*" />
+              <Section title="Upload Berkas (Google Drive)">
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
+                  <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                  <div>
+                    Upload semua berkas ke <strong>Google Drive</strong> kamu, lalu paste link nya di sini.
+                    Pastikan setting akses link <strong>"Anyone with the link can view"</strong>.
+                  </div>
+                </div>
+                <div className="grid gap-4">
+                  <LinkField
+                    label="Identitas Diri"
+                    placeholder="KTP / KTM / Kartu Pelajar"
+                    value={links.identitas}
+                    onChange={(v) => setLink("identitas", v)}
+                  />
+                  <LinkField
+                    label="Pengalaman Sosial"
+                    placeholder="Link Google Drive pengalaman sosial / organisasi"
+                    value={links.pengalaman_sosial}
+                    onChange={(v) => setLink("pengalaman_sosial", v)}
+                  />
+                  <LinkField
+                    label="Skill"
+                    placeholder="Link Google Drive daftar skill / kemampuan"
+                    value={links.skill}
+                    onChange={(v) => setLink("skill", v)}
+                  />
+                  <LinkField
+                    label="Sertifikat Pendukung"
+                    placeholder="Link Google Drive kumpulan sertifikat"
+                    value={links.sertifikat}
+                    onChange={(v) => setLink("sertifikat", v)}
+                  />
+                  <LinkField
+                    label="Portofolio Kegiatan"
+                    placeholder="Link Google Drive portofolio kegiatan"
+                    value={links.portofolio}
+                    onChange={(v) => setLink("portofolio", v)}
+                  />
                 </div>
               </Section>
 
