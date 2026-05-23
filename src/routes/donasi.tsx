@@ -7,7 +7,8 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
+import { IslamicPattern } from "@/components/IslamicPattern";
+import donasiHeader from "@/assets/donasi-header.jpg";
 
 export const Route = createFileRoute("/donasi")({
   head: () => ({
@@ -94,12 +95,17 @@ function DonasiPage() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          <div className="text-center mb-10 animate-fade-up">
-            <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
-            <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-[1.2] pb-3">
-              Tunaikan <span className="text-gradient-gold inline-block pb-2">Kontribusi Kebaikan</span>
-            </h1>
-            <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          <div className="mb-10 animate-fade-up">
+            <div className="relative rounded-3xl overflow-hidden shadow-emerald ring-1 ring-accent/30">
+              <img
+                src={donasiHeader}
+                alt="Tunaikan Kontribusi Kebaikan — Safar Iman"
+                width={1536}
+                height={1024}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            <p className="mt-6 text-center text-muted-foreground max-w-xl mx-auto leading-relaxed">
               Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">operasional program, kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
