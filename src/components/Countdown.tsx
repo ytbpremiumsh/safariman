@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const TARGET = new Date("2026-08-15T23:59:59+07:00").getTime();
+const DEFAULT_TARGET = new Date("2026-08-15T23:59:59+07:00").getTime();
 
 export function Countdown() {
+  const [target, setTarget] = useState<number>(DEFAULT_TARGET);
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("get_countdown_target");
+      if (data && typeof data === "string") {
+        const parsed = new Date(data).getTime();
+        if (!Number.isNaN(parsed)) setTarget(parsed);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     const tick = () => {
-      const diff = Math.max(0, TARGET - Date.now());
+      const diff = Math.max(0, target - Date.now());
       setT({
         d: Math.floor(diff / 86400000),
         h: Math.floor((diff / 3600000) % 24),
@@ -18,7 +30,7 @@ export function Countdown() {
     tick();
     const i = setInterval(tick, 1000);
     return () => clearInterval(i);
-  }, []);
+  }, [target]);
 
   const items = [
     { v: t.d, l: "Hari" },
