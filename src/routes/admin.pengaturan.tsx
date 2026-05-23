@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen } from "lucide-react";
+import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,14 @@ function PengaturanPage() {
   const [savingMayar, setSavingMayar] = useState(false);
 
   const [webhookUrl, setWebhookUrl] = useState("");
+  const [mpwaWebhookUrl, setMpwaWebhookUrl] = useState("");
 
   const [panduanUrl, setPanduanUrl] = useState("");
   const [savingPanduan, setSavingPanduan] = useState(false);
+
+  const [mayarWebhookSecret, setMayarWebhookSecret] = useState("");
+  const [mpwaWebhookSecret, setMpwaWebhookSecret] = useState("");
+  const [savingSecrets, setSavingSecrets] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -45,8 +50,11 @@ function PengaturanPage() {
       setMayarAmount(map.mayar_donation_amount ?? "150000");
       setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
       setPanduanUrl(map.panduan_url ?? "");
+      setMayarWebhookSecret(map.mayar_webhook_secret ?? "");
+      setMpwaWebhookSecret(map.mpwa_webhook_secret ?? "");
       if (typeof window !== "undefined") {
         setWebhookUrl(`${window.location.origin}/api/public/mayar-webhook`);
+        setMpwaWebhookUrl(`${window.location.origin}/api/public/mpwa-webhook`);
       }
       setLoading(false);
     })();
@@ -91,6 +99,18 @@ function PengaturanPage() {
     setSavingMayar(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Pengaturan Mayar disimpan");
+  };
+
+  const saveSecrets = async () => {
+    setSavingSecrets(true);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mayar_webhook_secret", value: mayarWebhookSecret.trim(), updated_at: now },
+      { key: "mpwa_webhook_secret", value: mpwaWebhookSecret.trim(), updated_at: now },
+    ]);
+    setSavingSecrets(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Webhook secret disimpan");
   };
 
   const copy = (text: string, label: string) => {
@@ -197,6 +217,57 @@ function PengaturanPage() {
           <strong className="text-foreground">Event yang ditangkap:</strong> <code>payment.received</code>, <code>invoice.paid</code>, atau status <code>paid / success / settled / completed</code>.
           Webhook mencocokkan invoice ID Mayar dengan peserta dan memperbarui status donasi.
         </div>
+      </div>
+
+      {/* Webhook Secrets */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="size-4 text-accent" />
+          <div className="font-semibold">Webhook Secrets (Keamanan Endpoint Publik)</div>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Rahasia ini memverifikasi bahwa request webhook benar-benar berasal dari Mayar / MPWA, bukan attacker.
+          Buat string acak yang panjang (minimal 32 karakter), simpan di sini, lalu daftarkan nilai yang sama pada masing-masing dashboard.
+        </p>
+
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-muted-foreground">Mayar Webhook Secret</label>
+          <Input
+            type="password"
+            value={mayarWebhookSecret}
+            onChange={(e) => setMayarWebhookSecret(e.target.value)}
+            placeholder="String acak panjang untuk HMAC signature Mayar"
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Di dashboard Mayar, set <strong>Webhook Secret</strong> dengan nilai yang sama. Mayar akan mengirim header <code>x-mayar-signature</code> berisi HMAC-SHA256 dari body.
+          </p>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          <label className="text-xs font-medium text-muted-foreground">MPWA Webhook Secret</label>
+          <Input
+            type="password"
+            value={mpwaWebhookSecret}
+            onChange={(e) => setMpwaWebhookSecret(e.target.value)}
+            placeholder="String acak panjang untuk header X-MPWA-Secret"
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            URL webhook MPWA: <code className="break-all">{mpwaWebhookUrl}?secret=YOUR_SECRET</code>{" "}
+            <button onClick={() => copy(`${mpwaWebhookUrl}?secret=${encodeURIComponent(mpwaWebhookSecret)}`, "URL Webhook MPWA")} className="text-accent underline ml-1">
+              salin URL+secret
+            </button>
+          </p>
+        </div>
+
+        <button
+          onClick={saveSecrets}
+          disabled={savingSecrets}
+          className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+        >
+          {savingSecrets ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Simpan Webhook Secrets
+        </button>
       </div>
     </AdminShell>
   );

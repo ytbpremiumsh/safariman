@@ -28,9 +28,14 @@ export const Route = createFileRoute("/api/public/mayar-webhook")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const secret = process.env.MAYAR_WEBHOOK_SECRET;
+          const { data: row } = await supabaseAdmin
+            .from("app_settings")
+            .select("value")
+            .eq("key", "mayar_webhook_secret")
+            .maybeSingle();
+          const secret = (row?.value ?? "").trim();
           if (!secret) {
-            console.error("MAYAR_WEBHOOK_SECRET tidak dikonfigurasi");
+            console.error("mayar_webhook_secret belum diisi di dashboard admin");
             return Response.json({ ok: false, error: "Server misconfigured" }, { status: 500 });
           }
 
