@@ -46,11 +46,17 @@ function BerkasPage() {
   const [d, setD] = useState({
     essay_worthy: "", essay_dream: "", essay_contribution: "",
   });
-  const [cv, setCv] = useState<File | null>(null);
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [links, setLinks] = useState({
+    identitas: "",
+    pengalaman_sosial: "",
+    skill: "",
+    sertifikat: "",
+    portofolio: "",
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
+  const setLink = <K extends keyof typeof links>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
 
   const verify = async () => {
     const c = code.trim().toUpperCase();
@@ -76,27 +82,23 @@ function BerkasPage() {
     if (!participant) return;
     const parsed = essaySchema.safeParse(d);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
-    if (!cv) { toast.error("CV wajib diupload"); return; }
-    if (!photo) { toast.error("Foto wajib diupload"); return; }
-    if (cv.size > 5 * 1024 * 1024) { toast.error("CV maksimal 5MB"); return; }
-    if (photo.size > 5 * 1024 * 1024) { toast.error("Foto maksimal 5MB"); return; }
+    const parsedLinks = linksSchema.safeParse(links);
+    if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
 
     setSubmitting(true);
     try {
-      const stamp = Date.now();
-      const cvPath = `${participant.id}/${stamp}-${cv.name}`;
-      const photoPath = `${participant.id}/${stamp}-${photo.name}`;
-
-      const { error: e1 } = await supabase.storage.from("participant-cv").upload(cvPath, cv);
-      if (e1) throw e1;
-      const { error: e2 } = await supabase.storage.from("participant-photo").upload(photoPath, photo);
-      if (e2) throw e2;
-      const photoUrl = supabase.storage.from("participant-photo").getPublicUrl(photoPath).data.publicUrl;
+      // Simpan link identitas di photo_url, gabungan link berkas lain di cv_url (JSON)
+      const cvPayload = JSON.stringify({
+        pengalaman_sosial: parsedLinks.data.pengalaman_sosial,
+        skill: parsedLinks.data.skill,
+        sertifikat: parsedLinks.data.sertifikat,
+        portofolio: parsedLinks.data.portofolio,
+      });
 
       const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
         p_code: code.trim().toUpperCase(),
-        p_cv_url: cvPath,
-        p_photo_url: photoUrl,
+        p_cv_url: cvPayload,
+        p_photo_url: parsedLinks.data.identitas,
         p_essay_worthy: parsed.data.essay_worthy,
         p_essay_dream: parsed.data.essay_dream,
         p_essay_contribution: parsed.data.essay_contribution,
@@ -104,7 +106,6 @@ function BerkasPage() {
       if (e3) throw e3;
       if (!ok) throw new Error("Kode tidak valid");
 
-      // Auto-kirim notifikasi WhatsApp konfirmasi berkas diterima via server function
       import("@/lib/wa-notify.functions")
         .then(({ notifyWaEvent }) =>
           notifyWaEvent({ data: { event: "berkas", code: code.trim().toUpperCase() } }),
