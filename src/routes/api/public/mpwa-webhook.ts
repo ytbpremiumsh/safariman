@@ -79,6 +79,22 @@ export const Route = createFileRoute("/api/public/mpwa-webhook")({
         Response.json({ ok: true, info: "MPWA webhook for Safar Iman AI auto-reply" }),
       POST: async ({ request }) => {
         try {
+          // SECURITY: shared-secret header check. Tanpa ini, siapa pun bisa
+          // memicu app mengirim pesan WA ke nomor sembarang & menguras kuota AI.
+          const expectedSecret = process.env.MPWA_WEBHOOK_SECRET;
+          if (!expectedSecret) {
+            console.error("MPWA_WEBHOOK_SECRET tidak dikonfigurasi");
+            return Response.json({ ok: false, error: "Server misconfigured" }, { status: 500 });
+          }
+          const providedSecret =
+            request.headers.get("x-mpwa-secret") ||
+            request.headers.get("x-webhook-secret") ||
+            new URL(request.url).searchParams.get("secret");
+          if (!providedSecret || providedSecret !== expectedSecret) {
+            console.warn("MPWA webhook: invalid or missing secret");
+            return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+          }
+
           const payload = await request.json().catch(() => ({}));
           const { sender, message, fromMe, isGroup } = extractIncoming(payload);
 
