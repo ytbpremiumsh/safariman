@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Upload, Sparkles, Loader2, KeyRound, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Link2, Loader2, KeyRound, CheckCircle2, Info } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+
+const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
+const linksSchema = z.object({
+  identitas: urlSchema,
+  pengalaman_sosial: urlSchema,
+  skill: urlSchema,
+  sertifikat: urlSchema,
+  portofolio: urlSchema,
+});
 
 const essaySchema = z.object({
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
@@ -37,11 +46,17 @@ function BerkasPage() {
   const [d, setD] = useState({
     essay_worthy: "", essay_dream: "", essay_contribution: "",
   });
-  const [cv, setCv] = useState<File | null>(null);
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [links, setLinks] = useState({
+    identitas: "",
+    pengalaman_sosial: "",
+    skill: "",
+    sertifikat: "",
+    portofolio: "",
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
+  const setLink = <K extends keyof typeof links>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
 
   const verify = async () => {
     const c = code.trim().toUpperCase();
@@ -67,27 +82,23 @@ function BerkasPage() {
     if (!participant) return;
     const parsed = essaySchema.safeParse(d);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
-    if (!cv) { toast.error("CV wajib diupload"); return; }
-    if (!photo) { toast.error("Foto wajib diupload"); return; }
-    if (cv.size > 5 * 1024 * 1024) { toast.error("CV maksimal 5MB"); return; }
-    if (photo.size > 5 * 1024 * 1024) { toast.error("Foto maksimal 5MB"); return; }
+    const parsedLinks = linksSchema.safeParse(links);
+    if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
 
     setSubmitting(true);
     try {
-      const stamp = Date.now();
-      const cvPath = `${participant.id}/${stamp}-${cv.name}`;
-      const photoPath = `${participant.id}/${stamp}-${photo.name}`;
-
-      const { error: e1 } = await supabase.storage.from("participant-cv").upload(cvPath, cv);
-      if (e1) throw e1;
-      const { error: e2 } = await supabase.storage.from("participant-photo").upload(photoPath, photo);
-      if (e2) throw e2;
-      const photoUrl = supabase.storage.from("participant-photo").getPublicUrl(photoPath).data.publicUrl;
+      // Simpan link identitas di photo_url, gabungan link berkas lain di cv_url (JSON)
+      const cvPayload = JSON.stringify({
+        pengalaman_sosial: parsedLinks.data.pengalaman_sosial,
+        skill: parsedLinks.data.skill,
+        sertifikat: parsedLinks.data.sertifikat,
+        portofolio: parsedLinks.data.portofolio,
+      });
 
       const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
         p_code: code.trim().toUpperCase(),
-        p_cv_url: cvPath,
-        p_photo_url: photoUrl,
+        p_cv_url: cvPayload,
+        p_photo_url: parsedLinks.data.identitas,
         p_essay_worthy: parsed.data.essay_worthy,
         p_essay_dream: parsed.data.essay_dream,
         p_essay_contribution: parsed.data.essay_contribution,
@@ -95,7 +106,6 @@ function BerkasPage() {
       if (e3) throw e3;
       if (!ok) throw new Error("Kode tidak valid");
 
-      // Auto-kirim notifikasi WhatsApp konfirmasi berkas diterima via server function
       import("@/lib/wa-notify.functions")
         .then(({ notifyWaEvent }) =>
           notifyWaEvent({ data: { event: "berkas", code: code.trim().toUpperCase() } }),
@@ -178,10 +188,45 @@ function BerkasPage() {
                 Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
               </div>
 
-              <Section title="Upload Berkas">
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <FileField label="CV (PDF, max 5MB)" file={cv} setFile={setCv} accept="application/pdf" />
-                  <FileField label="Foto (JPG/PNG, max 5MB)" file={photo} setFile={setPhoto} accept="image/*" />
+              <Section title="Upload Berkas (Google Drive)">
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
+                  <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                  <div>
+                    Upload semua berkas ke <strong>Google Drive</strong> kamu, lalu paste link nya di sini.
+                    Pastikan setting akses link <strong>"Anyone with the link can view"</strong>.
+                  </div>
+                </div>
+                <div className="grid gap-4">
+                  <LinkField
+                    label="Identitas Diri"
+                    placeholder="KTP / KTM / Kartu Pelajar"
+                    value={links.identitas}
+                    onChange={(v) => setLink("identitas", v)}
+                  />
+                  <LinkField
+                    label="Pengalaman Sosial"
+                    placeholder="Link Google Drive pengalaman sosial / organisasi"
+                    value={links.pengalaman_sosial}
+                    onChange={(v) => setLink("pengalaman_sosial", v)}
+                  />
+                  <LinkField
+                    label="Skill"
+                    placeholder="Link Google Drive daftar skill / kemampuan"
+                    value={links.skill}
+                    onChange={(v) => setLink("skill", v)}
+                  />
+                  <LinkField
+                    label="Sertifikat Pendukung"
+                    placeholder="Link Google Drive kumpulan sertifikat"
+                    value={links.sertifikat}
+                    onChange={(v) => setLink("sertifikat", v)}
+                  />
+                  <LinkField
+                    label="Portofolio Kegiatan"
+                    placeholder="Link Google Drive portofolio kegiatan"
+                    value={links.portofolio}
+                    onChange={(v) => setLink("portofolio", v)}
+                  />
                 </div>
               </Section>
 
@@ -221,16 +266,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function F({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="space-y-1.5"><Label className="text-sm font-medium">{label}</Label>{children}</div>;
 }
-function FileField({ label, file, setFile, accept }: { label: string; file: File | null; setFile: (f: File | null) => void; accept: string }) {
+function LinkField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
   return (
     <F label={label}>
-      <label className="cursor-pointer block rounded-2xl border-2 border-dashed border-border hover:border-accent p-5 text-center transition">
-        <Upload className="size-5 mx-auto text-muted-foreground mb-2" />
-        <div className="text-sm">
-          {file ? <span className="text-emerald font-medium break-all">{file.name}</span> : <span className="text-muted-foreground">Klik untuk pilih file</span>}
-        </div>
-        <input type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-      </label>
+      <div className="relative">
+        <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Input
+          type="url"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="pl-9"
+        />
+      </div>
     </F>
   );
 }
