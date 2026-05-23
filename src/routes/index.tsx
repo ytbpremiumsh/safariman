@@ -5,7 +5,8 @@ import {
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Countdown } from "@/components/Countdown";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
