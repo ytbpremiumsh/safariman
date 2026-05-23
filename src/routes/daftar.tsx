@@ -320,6 +320,9 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
         <Field label="Pekerjaan / Status">
           <Input value={data.occupation} onChange={(e) => set("occupation", e.target.value)} placeholder="Mahasiswa, Karyawan, dll" />
         </Field>
+        <Field label="Instagram">
+          <Input value={data.instagram} onChange={(e) => set("instagram", e.target.value)} placeholder="@username" />
+        </Field>
       </div>
     </div>
   );
