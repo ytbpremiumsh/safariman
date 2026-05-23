@@ -389,7 +389,11 @@ function Timeline() {
             >
               <div className={`pl-16 sm:pl-0 ${idx % 2 === 0 ? "sm:text-right sm:pr-12" : "sm:pl-12"}`}>
                 <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift">
-                  <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Tahap {idx + 1}</div>
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent font-semibold">
+                    <span>Tahap {idx + 1}</span>
+                    <span className="text-muted-foreground/60">•</span>
+                    <span className="text-foreground/70 normal-case tracking-normal font-medium">{s.date}</span>
+                  </div>
                   <h3 className="font-display text-2xl font-semibold mt-2">{s.t}</h3>
                   <p className="text-muted-foreground mt-1 text-sm">{s.d}</p>
                   {s.cta && (
