@@ -84,6 +84,13 @@ function WaSetupPage() {
   const [testNumber, setTestNumber] = useState("");
   const [testing, setTesting] = useState(false);
 
+  // AI auto-reply
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiBehavior, setAiBehavior] = useState(DEFAULT_AI_BEHAVIOR);
+  const [aiKnowledge, setAiKnowledge] = useState(DEFAULT_AI_KNOWLEDGE);
+  const [savingAi, setSavingAi] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState("");
+
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -92,7 +99,7 @@ function WaSetupPage() {
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
       const { data } = await supabase.from("app_settings")
         .select("key,value")
-        .in("key", ["mpwa_api_key", "mpwa_sender", ...TEMPLATE_KEYS]);
+        .in("key", ["mpwa_api_key", "mpwa_sender", "wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", ...TEMPLATE_KEYS]);
       const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
       setApiKey(map.mpwa_api_key ?? "");
       setSender(map.mpwa_sender ?? "");
@@ -103,6 +110,12 @@ function WaSetupPage() {
         wa_template_ditolak: map.wa_template_ditolak ?? "",
         wa_template_custom: map.wa_template_custom ?? "",
       });
+      setAiEnabled(map.wa_ai_enabled === "true");
+      if (map.wa_ai_behavior) setAiBehavior(map.wa_ai_behavior);
+      if (map.wa_ai_knowledge) setAiKnowledge(map.wa_ai_knowledge);
+      if (typeof window !== "undefined") {
+        setWebhookUrl(`${window.location.origin}/api/public/mpwa-webhook`);
+      }
       setLoading(false);
     })();
   }, [navigate]);
@@ -119,6 +132,25 @@ function WaSetupPage() {
     if (error) { toast.error(error.message); return; }
     toast.success("Pengaturan tersimpan");
   };
+
+  const saveAi = async () => {
+    setSavingAi(true);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "wa_ai_enabled", value: aiEnabled ? "true" : "false", updated_at: now },
+      { key: "wa_ai_behavior", value: aiBehavior, updated_at: now },
+      { key: "wa_ai_knowledge", value: aiKnowledge, updated_at: now },
+    ]);
+    setSavingAi(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Pengaturan AI tersimpan");
+  };
+
+  const copyText = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} disalin`);
+  };
+
 
   const generateQr = async () => {
     if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu, lalu Simpan"); return; }
