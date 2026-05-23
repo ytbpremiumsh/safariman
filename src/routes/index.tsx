@@ -94,6 +94,17 @@ function Nav() {
 }
 
 function Hero() {
+  const [panduanUrl, setPanduanUrl] = useState<string>("#program");
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "panduan_url")
+        .maybeSingle();
+      if (data?.value) setPanduanUrl(data.value);
+    })();
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <img
