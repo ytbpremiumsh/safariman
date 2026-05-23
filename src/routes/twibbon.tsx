@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText, Instagram, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import twibbonFrame from "@/assets/twibbon.png";
@@ -8,11 +8,18 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 const CP_WHATSAPP = "6281234567890";
 const CP_NAME = "CP Safar Iman";
 
+const IG_ACCOUNTS = [
+  { handle: "safariman.id", url: "https://instagram.com/safariman.id", label: "Safar Iman" },
+  { handle: "hasanah.tours.travel", url: "https://instagram.com/hasanah.tours.travel", label: "Hasanah Tours" },
+  { handle: "hasanah.hajiumrohsemarang", url: "https://instagram.com/hasanah.hajiumrohsemarang", label: "Hasanah Semarang" },
+  { handle: "prestasikita", url: "https://instagram.com/prestasikita", label: "Prestasi Kita" },
+];
+
 export const Route = createFileRoute("/twibbon")({
   head: () => ({
     meta: [
       { title: "Twibbon — Safar Iman" },
-      { name: "description", content: "Download twibbon Safar Iman, posting di sosmed, lalu kirim ke CP." },
+      { name: "description", content: "Download twibbon Safar Iman, follow Instagram kami, posting di sosmed, lalu kirim ke CP." },
     ],
   }),
   component: TwibbonPage,
@@ -36,7 +43,7 @@ function TwibbonPage() {
   };
 
   const waMessage = encodeURIComponent(
-    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Jazakallahu khairan 🙏`
+    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Jazakallahu khairan 🙏`
   );
 
   const copyMessage = async () => {
@@ -66,13 +73,13 @@ function TwibbonPage() {
               Yuk Bikin <span className="text-gradient-gold">Twibbon</span>mu
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Sebarkan semangat Safar Iman. Download twibbon, posting di sosmed, lalu kirim screenshot ke CP kami.
-              Tidak perlu mendaftar dulu — terbuka untuk siapa saja!
+              Ikuti 4 langkah mudah di bawah. Terbuka untuk siapa saja — tidak perlu mendaftar dulu.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
-            <div className="bg-card border border-border rounded-3xl p-6 shadow-soft animate-fade-up">
+          {/* Twibbon preview + download */}
+          <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start mb-8">
+            <div className="lg:col-span-2 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up lg:sticky lg:top-24">
               <div className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald">
                 <img src={twibbonFrame} alt="Twibbon Safar Iman" className="size-full object-cover" width={1024} height={1024} loading="lazy" />
               </div>
@@ -84,18 +91,52 @@ function TwibbonPage() {
               </button>
             </div>
 
-            <div className="space-y-5">
-              <Card n={1} title="Download Twibbon" icon={<Download className="size-5" />}>
-                Klik tombol "Download Twibbon" untuk menyimpan frame ke perangkatmu.
-              </Card>
-              <Card n={2} title="Pasang Fotomu" icon={<ImageIcon className="size-5" />}>
+            {/* Steps */}
+            <div className="lg:col-span-3 space-y-4">
+              <Step n={1} title="Download Twibbon" icon={<Download className="size-5" />}>
+                Klik tombol <strong className="text-foreground">"Download Twibbon"</strong> di samping untuk menyimpan frame ke perangkatmu.
+              </Step>
+
+              <Step n={2} title="Pasang Fotomu" icon={<ImageIcon className="size-5" />}>
                 Buka di aplikasi edit foto (Canva / PicsArt / Photoshop). Letakkan fotomu di area tengah frame.
-              </Card>
-              <Card n={3} title="Posting di Sosmed" icon={<Sparkles className="size-5" />}>
-                Upload di feed/story Instagram/Twitter dengan caption dakwah. Tag <strong className="text-foreground">@safariman.id</strong> & hashtag <strong className="text-foreground">#SafarIman #UmrahGratisBerprestasi</strong>.
-              </Card>
-              <Card n={4} title="Kirim Bukti ke CP" icon={<MessageCircle className="size-5" />}>
-                Screenshot postinganmu, lalu kirim ke {CP_NAME} via WhatsApp.
+              </Step>
+
+              <Step n={3} title="Wajib Follow Instagram Kami" icon={<Instagram className="size-5" />} highlight>
+                <p className="mb-3">
+                  Sebelum lanjut, pastikan kamu sudah <strong className="text-foreground">follow keempat akun Instagram</strong> resmi berikut:
+                </p>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {IG_ACCOUNTS.map((acc) => (
+                    <a
+                      key={acc.handle}
+                      href={acc.url}
+                      target="_blank" rel="noopener noreferrer"
+                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                    >
+                      <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                        <Instagram className="size-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] text-muted-foreground leading-tight">{acc.label}</div>
+                        <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                      </div>
+                      <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                    </a>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+                  <CheckCircle2 className="size-3.5 text-emerald shrink-0 mt-0.5" />
+                  <span>Screenshot bukti follow akan diminta CP saat verifikasi.</span>
+                </div>
+              </Step>
+
+              <Step n={4} title="Posting & Kirim Bukti ke CP" icon={<Sparkles className="size-5" />}>
+                <p>
+                  Upload twibbon di feed/story Instagram dengan caption dakwah. Tag{" "}
+                  <strong className="text-foreground">@safariman.id</strong> & hashtag{" "}
+                  <strong className="text-foreground">#SafarIman #UmrahGratisBerprestasi</strong>.
+                </p>
+                <p className="mt-2">Lalu screenshot postingan + bukti follow, kirim ke {CP_NAME} via WhatsApp.</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
                     href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
@@ -111,32 +152,32 @@ function TwibbonPage() {
                     <Copy className="size-4" /> Salin Pesan
                   </button>
                 </div>
-              </Card>
-
-              <Link
-                to="/berkas"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift"
-              >
-                <FileText className="size-4" /> Lanjut Kirim Berkas <ArrowRight className="size-4" />
-              </Link>
+              </Step>
             </div>
           </div>
+
+          <Link
+            to="/berkas"
+            className="w-full max-w-2xl mx-auto flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift"
+          >
+            <FileText className="size-4" /> Lanjut Kirim Berkas <ArrowRight className="size-4" />
+          </Link>
         </main>
       </div>
     </div>
   );
 }
 
-function Card({ n, title, icon, children }: { n: number; title: string; icon: React.ReactNode; children: React.ReactNode }) {
+function Step({ n, title, icon, children, highlight }: { n: number; title: string; icon: React.ReactNode; children: React.ReactNode; highlight?: boolean }) {
   return (
-    <div className="bg-card border border-border rounded-2xl p-5 shadow-soft flex gap-4 animate-fade-up">
+    <div className={`bg-card border rounded-2xl p-5 shadow-soft flex gap-4 animate-fade-up ${highlight ? "border-accent/40 ring-1 ring-accent/20" : "border-border"}`}>
       <div className="size-11 shrink-0 rounded-xl bg-gradient-emerald grid place-items-center text-accent shadow-emerald">
         {icon}
       </div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="text-[10px] uppercase tracking-[0.25em] text-accent font-semibold">Langkah {n}</div>
         <h3 className="font-display text-lg font-semibold mt-0.5">{title}</h3>
-        <div className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{children}</div>
+        <div className="text-sm text-muted-foreground mt-2 leading-relaxed">{children}</div>
       </div>
     </div>
   );
