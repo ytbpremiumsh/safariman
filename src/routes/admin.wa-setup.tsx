@@ -200,7 +200,8 @@ function WaSetupPage() {
             {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Template
           </button>
         </section>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }
+
