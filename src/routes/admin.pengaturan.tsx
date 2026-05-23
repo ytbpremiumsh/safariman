@@ -123,7 +123,34 @@ function PengaturanPage() {
     toast.success(`${label} disalin`);
   };
 
-  if (!ready || loading) return <AdminLoading />;
+  const onPickFrame = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) { toast.error("File harus gambar (PNG transparan disarankan)"); return; }
+    if (f.size > 8 * 1024 * 1024) { toast.error("Maks 8MB"); return; }
+    setUploadingFrame(true);
+    try {
+      const ext = (f.name.split(".").pop() || "png").toLowerCase();
+      const path = `frame-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("twibbon-assets").upload(path, f, {
+        upsert: true, contentType: f.type,
+      });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("twibbon-assets").getPublicUrl(path);
+      const url = `${data.publicUrl}?v=${Date.now()}`;
+      const { error: sErr } = await supabase.from("app_settings").upsert({
+        key: "twibbon_frame_url", value: url, updated_at: new Date().toISOString(),
+      });
+      if (sErr) throw sErr;
+      setTwibbonFrameUrl(url);
+      toast.success("Frame Twibbon berhasil diperbarui");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Gagal upload frame");
+    } finally {
+      setUploadingFrame(false);
+      if (frameInputRef.current) frameInputRef.current.value = "";
+    }
+  };
 
   return (
     <AdminShell title="Pengaturan">
