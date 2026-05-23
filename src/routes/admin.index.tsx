@@ -206,8 +206,9 @@ function AdminDashboard() {
           <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
             <option value="all">Semua Status</option>
             <option value="pending">Pending</option>
-            <option value="shortlisted">Shortlisted</option>
-            <option value="approved">Approved</option>
+            <option value="reviewed">Reviewed</option>
+            <option value="interview">Interview</option>
+            <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
