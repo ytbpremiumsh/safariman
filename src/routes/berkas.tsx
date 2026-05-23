@@ -85,7 +85,6 @@ function BerkasPage() {
 
       const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
         p_code: code.trim().toUpperCase(),
-        p_category: parsed.data.category,
         p_cv_url: cvPath,
         p_photo_url: photoUrl,
         p_essay_worthy: parsed.data.essay_worthy,
