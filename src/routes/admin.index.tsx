@@ -305,13 +305,14 @@ function AdminDashboard() {
                   <Th>Kota</Th>
                   <Th>Kategori</Th>
                   <Th>Status</Th>
+                  <Th>Berkas</Th>
                   <Th>Daftar</Th>
                   <Th>Aksi</Th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+                  <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
                 ) : filtered.map((r) => (
                   <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                     <Td>
@@ -328,6 +329,17 @@ function AdminDashboard() {
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
                         {r.status}
                       </span>
+                    </Td>
+                    <Td>
+                      {hasSubmittedDocs(r) ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald">
+                          <FileCheck className="size-3.5" /> Sudah Kirim
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600">
+                          <FileX className="size-3.5" /> Belum Kirim
+                        </span>
+                      )}
                     </Td>
                     <Td className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</Td>
                     <Td>
