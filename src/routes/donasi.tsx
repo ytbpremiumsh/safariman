@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/donasi")({
   head: () => ({
