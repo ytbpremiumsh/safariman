@@ -70,21 +70,6 @@ function TentangPage() {
             </div>
           </section>
 
-          {/* Trust Stats */}
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-            {[
-              { icon: Users, value: "10.000+", label: "Jamaah Terlayani" },
-              { icon: Award, value: "15+", label: "Tahun Pengalaman" },
-              { icon: BadgeCheck, value: "100%", label: "Berizin Resmi" },
-              { icon: Globe2, value: "20+", label: "Kota di Indonesia" },
-            ].map((s) => (
-              <div key={s.label} className="rounded-2xl bg-card border border-border p-5 text-center hover-lift">
-                <s.icon className="size-6 text-accent mx-auto mb-2" />
-                <div className="font-display text-2xl sm:text-3xl font-bold text-emerald-deep">{s.value}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground mt-1">{s.label}</div>
-              </div>
-            ))}
-          </section>
 
           {/* Partner: Hasanah */}
           <section className="grid md:grid-cols-[260px_1fr] gap-8 items-start mb-16 rounded-3xl bg-card border border-border p-6 sm:p-10 shadow-sm">
