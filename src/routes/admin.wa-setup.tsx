@@ -1,17 +1,63 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, QrCode, Save, MessageCircle, Phone } from "lucide-react";
+import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { AdminShell } from "@/components/AdminShell";
 
+const DEFAULT_AI_BEHAVIOR = `Kamu adalah asisten WhatsApp resmi Safar Iman — program Umrah Gratis untuk anak muda berprestasi.
+- Selalu sapa dengan "Assalamu'alaikum" pada pesan pertama.
+- Jawab singkat, hangat, sopan, dan islami (1–4 kalimat).
+- Gunakan bahasa Indonesia santai-formal.
+- Jika pertanyaan di luar program Safar Iman, arahkan kembali ke topik program.
+- Jangan mengarang fakta yang tidak ada di Knowledge. Jika tidak tahu, sarankan menghubungi admin manusia.
+- Jangan janjikan kelolosan, jangan minta data sensitif (KTP, nomor rekening, kata sandi).`;
+
+const DEFAULT_AI_KNOWLEDGE = `# Tentang Safar Iman
+Safar Iman adalah program Umrah Gratis (Fully Funded) untuk anak muda Indonesia berprestasi usia 17–30 tahun. Tagline: "Hasanah × Prestasi".
+
+# Apakah benar gratis?
+Untuk jalur Fully Funded seluruh biaya ditanggung 100%: tiket pesawat PP, visa, hotel, makan, bis, muthawif, tour leader, perlengkapan, dan city tour internasional. Jalur Partial mendapat subsidi sebagian, Self Funded bersifat mandiri.
+
+# Syarat bahasa
+Tidak wajib bisa bahasa Arab. Kemampuan dasar bahasa Arab/Inggris menjadi nilai tambah.
+
+# Siapa yang boleh daftar?
+Pelajar, mahasiswa, dan profesional muda usia 17–30 tahun. Wajib Muslim, sehat jasmani/rohani, dan punya prestasi/kontribusi sosial.
+
+# Tahapan seleksi
+1) Pendaftaran online & dapat Kode Pendaftaran (HXP-xxxx)
+2) Bagikan Twibbon
+3) Kirim Berkas & Essay (CV, foto, 3 essay)
+4) Seleksi Administrasi
+5) Interview online
+6) Pengumuman
+7) Technical Meeting
+8) Keberangkatan
+
+# Biaya tersembunyi?
+Tidak ada biaya tersembunyi. Semua transparan. Setelah lolos berkas administrasi, peserta diminta kontribusi donasi untuk mendukung operasional, kegiatan sosial, berbagi makanan, dan wakaf Al-Qur'an — bukan biaya program.
+
+# Benefit untuk SEMUA peserta (walau belum lolos)
+Setiap peserta yang menyelesaikan tahap berkas akan tetap mendapat:
+- Kelas Online "Fiqh Umrah Praktis: Dari Niat hingga Tahallul" (e-sertifikat)
+- Kajian Sirah "Jejak Cahaya: Makkah & Madinah dalam Lintasan Sejarah Nabi ﷺ"
+- Akses komunitas alumni Safar Iman
+
+# Cara cek status & donasi
+Buka halaman /donasi di website, masukkan Kode Pendaftaran. Jika sudah lolos berkas, link pembayaran donasi (via Mayar) akan muncul.
+
+# Kontak admin manusia
+WhatsApp: +62 812-3456-7890 · Email: hello@safariman.id · Instagram: @safariman.id`;
 
 export const Route = createFileRoute("/admin/wa-setup")({
-  head: () => ({ meta: [{ title: "WA Setup — Safar Iman Admin" }] }),
+  head: () => ({ meta: [{ title: "WhatsApp & AI — Safar Iman Admin" }] }),
   component: WaSetupPage,
 });
+
 
 const TEMPLATE_KEYS = ["wa_template_pendaftaran", "wa_template_berkas", "wa_template_lolos", "wa_template_ditolak", "wa_template_custom"] as const;
 type TemplateKey = (typeof TEMPLATE_KEYS)[number];
