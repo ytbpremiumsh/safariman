@@ -151,10 +151,11 @@ function Hero() {
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
-              href="#program"
+              href={panduanUrl}
+              {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors"
             >
-              Lihat Program
+              Panduan
             </a>
           </div>
 
