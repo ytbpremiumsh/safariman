@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Link2, Loader2, KeyRound, CheckCircle2, Info } from "lucide-react";
+import { ArrowLeft, ArrowRight, Link2, Loader2, KeyRound, CheckCircle2, Info, HeartHandshake, FileText } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,29 +21,24 @@ const textsSchema = z.object({
   skill: z.string().trim().min(20, "Skill minimal 20 karakter").max(2000),
 });
 
-const MIN_ESSAY_WORDS = 50;
-const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
-const essayField = (label: string) =>
-  z.string().trim().max(3000).refine((v) => countWords(v) >= MIN_ESSAY_WORDS, {
-    message: `${label} minimal ${MIN_ESSAY_WORDS} kata`,
-  });
-const essaySchema = z.object({
-  essay_worthy: essayField("Essay 'Kenapa kamu layak dipilih'"),
-  essay_dream: essayField("Essay 'Apa impianmu setelah ke Tanah Suci'"),
-  essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
-});
-
 export const Route = createFileRoute("/berkas")({
   head: () => ({
     meta: [
-      { title: "Kirim Berkas & Essay — Safar Iman" },
-      { name: "description", content: "Kirim berkas program & essay Safar Iman dengan kode pendaftaran." },
+      { title: "Kirim Berkas — Safar Iman" },
+      { name: "description", content: "Kirim berkas pendukung program Safar Iman dengan kode pendaftaran." },
     ],
   }),
   component: BerkasPage,
 });
 
-type Participant = { id: string; full_name: string; has_berkas: boolean };
+type Participant = {
+  id: string;
+  full_name: string;
+  has_berkas: boolean;
+  has_essay: boolean;
+  status: string;
+  payment_status: string;
+};
 
 function BerkasPage() {
   const navigate = useNavigate();
@@ -51,21 +46,10 @@ function BerkasPage() {
   const [checking, setChecking] = useState(false);
   const [participant, setParticipant] = useState<Participant | null>(null);
 
-  const [d, setD] = useState({
-    essay_worthy: "", essay_dream: "", essay_contribution: "",
-  });
-  const [links, setLinks] = useState({
-    identitas: "",
-    sertifikat: "",
-    portofolio: "",
-  });
-  const [texts, setTexts] = useState({
-    pengalaman_sosial: "",
-    skill: "",
-  });
+  const [links, setLinks] = useState({ identitas: "", sertifikat: "", portofolio: "" });
+  const [texts, setTexts] = useState({ pengalaman_sosial: "", skill: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
   const setLink = <K extends keyof typeof links>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
   const setText = <K extends keyof typeof texts>(k: K, v: string) => setTexts((x) => ({ ...x, [k]: v }));
 
@@ -78,9 +62,7 @@ function BerkasPage() {
       if (error) throw error;
       const row = data?.[0];
       if (!row) { toast.error("Kode tidak ditemukan. Pastikan kamu sudah mendaftar."); return; }
-      if (row.has_berkas) { toast.error("Berkas dengan kode ini sudah pernah dikirim."); return; }
       setParticipant(row as Participant);
-      toast.success(`Halo ${row.full_name.split(" ")[0]}! Silakan lanjut isi berkas & essay.`);
     } catch (e) {
       console.error(e);
       toast.error("Gagal memverifikasi kode.");
@@ -91,8 +73,6 @@ function BerkasPage() {
 
   const submit = async () => {
     if (!participant) return;
-    const parsedEssay = essaySchema.safeParse(d);
-    if (!parsedEssay.success) { toast.error(parsedEssay.error.issues[0].message); return; }
     const parsedTexts = textsSchema.safeParse(texts);
     if (!parsedTexts.success) { toast.error(parsedTexts.error.issues[0].message); return; }
     const parsedLinks = linksSchema.safeParse(links);
@@ -107,15 +87,12 @@ function BerkasPage() {
         portofolio: parsedLinks.data.portofolio,
       });
 
-      const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
+      const { data: ok, error } = await supabase.rpc("submit_berkas_by_code", {
         p_code: code.trim().toUpperCase(),
         p_cv_url: cvPayload,
         p_photo_url: parsedLinks.data.identitas,
-        p_essay_worthy: parsedEssay.data.essay_worthy,
-        p_essay_dream: parsedEssay.data.essay_dream,
-        p_essay_contribution: parsedEssay.data.essay_contribution,
       });
-      if (e3) throw e3;
+      if (error) throw error;
       if (!ok) throw new Error("Kode tidak valid");
 
       import("@/lib/wa-notify.functions")
@@ -124,7 +101,7 @@ function BerkasPage() {
         )
         .catch(() => {});
 
-      toast.success("Berkas & essay terkirim. Barakallah!");
+      toast.success("Berkas terkirim. Barakallah!");
       navigate({ to: "/sukses" });
     } catch (e) {
       console.error(e);
@@ -153,39 +130,22 @@ function BerkasPage() {
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Kirim <span className="text-gradient-gold">Berkas & Essay</span>
+              Kirim <span className="text-gradient-gold">Berkas</span>
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
               Masukkan <strong className="text-foreground">Kode Pendaftaran</strong> yang kamu dapat saat daftar,
-              lalu lengkapi berkas & essay programmu.
+              lalu lengkapi berkas pendukungmu.
             </p>
           </div>
 
           {!participant ? (
-            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto">
-              <div className="size-14 rounded-2xl bg-gradient-emerald grid place-items-center mx-auto mb-5 shadow-emerald">
-                <KeyRound className="size-6 text-accent" />
-              </div>
-              <h2 className="font-display text-2xl font-semibold text-center mb-2">Masukkan Kode Pendaftaran</h2>
-              <p className="text-sm text-muted-foreground text-center mb-6">
-                Belum daftar? <Link to="/daftar" className="text-accent underline">Daftar di sini</Link>.
-              </p>
-              <Input
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                onKeyDown={(e) => e.key === "Enter" && verify()}
-                placeholder="CONTOH: HXP-A1B2C3D4"
-                className="text-center font-mono text-lg tracking-[0.15em] h-14 uppercase"
-                maxLength={16}
-              />
-              <button
-                onClick={verify}
-                disabled={checking}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift disabled:opacity-60"
-              >
-                {checking ? <><Loader2 className="size-4 animate-spin" /> Memverifikasi...</> : <>Verifikasi Kode <ArrowRight className="size-4" /></>}
-              </button>
-            </div>
+            <CodeForm code={code} setCode={setCode} checking={checking} verify={verify} />
+          ) : participant.has_berkas ? (
+            <AlreadySubmittedCard
+              participant={participant}
+              code={code.toUpperCase()}
+              onReset={() => { setParticipant(null); setCode(""); }}
+            />
           ) : (
             <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
               <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
@@ -194,10 +154,6 @@ function BerkasPage() {
                   <div className="font-semibold">{participant.full_name}</div>
                   <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code.toUpperCase()}</span></div>
                 </div>
-              </div>
-
-              <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
-                Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
               </div>
 
               <Section title="Data & Berkas Pendukung">
@@ -209,54 +165,11 @@ function BerkasPage() {
                   </div>
                 </div>
                 <div className="grid gap-5">
-                  <LinkField
-                    label="Identitas Diri"
-                    hint="KTP / KTM / Kartu Pelajar"
-                    value={links.identitas}
-                    onChange={(v) => setLink("identitas", v)}
-                    required
-                  />
-                  <TextAreaField
-                    label="Pengalaman Sosial"
-                    hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu"
-                    value={texts.pengalaman_sosial}
-                    onChange={(v) => setText("pengalaman_sosial", v)}
-                    rows={4}
-                    required
-                  />
-                  <TextAreaField
-                    label="Skill"
-                    hint="Sebutkan skill / kemampuan yang kamu kuasai"
-                    value={texts.skill}
-                    onChange={(v) => setText("skill", v)}
-                    rows={3}
-                    required
-                  />
-                  <LinkField
-                    label="Sertifikat Pendukung"
-                    hint="Folder Google Drive berisi sertifikat-sertifikat kamu"
-                    value={links.sertifikat}
-                    onChange={(v) => setLink("sertifikat", v)}
-                    required
-                  />
-                  <LinkField
-                    label="Portofolio Kegiatan"
-                    hint="Folder Google Drive berisi dokumentasi kegiatan kamu"
-                    value={links.portofolio}
-                    onChange={(v) => setLink("portofolio", v)}
-                    required
-                  />
-                </div>
-              </Section>
-
-              <Section title="Essay Singkat">
-                <p className="text-xs text-muted-foreground -mt-2 mb-4">
-                  Semua essay <strong className="text-foreground">wajib diisi</strong>, minimal <strong className="text-foreground">{MIN_ESSAY_WORDS} kata</strong> per essay.
-                </p>
-                <div className="grid gap-5">
-                  <EssayField label="Kenapa kamu layak dipilih?" value={d.essay_worthy} onChange={(v) => set("essay_worthy", v)} />
-                  <EssayField label="Apa impianmu setelah ke Tanah Suci?" value={d.essay_dream} onChange={(v) => set("essay_dream", v)} />
-                  <EssayField label="Bagaimana kontribusimu untuk umat?" value={d.essay_contribution} onChange={(v) => set("essay_contribution", v)} />
+                  <LinkField label="Identitas Diri" hint="KTP / KTM / Kartu Pelajar" value={links.identitas} onChange={(v) => setLink("identitas", v)} required />
+                  <TextAreaField label="Pengalaman Sosial" hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu" value={texts.pengalaman_sosial} onChange={(v) => setText("pengalaman_sosial", v)} rows={4} required />
+                  <TextAreaField label="Skill" hint="Sebutkan skill / kemampuan yang kamu kuasai" value={texts.skill} onChange={(v) => setText("skill", v)} rows={3} required />
+                  <LinkField label="Sertifikat Pendukung" hint="Folder Google Drive berisi sertifikat-sertifikat kamu" value={links.sertifikat} onChange={(v) => setLink("sertifikat", v)} required />
+                  <LinkField label="Portofolio Kegiatan" hint="Folder Google Drive berisi dokumentasi kegiatan kamu" value={links.portofolio} onChange={(v) => setLink("portofolio", v)} required />
                 </div>
               </Section>
 
@@ -265,12 +178,112 @@ function BerkasPage() {
                 disabled={submitting}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
               >
-                {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Berkas & Essay <ArrowRight className="size-4" /></>}
+                {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Berkas <ArrowRight className="size-4" /></>}
               </button>
             </div>
           )}
         </main>
       </div>
+    </div>
+  );
+}
+
+function CodeForm({ code, setCode, checking, verify }: { code: string; setCode: (v: string) => void; checking: boolean; verify: () => void }) {
+  return (
+    <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto">
+      <div className="size-14 rounded-2xl bg-gradient-emerald grid place-items-center mx-auto mb-5 shadow-emerald">
+        <KeyRound className="size-6 text-accent" />
+      </div>
+      <h2 className="font-display text-2xl font-semibold text-center mb-2">Masukkan Kode Pendaftaran</h2>
+      <p className="text-sm text-muted-foreground text-center mb-6">
+        Belum daftar? <Link to="/daftar" className="text-accent underline">Daftar di sini</Link>.
+      </p>
+      <Input
+        value={code}
+        onChange={(e) => setCode(e.target.value.toUpperCase())}
+        onKeyDown={(e) => e.key === "Enter" && verify()}
+        placeholder="CONTOH: HXP-A1B2C3D4"
+        className="text-center font-mono text-lg tracking-[0.15em] h-14 uppercase"
+        maxLength={16}
+      />
+      <button
+        onClick={verify}
+        disabled={checking}
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift disabled:opacity-60"
+      >
+        {checking ? <><Loader2 className="size-4 animate-spin" /> Memverifikasi...</> : <>Verifikasi Kode <ArrowRight className="size-4" /></>}
+      </button>
+    </div>
+  );
+}
+
+function AlreadySubmittedCard({ participant, code, onReset }: { participant: Participant; code: string; onReset: () => void }) {
+  const paid = participant.payment_status === "paid";
+  return (
+    <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
+      <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
+        <CheckCircle2 className="size-5 text-emerald shrink-0" />
+        <div className="text-sm">
+          <div className="font-semibold">{participant.full_name}</div>
+          <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code}</span></div>
+        </div>
+      </div>
+
+      <div className="text-center">
+        <div className="size-14 rounded-2xl bg-gradient-gold grid place-items-center mx-auto mb-4 shadow-gold">
+          <CheckCircle2 className="size-7 text-emerald-deep" />
+        </div>
+        <h3 className="font-display text-2xl font-semibold">Berkas kamu sudah masuk</h3>
+        <p className="text-muted-foreground text-sm mt-2">
+          Kami sudah menerima berkas pendukungmu. Berikut langkah selanjutnya:
+        </p>
+      </div>
+
+      {paid ? (
+        participant.has_essay ? (
+          <div className="rounded-2xl bg-emerald/10 border border-emerald/30 p-5 text-sm text-center">
+            <div className="font-semibold mb-1">Semua tahap sudah selesai</div>
+            <p className="text-muted-foreground">
+              Berkas, kontribusi, dan essay sudah lengkap. Tunggu pengumuman seleksi berikutnya, ya.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="rounded-2xl bg-gradient-emerald p-6 text-center">
+              <div className="text-accent text-xs uppercase tracking-[0.2em] font-bold mb-2">Kontribusi sudah tertunai</div>
+              <div className="font-display text-white text-xl leading-snug">Lanjut ke tahap pengisian Essay</div>
+            </div>
+            <Link
+              to="/essay"
+              search={{ code }}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
+            >
+              <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
+            </Link>
+          </>
+        )
+      ) : (
+        <>
+          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
+            <div className="font-semibold mb-1">Belum bisa lanjut ke Essay</div>
+            <p className="text-muted-foreground">
+              Tahap Essay terbuka setelah kamu dinyatakan lolos seleksi administrasi
+              dan menunaikan <strong className="text-foreground">kontribusi / donasi</strong> terlebih dahulu.
+            </p>
+          </div>
+          <Link
+            to="/donasi"
+            search={{ code }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
+          >
+            <HeartHandshake className="size-5" /> Tunaikan Kontribusi <ArrowRight className="size-4" />
+          </Link>
+        </>
+      )}
+
+      <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">
+        Cek kode lain
+      </button>
     </div>
   );
 }
@@ -303,14 +316,7 @@ function LinkField({ label, hint, value, onChange, required }: { label: string; 
     <FieldShell label={label} hint={hint} required={required}>
       <div className="relative">
         <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-        <Input
-          type="url"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Link Google Drive"
-          className="pl-9"
-          required={required}
-        />
+        <Input type="url" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Link Google Drive" className="pl-9" required={required} />
       </div>
     </FieldShell>
   );
@@ -319,18 +325,6 @@ function TextAreaField({ label, hint, value, onChange, rows = 4, required }: { l
   return (
     <FieldShell label={label} hint={hint} required={required}>
       <Textarea rows={rows} value={value} onChange={(e) => onChange(e.target.value)} required={required} />
-    </FieldShell>
-  );
-}
-function EssayField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  const words = countWords(value);
-  const ok = words >= MIN_ESSAY_WORDS;
-  return (
-    <FieldShell label={label} required>
-      <Textarea rows={5} value={value} onChange={(e) => onChange(e.target.value)} required />
-      <div className={`text-xs mt-1 ${ok ? "text-emerald" : "text-muted-foreground"}`}>
-        {words} / {MIN_ESSAY_WORDS} kata {ok && "✓"}
-      </div>
     </FieldShell>
   );
 }
