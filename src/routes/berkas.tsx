@@ -13,16 +13,24 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
 const linksSchema = z.object({
   identitas: urlSchema,
-  pengalaman_sosial: urlSchema,
-  skill: urlSchema,
   sertifikat: urlSchema,
   portofolio: urlSchema,
 });
+const textsSchema = z.object({
+  pengalaman_sosial: z.string().trim().min(30, "Pengalaman Sosial minimal 30 karakter").max(3000),
+  skill: z.string().trim().min(20, "Skill minimal 20 karakter").max(2000),
+});
 
+const MIN_ESSAY_WORDS = 50;
+const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
+const essayField = (label: string) =>
+  z.string().trim().max(3000).refine((v) => countWords(v) >= MIN_ESSAY_WORDS, {
+    message: `${label} minimal ${MIN_ESSAY_WORDS} kata`,
+  });
 const essaySchema = z.object({
-  essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
-  essay_dream: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
-  essay_contribution: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
+  essay_worthy: essayField("Essay 'Kenapa kamu layak dipilih'"),
+  essay_dream: essayField("Essay 'Apa impianmu setelah ke Tanah Suci'"),
+  essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
 });
 
 export const Route = createFileRoute("/berkas")({
