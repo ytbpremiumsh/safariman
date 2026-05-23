@@ -4,6 +4,7 @@ import {
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
+  Instagram, Mail, Phone, MapPinned,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
