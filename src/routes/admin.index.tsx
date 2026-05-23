@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   LogOut, Search, Download, Sparkles, Users, CheckCircle2, Clock, XCircle,
   Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft, MessageCircle, Settings, QrCode,
+  FileCheck, FileX,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -66,6 +67,7 @@ function AdminDashboard() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [status, setStatus] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
+  const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">("all");
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
   const [templates, setTemplates] = useState<Record<string, string>>({});
@@ -129,21 +131,28 @@ function AdminDashboard() {
     setLoading(false);
   };
 
+  const hasSubmittedDocs = (p: Participant) =>
+    !!(p.cv_url || p.photo_url || p.essay_worthy || p.essay_dream || p.essay_contribution);
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
       if (cat !== "all" && r.category !== cat) return false;
       if (status !== "all" && r.status !== status) return false;
+      if (docFilter === "registered" && hasSubmittedDocs(r)) return false;
+      if (docFilter === "submitted" && !hasSubmittedDocs(r)) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city].some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, cat, status]);
+  }, [rows, q, cat, status, docFilter]);
 
   const stats = useMemo(() => ({
     total: rows.length,
     pending: rows.filter((r) => r.status === "pending").length,
     accepted: rows.filter((r) => r.status === "accepted").length,
     rejected: rows.filter((r) => r.status === "rejected").length,
+    registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
+    submitted: rows.filter((r) => hasSubmittedDocs(r)).length,
   }), [rows]);
 
   const exportExcel = () => {
@@ -230,36 +239,59 @@ function AdminDashboard() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
           <Stat icon={<Users className="size-5" />} label="Total Peserta" value={stats.total} tint="emerald" />
           <Stat icon={<Clock className="size-5" />} label="Menunggu" value={stats.pending} tint="amber" />
           <Stat icon={<CheckCircle2 className="size-5" />} label="Diterima" value={stats.accepted} tint="emerald" />
           <Stat icon={<XCircle className="size-5" />} label="Ditolak" value={stats.rejected} tint="red" />
+          <Stat icon={<FileX className="size-5" />} label="Hanya Daftar" value={stats.registeredOnly} tint="amber" />
+          <Stat icon={<FileCheck className="size-5" />} label="Sudah Kirim Berkas" value={stats.submitted} tint="emerald" />
         </div>
 
-        {/* Filters */}
-        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, WA, kota..." className="pl-9" />
+        {/* Tabs + Filters */}
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {([
+              { key: "all", label: "Semua Peserta" },
+              { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
+              { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
+            ] as const).map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setDocFilter(t.key)}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                  docFilter === t.key
+                    ? "bg-emerald text-white border-emerald shadow-emerald"
+                    : "border-border bg-background hover:bg-secondary"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
-          <select value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Kategori</option>
-            <option value="fully_funded">Fully Funded</option>
-            <option value="partial_funded">Partial Funded</option>
-            <option value="self_funded">Self Funded</option>
-          </select>
-          <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="reviewed">Reviewed</option>
-            <option value="interview">Interview</option>
-            <option value="accepted">Accepted</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
-            <Download className="size-4" /> Export Excel
-          </button>
+          <div className="flex flex-col md:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, WA, kota..." className="pl-9" />
+            </div>
+            <select value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value="all">Semua Kategori</option>
+              <option value="fully_funded">Fully Funded</option>
+              <option value="partial_funded">Partial Funded</option>
+              <option value="self_funded">Self Funded</option>
+            </select>
+            <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value="all">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="interview">Interview</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
+              <Download className="size-4" /> Export Excel
+            </button>
+          </div>
         </div>
 
         {/* Table */}
@@ -273,13 +305,14 @@ function AdminDashboard() {
                   <Th>Kota</Th>
                   <Th>Kategori</Th>
                   <Th>Status</Th>
+                  <Th>Berkas</Th>
                   <Th>Daftar</Th>
                   <Th>Aksi</Th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+                  <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
                 ) : filtered.map((r) => (
                   <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                     <Td>
@@ -296,6 +329,17 @@ function AdminDashboard() {
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
                         {r.status}
                       </span>
+                    </Td>
+                    <Td>
+                      {hasSubmittedDocs(r) ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald">
+                          <FileCheck className="size-3.5" /> Sudah Kirim
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600">
+                          <FileX className="size-3.5" /> Belum Kirim
+                        </span>
+                      )}
                     </Td>
                     <Td className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</Td>
                     <Td>
