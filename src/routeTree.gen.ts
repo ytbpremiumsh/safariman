@@ -22,6 +22,7 @@ import { Route as AdminPesertaRouteImport } from './routes/admin.peserta'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicWaNotifyRouteImport } from './routes/api/public/wa-notify'
+import { Route as ApiPublicMpwaWebhookRouteImport } from './routes/api/public/mpwa-webhook'
 import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
 import { Route as ApiPublicMayarCreateInvoiceRouteImport } from './routes/api/public/mayar-create-invoice'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
@@ -91,6 +92,11 @@ const ApiPublicWaNotifyRoute = ApiPublicWaNotifyRouteImport.update({
   path: '/api/public/wa-notify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMpwaWebhookRoute = ApiPublicMpwaWebhookRouteImport.update({
+  id: '/api/public/mpwa-webhook',
+  path: '/api/public/mpwa-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMayarWebhookRoute = ApiPublicMayarWebhookRouteImport.update({
   id: '/api/public/mayar-webhook',
   path: '/api/public/mayar-webhook',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
+  '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
+  '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
+  '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
+    | '/api/public/mpwa-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
+    | '/api/public/mpwa-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   id:
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
+    | '/api/public/mpwa-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   ApiPublicMayarCreateInvoiceRoute: typeof ApiPublicMayarCreateInvoiceRoute
   ApiPublicMayarWebhookRoute: typeof ApiPublicMayarWebhookRoute
+  ApiPublicMpwaWebhookRoute: typeof ApiPublicMpwaWebhookRoute
   ApiPublicWaNotifyRoute: typeof ApiPublicWaNotifyRoute
   ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
@@ -332,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWaNotifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mpwa-webhook': {
+      id: '/api/public/mpwa-webhook'
+      path: '/api/public/mpwa-webhook'
+      fullPath: '/api/public/mpwa-webhook'
+      preLoaderRoute: typeof ApiPublicMpwaWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mayar-webhook': {
       id: '/api/public/mayar-webhook'
       path: '/api/public/mayar-webhook'
@@ -371,9 +391,20 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   ApiPublicMayarCreateInvoiceRoute: ApiPublicMayarCreateInvoiceRoute,
   ApiPublicMayarWebhookRoute: ApiPublicMayarWebhookRoute,
+  ApiPublicMpwaWebhookRoute: ApiPublicMpwaWebhookRoute,
   ApiPublicWaNotifyRoute: ApiPublicWaNotifyRoute,
   ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
