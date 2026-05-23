@@ -3,6 +3,7 @@ import {
   Sparkles, Globe2, Award, BookOpen, Users, Building2, GraduationCap, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
+  Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import { Countdown } from "@/components/Countdown";
