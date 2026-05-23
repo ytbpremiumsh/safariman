@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const { code } = (await request.json()) as { code?: string };
+          const { code, force } = (await request.json()) as { code?: string; force?: boolean };
           if (!code || code.length < 4) {
             return Response.json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
           }
@@ -44,8 +44,8 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
           if (p.payment_status === "paid") {
             return Response.json({ ok: true, alreadyPaid: true });
           }
-          // Reuse existing payment link kalau masih valid
-          if (p.payment_url && p.payment_status === "pending") {
+          // Reuse existing payment link kalau masih valid dan tidak di-force refresh
+          if (!force && p.payment_url && p.payment_status === "pending") {
             return Response.json({ ok: true, url: p.payment_url, reused: true });
           }
 
