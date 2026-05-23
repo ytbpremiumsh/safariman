@@ -388,8 +388,68 @@ function AdminDashboard() {
                   ))}
                 </div>
               </div>
+
+              <div className="mt-6 pt-4 border-t border-border space-y-2">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Kirim WhatsApp ({detail.whatsapp})</div>
+                <textarea
+                  value={waMsg}
+                  onChange={(e) => setWaMsg(e.target.value)}
+                  placeholder={`Assalamu'alaikum ${detail.full_name}, terima kasih telah mendaftar program Safar Iman...`}
+                  className="w-full min-h-[90px] rounded-md border border-input bg-background p-3 text-sm"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nTerima kasih telah mendaftar program SAFAR IMAN ✨\nStatus pendaftaranmu saat ini: *${detail.status.toUpperCase()}*.\n\nMohon pantau email & WA untuk info selanjutnya.\n\nBarakallahu fiik 🤲`)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
+                  >Template Status</button>
+                  <button
+                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nSelamat! 🎉 Kamu LOLOS seleksi program SAFAR IMAN.\nSilakan menunggu info teknis selanjutnya dari panitia.\n\nBarakallahu fiik 🤲`)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
+                  >Template Lolos</button>
+                  <button
+                    disabled={waSending || !waMsg.trim()}
+                    onClick={() => sendWa(detail.whatsapp, waMsg)}
+                    className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-emerald-deep"
+                  >
+                    {waSending ? <Loader2 className="size-4 animate-spin" /> : <MessageCircle className="size-4" />} Kirim WA
+                  </button>
+                </div>
+              </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={waOpen} onOpenChange={setWaOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl flex items-center gap-2"><Settings className="size-5" /> MPWA WhatsApp Setup</DialogTitle>
+            <DialogDescription>Atur kredensial MPWA (app.ayopintar.com) untuk mengirim notifikasi WhatsApp ke peserta.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">API Key</label>
+              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Masukkan MPWA API key" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Sender / Nomor Device</label>
+              <Input value={sender} onChange={(e) => setSender(e.target.value)} placeholder="contoh: 6281234567890" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={saveSettings} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald">
+                Simpan
+              </button>
+              <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent px-4 py-2 text-sm font-semibold hover:bg-accent/25 disabled:opacity-50">
+                {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} Generate QR
+              </button>
+            </div>
+            {qr && (
+              <div className="rounded-xl border border-border p-4 grid place-items-center bg-secondary/30">
+                <img src={qr} alt="WhatsApp QR" className="size-64" />
+                <p className="text-xs text-muted-foreground mt-2">Scan QR dari WhatsApp &gt; Linked Devices.</p>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
