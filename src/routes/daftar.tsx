@@ -87,8 +87,14 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       const row = rows?.[0];
       if (!row) throw new Error("Tidak ada respons dari server");
       setCode(row.registration_code);
+      // Auto-kirim notifikasi WhatsApp (fire & forget)
+      fetch("/api/public/wa-notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "pendaftaran", code: row.registration_code }),
+      }).catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
-      toast.success("Pendaftaran berhasil! Simpan kode pendaftaranmu ✨");
+      toast.success("Pendaftaran berhasil! Notifikasi WA sedang dikirim ✨");
     } catch (e) {
       console.error(e);
       toast.error("Terjadi kesalahan. Coba lagi.");
