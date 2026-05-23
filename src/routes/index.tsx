@@ -3,6 +3,7 @@ import {
   Sparkles, Globe2, Award, BookOpen, Users, Building2, GraduationCap, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
+  Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import { Countdown } from "@/components/Countdown";
@@ -201,35 +202,59 @@ function Benefits() {
 }
 
 function Quota() {
+  const facilities = [
+    { icon: Plane, label: "Tiket Pesawat PP" },
+    { icon: Briefcase, label: "Bagasi" },
+    { icon: Hotel, label: "Hotel" },
+    { icon: UtensilsCrossed, label: "Makan" },
+    { icon: Bus, label: "Bis" },
+    { icon: BadgeCheck, label: "Visa" },
+    { icon: UserCheck, label: "Muthawif" },
+    { icon: Compass, label: "Tour Leader" },
+    { icon: Luggage, label: "Handling" },
+    { icon: ShoppingBag, label: "Perlengkapan Lengkap" },
+    { icon: MapPin, label: "City Tour Internasional" },
+  ];
   const tiers = [
     {
       name: "Fully Funded",
       qty: "3 Orang",
       price: "GRATIS TOTAL",
       badge: "Most Competitive",
-      featured: false,
-      items: ["Tiket pesawat PP", "Hotel & Visa", "City Tour Internasional", "Uang Saku", "Sertifikat Resmi", "Seluruh Fasilitas Program"],
+      featured: true,
+      items: facilities.map((f) => f.label),
     },
-    // Partial Funded disembunyikan — hanya untuk peserta yang lolos seleksi
-
-    {
-      name: "Self Funded",
-      qty: "10 Orang",
-      price: "Jalur Mandiri",
-      badge: "Priority Access",
-      featured: false,
-      items: ["Semua benefit program", "Prioritas seleksi", "Fleksibilitas tinggi", "Sertifikat Resmi", "Mentor Pembinaan", "Networking Nasional"],
-    },
+    // Self Funded & Partial Funded disembunyikan
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Kuota Program"
-          title={<>Pilih jalurmu menuju <span className="text-gradient-gold">Baitullah</span></>}
-          subtitle="Tiga kategori untuk membuka kesempatan bagi setiap calon peserta terbaik."
+          title={<>Kesempatan menuju <span className="text-gradient-gold">Baitullah</span></>}
+          subtitle="Program fully funded dengan fasilitas lengkap plus city tour internasional untuk pengalaman tak terlupakan."
         />
-        <div className="grid lg:grid-cols-3 gap-7 mt-16 items-stretch">
+
+        {/* Facilities strip — inspired by reference */}
+        <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 p-6 sm:p-8 shadow-gold">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-deep text-white px-4 py-1.5 text-sm font-semibold">
+              <Sparkles className="size-4 text-accent" /> Fasilitas
+            </span>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-11 gap-4">
+            {facilities.map((f) => (
+              <div key={f.label} className="flex flex-col items-center text-center gap-2 text-white">
+                <div className="size-12 rounded-full bg-white/20 backdrop-blur grid place-items-center ring-2 ring-white/40">
+                  <f.icon className="size-6" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight">{f.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-1 gap-7 mt-12 items-stretch max-w-2xl mx-auto">
           {tiers.map((t, idx) => (
             <div
               key={t.name}
