@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as SuksesRouteImport } from './routes/sukses'
 import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TwibbonRoute = TwibbonRouteImport.update({
+  id: '/twibbon',
+  path: '/twibbon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
@@ -23,6 +30,11 @@ const DaftarRoute = DaftarRouteImport.update({
   path: '/daftar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BerkasRoute = BerkasRouteImport.update({
+  id: '/berkas',
+  path: '/berkas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +43,51 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/sukses': typeof SuksesRoute
+  '/twibbon': typeof TwibbonRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/sukses': typeof SuksesRoute
+  '/twibbon': typeof TwibbonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/sukses': typeof SuksesRoute
+  '/twibbon': typeof TwibbonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/daftar' | '/sukses'
+  fullPaths: '/' | '/berkas' | '/daftar' | '/sukses' | '/twibbon'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/daftar' | '/sukses'
-  id: '__root__' | '/' | '/daftar' | '/sukses'
+  to: '/' | '/berkas' | '/daftar' | '/sukses' | '/twibbon'
+  id: '__root__' | '/' | '/berkas' | '/daftar' | '/sukses' | '/twibbon'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BerkasRoute: typeof BerkasRoute
   DaftarRoute: typeof DaftarRoute
   SuksesRoute: typeof SuksesRoute
+  TwibbonRoute: typeof TwibbonRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/twibbon': {
+      id: '/twibbon'
+      path: '/twibbon'
+      fullPath: '/twibbon'
+      preLoaderRoute: typeof TwibbonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sukses': {
       id: '/sukses'
       path: '/sukses'
@@ -75,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DaftarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/berkas': {
+      id: '/berkas'
+      path: '/berkas'
+      fullPath: '/berkas'
+      preLoaderRoute: typeof BerkasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,8 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BerkasRoute: BerkasRoute,
   DaftarRoute: DaftarRoute,
   SuksesRoute: SuksesRoute,
+  TwibbonRoute: TwibbonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

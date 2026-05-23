@@ -16,12 +16,13 @@ export type Database = {
     Tables: {
       participants: {
         Row: {
-          achievements: string
+          achievements: string | null
           birth_date: string
-          category: Database["public"]["Enums"]["program_category"]
+          category: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at: string
           cv_url: string | null
+          edit_token: string
           education: string
           email: string
           essay_contribution: string
@@ -33,19 +34,21 @@ export type Database = {
           occupation: string
           organization_experience: string | null
           photo_url: string | null
-          reason: string
+          reason: string | null
           social_media: string | null
           status: Database["public"]["Enums"]["participant_status"]
+          twibbon_confirmed_at: string | null
           updated_at: string
           whatsapp: string
         }
         Insert: {
-          achievements: string
+          achievements?: string | null
           birth_date: string
-          category: Database["public"]["Enums"]["program_category"]
+          category?: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at?: string
           cv_url?: string | null
+          edit_token?: string
           education: string
           email: string
           essay_contribution: string
@@ -57,19 +60,21 @@ export type Database = {
           occupation: string
           organization_experience?: string | null
           photo_url?: string | null
-          reason: string
+          reason?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
+          twibbon_confirmed_at?: string | null
           updated_at?: string
           whatsapp: string
         }
         Update: {
-          achievements?: string
+          achievements?: string | null
           birth_date?: string
-          category?: Database["public"]["Enums"]["program_category"]
+          category?: Database["public"]["Enums"]["program_category"] | null
           city?: string
           created_at?: string
           cv_url?: string | null
+          edit_token?: string
           education?: string
           email?: string
           essay_contribution?: string
@@ -81,9 +86,10 @@ export type Database = {
           occupation?: string
           organization_experience?: string | null
           photo_url?: string | null
-          reason?: string
+          reason?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
+          twibbon_confirmed_at?: string | null
           updated_at?: string
           whatsapp?: string
         }
@@ -119,6 +125,17 @@ export type Database = {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      update_participant_with_token: {
+        Args: {
+          p_category?: Database["public"]["Enums"]["program_category"]
+          p_cv_url?: string
+          p_id: string
+          p_photo_url?: string
+          p_token: string
+          p_twibbon_confirmed?: boolean
         }
         Returns: boolean
       }
