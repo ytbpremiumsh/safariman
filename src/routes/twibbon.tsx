@@ -208,13 +208,11 @@ function TwibbonPage() {
         <main className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
-            <div className="font-arabic text-2xl sm:text-3xl text-emerald mb-2" dir="rtl">بَلِّغُوا عَنِّي وَلَوْ آيَةً</div>
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Bagikan <span className="text-gradient-gold">Twibbon</span> Dakwah
+              Bagikan <span className="text-gradient-gold">Twibbon</span> Kamu
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Jadikan langkah kecilmu sebagai syiar — bagikan Twibbon Safar Iman,
-              ajak saudara seimanmu meraih keberkahan Tanah Suci. Upload foto, atur, lalu sebarkan.
+              Tunjukkan dukunganmu untuk Safar Iman. Upload foto, atur posisi, lalu bagikan ke teman dan keluargamu.
             </p>
           </div>
 
