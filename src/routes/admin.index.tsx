@@ -66,11 +66,9 @@ function AdminDashboard() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [status, setStatus] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
-  const [waOpen, setWaOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
-  const [qr, setQr] = useState<string | null>(null);
-  const [qrLoading, setQrLoading] = useState(false);
+  const [templates, setTemplates] = useState<Record<string, string>>({});
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
 
@@ -86,43 +84,30 @@ function AdminDashboard() {
   }, [navigate]);
 
   const loadSettings = async () => {
-    const { data } = await supabase.from("app_settings").select("key,value").in("key", ["mpwa_api_key", "mpwa_sender"]);
+    const { data } = await supabase.from("app_settings").select("key,value");
     const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
     setApiKey(map.mpwa_api_key ?? "");
     setSender(map.mpwa_sender ?? "");
+    setTemplates({
+      pendaftaran: map.wa_template_pendaftaran ?? "",
+      lolos: map.wa_template_lolos ?? "",
+      ditolak: map.wa_template_ditolak ?? "",
+      custom: map.wa_template_custom ?? "",
+    });
   };
 
-  const saveSettings = async () => {
-    const { error } = await supabase.from("app_settings").upsert([
-      { key: "mpwa_api_key", value: apiKey, updated_at: new Date().toISOString() },
-      { key: "mpwa_sender", value: sender, updated_at: new Date().toISOString() },
-    ]);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Pengaturan disimpan");
-  };
-
-  const generateQr = async () => {
-    if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu"); return; }
-    setQrLoading(true); setQr(null);
-    try {
-      const res = await fetch("https://app.ayopintar.com/generate-qr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ device: sender, api_key: apiKey, force: true }),
-      });
-      const json = await res.json();
-      if (json.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp"); }
-      else toast.success(json.msg || "Device sudah terhubung");
-    } catch (e) { toast.error("Gagal generate QR"); }
-    finally { setQrLoading(false); }
-  };
+  const fillTemplate = (raw: string, p: Participant) => raw
+    .replace(/\{nama\}/g, p.full_name)
+    .replace(/\{kode\}/g, p.id.slice(0, 8))
+    .replace(/\{kategori\}/g, p.category ? CAT_LABEL[p.category] : "-")
+    .replace(/\{status\}/g, p.status.toUpperCase());
 
   const sendWa = async (number: string, message: string) => {
-    if (!apiKey || !sender) { toast.error("Atur MPWA API Key & Sender di Pengaturan"); return false; }
+    if (!apiKey || !sender) { toast.error("Atur MPWA dulu di halaman WA Setup"); return false; }
     const clean = number.replace(/\D/g, "").replace(/^0/, "62");
     setWaSending(true);
     try {
-      const res = await fetch("https://app.ayopintar.com/send-message", {
+      const res = await fetch("/api/public/mpwa/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ api_key: apiKey, sender, number: clean, message, footer: "Safar Iman" }),
