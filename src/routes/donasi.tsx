@@ -104,10 +104,11 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3 mb-10">
+          <div className="grid sm:grid-cols-3 gap-3 mb-10">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Setiap mushaf yang dibagikan menjadi amal jariyah." },
-              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan." },
+              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
+              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
+              { i: Users, t: "Operasional Program", d: "Menjaga keberlangsungan kegiatan dan ekosistem komunitas." },
             ].map((b) => (
               <div key={b.t} className="rounded-2xl bg-card border border-border p-5">
                 <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
