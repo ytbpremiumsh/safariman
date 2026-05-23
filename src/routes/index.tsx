@@ -289,9 +289,11 @@ function Quota() {
 }
 
 function Timeline() {
-  const steps = [
-    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir online" },
-    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas" },
+  const steps: { i: typeof ClipboardList; t: string; d: string; cta?: { label: string; to: "/daftar" | "/twibbon" | "/berkas" } }[] = [
+    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", cta: { label: "Daftar Sekarang", to: "/daftar" } },
+    { i: Megaphone, t: "Bagikan Twibbon", d: "Download frame & share di sosial media", cta: { label: "Buat Twibbon", to: "/twibbon" } },
+    { i: ClipboardList, t: "Pengiriman Berkas & Essay", d: "Masukkan Kode Pendaftaran, upload CV/foto, kirim essay", cta: { label: "Kirim Berkas", to: "/berkas" } },
+    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami" },
     { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online" },
     { i: Megaphone, t: "Pengumuman", d: "Diumumkan via email & web" },
     { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan" },
@@ -303,7 +305,7 @@ function Timeline() {
         <SectionHeading
           eyebrow="Timeline Program"
           title={<>Perjalanan menuju <span className="text-gradient-emerald">keberangkatan</span></>}
-          subtitle="Enam tahap yang akan kamu lalui menuju Baitullah."
+          subtitle="Delapan tahap yang akan kamu lalui menuju Baitullah."
         />
         <div className="relative mt-16">
           <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent" />
@@ -320,6 +322,16 @@ function Timeline() {
                   <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Tahap {idx + 1}</div>
                   <h3 className="font-display text-2xl font-semibold mt-2">{s.t}</h3>
                   <p className="text-muted-foreground mt-1 text-sm">{s.d}</p>
+                  {s.cta && (
+                    <Link
+                      to={s.cta.to}
+                      className={`mt-4 inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-xs font-semibold shadow-gold hover-lift ${
+                        idx % 2 === 0 ? "sm:ml-auto" : ""
+                      }`}
+                    >
+                      {s.cta.label} <ArrowRight className="size-3.5" />
+                    </Link>
+                  )}
                 </div>
               </div>
               <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-4">
