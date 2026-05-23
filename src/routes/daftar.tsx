@@ -250,7 +250,7 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
 
       <div className="bg-gradient-emerald rounded-3xl p-8 text-center shadow-emerald mb-8">
         <div className="text-xs uppercase tracking-[0.3em] text-accent/80 mb-3">Kode Pendaftaran</div>
-        <div className="font-display text-4xl sm:text-6xl font-bold text-gradient-gold tracking-[0.2em] mb-4">
+        <div className="font-mono text-3xl sm:text-5xl font-bold text-gradient-gold tracking-[0.15em] mb-4 break-all">
           {code}
         </div>
         <button onClick={copy} className="inline-flex items-center gap-2 text-sm text-accent/90 hover:text-accent">
