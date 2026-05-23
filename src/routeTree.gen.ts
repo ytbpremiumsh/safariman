@@ -11,11 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
 
 const TwibbonRoute = TwibbonRouteImport.update({
   id: '/twibbon',
@@ -25,6 +27,11 @@ const TwibbonRoute = TwibbonRouteImport.update({
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
+  id: '/daftar-mandiri',
+  path: '/daftar-mandiri',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarRoute = DaftarRouteImport.update({
@@ -52,34 +59,45 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMpwaSplatRoute = ApiPublicMpwaSplatRouteImport.update({
+  id: '/api/public/mpwa/$',
+  path: '/api/public/mpwa/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-mandiri': typeof DaftarMandiriRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-mandiri': typeof DaftarMandiriRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-mandiri': typeof DaftarMandiriRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,38 +105,46 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-mandiri'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin/'
+    | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-mandiri'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin'
+    | '/api/public/mpwa/$'
   id:
     | '__root__'
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-mandiri'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin/'
+    | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BerkasRoute: typeof BerkasRoute
   DaftarRoute: typeof DaftarRoute
+  DaftarMandiriRoute: typeof DaftarMandiriRoute
   SuksesRoute: typeof SuksesRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -135,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/sukses'
       fullPath: '/sukses'
       preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-mandiri': {
+      id: '/daftar-mandiri'
+      path: '/daftar-mandiri'
+      fullPath: '/daftar-mandiri'
+      preLoaderRoute: typeof DaftarMandiriRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/daftar': {
@@ -172,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mpwa/$': {
+      id: '/api/public/mpwa/$'
+      path: '/api/public/mpwa/$'
+      fullPath: '/api/public/mpwa/$'
+      preLoaderRoute: typeof ApiPublicMpwaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -179,10 +219,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BerkasRoute: BerkasRoute,
   DaftarRoute: DaftarRoute,
+  DaftarMandiriRoute: DaftarMandiriRoute,
   SuksesRoute: SuksesRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
