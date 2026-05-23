@@ -26,12 +26,13 @@ type Kind = "fully_funded" | "self_funded";
 type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
   birth_date: string; city: string; education: string; occupation: string;
+  instagram: string;
   agree: boolean;
 };
 
 const initial: FormData = {
   full_name: "", email: "", whatsapp: "", gender: "", birth_date: "",
-  city: "", education: "", occupation: "", agree: false,
+  city: "", education: "", occupation: "", instagram: "", agree: false,
 };
 
 const schema = z.object({
@@ -43,6 +44,8 @@ const schema = z.object({
   city: z.string().trim().min(2).max(100),
   education: z.string().trim().min(2).max(100),
   occupation: z.string().trim().min(2).max(100),
+  instagram: z.string().trim().min(2, "Username Instagram wajib diisi").max(50, "Maksimal 50 karakter")
+    .regex(/^@?[A-Za-z0-9._]+$/, "Format username Instagram tidak valid"),
 });
 
 export function RegisterPage({ kind }: { kind: Kind }) {
