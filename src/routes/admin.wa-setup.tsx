@@ -122,25 +122,9 @@ function WaSetupPage() {
   if (loading) return <div className="min-h-screen grid place-items-center"><Loader2 className="size-8 animate-spin text-accent" /></div>;
 
   return (
-    <div className="min-h-screen bg-secondary/30">
-      <header className="bg-emerald-deep text-white sticky top-0 z-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/admin" className="flex items-center gap-2.5">
-            <div className="size-9 rounded-xl bg-gradient-gold grid place-items-center">
-              <Sparkles className="size-4 text-emerald-deep" />
-            </div>
-            <div>
-              <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-              <div className="text-[10px] tracking-[0.25em] uppercase text-accent">WA Setup</div>
-            </div>
-          </Link>
-          <Link to="/admin" className="text-sm text-white/80 hover:text-white inline-flex items-center gap-1.5 px-3 py-2">
-            <ArrowLeft className="size-4" /> Dashboard
-          </Link>
-        </div>
-      </header>
+    <AdminShell title="WA Setup">
+      <div className="space-y-6 max-w-5xl">
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-6">
         {/* Credentials */}
         <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 space-y-4">
           <div>
