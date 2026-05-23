@@ -215,9 +215,9 @@ function AdminDashboard() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => setWaOpen(true)} className="text-sm text-white/90 hover:text-white inline-flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-white/10">
+            <Link to="/admin/wa-setup" className="text-sm text-white/90 hover:text-white inline-flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-white/10">
               <Settings className="size-4" /> <span className="hidden sm:inline">WA Setup</span>
-            </button>
+            </Link>
             <Link to="/" className="text-sm text-white/70 hover:text-white flex items-center gap-1.5 px-3 py-2">
               <ArrowLeft className="size-4" /> <span className="hidden sm:inline">Beranda</span>
             </Link>
@@ -405,38 +405,6 @@ function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={waOpen} onOpenChange={setWaOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-display text-2xl flex items-center gap-2"><Settings className="size-5" /> MPWA WhatsApp Setup</DialogTitle>
-            <DialogDescription>Atur kredensial MPWA (app.ayopintar.com) untuk mengirim notifikasi WhatsApp ke peserta.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 mt-2">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">API Key</label>
-              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Masukkan MPWA API key" />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Sender / Nomor Device</label>
-              <Input value={sender} onChange={(e) => setSender(e.target.value)} placeholder="contoh: 6281234567890" />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button onClick={saveSettings} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald">
-                Simpan
-              </button>
-              <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent px-4 py-2 text-sm font-semibold hover:bg-accent/25 disabled:opacity-50">
-                {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} Generate QR
-              </button>
-            </div>
-            {qr && (
-              <div className="rounded-xl border border-border p-4 grid place-items-center bg-secondary/30">
-                <img src={qr} alt="WhatsApp QR" className="size-64" />
-                <p className="text-xs text-muted-foreground mt-2">Scan QR dari WhatsApp &gt; Linked Devices.</p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
