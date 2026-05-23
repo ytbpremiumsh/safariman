@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const essaySchema = z.object({
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
