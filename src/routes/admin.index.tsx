@@ -128,6 +128,9 @@ function AdminDashboard() {
     setSavingMayar(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Pengaturan Mayar disimpan");
+  };
+
+
 
   const saveCountdown = async () => {
     if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
