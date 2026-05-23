@@ -13,12 +13,14 @@ import { IslamicPattern } from "@/components/IslamicPattern";
 export const Route = createFileRoute("/daftar")({
   head: () => ({
     meta: [
-      { title: "Pendaftaran — Safar Iman" },
-      { name: "description", content: "Daftarkan diri kamu untuk Program Umrah Gratis Safar Iman." },
+      { title: "Pendaftaran Reguler — Safar Iman" },
+      { name: "description", content: "Daftarkan diri untuk Program Umrah Gratis Safar Iman (Reguler / Fully Funded)." },
     ],
   }),
-  component: RegisterPage,
+  component: () => <RegisterPage kind="fully_funded" />,
 });
+
+type Kind = "fully_funded" | "self_funded";
 
 type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
@@ -42,7 +44,10 @@ const schema = z.object({
   occupation: z.string().trim().min(2).max(100),
 });
 
-function RegisterPage() {
+export function RegisterPage({ kind }: { kind: Kind }) {
+  const KIND_META = kind === "self_funded"
+    ? { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri)." }
+    : { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi)." };
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
@@ -76,6 +81,7 @@ function RegisterPage() {
         p_city: parsed.data.city,
         p_education: parsed.data.education,
         p_occupation: parsed.data.occupation,
+        p_category: kind,
       });
       if (error) throw error;
       const row = rows?.[0];
@@ -103,7 +109,7 @@ function RegisterPage() {
               </div>
               <div>
                 <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Pendaftaran</div>
+                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">{KIND_META.tagline}</div>
               </div>
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
@@ -117,6 +123,15 @@ function RegisterPage() {
             <SuccessCard code={code} name={data.full_name} />
           ) : (
             <>
+              <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 sm:p-5 mb-8 flex items-start gap-3 animate-fade-up">
+                <div className={`size-10 rounded-xl grid place-items-center shrink-0 ${kind === "self_funded" ? "bg-emerald/15 text-emerald" : "bg-gradient-gold text-emerald-deep"}`}>
+                  <Sparkles className="size-5" />
+                </div>
+                <div className="text-sm">
+                  <div className="font-display text-lg font-semibold">{KIND_META.title}</div>
+                  <p className="text-muted-foreground">{KIND_META.note} {kind === "self_funded" ? <>Mau jalur Reguler? <Link to="/daftar" className="text-accent underline">Klik di sini</Link>.</> : <>Pilih jalur Mandiri? <Link to="/daftar-mandiri" className="text-accent underline">Klik di sini</Link>.</>}</p>
+                </div>
+              </div>
               <div className="mb-10">
                 <div className="flex items-center justify-between mb-3">
                   {[1, 2].map((n) => (

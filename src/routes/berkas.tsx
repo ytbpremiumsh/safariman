@@ -9,16 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 
-type Cat = "fully_funded" | "partial_funded" | "self_funded";
-
-const CATS: { v: Cat; t: string; d: string }[] = [
-  { v: "fully_funded", t: "Fully Funded", d: "Gratis total — 3 kuota" },
-  { v: "partial_funded", t: "Partial Funded", d: "Subsidi Rp2.000.000 — 30 kuota" },
-  { v: "self_funded", t: "Self Funded", d: "Jalur mandiri — 10 kuota" },
-];
-
 const essaySchema = z.object({
-  category: z.enum(["fully_funded", "partial_funded", "self_funded"]),
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
   essay_dream: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
   essay_contribution: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
@@ -43,7 +34,6 @@ function BerkasPage() {
   const [participant, setParticipant] = useState<Participant | null>(null);
 
   const [d, setD] = useState({
-    category: "" as Cat | "",
     essay_worthy: "", essay_dream: "", essay_contribution: "",
   });
   const [cv, setCv] = useState<File | null>(null);
@@ -95,7 +85,6 @@ function BerkasPage() {
 
       const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
         p_code: code.trim().toUpperCase(),
-        p_category: parsed.data.category,
         p_cv_url: cvPath,
         p_photo_url: photoUrl,
         p_essay_worthy: parsed.data.essay_worthy,
@@ -183,24 +172,9 @@ function BerkasPage() {
                 </div>
               </div>
 
-              <Section title="Pilih Kategori Program">
-                <div className="grid sm:grid-cols-3 gap-3">
-                  {CATS.map((c) => (
-                    <button
-                      key={c.v} type="button"
-                      onClick={() => set("category", c.v)}
-                      className={`text-left rounded-2xl border-2 p-4 transition ${
-                        d.category === c.v
-                          ? "border-accent bg-accent/10 shadow-gold"
-                          : "border-border hover:border-accent/50"
-                      }`}
-                    >
-                      <div className="font-display text-lg font-semibold">{c.t}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{c.d}</div>
-                    </button>
-                  ))}
-                </div>
-              </Section>
+              <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
+                Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
+              </div>
 
               <Section title="Upload Berkas">
                 <div className="grid sm:grid-cols-2 gap-5">
