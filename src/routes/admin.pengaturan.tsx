@@ -33,6 +33,10 @@ function PengaturanPage() {
   const [mpwaWebhookSecret, setMpwaWebhookSecret] = useState("");
   const [savingSecrets, setSavingSecrets] = useState(false);
 
+  const [twibbonFrameUrl, setTwibbonFrameUrl] = useState("");
+  const [uploadingFrame, setUploadingFrame] = useState(false);
+  const frameInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (!ready) return;
     (async () => {
