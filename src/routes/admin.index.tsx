@@ -75,6 +75,10 @@ function AdminDashboard() {
   const [waSending, setWaSending] = useState(false);
   const [countdownTarget, setCountdownTarget] = useState("");
   const [savingCountdown, setSavingCountdown] = useState(false);
+  const [mayarKey, setMayarKey] = useState("");
+  const [mayarAmount, setMayarAmount] = useState("150000");
+  const [mayarDesc, setMayarDesc] = useState("");
+  const [savingMayar, setSavingMayar] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -107,7 +111,23 @@ function AdminDashboard() {
         setCountdownTarget(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
       }
     }
+    setMayarKey(map.mayar_api_key ?? "");
+    setMayarAmount(map.mayar_donation_amount ?? "150000");
+    setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
   };
+
+  const saveMayar = async () => {
+    if (!mayarKey.trim()) { toast.error("API Key Mayar wajib diisi"); return; }
+    setSavingMayar(true);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mayar_api_key", value: mayarKey.trim(), updated_at: now },
+      { key: "mayar_donation_amount", value: String(Number(mayarAmount) || 0), updated_at: now },
+      { key: "mayar_donation_description", value: mayarDesc, updated_at: now },
+    ]);
+    setSavingMayar(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Pengaturan Mayar disimpan");
 
   const saveCountdown = async () => {
     if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
