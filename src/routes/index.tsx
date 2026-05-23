@@ -158,10 +158,8 @@ function Hero() {
 
 function CountdownSection() {
   return (
-    <section className="relative py-16 sm:py-20 bg-emerald-deep overflow-hidden">
-      <IslamicPattern className="absolute inset-0 size-full text-accent/10" />
-      <div className="absolute top-0 left-1/4 size-40 rounded-full bg-accent/20 blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 size-40 rounded-full bg-emerald/30 blur-3xl" />
+    <section className="relative py-16 sm:py-20 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/40 to-background" />
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center">
         <span className="inline-flex items-center gap-2 glass text-white text-xs uppercase tracking-[0.3em] px-4 py-1.5 rounded-full mb-6">
           <Sparkles className="size-3.5 text-accent" /> Pendaftaran ditutup dalam
