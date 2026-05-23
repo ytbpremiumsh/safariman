@@ -158,6 +158,7 @@ export type Database = {
       gen_registration_code: { Args: never; Returns: string }
       get_countdown_target: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
+      get_twibbon_frame_url: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
