@@ -224,6 +224,25 @@ export type Database = {
               registration_code: string
             }[]
           }
+        | {
+            Args: {
+              p_birth_date: string
+              p_category?: Database["public"]["Enums"]["program_category"]
+              p_city: string
+              p_education: string
+              p_email: string
+              p_full_name: string
+              p_gender: string
+              p_instagram?: string
+              p_occupation: string
+              p_whatsapp: string
+            }
+            Returns: {
+              full_name: string
+              id: string
+              registration_code: string
+            }[]
+          }
       save_payment_invoice: {
         Args: { p_code: string; p_invoice_id: string; p_url: string }
         Returns: boolean
