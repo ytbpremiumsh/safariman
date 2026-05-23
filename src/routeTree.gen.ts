@@ -16,6 +16,7 @@ import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
 
@@ -54,6 +55,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
+  id: '/admin/wa-setup',
+  path: '/admin/wa-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/wa-setup'
     | '/admin/'
     | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/wa-setup'
     | '/admin'
     | '/api/public/mpwa/$'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/wa-setup'
     | '/admin/'
     | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   SuksesRoute: typeof SuksesRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/wa-setup': {
+      id: '/admin/wa-setup'
+      path: '/admin/wa-setup'
+      fullPath: '/admin/wa-setup'
+      preLoaderRoute: typeof AdminWaSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -223,9 +243,20 @@ const rootRouteChildren: RootRouteChildren = {
   SuksesRoute: SuksesRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
