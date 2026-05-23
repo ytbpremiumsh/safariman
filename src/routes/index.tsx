@@ -5,7 +5,8 @@ import {
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Countdown } from "@/components/Countdown";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
@@ -93,6 +94,13 @@ function Nav() {
 }
 
 function Hero() {
+  const [panduanUrl, setPanduanUrl] = useState<string>("#program");
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("get_panduan_url");
+      if (data && typeof data === "string" && data.trim()) setPanduanUrl(data.trim());
+    })();
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <img
@@ -139,10 +147,11 @@ function Hero() {
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
-              href="#program"
+              href={panduanUrl}
+              {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
               className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors"
             >
-              Lihat Program
+              Panduan
             </a>
           </div>
 

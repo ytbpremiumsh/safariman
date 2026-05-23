@@ -129,6 +129,17 @@ export function RegisterPage({ kind }: { kind: Kind }) {
             <SuccessCard code={code} name={data.full_name} />
           ) : (
             <>
+              <div className="text-center mb-8 animate-fade-up">
+                <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/30 px-4 py-1.5 text-xs font-medium text-accent uppercase tracking-[0.2em] mb-4">
+                  <Sparkles className="size-3.5" /> {KIND_META.tagline}
+                </div>
+                <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
+                  Formulir <span className="text-gradient-gold">{KIND_META.title.replace("Pendaftaran ", "")}</span>
+                </h1>
+                <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+                  Lengkapi data dirimu dengan jujur dan teliti. Pastikan email & nomor WhatsApp aktif untuk menerima Kode Pendaftaran.
+                </p>
+              </div>
               <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 sm:p-5 mb-8 flex items-start gap-3 animate-fade-up">
                 <div className={`size-10 rounded-xl grid place-items-center shrink-0 ${kind === "self_funded" ? "bg-emerald/15 text-emerald" : "bg-gradient-gold text-emerald-deep"}`}>
                   <Sparkles className="size-5" />

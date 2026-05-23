@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook } from "lucide-react";
+import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,9 @@ function PengaturanPage() {
 
   const [webhookUrl, setWebhookUrl] = useState("");
 
+  const [panduanUrl, setPanduanUrl] = useState("");
+  const [savingPanduan, setSavingPanduan] = useState(false);
+
   useEffect(() => {
     if (!ready) return;
     (async () => {
@@ -41,6 +44,7 @@ function PengaturanPage() {
       setMayarKey(map.mayar_api_key ?? "");
       setMayarAmount(map.mayar_donation_amount ?? "150000");
       setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
+      setPanduanUrl(map.panduan_url ?? "");
       if (typeof window !== "undefined") {
         setWebhookUrl(`${window.location.origin}/api/public/mayar-webhook`);
       }
@@ -58,6 +62,21 @@ function PengaturanPage() {
     setSavingCountdown(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Waktu countdown disimpan");
+  };
+
+  const savePanduan = async () => {
+    const v = panduanUrl.trim();
+    if (v && !/^https?:\/\//i.test(v) && !v.startsWith("#") && !v.startsWith("/")) {
+      toast.error("URL harus diawali http(s)://, /, atau #");
+      return;
+    }
+    setSavingPanduan(true);
+    const { error } = await supabase.from("app_settings").upsert({
+      key: "panduan_url", value: v, updated_at: new Date().toISOString(),
+    });
+    setSavingPanduan(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Link Panduan disimpan");
   };
 
   const saveMayar = async () => {
@@ -94,6 +113,30 @@ function PengaturanPage() {
           <Input type="datetime-local" value={countdownTarget} onChange={(e) => setCountdownTarget(e.target.value)} className="max-w-xs" />
           <button onClick={saveCountdown} disabled={savingCountdown} className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60 w-fit">
             {savingCountdown ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Simpan Countdown
+          </button>
+        </div>
+      </div>
+
+      {/* Panduan URL */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-accent" />
+          <div className="font-semibold">Link Panduan (Tombol "Panduan" di Landing)</div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          URL tujuan ketika pengunjung menekan tombol <strong>Panduan</strong> pada hero halaman utama.
+          Bisa berupa Google Drive / PDF / Notion. Kosongkan untuk default ke <code>#program</code>.
+        </p>
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          <Input
+            type="url"
+            value={panduanUrl}
+            onChange={(e) => setPanduanUrl(e.target.value)}
+            placeholder="https://drive.google.com/..."
+            className="md:max-w-xl"
+          />
+          <button onClick={savePanduan} disabled={savingPanduan} className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60 w-fit">
+            {savingPanduan ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Simpan Panduan
           </button>
         </div>
       </div>
