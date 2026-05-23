@@ -152,8 +152,54 @@ function PengaturanPage() {
     }
   };
 
+  if (!ready || loading) return <AdminLoading />;
+
   return (
     <AdminShell title="Pengaturan">
+      {/* Twibbon Frame */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <ImageIcon className="size-4 text-accent" />
+          <div className="font-semibold">Frame Twibbon</div>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Gambar frame yang dipasang di atas foto peserta pada halaman Twibbon.
+          Gunakan <strong>PNG transparan ukuran 1080×1080</strong> agar hasilnya pas.
+          Setelah upload, frame baru langsung berlaku untuk semua pengunjung.
+        </p>
+        <div className="flex items-start gap-4 flex-wrap">
+          <div className="size-32 rounded-2xl overflow-hidden border border-border bg-secondary grid place-items-center shrink-0">
+            {twibbonFrameUrl ? (
+              <img src={twibbonFrameUrl} alt="Frame Twibbon aktif" className="size-full object-cover" />
+            ) : (
+              <span className="text-[10px] text-muted-foreground text-center px-2">Pakai frame default</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-[200px] space-y-2">
+            <input
+              ref={frameInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={onPickFrame}
+              className="hidden"
+            />
+            <button
+              onClick={() => frameInputRef.current?.click()}
+              disabled={uploadingFrame}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+            >
+              {uploadingFrame ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+              {uploadingFrame ? "Mengupload..." : "Upload Frame Baru"}
+            </button>
+            {twibbonFrameUrl && (
+              <div className="text-[11px] text-muted-foreground break-all">
+                URL: <a href={twibbonFrameUrl} target="_blank" rel="noreferrer" className="text-accent underline">{twibbonFrameUrl}</a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Countdown */}
       <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
         <div className="flex items-center gap-2">
