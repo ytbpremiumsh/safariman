@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Upload, Sparkles, Loader2, KeyRound, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Link2, Loader2, KeyRound, CheckCircle2, Info } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+
+const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
+const linksSchema = z.object({
+  identitas: urlSchema,
+  pengalaman_sosial: urlSchema,
+  skill: urlSchema,
+  sertifikat: urlSchema,
+  portofolio: urlSchema,
+});
 
 const essaySchema = z.object({
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
