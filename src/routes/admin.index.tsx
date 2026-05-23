@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   LogOut, Search, Download, Sparkles, Users, CheckCircle2, Clock, XCircle,
-  Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft,
+  Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft, MessageCircle, Settings, QrCode,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -66,6 +66,13 @@ function AdminDashboard() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [status, setStatus] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
+  const [waOpen, setWaOpen] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [sender, setSender] = useState("");
+  const [qr, setQr] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [waMsg, setWaMsg] = useState("");
+  const [waSending, setWaSending] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -74,8 +81,59 @@ function AdminDashboard() {
       const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" });
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
       await load();
+      await loadSettings();
     })();
   }, [navigate]);
+
+  const loadSettings = async () => {
+    const { data } = await supabase.from("app_settings").select("key,value").in("key", ["mpwa_api_key", "mpwa_sender"]);
+    const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
+    setApiKey(map.mpwa_api_key ?? "");
+    setSender(map.mpwa_sender ?? "");
+  };
+
+  const saveSettings = async () => {
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mpwa_api_key", value: apiKey, updated_at: new Date().toISOString() },
+      { key: "mpwa_sender", value: sender, updated_at: new Date().toISOString() },
+    ]);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Pengaturan disimpan");
+  };
+
+  const generateQr = async () => {
+    if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu"); return; }
+    setQrLoading(true); setQr(null);
+    try {
+      const res = await fetch("https://app.ayopintar.com/generate-qr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device: sender, api_key: apiKey, force: true }),
+      });
+      const json = await res.json();
+      if (json.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp"); }
+      else toast.success(json.msg || "Device sudah terhubung");
+    } catch (e) { toast.error("Gagal generate QR"); }
+    finally { setQrLoading(false); }
+  };
+
+  const sendWa = async (number: string, message: string) => {
+    if (!apiKey || !sender) { toast.error("Atur MPWA API Key & Sender di Pengaturan"); return false; }
+    const clean = number.replace(/\D/g, "").replace(/^0/, "62");
+    setWaSending(true);
+    try {
+      const res = await fetch("https://app.ayopintar.com/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ api_key: apiKey, sender, number: clean, message, footer: "Safar Iman" }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.status === false && json.message) { throw new Error(json.message || "Gagal kirim"); }
+      toast.success(`WA terkirim ke ${clean}`);
+      return true;
+    } catch (e: any) { toast.error(e.message || "Gagal kirim WA"); return false; }
+    finally { setWaSending(false); }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -172,6 +230,9 @@ function AdminDashboard() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
+            <button onClick={() => setWaOpen(true)} className="text-sm text-white/90 hover:text-white inline-flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-white/10">
+              <Settings className="size-4" /> <span className="hidden sm:inline">WA Setup</span>
+            </button>
             <Link to="/" className="text-sm text-white/70 hover:text-white flex items-center gap-1.5 px-3 py-2">
               <ArrowLeft className="size-4" /> <span className="hidden sm:inline">Beranda</span>
             </Link>
@@ -327,8 +388,68 @@ function AdminDashboard() {
                   ))}
                 </div>
               </div>
+
+              <div className="mt-6 pt-4 border-t border-border space-y-2">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Kirim WhatsApp ({detail.whatsapp})</div>
+                <textarea
+                  value={waMsg}
+                  onChange={(e) => setWaMsg(e.target.value)}
+                  placeholder={`Assalamu'alaikum ${detail.full_name}, terima kasih telah mendaftar program Safar Iman...`}
+                  className="w-full min-h-[90px] rounded-md border border-input bg-background p-3 text-sm"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nTerima kasih telah mendaftar program SAFAR IMAN ✨\nStatus pendaftaranmu saat ini: *${detail.status.toUpperCase()}*.\n\nMohon pantau email & WA untuk info selanjutnya.\n\nBarakallahu fiik 🤲`)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
+                  >Template Status</button>
+                  <button
+                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nSelamat! 🎉 Kamu LOLOS seleksi program SAFAR IMAN.\nSilakan menunggu info teknis selanjutnya dari panitia.\n\nBarakallahu fiik 🤲`)}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
+                  >Template Lolos</button>
+                  <button
+                    disabled={waSending || !waMsg.trim()}
+                    onClick={() => sendWa(detail.whatsapp, waMsg)}
+                    className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-emerald-deep"
+                  >
+                    {waSending ? <Loader2 className="size-4 animate-spin" /> : <MessageCircle className="size-4" />} Kirim WA
+                  </button>
+                </div>
+              </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={waOpen} onOpenChange={setWaOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl flex items-center gap-2"><Settings className="size-5" /> MPWA WhatsApp Setup</DialogTitle>
+            <DialogDescription>Atur kredensial MPWA (app.ayopintar.com) untuk mengirim notifikasi WhatsApp ke peserta.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">API Key</label>
+              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Masukkan MPWA API key" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Sender / Nomor Device</label>
+              <Input value={sender} onChange={(e) => setSender(e.target.value)} placeholder="contoh: 6281234567890" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={saveSettings} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald">
+                Simpan
+              </button>
+              <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent px-4 py-2 text-sm font-semibold hover:bg-accent/25 disabled:opacity-50">
+                {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} Generate QR
+              </button>
+            </div>
+            {qr && (
+              <div className="rounded-xl border border-border p-4 grid place-items-center bg-secondary/30">
+                <img src={qr} alt="WhatsApp QR" className="size-64" />
+                <p className="text-xs text-muted-foreground mt-2">Scan QR dari WhatsApp &gt; Linked Devices.</p>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
