@@ -20,6 +20,7 @@ import dubaiImg from "@/assets/dubai.jpg";
 import cappadociaImg from "@/assets/cappadocia.jpg";
 import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
+import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -204,6 +205,69 @@ function Benefits() {
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{b.d}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function Persyaratan() {
+  const items = [
+    "Muslim/Muslimah yang siap menjalankan ibadah dengan niat yang lurus.",
+    "Pemuda-pemudi Indonesia berusia 12 – 40 tahun, terbuka untuk pelajar, mahasiswa, hingga alumni dari berbagai jenjang.",
+    "Bersedia mengikuti seluruh rangkaian kegiatan dari awal hingga akhir sesuai jadwal program.",
+    "Tidak perlu mahir Bahasa Inggris maupun Bahasa Arab — peserta didampingi pembimbing berbahasa Indonesia.",
+    "Tidak harus memiliki latar belakang ilmu agama yang mendalam — kita akan belajar bersama mentor.",
+  ];
+  return (
+    <section id="persyaratan" className="relative py-24 sm:py-32 bg-secondary/30">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <SectionHeading
+          eyebrow="Persyaratan Umum"
+          title={<>Siapa saja yang <span className="text-gradient-gold">dapat mendaftar</span></>}
+          subtitle="Program Safar Iman terbuka luas untuk pemuda-pemudi Indonesia yang siap menempuh perjalanan keimanan."
+        />
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mt-16 items-center">
+          <div className="rounded-3xl border border-border bg-card p-7 sm:p-9 shadow-soft animate-fade-up">
+            <div className="flex items-center gap-2 mb-6">
+              <CheckCircle2 className="size-5 text-accent" />
+              <h3 className="font-display text-2xl font-semibold text-gradient-gold">Kriteria Peserta</h3>
+            </div>
+            <ul className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+              {items.map((t, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className={`mt-0.5 size-6 shrink-0 rounded-full grid place-items-center text-xs font-semibold ${i < 3 ? "bg-emerald/10 text-emerald" : "bg-accent/15 text-accent"}`}>
+                    {i + 1}
+                  </span>
+                  <span className="text-foreground/90">{t}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-xs text-muted-foreground italic border-t border-border pt-4">
+              *Ketentuan selengkapnya tersedia pada buku panduan program.
+            </p>
+            <Link
+              to="/daftar"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift"
+            >
+              Daftar Sekarang <ArrowRight className="size-4" />
+            </Link>
+          </div>
+
+          <div className="relative animate-scale-in">
+            <div className="absolute -inset-3 bg-gradient-gold opacity-20 blur-2xl rounded-3xl" />
+            <div className="relative rounded-3xl overflow-hidden shadow-emerald ring-1 ring-accent/30">
+              <img
+                src={persyaratanPoster}
+                alt="Pemuda Indonesia dalam perjalanan ibadah Safar Iman"
+                loading="lazy"
+                width={1024}
+                height={1024}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -567,6 +631,7 @@ function Landing() {
         <Hero />
         <CountdownSection />
         <Benefits />
+        <Persyaratan />
         <Quota />
         <Timeline />
         <Testimonials />
