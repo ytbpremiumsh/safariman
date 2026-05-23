@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles,
-  BookOpen, Utensils, Users, GraduationCap, MapPin, ShieldCheck, Lock,
+  BookOpen, Utensils, Users, GraduationCap, MapPin, ShieldCheck, Lock, FileText,
 } from "lucide-react";
+import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/donasi")({
+  validateSearch: z.object({ code: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Kontribusi Kebaikan — Safar Iman" },
