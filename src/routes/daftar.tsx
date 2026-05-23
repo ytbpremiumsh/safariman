@@ -109,7 +109,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
               </div>
               <div>
                 <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Pendaftaran</div>
+                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">{KIND_META.tagline}</div>
               </div>
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
