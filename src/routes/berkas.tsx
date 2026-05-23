@@ -285,22 +285,52 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   );
 }
-function F({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className="space-y-1.5"><Label className="text-sm font-medium">{label}</Label>{children}</div>;
-}
-function LinkField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
+function FieldShell({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (
-    <F label={label}>
+    <div className="space-y-1.5">
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <Label className="text-sm font-medium">
+          {label} {required && <span className="text-destructive">*</span>}
+        </Label>
+        {hint && <span className="text-xs text-muted-foreground">— {hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+function LinkField({ label, hint, value, onChange, required }: { label: string; hint?: string; value: string; onChange: (v: string) => void; required?: boolean }) {
+  return (
+    <FieldShell label={label} hint={hint} required={required}>
       <div className="relative">
         <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           type="url"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder="Link Google Drive"
           className="pl-9"
+          required={required}
         />
       </div>
-    </F>
+    </FieldShell>
+  );
+}
+function TextAreaField({ label, hint, value, onChange, rows = 4, required }: { label: string; hint?: string; value: string; onChange: (v: string) => void; rows?: number; required?: boolean }) {
+  return (
+    <FieldShell label={label} hint={hint} required={required}>
+      <Textarea rows={rows} value={value} onChange={(e) => onChange(e.target.value)} required={required} />
+    </FieldShell>
+  );
+}
+function EssayField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const words = countWords(value);
+  const ok = words >= MIN_ESSAY_WORDS;
+  return (
+    <FieldShell label={label} required>
+      <Textarea rows={5} value={value} onChange={(e) => onChange(e.target.value)} required />
+      <div className={`text-xs mt-1 ${ok ? "text-emerald" : "text-muted-foreground"}`}>
+        {words} / {MIN_ESSAY_WORDS} kata {ok && "✓"}
+      </div>
+    </FieldShell>
   );
 }
