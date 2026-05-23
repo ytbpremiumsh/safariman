@@ -101,6 +101,18 @@ function PengaturanPage() {
     toast.success("Pengaturan Mayar disimpan");
   };
 
+  const saveSecrets = async () => {
+    setSavingSecrets(true);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mayar_webhook_secret", value: mayarWebhookSecret.trim(), updated_at: now },
+      { key: "mpwa_webhook_secret", value: mpwaWebhookSecret.trim(), updated_at: now },
+    ]);
+    setSavingSecrets(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Webhook secret disimpan");
+  };
+
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} disalin`);
