@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as BerkasRouteImport } from './routes/berkas'
@@ -19,6 +20,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicWaNotifyRouteImport } from './routes/api/public/wa-notify'
+import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
+import { Route as ApiPublicMayarCreateInvoiceRouteImport } from './routes/api/public/mayar-create-invoice'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
 
 const TwibbonRoute = TwibbonRouteImport.update({
@@ -29,6 +32,11 @@ const TwibbonRoute = TwibbonRouteImport.update({
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonasiRoute = DonasiRouteImport.update({
+  id: '/donasi',
+  path: '/donasi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
@@ -71,6 +79,17 @@ const ApiPublicWaNotifyRoute = ApiPublicWaNotifyRouteImport.update({
   path: '/api/public/wa-notify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMayarWebhookRoute = ApiPublicMayarWebhookRouteImport.update({
+  id: '/api/public/mayar-webhook',
+  path: '/api/public/mayar-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMayarCreateInvoiceRoute =
+  ApiPublicMayarCreateInvoiceRouteImport.update({
+    id: '/api/public/mayar-create-invoice',
+    path: '/api/public/mayar-create-invoice',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicMpwaSplatRoute = ApiPublicMpwaSplatRouteImport.update({
   id: '/api/public/mpwa/$',
   path: '/api/public/mpwa/$',
@@ -82,11 +101,14 @@ export interface FileRoutesByFullPath {
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
+  '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -95,11 +117,14 @@ export interface FileRoutesByTo {
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
+  '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -109,11 +134,14 @@ export interface FileRoutesById {
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
   '/daftar-mandiri': typeof DaftarMandiriRoute
+  '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
@@ -124,11 +152,14 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/daftar'
     | '/daftar-mandiri'
+    | '/donasi'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
@@ -137,11 +168,14 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/daftar'
     | '/daftar-mandiri'
+    | '/donasi'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin'
+    | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   id:
@@ -150,11 +184,14 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/daftar'
     | '/daftar-mandiri'
+    | '/donasi'
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-webhook'
     | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
@@ -164,11 +201,14 @@ export interface RootRouteChildren {
   BerkasRoute: typeof BerkasRoute
   DaftarRoute: typeof DaftarRoute
   DaftarMandiriRoute: typeof DaftarMandiriRoute
+  DonasiRoute: typeof DonasiRoute
   SuksesRoute: typeof SuksesRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicMayarCreateInvoiceRoute: typeof ApiPublicMayarCreateInvoiceRoute
+  ApiPublicMayarWebhookRoute: typeof ApiPublicMayarWebhookRoute
   ApiPublicWaNotifyRoute: typeof ApiPublicWaNotifyRoute
   ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
@@ -187,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/sukses'
       fullPath: '/sukses'
       preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donasi': {
+      id: '/donasi'
+      path: '/donasi'
+      fullPath: '/donasi'
+      preLoaderRoute: typeof DonasiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/daftar-mandiri': {
@@ -245,6 +292,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWaNotifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mayar-webhook': {
+      id: '/api/public/mayar-webhook'
+      path: '/api/public/mayar-webhook'
+      fullPath: '/api/public/mayar-webhook'
+      preLoaderRoute: typeof ApiPublicMayarWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/mayar-create-invoice': {
+      id: '/api/public/mayar-create-invoice'
+      path: '/api/public/mayar-create-invoice'
+      fullPath: '/api/public/mayar-create-invoice'
+      preLoaderRoute: typeof ApiPublicMayarCreateInvoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mpwa/$': {
       id: '/api/public/mpwa/$'
       path: '/api/public/mpwa/$'
@@ -260,24 +321,17 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasRoute: BerkasRoute,
   DaftarRoute: DaftarRoute,
   DaftarMandiriRoute: DaftarMandiriRoute,
+  DonasiRoute: DonasiRoute,
   SuksesRoute: SuksesRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicMayarCreateInvoiceRoute: ApiPublicMayarCreateInvoiceRoute,
+  ApiPublicMayarWebhookRoute: ApiPublicMayarWebhookRoute,
   ApiPublicWaNotifyRoute: ApiPublicWaNotifyRoute,
   ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

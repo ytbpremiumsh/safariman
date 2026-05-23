@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   LogOut, Search, Download, Sparkles, Users, CheckCircle2, Clock, XCircle,
   Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft, MessageCircle, Settings, QrCode,
-  FileCheck, FileX,
+  FileCheck, FileX, HeartHandshake,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -75,6 +75,10 @@ function AdminDashboard() {
   const [waSending, setWaSending] = useState(false);
   const [countdownTarget, setCountdownTarget] = useState("");
   const [savingCountdown, setSavingCountdown] = useState(false);
+  const [mayarKey, setMayarKey] = useState("");
+  const [mayarAmount, setMayarAmount] = useState("150000");
+  const [mayarDesc, setMayarDesc] = useState("");
+  const [savingMayar, setSavingMayar] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -107,7 +111,26 @@ function AdminDashboard() {
         setCountdownTarget(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
       }
     }
+    setMayarKey(map.mayar_api_key ?? "");
+    setMayarAmount(map.mayar_donation_amount ?? "150000");
+    setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
   };
+
+  const saveMayar = async () => {
+    if (!mayarKey.trim()) { toast.error("API Key Mayar wajib diisi"); return; }
+    setSavingMayar(true);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mayar_api_key", value: mayarKey.trim(), updated_at: now },
+      { key: "mayar_donation_amount", value: String(Number(mayarAmount) || 0), updated_at: now },
+      { key: "mayar_donation_description", value: mayarDesc, updated_at: now },
+    ]);
+    setSavingMayar(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Pengaturan Mayar disimpan");
+  };
+
+
 
   const saveCountdown = async () => {
     if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
@@ -295,6 +318,57 @@ function AdminDashboard() {
             Simpan Countdown
           </button>
         </div>
+
+        {/* Mayar payment settings */}
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <HeartHandshake className="size-4 text-accent" />
+            <div className="font-semibold text-sm">Pengaturan Pembayaran Mayar (Donasi Peserta Lolos)</div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            API Key didapat dari dashboard Mayar. Nominal & deskripsi akan tampil pada invoice peserta yang sudah dinyatakan <strong>lolos berkas administrasi</strong>.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Mayar API Key</label>
+              <Input
+                type="password"
+                value={mayarKey}
+                onChange={(e) => setMayarKey(e.target.value)}
+                placeholder="Bearer key dari dashboard Mayar"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Nominal Donasi (IDR)</label>
+              <Input
+                type="number"
+                min={1000}
+                value={mayarAmount}
+                onChange={(e) => setMayarAmount(e.target.value)}
+                placeholder="150000"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">Deskripsi (Tampil di Invoice)</label>
+            <textarea
+              value={mayarDesc}
+              onChange={(e) => setMayarDesc(e.target.value)}
+              rows={3}
+              className="w-full mt-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            />
+          </div>
+          <button
+            onClick={saveMayar}
+            disabled={savingMayar}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingMayar ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+            Simpan Pengaturan Mayar
+          </button>
+        </div>
+
+
 
         {/* Tabs + Filters */}
         <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
