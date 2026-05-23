@@ -213,14 +213,21 @@ function DonasiPage() {
               </div>
 
               {info.payment_status === "paid" ? (
-                <div className="text-center py-8">
+                <div className="text-center py-4">
                   <div className="size-16 rounded-full bg-gradient-gold grid place-items-center mx-auto mb-4 shadow-gold">
                     <HeartHandshake className="size-8 text-emerald-deep" />
                   </div>
                   <h3 className="font-display text-2xl font-semibold">Barakallahu fiik!</h3>
-                  <p className="text-muted-foreground text-sm mt-2">
+                  <p className="text-muted-foreground text-sm mt-2 mb-6">
                     Kontribusi kebaikanmu sudah tercatat pada {info.paid_at ? new Date(info.paid_at).toLocaleString("id-ID") : "-"}.
                   </p>
+                  <Link
+                    to="/essay"
+                    search={{ code: code.trim().toUpperCase() }}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
+                  >
+                    <FileText className="size-5" /> Lanjut ke Tahap Essay <ArrowRight className="size-4" />
+                  </Link>
                 </div>
               ) : info.status !== "accepted" ? (
                 <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
