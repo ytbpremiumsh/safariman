@@ -210,15 +210,8 @@ function Quota() {
       featured: false,
       items: ["Tiket pesawat PP", "Hotel & Visa", "City Tour Internasional", "Uang Saku", "Sertifikat Resmi", "Seluruh Fasilitas Program"],
     },
-    {
-      name: "Partial Funded",
-      qty: "30 Orang",
-      price: "Subsidi Rp2.000.000",
-      sub: "/orang",
-      badge: "Most Popular",
-      featured: true,
-      items: ["Subsidi biaya program", "Hotel & Akomodasi", "City Tour", "Seminar & Sertifikat", "Mentor Pembinaan", "Networking Nasional"],
-    },
+    // Partial Funded disembunyikan — hanya untuk peserta yang lolos seleksi
+
     {
       name: "Self Funded",
       qty: "10 Orang",
