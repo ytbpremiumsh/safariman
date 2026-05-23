@@ -145,17 +145,28 @@ function Hero() {
             </a>
           </div>
 
-          <div className="mt-12 sm:mt-16 animate-fade-up" style={{ animationDelay: "0.4s" }}>
-            <p className="text-white/70 text-xs uppercase tracking-[0.3em] mb-4 text-center sm:text-left">
-              Pendaftaran ditutup dalam
-            </p>
-            <Countdown />
-          </div>
+          {/* countdown moved to its own section above Program Benefit */}
         </div>
       </div>
 
       <div className="absolute bottom-6 inset-x-0 flex justify-center text-white/50 text-xs animate-float">
         ↓ Scroll
+      </div>
+    </section>
+  );
+}
+
+function CountdownSection() {
+  return (
+    <section className="relative py-16 sm:py-20 bg-emerald-deep overflow-hidden">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/10" />
+      <div className="absolute top-0 left-1/4 size-40 rounded-full bg-accent/20 blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 size-40 rounded-full bg-emerald/30 blur-3xl" />
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center">
+        <span className="inline-flex items-center gap-2 glass text-white text-xs uppercase tracking-[0.3em] px-4 py-1.5 rounded-full mb-6">
+          <Sparkles className="size-3.5 text-accent" /> Pendaftaran ditutup dalam
+        </span>
+        <Countdown />
       </div>
     </section>
   );
@@ -555,6 +566,7 @@ function Landing() {
       <Nav />
       <main>
         <Hero />
+        <CountdownSection />
         <Benefits />
         <Quota />
         <Timeline />

@@ -73,6 +73,8 @@ function AdminDashboard() {
   const [templates, setTemplates] = useState<Record<string, string>>({});
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
+  const [countdownTarget, setCountdownTarget] = useState("");
+  const [savingCountdown, setSavingCountdown] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -96,6 +98,27 @@ function AdminDashboard() {
       ditolak: map.wa_template_ditolak ?? "",
       custom: map.wa_template_custom ?? "",
     });
+    // datetime-local needs "YYYY-MM-DDTHH:mm"
+    const raw = map.countdown_target ?? "";
+    if (raw) {
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) {
+        const pad = (n: number) => String(n).padStart(2, "0");
+        setCountdownTarget(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
+      }
+    }
+  };
+
+  const saveCountdown = async () => {
+    if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
+    setSavingCountdown(true);
+    const iso = new Date(countdownTarget).toISOString();
+    const { error } = await supabase.from("app_settings").upsert({
+      key: "countdown_target", value: iso, updated_at: new Date().toISOString(),
+    });
+    setSavingCountdown(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Waktu countdown disimpan");
   };
 
   const fillTemplate = (raw: string, p: Participant) => raw
@@ -246,6 +269,31 @@ function AdminDashboard() {
           <Stat icon={<XCircle className="size-5" />} label="Ditolak" value={stats.rejected} tint="red" />
           <Stat icon={<FileX className="size-5" />} label="Hanya Daftar" value={stats.registeredOnly} tint="amber" />
           <Stat icon={<FileCheck className="size-5" />} label="Sudah Kirim Berkas" value={stats.submitted} tint="emerald" />
+        </div>
+
+        {/* Countdown setting */}
+        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row md:items-end gap-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="size-4 text-accent" />
+              <div className="font-semibold text-sm">Waktu Penutupan Pendaftaran (Countdown Landing)</div>
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">Tanggal & waktu ini akan ditampilkan pada countdown di halaman utama.</p>
+            <Input
+              type="datetime-local"
+              value={countdownTarget}
+              onChange={(e) => setCountdownTarget(e.target.value)}
+              className="max-w-xs"
+            />
+          </div>
+          <button
+            onClick={saveCountdown}
+            disabled={savingCountdown}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingCountdown ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+            Simpan Countdown
+          </button>
         </div>
 
         {/* Tabs + Filters */}

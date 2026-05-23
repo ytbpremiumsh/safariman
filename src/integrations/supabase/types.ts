@@ -144,6 +144,7 @@ export type Database = {
     Functions: {
       claim_admin_if_first: { Args: never; Returns: boolean }
       gen_registration_code: { Args: never; Returns: string }
+      get_countdown_target: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
