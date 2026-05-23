@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as Imag
 import { toast } from "sonner";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import twibbonFrame from "@/assets/twibbon.png";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const CP_WHATSAPP = "6281234567890";
 const CP_NAME = "CP Safar Iman";
