@@ -117,6 +117,30 @@ function PengaturanPage() {
         </div>
       </div>
 
+      {/* Panduan URL */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-accent" />
+          <div className="font-semibold">Link Panduan (Tombol "Panduan" di Landing)</div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          URL tujuan ketika pengunjung menekan tombol <strong>Panduan</strong> pada hero halaman utama.
+          Bisa berupa Google Drive / PDF / Notion. Kosongkan untuk default ke <code>#program</code>.
+        </p>
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          <Input
+            type="url"
+            value={panduanUrl}
+            onChange={(e) => setPanduanUrl(e.target.value)}
+            placeholder="https://drive.google.com/..."
+            className="md:max-w-xl"
+          />
+          <button onClick={savePanduan} disabled={savingPanduan} className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60 w-fit">
+            {savingPanduan ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} Simpan Panduan
+          </button>
+        </div>
+      </div>
+
       {/* Mayar settings */}
       <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
         <div className="flex items-center gap-2">
