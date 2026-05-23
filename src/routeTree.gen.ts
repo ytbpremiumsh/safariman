@@ -18,6 +18,8 @@ import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
+import { Route as AdminPesertaRouteImport } from './routes/admin.peserta'
+import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicWaNotifyRouteImport } from './routes/api/public/wa-notify'
 import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
@@ -69,6 +71,16 @@ const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
   path: '/admin/wa-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPesertaRoute = AdminPesertaRouteImport.update({
+  id: '/admin/peserta',
+  path: '/admin/peserta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
+  id: '/admin/pengaturan',
+  path: '/admin/pengaturan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -105,6 +117,8 @@ export interface FileRoutesByFullPath {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
@@ -121,6 +135,8 @@ export interface FileRoutesByTo {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
@@ -138,6 +154,8 @@ export interface FileRoutesById {
   '/sukses': typeof SuksesRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
@@ -156,6 +174,8 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/pengaturan'
+    | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
     | '/api/public/mayar-create-invoice'
@@ -172,6 +192,8 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/pengaturan'
+    | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin'
     | '/api/public/mayar-create-invoice'
@@ -188,6 +210,8 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/twibbon'
     | '/admin/login'
+    | '/admin/pengaturan'
+    | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
     | '/api/public/mayar-create-invoice'
@@ -205,6 +229,8 @@ export interface RootRouteChildren {
   SuksesRoute: typeof SuksesRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPengaturanRoute: typeof AdminPengaturanRoute
+  AdminPesertaRoute: typeof AdminPesertaRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApiPublicMayarCreateInvoiceRoute: typeof ApiPublicMayarCreateInvoiceRoute
@@ -278,6 +304,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWaSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/peserta': {
+      id: '/admin/peserta'
+      path: '/admin/peserta'
+      fullPath: '/admin/peserta'
+      preLoaderRoute: typeof AdminPesertaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan': {
+      id: '/admin/pengaturan'
+      path: '/admin/pengaturan'
+      fullPath: '/admin/pengaturan'
+      preLoaderRoute: typeof AdminPengaturanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -325,6 +365,8 @@ const rootRouteChildren: RootRouteChildren = {
   SuksesRoute: SuksesRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPengaturanRoute: AdminPengaturanRoute,
+  AdminPesertaRoute: AdminPesertaRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApiPublicMayarCreateInvoiceRoute: ApiPublicMayarCreateInvoiceRoute,
@@ -335,3 +377,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
