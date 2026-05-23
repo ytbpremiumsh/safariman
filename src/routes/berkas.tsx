@@ -200,53 +200,63 @@ function BerkasPage() {
                 Kategori program kamu sudah ditentukan saat pendaftaran. Lengkapi berkas & essay di bawah.
               </div>
 
-              <Section title="Upload Berkas (Google Drive)">
+              <Section title="Data & Berkas Pendukung">
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
                   <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
                   <div>
-                    Upload semua berkas ke <strong>Google Drive</strong> kamu, lalu paste link nya di sini.
-                    Pastikan setting akses link <strong>"Anyone with the link can view"</strong>.
+                    Untuk berkas berupa file, upload dulu ke <strong>Google Drive</strong> kamu lalu paste link nya.
+                    Pastikan akses link <strong>"Anyone with the link can view"</strong>.
                   </div>
                 </div>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <LinkField
                     label="Identitas Diri"
-                    placeholder="KTP / KTM / Kartu Pelajar"
+                    hint="KTP / KTM / Kartu Pelajar"
                     value={links.identitas}
                     onChange={(v) => setLink("identitas", v)}
+                    required
                   />
-                  <LinkField
+                  <TextAreaField
                     label="Pengalaman Sosial"
-                    placeholder="Link Google Drive pengalaman sosial / organisasi"
-                    value={links.pengalaman_sosial}
-                    onChange={(v) => setLink("pengalaman_sosial", v)}
+                    hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu"
+                    value={texts.pengalaman_sosial}
+                    onChange={(v) => setText("pengalaman_sosial", v)}
+                    rows={4}
+                    required
                   />
-                  <LinkField
+                  <TextAreaField
                     label="Skill"
-                    placeholder="Link Google Drive daftar skill / kemampuan"
-                    value={links.skill}
-                    onChange={(v) => setLink("skill", v)}
+                    hint="Sebutkan skill / kemampuan yang kamu kuasai"
+                    value={texts.skill}
+                    onChange={(v) => setText("skill", v)}
+                    rows={3}
+                    required
                   />
                   <LinkField
                     label="Sertifikat Pendukung"
-                    placeholder="Link Google Drive kumpulan sertifikat"
+                    hint="Folder Google Drive berisi sertifikat-sertifikat kamu"
                     value={links.sertifikat}
                     onChange={(v) => setLink("sertifikat", v)}
+                    required
                   />
                   <LinkField
                     label="Portofolio Kegiatan"
-                    placeholder="Link Google Drive portofolio kegiatan"
+                    hint="Folder Google Drive berisi dokumentasi kegiatan kamu"
                     value={links.portofolio}
                     onChange={(v) => setLink("portofolio", v)}
+                    required
                   />
                 </div>
               </Section>
 
               <Section title="Essay Singkat">
+                <p className="text-xs text-muted-foreground -mt-2 mb-4">
+                  Semua essay <strong className="text-foreground">wajib diisi</strong>, minimal <strong className="text-foreground">{MIN_ESSAY_WORDS} kata</strong> per essay.
+                </p>
                 <div className="grid gap-5">
-                  <F label="Kenapa kamu layak dipilih?"><Textarea rows={4} value={d.essay_worthy} onChange={(e) => set("essay_worthy", e.target.value)} /></F>
-                  <F label="Apa impianmu setelah ke Tanah Suci?"><Textarea rows={4} value={d.essay_dream} onChange={(e) => set("essay_dream", e.target.value)} /></F>
-                  <F label="Bagaimana kontribusimu untuk umat?"><Textarea rows={4} value={d.essay_contribution} onChange={(e) => set("essay_contribution", e.target.value)} /></F>
+                  <EssayField label="Kenapa kamu layak dipilih?" value={d.essay_worthy} onChange={(v) => set("essay_worthy", v)} />
+                  <EssayField label="Apa impianmu setelah ke Tanah Suci?" value={d.essay_dream} onChange={(v) => set("essay_dream", v)} />
+                  <EssayField label="Bagaimana kontribusimu untuk umat?" value={d.essay_contribution} onChange={(v) => set("essay_contribution", v)} />
                 </div>
               </Section>
 
