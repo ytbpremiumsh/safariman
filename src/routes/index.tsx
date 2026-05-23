@@ -253,7 +253,7 @@ function Quota() {
                 <div className={`font-display text-4xl font-semibold ${t.featured ? "text-gradient-gold" : "text-gradient-emerald"}`}>
                   {t.price}
                 </div>
-                {t.sub && <span className={`text-sm ${t.featured ? "text-white/60" : "text-muted-foreground"}`}>{t.sub}</span>}
+                {"sub" in t && (t as { sub?: string }).sub && <span className={`text-sm ${t.featured ? "text-white/60" : "text-muted-foreground"}`}>{(t as { sub?: string }).sub}</span>}
               </div>
               <ul className="mt-7 space-y-3 flex-1">
                 {t.items.map((i) => (
