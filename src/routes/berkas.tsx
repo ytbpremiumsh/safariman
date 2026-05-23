@@ -91,17 +91,18 @@ function BerkasPage() {
 
   const submit = async () => {
     if (!participant) return;
-    const parsed = essaySchema.safeParse(d);
-    if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+    const parsedEssay = essaySchema.safeParse(d);
+    if (!parsedEssay.success) { toast.error(parsedEssay.error.issues[0].message); return; }
+    const parsedTexts = textsSchema.safeParse(texts);
+    if (!parsedTexts.success) { toast.error(parsedTexts.error.issues[0].message); return; }
     const parsedLinks = linksSchema.safeParse(links);
     if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
 
     setSubmitting(true);
     try {
-      // Simpan link identitas di photo_url, gabungan link berkas lain di cv_url (JSON)
       const cvPayload = JSON.stringify({
-        pengalaman_sosial: parsedLinks.data.pengalaman_sosial,
-        skill: parsedLinks.data.skill,
+        pengalaman_sosial: parsedTexts.data.pengalaman_sosial,
+        skill: parsedTexts.data.skill,
         sertifikat: parsedLinks.data.sertifikat,
         portofolio: parsedLinks.data.portofolio,
       });
@@ -110,9 +111,9 @@ function BerkasPage() {
         p_code: code.trim().toUpperCase(),
         p_cv_url: cvPayload,
         p_photo_url: parsedLinks.data.identitas,
-        p_essay_worthy: parsed.data.essay_worthy,
-        p_essay_dream: parsed.data.essay_dream,
-        p_essay_contribution: parsed.data.essay_contribution,
+        p_essay_worthy: parsedEssay.data.essay_worthy,
+        p_essay_dream: parsedEssay.data.essay_dream,
+        p_essay_contribution: parsedEssay.data.essay_contribution,
       });
       if (e3) throw e3;
       if (!ok) throw new Error("Kode tidak valid");
