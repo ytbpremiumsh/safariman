@@ -358,16 +358,16 @@ function Quota() {
 }
 
 function Timeline() {
-  const steps: { i: typeof ClipboardList; t: string; d: string; cta?: { label: string; to: "/daftar" | "/twibbon" | "/berkas" | "/essay" } }[] = [
-    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", cta: { label: "Daftar Sekarang", to: "/daftar" } },
-    { i: Megaphone, t: "Bagikan Twibbon", d: "Download frame & share di sosial media", cta: { label: "Buat Twibbon", to: "/twibbon" } },
-    { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", cta: { label: "Kirim Berkas", to: "/berkas" } },
-    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami" },
-    { i: ClipboardList, t: "Pengisian Essay", d: "Setelah lolos administrasi & tunaikan kontribusi, lanjut isi essay", cta: { label: "Kirim Essay", to: "/essay" } },
-    { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online" },
-    { i: Megaphone, t: "Pengumuman", d: "Diumumkan via email & web" },
-    { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan" },
-    { i: Rocket, t: "Keberangkatan", d: "Perjalanan ke Tanah Suci" },
+  const steps: { i: typeof ClipboardList; t: string; d: string; date: string; cta?: { label: string; to: "/daftar" | "/twibbon" | "/berkas" | "/essay" } }[] = [
+    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", date: "1 Juni – 31 Juli 2026", cta: { label: "Daftar Sekarang", to: "/daftar" } },
+    { i: Megaphone, t: "Bagikan Twibbon", d: "Download frame & share di sosial media", date: "1 Juni – 5 Agustus 2026", cta: { label: "Buat Twibbon", to: "/twibbon" } },
+    { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "1 Juni – 10 Agustus 2026", cta: { label: "Kirim Berkas", to: "/berkas" } },
+    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami", date: "11 – 25 Agustus 2026" },
+    { i: ClipboardList, t: "Pengisian Essay", d: "Setelah lolos administrasi & tunaikan kontribusi, lanjut isi essay", date: "26 Agustus – 10 September 2026", cta: { label: "Kirim Essay", to: "/essay" } },
+    { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online", date: "15 – 30 September 2026" },
+    { i: Megaphone, t: "Pengumuman", d: "Diumumkan via email & web", date: "10 Oktober 2026" },
+    { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan", date: "Akhir Oktober 2026" },
+    { i: Rocket, t: "Keberangkatan", d: "Perjalanan ke Tanah Suci", date: "November 2026" },
   ];
   return (
     <section id="timeline" className="relative py-24 sm:py-32 bg-secondary/30">
@@ -389,7 +389,11 @@ function Timeline() {
             >
               <div className={`pl-16 sm:pl-0 ${idx % 2 === 0 ? "sm:text-right sm:pr-12" : "sm:pl-12"}`}>
                 <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift">
-                  <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Tahap {idx + 1}</div>
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent font-semibold">
+                    <span>Tahap {idx + 1}</span>
+                    <span className="text-muted-foreground/60">•</span>
+                    <span className="text-foreground/70 normal-case tracking-normal font-medium">{s.date}</span>
+                  </div>
                   <h3 className="font-display text-2xl font-semibold mt-2">{s.t}</h3>
                   <p className="text-muted-foreground mt-1 text-sm">{s.d}</p>
                   {s.cta && (
