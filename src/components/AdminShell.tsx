@@ -9,6 +9,7 @@ import {
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -42,12 +43,9 @@ function AdminSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarHeader className="border-b border-border">
-        <Link to="/admin" className="flex items-center gap-2.5 px-2 py-2">
-          <div className="size-9 shrink-0 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
-            <Sparkles className="size-4 text-emerald-deep" />
-          </div>
+        <Link to="/admin" className="flex items-center gap-2 px-2 py-2">
+          <img src={logoSafarIman} alt="Safar Iman" className="h-9 w-auto shrink-0 group-data-[collapsible=icon]:h-7" />
           <div className="group-data-[collapsible=icon]:hidden">
-            <div className="font-display text-base font-semibold leading-tight">Safar Iman</div>
             <div className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground">Admin Panel</div>
           </div>
         </Link>

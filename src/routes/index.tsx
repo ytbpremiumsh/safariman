@@ -22,6 +22,7 @@ import cappadociaImg from "@/assets/cappadocia.jpg";
 import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,13 +47,9 @@ function Nav() {
     <header className="fixed top-0 inset-x-0 z-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 mt-4">
         <div className="glass rounded-2xl px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="size-9 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
-              <Sparkles className="size-4 text-emerald-deep" />
-            </div>
-            <div className="text-white">
-              <div className="font-display text-lg leading-none font-semibold">Safar Iman</div>
-              <div className="text-[10px] tracking-[0.25em] uppercase text-white/60">Hasanah × Prestasi</div>
+          <Link to="/" className="flex items-center">
+            <div className="bg-white/95 rounded-xl px-3 py-1.5 shadow-gold">
+              <img src={logoSafarIman} alt="Safar Iman" className="h-9 sm:h-10 w-auto" />
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm text-white/80">

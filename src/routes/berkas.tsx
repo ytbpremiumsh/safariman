@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const essaySchema = z.object({
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
@@ -117,14 +118,8 @@ function BerkasPage() {
       <div className="relative">
         <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="size-9 rounded-xl bg-gradient-emerald grid place-items-center">
-                <Sparkles className="size-4 text-accent" />
-              </div>
-              <div>
-                <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Kirim Berkas & Essay</div>
-              </div>
+            <Link to="/" className="flex items-center">
+              <img src={logoSafarIman} alt="Safar Iman" className="h-10 sm:h-11 w-auto" />
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
               <ArrowLeft className="size-4" /> Beranda
