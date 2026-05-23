@@ -188,7 +188,7 @@ function DonasiPage() {
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && verify()}
                 placeholder="CONTOH: HXP-A1B2C3D4"
-                className="text-center font-display text-xl tracking-[0.2em] h-14"
+                className="text-center font-mono text-lg tracking-[0.15em] h-14 uppercase"
                 maxLength={16}
               />
               <button
