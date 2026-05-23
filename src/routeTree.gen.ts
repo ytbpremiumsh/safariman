@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
+import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
 import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
@@ -30,6 +31,11 @@ import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa
 const TwibbonRoute = TwibbonRouteImport.update({
   id: '/twibbon',
   path: '/twibbon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuksesRoute = SuksesRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
+  '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
+  '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/sukses': typeof SuksesRoute
+  '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/daftar-mandiri'
     | '/donasi'
     | '/sukses'
+    | '/tentang'
     | '/twibbon'
     | '/admin/login'
     | '/admin/pengaturan'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/daftar-mandiri'
     | '/donasi'
     | '/sukses'
+    | '/tentang'
     | '/twibbon'
     | '/admin/login'
     | '/admin/pengaturan'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/daftar-mandiri'
     | '/donasi'
     | '/sukses'
+    | '/tentang'
     | '/twibbon'
     | '/admin/login'
     | '/admin/pengaturan'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   DaftarMandiriRoute: typeof DaftarMandiriRoute
   DonasiRoute: typeof DonasiRoute
   SuksesRoute: typeof SuksesRoute
+  TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/twibbon'
       fullPath: '/twibbon'
       preLoaderRoute: typeof TwibbonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sukses': {
@@ -383,6 +403,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarMandiriRoute: DaftarMandiriRoute,
   DonasiRoute: DonasiRoute,
   SuksesRoute: SuksesRoute,
+  TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
