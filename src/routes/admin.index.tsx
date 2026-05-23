@@ -314,7 +314,7 @@ function AdminDashboard() {
               <div className="mt-6 pt-4 border-t border-border">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Ubah Status</div>
                 <div className="flex flex-wrap gap-2">
-                  {(["pending", "shortlisted", "approved", "rejected"] as Status[]).map((s) => (
+                  {(["pending", "reviewed", "interview", "accepted", "rejected"] as Status[]).map((s) => (
                     <button
                       key={s}
                       onClick={() => updateStatus(detail.id, s)}
