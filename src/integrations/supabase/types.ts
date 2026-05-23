@@ -159,35 +159,66 @@ export type Database = {
           id: string
         }[]
       }
-      register_participant: {
-        Args: {
-          p_birth_date: string
-          p_city: string
-          p_education: string
-          p_email: string
-          p_full_name: string
-          p_gender: string
-          p_occupation: string
-          p_whatsapp: string
-        }
-        Returns: {
-          full_name: string
-          id: string
-          registration_code: string
-        }[]
-      }
-      submit_berkas_by_code: {
-        Args: {
-          p_category: Database["public"]["Enums"]["program_category"]
-          p_code: string
-          p_cv_url: string
-          p_essay_contribution: string
-          p_essay_dream: string
-          p_essay_worthy: string
-          p_photo_url: string
-        }
-        Returns: boolean
-      }
+      register_participant:
+        | {
+            Args: {
+              p_birth_date: string
+              p_city: string
+              p_education: string
+              p_email: string
+              p_full_name: string
+              p_gender: string
+              p_occupation: string
+              p_whatsapp: string
+            }
+            Returns: {
+              full_name: string
+              id: string
+              registration_code: string
+            }[]
+          }
+        | {
+            Args: {
+              p_birth_date: string
+              p_category?: Database["public"]["Enums"]["program_category"]
+              p_city: string
+              p_education: string
+              p_email: string
+              p_full_name: string
+              p_gender: string
+              p_occupation: string
+              p_whatsapp: string
+            }
+            Returns: {
+              full_name: string
+              id: string
+              registration_code: string
+            }[]
+          }
+      submit_berkas_by_code:
+        | {
+            Args: {
+              p_category: Database["public"]["Enums"]["program_category"]
+              p_code: string
+              p_cv_url: string
+              p_essay_contribution: string
+              p_essay_dream: string
+              p_essay_worthy: string
+              p_photo_url: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              p_code: string
+              p_cv_url: string
+              p_essay_contribution: string
+              p_essay_dream: string
+              p_essay_worthy: string
+              p_photo_url: string
+            }
+            Returns: boolean
+          }
       update_participant_with_token: {
         Args: {
           p_category?: Database["public"]["Enums"]["program_category"]
