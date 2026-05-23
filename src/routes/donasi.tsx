@@ -59,7 +59,7 @@ function DonasiPage() {
       const res = await fetch("/api/public/mayar-create-invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: code.trim().toUpperCase() }),
+        body: JSON.stringify({ code: code.trim().toUpperCase(), force: true }),
       });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
