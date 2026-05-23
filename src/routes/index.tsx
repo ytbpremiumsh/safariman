@@ -46,15 +46,13 @@ function Nav() {
   return (
     <header className="fixed top-0 inset-x-0 z-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 mt-4">
-        <div className="glass rounded-2xl px-4 py-3 flex items-center justify-between">
+        <div className="bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-lg ring-1 ring-black/5">
           <Link to="/" className="flex items-center">
-            <div className="bg-white/95 rounded-xl px-3 py-1.5 shadow-gold">
-              <img src={logoSafarIman} alt="Safar Iman" className="h-9 sm:h-10 w-auto" />
-            </div>
+            <img src={logoSafarIman} alt="Safar Iman" className="h-9 sm:h-10 w-auto" />
           </Link>
-          <nav className="hidden md:flex items-center gap-7 text-sm text-white/80">
+          <nav className="hidden md:flex items-center gap-7 text-sm text-foreground/80">
             {links.map((l) => (
-              <a key={l.href} href={l.href} className="hover:text-accent transition-colors">{l.label}</a>
+              <a key={l.href} href={l.href} className="hover:text-emerald-deep transition-colors font-medium">{l.label}</a>
             ))}
           </nav>
           <Link
@@ -65,20 +63,20 @@ function Nav() {
           </Link>
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden text-white p-2"
+            className="md:hidden text-foreground p-2"
             aria-label="Menu"
           >
             <div className="size-5 flex flex-col justify-between">
-              <span className="h-0.5 bg-white" />
-              <span className="h-0.5 bg-white" />
-              <span className="h-0.5 bg-white" />
+              <span className="h-0.5 bg-foreground" />
+              <span className="h-0.5 bg-foreground" />
+              <span className="h-0.5 bg-foreground" />
             </div>
           </button>
         </div>
         {open && (
-          <div className="glass rounded-2xl mt-2 p-4 md:hidden animate-fade-up">
+          <div className="bg-white rounded-2xl mt-2 p-4 md:hidden animate-fade-up shadow-lg ring-1 ring-black/5">
             {links.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-white/90">{l.label}</a>
+              <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
             ))}
             <Link to="/daftar" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
