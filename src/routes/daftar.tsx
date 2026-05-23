@@ -138,6 +138,39 @@ export function RegisterPage({ kind }: { kind: Kind }) {
                   <p className="text-muted-foreground">{KIND_META.note} {kind === "self_funded" ? <>Mau jalur Reguler? <Link to="/daftar" className="text-accent underline">Klik di sini</Link>.</> : <>Pilih jalur Mandiri? <Link to="/daftar-mandiri" className="text-accent underline">Klik di sini</Link>.</>}</p>
                 </div>
               </div>
+
+              <div className="rounded-3xl border border-border bg-card/60 backdrop-blur p-6 sm:p-8 mb-8 shadow-soft animate-fade-up">
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircle2 className="size-4 text-accent" />
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-gradient-gold">Persyaratan Umum</h3>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                  <li className="flex gap-3">
+                    <span className="mt-0.5 size-5 shrink-0 rounded-full bg-emerald/10 text-emerald grid place-items-center text-[11px] font-semibold">1</span>
+                    <span>Muslim/Muslimah yang siap menjalankan ibadah dengan niat yang lurus.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-0.5 size-5 shrink-0 rounded-full bg-emerald/10 text-emerald grid place-items-center text-[11px] font-semibold">2</span>
+                    <span>Pemuda-pemudi Indonesia berusia <strong className="text-foreground">12 – 40 tahun</strong>, terbuka untuk pelajar, mahasiswa, hingga alumni dari berbagai jenjang.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-0.5 size-5 shrink-0 rounded-full bg-emerald/10 text-emerald grid place-items-center text-[11px] font-semibold">3</span>
+                    <span>Bersedia mengikuti seluruh rangkaian kegiatan dari awal hingga akhir sesuai jadwal program yang ditentukan.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-0.5 size-5 shrink-0 rounded-full bg-accent/15 text-accent grid place-items-center text-[11px] font-semibold">4</span>
+                    <span className="text-foreground/90"><strong>Tidak perlu mahir Bahasa Inggris maupun Bahasa Arab</strong> — selama di Makkah dan Madinah peserta akan didampingi pembimbing berbahasa Indonesia.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-0.5 size-5 shrink-0 rounded-full bg-accent/15 text-accent grid place-items-center text-[11px] font-semibold">5</span>
+                    <span className="text-foreground/90"><strong>Tidak harus memiliki latar belakang ilmu agama yang mendalam</strong> — kita akan belajar bersama dengan bimbingan langsung dari para mentor.</span>
+                  </li>
+                </ul>
+                <p className="mt-5 text-xs text-muted-foreground italic border-t border-border pt-4">
+                  *Ketentuan selengkapnya dapat dibaca pada buku panduan program.
+                </p>
+              </div>
+
               <div className="mb-10">
                 <div className="flex items-center justify-between mb-3">
                   {[1, 2].map((n) => (
