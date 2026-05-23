@@ -16,9 +16,9 @@ export type Database = {
     Tables: {
       participants: {
         Row: {
-          achievements: string
+          achievements: string | null
           birth_date: string
-          category: Database["public"]["Enums"]["program_category"]
+          category: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at: string
           cv_url: string | null
@@ -33,16 +33,16 @@ export type Database = {
           occupation: string
           organization_experience: string | null
           photo_url: string | null
-          reason: string
+          reason: string | null
           social_media: string | null
           status: Database["public"]["Enums"]["participant_status"]
           updated_at: string
           whatsapp: string
         }
         Insert: {
-          achievements: string
+          achievements?: string | null
           birth_date: string
-          category: Database["public"]["Enums"]["program_category"]
+          category?: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at?: string
           cv_url?: string | null
@@ -57,16 +57,16 @@ export type Database = {
           occupation: string
           organization_experience?: string | null
           photo_url?: string | null
-          reason: string
+          reason?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           updated_at?: string
           whatsapp: string
         }
         Update: {
-          achievements?: string
+          achievements?: string | null
           birth_date?: string
-          category?: Database["public"]["Enums"]["program_category"]
+          category?: Database["public"]["Enums"]["program_category"] | null
           city?: string
           created_at?: string
           cv_url?: string | null
@@ -81,7 +81,7 @@ export type Database = {
           occupation?: string
           organization_experience?: string | null
           photo_url?: string | null
-          reason?: string
+          reason?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           updated_at?: string
