@@ -200,7 +200,8 @@ function WaSetupPage() {
   if (loading) return <div className="min-h-screen grid place-items-center"><Loader2 className="size-8 animate-spin text-accent" /></div>;
 
   return (
-    <AdminShell title="WA Setup">
+    <AdminShell title="WhatsApp & AI Assistant">
+
       <div className="space-y-6 max-w-5xl">
 
         {/* Credentials */}
@@ -278,8 +279,99 @@ function WaSetupPage() {
             {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Template
           </button>
         </section>
+
+        {/* AI Auto-Reply */}
+        <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 space-y-5">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h2 className="font-display text-2xl font-semibold flex items-center gap-2">
+                <Bot className="size-5 text-accent" /> AI Auto-Reply WhatsApp
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                Asisten AI akan menjawab pesan WhatsApp masuk secara otomatis berdasarkan Knowledge & Behavior di bawah.
+                Powered by Lovable AI Gateway.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 bg-secondary/60 rounded-full px-4 py-2">
+              <Sparkles className={`size-4 ${aiEnabled ? "text-accent" : "text-muted-foreground"}`} />
+              <Label htmlFor="ai-toggle" className="text-sm font-medium cursor-pointer">
+                {aiEnabled ? "Aktif" : "Nonaktif"}
+              </Label>
+              <Switch id="ai-toggle" checked={aiEnabled} onCheckedChange={setAiEnabled} />
+            </div>
+          </div>
+
+          {/* Webhook URL */}
+          <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 space-y-2">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <Webhook className="size-4 text-accent" /> Webhook URL (untuk MPWA)
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Salin URL ini, lalu tempelkan di dashboard <span className="font-mono">app.ayopintar.com</span> →{" "}
+              <strong>Webhook / Auto Reply / Incoming Message URL</strong>. Setiap pesan WA masuk akan dijawab AI.
+            </p>
+            <div className="flex gap-2">
+              <Input value={webhookUrl} readOnly className="font-mono text-xs" />
+              <button
+                onClick={() => copyText(webhookUrl, "Webhook URL")}
+                className="inline-flex items-center gap-1.5 rounded-md bg-emerald text-white px-4 py-2 text-sm font-semibold shrink-0 hover:bg-emerald-deep"
+              >
+                <Copy className="size-4" /> Salin
+              </button>
+            </div>
+          </div>
+
+          {/* AI Behavior */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              <Bot className="size-4 text-accent" /> AI Behavior (Karakter & Aturan)
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Atur gaya bicara, tone, batasan, dan persona asisten. Ini menjadi <em>system prompt</em>.
+            </p>
+            <textarea
+              value={aiBehavior}
+              onChange={(e) => setAiBehavior(e.target.value)}
+              rows={8}
+              className="w-full rounded-xl border border-input bg-background p-3 text-sm leading-relaxed"
+            />
+          </div>
+
+          {/* AI Knowledge */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              <BookOpen className="size-4 text-accent" /> AI Knowledge Base
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Pengetahuan yang dipakai AI untuk menjawab. Tambah/ubah pertanyaan & jawaban di sini. Gunakan format Markdown sederhana.
+            </p>
+            <textarea
+              value={aiKnowledge}
+              onChange={(e) => setAiKnowledge(e.target.value)}
+              rows={18}
+              className="w-full rounded-xl border border-input bg-background p-3 text-sm font-mono leading-relaxed"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={saveAi}
+              disabled={savingAi}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold shadow-gold disabled:opacity-60"
+            >
+              {savingAi ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan AI Settings
+            </button>
+            <button
+              onClick={() => { setAiBehavior(DEFAULT_AI_BEHAVIOR); setAiKnowledge(DEFAULT_AI_KNOWLEDGE); toast.info("Behavior & Knowledge direset ke default"); }}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary"
+            >
+              Reset ke Default
+            </button>
+          </div>
+        </section>
       </div>
     </AdminShell>
   );
+
 }
 
