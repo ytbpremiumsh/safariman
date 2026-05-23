@@ -230,8 +230,11 @@ function DonasiPage() {
               ) : (
                 <>
                   <div className="rounded-2xl bg-gradient-emerald p-5 text-center">
-                    <div className="text-accent/80 text-xs uppercase tracking-[0.25em] mb-1">Selamat, kamu lolos!</div>
-                    <div className="font-display text-white text-xl">Lanjutkan ke tahap kontribusi</div>
+                    <div className="text-accent/80 text-xs uppercase tracking-[0.25em] mb-1">Selamat, kamu lolos berkas!</div>
+                    <div className="font-display text-white text-xl">Selangkah lagi menuju tahap Essay</div>
+                    <p className="text-accent/90 text-xs mt-2 leading-relaxed">
+                      Tunaikan donasi terlebih dahulu untuk membuka akses ke tahap penulisan Essay.
+                    </p>
                   </div>
                   <button
                     onClick={startPayment}
