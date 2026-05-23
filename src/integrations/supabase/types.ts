@@ -170,7 +170,10 @@ export type Database = {
         Returns: {
           full_name: string
           has_berkas: boolean
+          has_essay: boolean
           id: string
+          payment_status: string
+          status: Database["public"]["Enums"]["participant_status"]
         }[]
       }
       lookup_payment_status_by_code: {
@@ -239,6 +242,10 @@ export type Database = {
             Returns: boolean
           }
         | {
+            Args: { p_code: string; p_cv_url: string; p_photo_url: string }
+            Returns: boolean
+          }
+        | {
             Args: {
               p_code: string
               p_cv_url: string
@@ -249,6 +256,15 @@ export type Database = {
             }
             Returns: boolean
           }
+      submit_essay_by_code: {
+        Args: {
+          p_code: string
+          p_essay_contribution: string
+          p_essay_dream: string
+          p_essay_worthy: string
+        }
+        Returns: boolean
+      }
       update_participant_with_token: {
         Args: {
           p_category?: Database["public"]["Enums"]["program_category"]
