@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ApiPublicWaNotifyRouteImport } from './routes/api/public/wa-notify'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
 
 const TwibbonRoute = TwibbonRouteImport.update({
@@ -65,6 +66,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWaNotifyRoute = ApiPublicWaNotifyRouteImport.update({
+  id: '/api/public/wa-notify',
+  path: '/api/public/wa-notify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMpwaSplatRoute = ApiPublicMpwaSplatRouteImport.update({
   id: '/api/public/mpwa/$',
   path: '/api/public/mpwa/$',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/wa-notify': typeof ApiPublicWaNotifyRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin'
+    | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/api/public/wa-notify'
     | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicWaNotifyRoute: typeof ApiPublicWaNotifyRoute
   ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
 
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/wa-notify': {
+      id: '/api/public/wa-notify'
+      path: '/api/public/wa-notify'
+      fullPath: '/api/public/wa-notify'
+      preLoaderRoute: typeof ApiPublicWaNotifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mpwa/$': {
       id: '/api/public/mpwa/$'
       path: '/api/public/mpwa/$'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicWaNotifyRoute: ApiPublicWaNotifyRoute,
   ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
