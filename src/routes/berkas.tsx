@@ -266,16 +266,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function F({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="space-y-1.5"><Label className="text-sm font-medium">{label}</Label>{children}</div>;
 }
-function FileField({ label, file, setFile, accept }: { label: string; file: File | null; setFile: (f: File | null) => void; accept: string }) {
+function LinkField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
   return (
     <F label={label}>
-      <label className="cursor-pointer block rounded-2xl border-2 border-dashed border-border hover:border-accent p-5 text-center transition">
-        <Upload className="size-5 mx-auto text-muted-foreground mb-2" />
-        <div className="text-sm">
-          {file ? <span className="text-emerald font-medium break-all">{file.name}</span> : <span className="text-muted-foreground">Klik untuk pilih file</span>}
-        </div>
-        <input type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-      </label>
+      <div className="relative">
+        <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Input
+          type="url"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="pl-9"
+        />
+      </div>
     </F>
   );
 }
