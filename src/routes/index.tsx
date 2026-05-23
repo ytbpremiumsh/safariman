@@ -37,12 +37,12 @@ export const Route = createFileRoute("/")({
 function Nav() {
   const [open, setOpen] = useState(false);
   const links = [
-    { href: "/tentang", label: "Tentang" },
     { href: "#program", label: "Program" },
     { href: "#kuota", label: "Kuota" },
     { href: "#timeline", label: "Timeline" },
     { href: "#galeri", label: "Galeri" },
     { href: "#faq", label: "FAQ" },
+    { href: "/tentang", label: "Tentang" },
   ];
   return (
     <header className="fixed top-0 inset-x-0 z-40">
