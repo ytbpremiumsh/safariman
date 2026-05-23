@@ -25,9 +25,9 @@ export type Database = {
           edit_token: string
           education: string
           email: string
-          essay_contribution: string
-          essay_dream: string
-          essay_worthy: string
+          essay_contribution: string | null
+          essay_dream: string | null
+          essay_worthy: string | null
           full_name: string
           gender: string
           id: string
@@ -35,6 +35,7 @@ export type Database = {
           organization_experience: string | null
           photo_url: string | null
           reason: string | null
+          registration_code: string
           social_media: string | null
           status: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at: string | null
@@ -51,9 +52,9 @@ export type Database = {
           edit_token?: string
           education: string
           email: string
-          essay_contribution: string
-          essay_dream: string
-          essay_worthy: string
+          essay_contribution?: string | null
+          essay_dream?: string | null
+          essay_worthy?: string | null
           full_name: string
           gender: string
           id?: string
@@ -61,6 +62,7 @@ export type Database = {
           organization_experience?: string | null
           photo_url?: string | null
           reason?: string | null
+          registration_code?: string
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at?: string | null
@@ -77,9 +79,9 @@ export type Database = {
           edit_token?: string
           education?: string
           email?: string
-          essay_contribution?: string
-          essay_dream?: string
-          essay_worthy?: string
+          essay_contribution?: string | null
+          essay_dream?: string | null
+          essay_worthy?: string | null
           full_name?: string
           gender?: string
           id?: string
@@ -87,6 +89,7 @@ export type Database = {
           organization_experience?: string | null
           photo_url?: string | null
           reason?: string | null
+          registration_code?: string
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at?: string | null
@@ -122,10 +125,31 @@ export type Database = {
     }
     Functions: {
       claim_admin_if_first: { Args: never; Returns: boolean }
+      gen_registration_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      lookup_participant_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          full_name: string
+          has_berkas: boolean
+          id: string
+        }[]
+      }
+      submit_berkas_by_code: {
+        Args: {
+          p_category: Database["public"]["Enums"]["program_category"]
+          p_code: string
+          p_cv_url: string
+          p_essay_contribution: string
+          p_essay_dream: string
+          p_essay_worthy: string
+          p_photo_url: string
         }
         Returns: boolean
       }
