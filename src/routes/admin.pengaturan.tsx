@@ -64,6 +64,21 @@ function PengaturanPage() {
     toast.success("Waktu countdown disimpan");
   };
 
+  const savePanduan = async () => {
+    const v = panduanUrl.trim();
+    if (v && !/^https?:\/\//i.test(v) && !v.startsWith("#") && !v.startsWith("/")) {
+      toast.error("URL harus diawali http(s)://, /, atau #");
+      return;
+    }
+    setSavingPanduan(true);
+    const { error } = await supabase.from("app_settings").upsert({
+      key: "panduan_url", value: v, updated_at: new Date().toISOString(),
+    });
+    setSavingPanduan(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Link Panduan disimpan");
+  };
+
   const saveMayar = async () => {
     if (!mayarKey.trim()) { toast.error("API Key Mayar wajib diisi"); return; }
     setSavingMayar(true);
