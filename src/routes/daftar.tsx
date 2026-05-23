@@ -67,11 +67,19 @@ function RegisterPage() {
 
     setSubmitting(true);
     try {
-      const { data: row, error } = await supabase.from("participants")
-        .insert(parsed.data)
-        .select("id, registration_code, full_name")
-        .single();
+      const { data: rows, error } = await supabase.rpc("register_participant", {
+        p_full_name: parsed.data.full_name,
+        p_email: parsed.data.email,
+        p_whatsapp: parsed.data.whatsapp,
+        p_gender: parsed.data.gender,
+        p_birth_date: parsed.data.birth_date,
+        p_city: parsed.data.city,
+        p_education: parsed.data.education,
+        p_occupation: parsed.data.occupation,
+      });
       if (error) throw error;
+      const row = rows?.[0];
+      if (!row) throw new Error("Tidak ada respons dari server");
       setCode(row.registration_code);
       window.scrollTo({ top: 0, behavior: "smooth" });
       toast.success("Pendaftaran berhasil! Simpan kode pendaftaranmu ✨");
