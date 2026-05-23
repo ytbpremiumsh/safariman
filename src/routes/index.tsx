@@ -37,6 +37,7 @@ export const Route = createFileRoute("/")({
 function Nav() {
   const [open, setOpen] = useState(false);
   const links = [
+    { href: "/tentang", label: "Tentang" },
     { href: "#program", label: "Program" },
     { href: "#kuota", label: "Kuota" },
     { href: "#timeline", label: "Timeline" },
