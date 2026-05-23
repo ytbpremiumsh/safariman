@@ -56,6 +56,7 @@ function PengaturanPage() {
       setPanduanUrl(map.panduan_url ?? "");
       setMayarWebhookSecret(map.mayar_webhook_secret ?? "");
       setMpwaWebhookSecret(map.mpwa_webhook_secret ?? "");
+      setTwibbonFrameUrl(map.twibbon_frame_url ?? "");
       if (typeof window !== "undefined") {
         setWebhookUrl(`${window.location.origin}/api/public/mayar-webhook`);
         setMpwaWebhookUrl(`${window.location.origin}/api/public/mpwa-webhook`);
