@@ -1,37 +1,23 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import twibbonFrame from "@/assets/twibbon.png";
 
-const CP_WHATSAPP = "6281234567890"; // ganti dengan nomor CP resmi
+const CP_WHATSAPP = "6281234567890";
 const CP_NAME = "CP Safar Iman";
 
 export const Route = createFileRoute("/twibbon")({
   head: () => ({
     meta: [
       { title: "Twibbon — Safar Iman" },
-      { name: "description", content: "Download twibbon Safar Iman dan kirim ke CP." },
+      { name: "description", content: "Download twibbon Safar Iman, posting di sosmed, lalu kirim ke CP." },
     ],
   }),
   component: TwibbonPage,
 });
 
-type Stored = { id: string; token: string; name: string };
-
 function TwibbonPage() {
-  const navigate = useNavigate();
-  const [me, setMe] = useState<Stored | null>(null);
-  const [confirming, setConfirming] = useState(false);
-
-  useEffect(() => {
-    const raw = localStorage.getItem("safariman_participant");
-    if (!raw) { navigate({ to: "/daftar" }); return; }
-    try { setMe(JSON.parse(raw)); } catch { navigate({ to: "/daftar" }); }
-  }, [navigate]);
-
   const downloadTwibbon = async () => {
     try {
       const res = await fetch(twibbonFrame);
@@ -49,30 +35,12 @@ function TwibbonPage() {
   };
 
   const waMessage = encodeURIComponent(
-    `Assalamu'alaikum, saya ${me?.name ?? ""} sudah mendaftar program Safar Iman dan mengirimkan bukti twibbon. Mohon konfirmasinya. Jazakallahu khairan 🙏`
+    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Jazakallahu khairan 🙏`
   );
 
   const copyMessage = async () => {
     await navigator.clipboard.writeText(decodeURIComponent(waMessage));
     toast.success("Pesan disalin!");
-  };
-
-  const confirmAndNext = async () => {
-    if (!me) return;
-    setConfirming(true);
-    try {
-      const { error } = await supabase.rpc("update_participant_with_token", {
-        p_id: me.id, p_token: me.token, p_twibbon_confirmed: true,
-      });
-      if (error) throw error;
-      toast.success("Twibbon dikonfirmasi. Lanjut upload berkas!");
-      navigate({ to: "/berkas" });
-    } catch (e) {
-      console.error(e);
-      toast.error("Gagal konfirmasi. Coba lagi.");
-    } finally {
-      setConfirming(false);
-    }
   };
 
   return (
@@ -87,7 +55,7 @@ function TwibbonPage() {
               </div>
               <div>
                 <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Step 2 · Twibbon</div>
+                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Twibbon</div>
               </div>
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
@@ -99,19 +67,16 @@ function TwibbonPage() {
         <main className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 text-emerald text-xs font-semibold tracking-wider uppercase">
-              <CheckCircle2 className="size-3.5" /> Pendaftaran Terkirim
-            </div>
-            <h1 className="font-display text-3xl sm:text-5xl font-semibold mt-4 leading-tight">
+            <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
               Yuk Bikin <span className="text-gradient-gold">Twibbon</span>mu
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Sebarkan semangat Safar Iman! Download twibbon, posting di sosmed, lalu kirim screenshot ke CP kami.
+              Sebarkan semangat Safar Iman. Download twibbon, posting di sosmed, lalu kirim screenshot ke CP kami.
+              Tidak perlu mendaftar dulu — terbuka untuk siapa saja!
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
-            {/* Twibbon preview */}
             <div className="bg-card border border-border rounded-3xl p-6 shadow-soft animate-fade-up">
               <div className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald">
                 <img src={twibbonFrame} alt="Twibbon Safar Iman" className="size-full object-cover" width={1024} height={1024} loading="lazy" />
@@ -124,16 +89,15 @@ function TwibbonPage() {
               </button>
             </div>
 
-            {/* Instructions */}
             <div className="space-y-5">
               <Card n={1} title="Download Twibbon" icon={<Download className="size-5" />}>
-                Klik tombol "Download Twibbon" untuk menyimpan frame.
+                Klik tombol "Download Twibbon" untuk menyimpan frame ke perangkatmu.
               </Card>
               <Card n={2} title="Pasang Fotomu" icon={<ImageIcon className="size-5" />}>
-                Buka di aplikasi edit foto favoritmu (Canva / PicsArt / Photoshop). Letakkan foto kamu di area tengah frame.
+                Buka di aplikasi edit foto (Canva / PicsArt / Photoshop). Letakkan fotomu di area tengah frame.
               </Card>
-              <Card n={3} title="Posting di Instagram / Twitter" icon={<Sparkles className="size-5" />}>
-                Upload di feed/story dengan caption dakwah & tag <strong className="text-foreground">@safariman.id</strong>. Gunakan hashtag <strong className="text-foreground">#SafarIman #UmrahGratisBerprestasi</strong>.
+              <Card n={3} title="Posting di Sosmed" icon={<Sparkles className="size-5" />}>
+                Upload di feed/story Instagram/Twitter dengan caption dakwah. Tag <strong className="text-foreground">@safariman.id</strong> & hashtag <strong className="text-foreground">#SafarIman #UmrahGratisBerprestasi</strong>.
               </Card>
               <Card n={4} title="Kirim Bukti ke CP" icon={<MessageCircle className="size-5" />}>
                 Screenshot postinganmu, lalu kirim ke {CP_NAME} via WhatsApp.
@@ -154,13 +118,12 @@ function TwibbonPage() {
                 </div>
               </Card>
 
-              <button
-                onClick={confirmAndNext}
-                disabled={confirming}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift disabled:opacity-60"
+              <Link
+                to="/berkas"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift"
               >
-                {confirming ? <><Loader2 className="size-4 animate-spin" /> Memproses...</> : <>Saya Sudah Kirim ke CP — Lanjut Upload Berkas <ArrowRight className="size-4" /></>}
-              </button>
+                <FileText className="size-4" /> Lanjut Kirim Berkas <ArrowRight className="size-4" />
+              </Link>
             </div>
           </div>
         </main>
