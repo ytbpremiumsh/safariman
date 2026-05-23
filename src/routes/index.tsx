@@ -358,11 +358,12 @@ function Quota() {
 }
 
 function Timeline() {
-  const steps: { i: typeof ClipboardList; t: string; d: string; cta?: { label: string; to: "/daftar" | "/twibbon" | "/berkas" } }[] = [
+  const steps: { i: typeof ClipboardList; t: string; d: string; cta?: { label: string; to: "/daftar" | "/twibbon" | "/berkas" | "/essay" } }[] = [
     { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", cta: { label: "Daftar Sekarang", to: "/daftar" } },
     { i: Megaphone, t: "Bagikan Twibbon", d: "Download frame & share di sosial media", cta: { label: "Buat Twibbon", to: "/twibbon" } },
-    { i: ClipboardList, t: "Pengiriman Berkas & Essay", d: "Masukkan Kode Pendaftaran, upload CV/foto, kirim essay", cta: { label: "Kirim Berkas", to: "/berkas" } },
+    { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", cta: { label: "Kirim Berkas", to: "/berkas" } },
     { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami" },
+    { i: ClipboardList, t: "Pengisian Essay", d: "Setelah lolos administrasi & tunaikan kontribusi, lanjut isi essay", cta: { label: "Kirim Essay", to: "/essay" } },
     { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online" },
     { i: Megaphone, t: "Pengumuman", d: "Diumumkan via email & web" },
     { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan" },
