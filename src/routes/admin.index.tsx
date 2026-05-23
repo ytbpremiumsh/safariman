@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   LogOut, Search, Download, Sparkles, Users, CheckCircle2, Clock, XCircle,
-  Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft,
+  Eye, FileDown, Image as ImageIcon, Loader2, ArrowLeft, MessageCircle, Settings, QrCode,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -66,6 +66,13 @@ function AdminDashboard() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [status, setStatus] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
+  const [waOpen, setWaOpen] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [sender, setSender] = useState("");
+  const [qr, setQr] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [waMsg, setWaMsg] = useState("");
+  const [waSending, setWaSending] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -74,8 +81,59 @@ function AdminDashboard() {
       const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" });
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
       await load();
+      await loadSettings();
     })();
   }, [navigate]);
+
+  const loadSettings = async () => {
+    const { data } = await supabase.from("app_settings").select("key,value").in("key", ["mpwa_api_key", "mpwa_sender"]);
+    const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
+    setApiKey(map.mpwa_api_key ?? "");
+    setSender(map.mpwa_sender ?? "");
+  };
+
+  const saveSettings = async () => {
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "mpwa_api_key", value: apiKey, updated_at: new Date().toISOString() },
+      { key: "mpwa_sender", value: sender, updated_at: new Date().toISOString() },
+    ]);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Pengaturan disimpan");
+  };
+
+  const generateQr = async () => {
+    if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu"); return; }
+    setQrLoading(true); setQr(null);
+    try {
+      const res = await fetch("https://app.ayopintar.com/generate-qr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device: sender, api_key: apiKey, force: true }),
+      });
+      const json = await res.json();
+      if (json.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp"); }
+      else toast.success(json.msg || "Device sudah terhubung");
+    } catch (e) { toast.error("Gagal generate QR"); }
+    finally { setQrLoading(false); }
+  };
+
+  const sendWa = async (number: string, message: string) => {
+    if (!apiKey || !sender) { toast.error("Atur MPWA API Key & Sender di Pengaturan"); return false; }
+    const clean = number.replace(/\D/g, "").replace(/^0/, "62");
+    setWaSending(true);
+    try {
+      const res = await fetch("https://app.ayopintar.com/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ api_key: apiKey, sender, number: clean, message, footer: "Safar Iman" }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.status === false && json.message) { throw new Error(json.message || "Gagal kirim"); }
+      toast.success(`WA terkirim ke ${clean}`);
+      return true;
+    } catch (e: any) { toast.error(e.message || "Gagal kirim WA"); return false; }
+    finally { setWaSending(false); }
+  };
 
   const load = async () => {
     setLoading(true);
