@@ -141,6 +141,23 @@ export type Database = {
           id: string
         }[]
       }
+      register_participant: {
+        Args: {
+          p_birth_date: string
+          p_city: string
+          p_education: string
+          p_email: string
+          p_full_name: string
+          p_gender: string
+          p_occupation: string
+          p_whatsapp: string
+        }
+        Returns: {
+          full_name: string
+          id: string
+          registration_code: string
+        }[]
+      }
       submit_berkas_by_code: {
         Args: {
           p_category: Database["public"]["Enums"]["program_category"]
