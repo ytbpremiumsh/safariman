@@ -100,7 +100,7 @@ function DonasiPage() {
               Tunaikan <span className="text-gradient-gold">Kontribusi Kebaikan</span>
             </h1>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">kegiatan sosial, berbagi makanan, dan wakaf Al-Qur'an</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
+              Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">operasional program, kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
 
