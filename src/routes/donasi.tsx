@@ -96,8 +96,8 @@ function DonasiPage() {
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
-            <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Tunaikan <span className="text-gradient-gold">Kontribusi Kebaikan</span>
+            <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-[1.2] pb-3">
+              Tunaikan <span className="text-gradient-gold inline-block pb-2">Kontribusi Kebaikan</span>
             </h1>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
               Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">operasional program, kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
