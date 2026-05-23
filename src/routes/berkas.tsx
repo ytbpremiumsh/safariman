@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Upload, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, Sparkles, Loader2, KeyRound, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,15 +17,7 @@ const CATS: { v: Cat; t: string; d: string }[] = [
   { v: "self_funded", t: "Self Funded", d: "Jalur mandiri — 10 kuota" },
 ];
 
-const schema = z.object({
-  full_name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  whatsapp: z.string().trim().min(8).max(20),
-  gender: z.string().min(1),
-  birth_date: z.string().min(1),
-  city: z.string().trim().min(2).max(100),
-  education: z.string().trim().min(2).max(100),
-  occupation: z.string().trim().min(2).max(100),
+const essaySchema = z.object({
   category: z.enum(["fully_funded", "partial_funded", "self_funded"]),
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
   essay_dream: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
@@ -35,18 +27,23 @@ const schema = z.object({
 export const Route = createFileRoute("/berkas")({
   head: () => ({
     meta: [
-      { title: "Kirim Berkas — Safar Iman" },
-      { name: "description", content: "Kirim berkas program Safar Iman: CV, foto, dan essay." },
+      { title: "Kirim Berkas & Essay — Safar Iman" },
+      { name: "description", content: "Kirim berkas program & essay Safar Iman dengan kode pendaftaran." },
     ],
   }),
   component: BerkasPage,
 });
 
+type Participant = { id: string; full_name: string; has_berkas: boolean };
+
 function BerkasPage() {
   const navigate = useNavigate();
+  const [code, setCode] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [participant, setParticipant] = useState<Participant | null>(null);
+
   const [d, setD] = useState({
-    full_name: "", email: "", whatsapp: "", gender: "", birth_date: "",
-    city: "", education: "", occupation: "", category: "" as Cat | "",
+    category: "" as Cat | "",
     essay_worthy: "", essay_dream: "", essay_contribution: "",
   });
   const [cv, setCv] = useState<File | null>(null);
@@ -55,8 +52,29 @@ function BerkasPage() {
 
   const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
 
+  const verify = async () => {
+    const c = code.trim().toUpperCase();
+    if (c.length < 4) { toast.error("Masukkan kode pendaftaran"); return; }
+    setChecking(true);
+    try {
+      const { data, error } = await supabase.rpc("lookup_participant_by_code", { p_code: c });
+      if (error) throw error;
+      const row = data?.[0];
+      if (!row) { toast.error("Kode tidak ditemukan. Pastikan kamu sudah mendaftar."); return; }
+      if (row.has_berkas) { toast.error("Berkas dengan kode ini sudah pernah dikirim."); return; }
+      setParticipant(row as Participant);
+      toast.success(`Halo ${row.full_name.split(" ")[0]}! Silakan lanjut isi berkas & essay.`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Gagal memverifikasi kode.");
+    } finally {
+      setChecking(false);
+    }
+  };
+
   const submit = async () => {
-    const parsed = schema.safeParse(d);
+    if (!participant) return;
+    const parsed = essaySchema.safeParse(d);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     if (!cv) { toast.error("CV wajib diupload"); return; }
     if (!photo) { toast.error("Foto wajib diupload"); return; }
@@ -66,8 +84,8 @@ function BerkasPage() {
     setSubmitting(true);
     try {
       const stamp = Date.now();
-      const cvPath = `${stamp}-${cv.name}`;
-      const photoPath = `${stamp}-${photo.name}`;
+      const cvPath = `${participant.id}/${stamp}-${cv.name}`;
+      const photoPath = `${participant.id}/${stamp}-${photo.name}`;
 
       const { error: e1 } = await supabase.storage.from("participant-cv").upload(cvPath, cv);
       if (e1) throw e1;
@@ -75,12 +93,19 @@ function BerkasPage() {
       if (e2) throw e2;
       const photoUrl = supabase.storage.from("participant-photo").getPublicUrl(photoPath).data.publicUrl;
 
-      const { error: e3 } = await supabase.from("participants").insert({
-        ...parsed.data, cv_url: cvPath, photo_url: photoUrl,
+      const { data: ok, error: e3 } = await supabase.rpc("submit_berkas_by_code", {
+        p_code: code.trim().toUpperCase(),
+        p_category: parsed.data.category,
+        p_cv_url: cvPath,
+        p_photo_url: photoUrl,
+        p_essay_worthy: parsed.data.essay_worthy,
+        p_essay_dream: parsed.data.essay_dream,
+        p_essay_contribution: parsed.data.essay_contribution,
       });
       if (e3) throw e3;
+      if (!ok) throw new Error("Kode tidak valid");
 
-      toast.success("Berkas terkirim. Barakallah!");
+      toast.success("Berkas & essay terkirim. Barakallah!");
       navigate({ to: "/sukses" });
     } catch (e) {
       console.error(e);
@@ -102,7 +127,7 @@ function BerkasPage() {
               </div>
               <div>
                 <div className="font-display text-lg font-semibold leading-none">Safar Iman</div>
-                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Kirim Berkas</div>
+                <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Kirim Berkas & Essay</div>
               </div>
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
@@ -115,76 +140,92 @@ function BerkasPage() {
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Kirim <span className="text-gradient-gold">Berkas Program</span>
+              Kirim <span className="text-gradient-gold">Berkas & Essay</span>
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Lengkapi data dirimu, pilih jalur program, upload CV & foto, dan tulis essay singkat.
-              Bisa dilakukan langsung tanpa perlu mendaftar dulu.
+              Masukkan <strong className="text-foreground">Kode Pendaftaran</strong> yang kamu dapat saat daftar,
+              lalu lengkapi berkas & essay programmu.
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
-            <Section title="Data Diri">
-              <div className="grid sm:grid-cols-2 gap-5">
-                <F label="Nama Lengkap"><Input value={d.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder="Nama sesuai KTP" /></F>
-                <F label="Email"><Input type="email" value={d.email} onChange={(e) => set("email", e.target.value)} placeholder="nama@email.com" /></F>
-                <F label="WhatsApp"><Input value={d.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="08xxxxxxxxxx" /></F>
-                <F label="Jenis Kelamin">
-                  <select value={d.gender} onChange={(e) => set("gender", e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm">
-                    <option value="">Pilih...</option>
-                    <option>Laki-laki</option>
-                    <option>Perempuan</option>
-                  </select>
-                </F>
-                <F label="Tanggal Lahir"><Input type="date" value={d.birth_date} onChange={(e) => set("birth_date", e.target.value)} /></F>
-                <F label="Kota Asal"><Input value={d.city} onChange={(e) => set("city", e.target.value)} placeholder="Jakarta" /></F>
-                <F label="Pendidikan Terakhir"><Input value={d.education} onChange={(e) => set("education", e.target.value)} placeholder="S1 / SMA / dll" /></F>
-                <F label="Pekerjaan / Status"><Input value={d.occupation} onChange={(e) => set("occupation", e.target.value)} placeholder="Mahasiswa, dll" /></F>
+          {!participant ? (
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto">
+              <div className="size-14 rounded-2xl bg-gradient-emerald grid place-items-center mx-auto mb-5 shadow-emerald">
+                <KeyRound className="size-6 text-accent" />
               </div>
-            </Section>
-
-            <Section title="Pilih Kategori Program">
-              <div className="grid sm:grid-cols-3 gap-3">
-                {CATS.map((c) => (
-                  <button
-                    key={c.v} type="button"
-                    onClick={() => set("category", c.v)}
-                    className={`text-left rounded-2xl border-2 p-4 transition ${
-                      d.category === c.v
-                        ? "border-accent bg-accent/10 shadow-gold"
-                        : "border-border hover:border-accent/50"
-                    }`}
-                  >
-                    <div className="font-display text-lg font-semibold">{c.t}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{c.d}</div>
-                  </button>
-                ))}
+              <h2 className="font-display text-2xl font-semibold text-center mb-2">Masukkan Kode Pendaftaran</h2>
+              <p className="text-sm text-muted-foreground text-center mb-6">
+                Belum daftar? <Link to="/daftar" className="text-accent underline">Daftar di sini</Link>.
+              </p>
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === "Enter" && verify()}
+                placeholder="CONTOH: A1B2C3D4"
+                className="text-center font-display text-2xl tracking-[0.3em] h-14"
+                maxLength={12}
+              />
+              <button
+                onClick={verify}
+                disabled={checking}
+                className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift disabled:opacity-60"
+              >
+                {checking ? <><Loader2 className="size-4 animate-spin" /> Memverifikasi...</> : <>Verifikasi Kode <ArrowRight className="size-4" /></>}
+              </button>
+            </div>
+          ) : (
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
+              <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
+                <CheckCircle2 className="size-5 text-emerald shrink-0" />
+                <div className="text-sm">
+                  <div className="font-semibold">{participant.full_name}</div>
+                  <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code.toUpperCase()}</span></div>
+                </div>
               </div>
-            </Section>
 
-            <Section title="Upload Berkas">
-              <div className="grid sm:grid-cols-2 gap-5">
-                <FileField label="CV (PDF, max 5MB)" file={cv} setFile={setCv} accept="application/pdf" />
-                <FileField label="Foto (JPG/PNG, max 5MB)" file={photo} setFile={setPhoto} accept="image/*" />
-              </div>
-            </Section>
+              <Section title="Pilih Kategori Program">
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {CATS.map((c) => (
+                    <button
+                      key={c.v} type="button"
+                      onClick={() => set("category", c.v)}
+                      className={`text-left rounded-2xl border-2 p-4 transition ${
+                        d.category === c.v
+                          ? "border-accent bg-accent/10 shadow-gold"
+                          : "border-border hover:border-accent/50"
+                      }`}
+                    >
+                      <div className="font-display text-lg font-semibold">{c.t}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{c.d}</div>
+                    </button>
+                  ))}
+                </div>
+              </Section>
 
-            <Section title="Essay Singkat">
-              <div className="grid gap-5">
-                <F label="Kenapa kamu layak dipilih?"><Textarea rows={4} value={d.essay_worthy} onChange={(e) => set("essay_worthy", e.target.value)} /></F>
-                <F label="Apa impianmu setelah ke Tanah Suci?"><Textarea rows={4} value={d.essay_dream} onChange={(e) => set("essay_dream", e.target.value)} /></F>
-                <F label="Bagaimana kontribusimu untuk umat?"><Textarea rows={4} value={d.essay_contribution} onChange={(e) => set("essay_contribution", e.target.value)} /></F>
-              </div>
-            </Section>
+              <Section title="Upload Berkas">
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <FileField label="CV (PDF, max 5MB)" file={cv} setFile={setCv} accept="application/pdf" />
+                  <FileField label="Foto (JPG/PNG, max 5MB)" file={photo} setFile={setPhoto} accept="image/*" />
+                </div>
+              </Section>
 
-            <button
-              onClick={submit}
-              disabled={submitting}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
-            >
-              {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Berkas <ArrowRight className="size-4" /></>}
-            </button>
-          </div>
+              <Section title="Essay Singkat">
+                <div className="grid gap-5">
+                  <F label="Kenapa kamu layak dipilih?"><Textarea rows={4} value={d.essay_worthy} onChange={(e) => set("essay_worthy", e.target.value)} /></F>
+                  <F label="Apa impianmu setelah ke Tanah Suci?"><Textarea rows={4} value={d.essay_dream} onChange={(e) => set("essay_dream", e.target.value)} /></F>
+                  <F label="Bagaimana kontribusimu untuk umat?"><Textarea rows={4} value={d.essay_contribution} onChange={(e) => set("essay_contribution", e.target.value)} /></F>
+                </div>
+              </Section>
+
+              <button
+                onClick={submit}
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
+              >
+                {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Berkas & Essay <ArrowRight className="size-4" /></>}
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>

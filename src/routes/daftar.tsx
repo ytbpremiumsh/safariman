@@ -1,12 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Copy, FileText, Image as ImageIcon } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { IslamicPattern } from "@/components/IslamicPattern";
@@ -24,14 +23,12 @@ export const Route = createFileRoute("/daftar")({
 type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
   birth_date: string; city: string; education: string; occupation: string;
-  essay_worthy: string; essay_dream: string; essay_contribution: string;
   agree: boolean;
 };
 
 const initial: FormData = {
   full_name: "", email: "", whatsapp: "", gender: "", birth_date: "",
-  city: "", education: "", occupation: "",
-  essay_worthy: "", essay_dream: "", essay_contribution: "", agree: false,
+  city: "", education: "", occupation: "", agree: false,
 };
 
 const schema = z.object({
@@ -43,39 +40,25 @@ const schema = z.object({
   city: z.string().trim().min(2).max(100),
   education: z.string().trim().min(2).max(100),
   occupation: z.string().trim().min(2).max(100),
-  essay_worthy: z.string().trim().min(50, "Minimal 50 karakter").max(3000),
-  essay_dream: z.string().trim().min(50, "Minimal 50 karakter").max(3000),
-  essay_contribution: z.string().trim().min(50, "Minimal 50 karakter").max(3000),
 });
 
 function RegisterPage() {
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
 
   const set = <K extends keyof FormData>(k: K, v: FormData[K]) =>
     setData((d) => ({ ...d, [k]: v }));
 
   const next = () => {
-    if (step === 1) {
-      const r = schema.pick({
-        full_name: true, email: true, whatsapp: true, gender: true,
-        birth_date: true, city: true, education: true, occupation: true,
-      }).safeParse(data);
-      if (!r.success) { toast.error(r.error.issues[0].message); return; }
-    }
-    if (step === 2) {
-      const r = schema.pick({
-        essay_worthy: true, essay_dream: true, essay_contribution: true,
-      }).safeParse(data);
-      if (!r.success) { toast.error(r.error.issues[0].message); return; }
-    }
-    setStep((s) => Math.min(3, s + 1));
+    const r = schema.safeParse(data);
+    if (!r.success) { toast.error(r.error.issues[0].message); return; }
+    setStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const back = () => { setStep((s) => Math.max(1, s - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const back = () => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   const submit = async () => {
     if (!data.agree) { toast.error("Harap setujui syarat & ketentuan"); return; }
@@ -84,27 +67,14 @@ function RegisterPage() {
 
     setSubmitting(true);
     try {
-      const { data: row, error } = await supabase.from("participants").insert({
-        full_name: parsed.data.full_name,
-        email: parsed.data.email,
-        whatsapp: parsed.data.whatsapp,
-        gender: parsed.data.gender,
-        birth_date: parsed.data.birth_date,
-        city: parsed.data.city,
-        education: parsed.data.education,
-        occupation: parsed.data.occupation,
-        essay_worthy: parsed.data.essay_worthy,
-        essay_dream: parsed.data.essay_dream,
-        essay_contribution: parsed.data.essay_contribution,
-      }).select("id, edit_token, full_name").single();
+      const { data: row, error } = await supabase.from("participants")
+        .insert(parsed.data)
+        .select("id, registration_code, full_name")
+        .single();
       if (error) throw error;
-
-      localStorage.setItem("safariman_participant", JSON.stringify({
-        id: row.id, token: row.edit_token, name: row.full_name,
-      }));
-
-      toast.success("Pendaftaran berhasil! Lanjut bikin Twibbon ✨");
-      navigate({ to: "/twibbon" });
+      setCode(row.registration_code);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      toast.success("Pendaftaran berhasil! Simpan kode pendaftaranmu ✨");
     } catch (e) {
       console.error(e);
       toast.error("Terjadi kesalahan. Coba lagi.");
@@ -135,58 +105,120 @@ function RegisterPage() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          <div className="mb-10">
-            <div className="flex items-center justify-between mb-3">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="flex-1 flex items-center">
-                  <div className={`size-9 sm:size-10 rounded-full grid place-items-center font-semibold text-sm transition ${
-                    step >= n ? "bg-gradient-emerald text-accent shadow-emerald" : "bg-secondary text-muted-foreground"
-                  }`}>
-                    {step > n ? <CheckCircle2 className="size-5" /> : n}
-                  </div>
-                  {n < 3 && (
-                    <div className={`flex-1 h-0.5 mx-2 transition ${step > n ? "bg-emerald" : "bg-border"}`} />
+          {code ? (
+            <SuccessCard code={code} name={data.full_name} />
+          ) : (
+            <>
+              <div className="mb-10">
+                <div className="flex items-center justify-between mb-3">
+                  {[1, 2].map((n) => (
+                    <div key={n} className="flex-1 flex items-center">
+                      <div className={`size-9 sm:size-10 rounded-full grid place-items-center font-semibold text-sm transition ${
+                        step >= n ? "bg-gradient-emerald text-accent shadow-emerald" : "bg-secondary text-muted-foreground"
+                      }`}>
+                        {step > n ? <CheckCircle2 className="size-5" /> : n}
+                      </div>
+                      {n < 2 && (
+                        <div className={`flex-1 h-0.5 mx-2 transition ${step > n ? "bg-emerald" : "bg-border"}`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs text-muted-foreground text-center">
+                  <span>Data Diri</span>
+                  <span>Review</span>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">
+                {step === 1 && <Step1 data={data} set={set} />}
+                {step === 2 && <Step2Review data={data} />}
+
+                <div className="mt-10 flex items-center justify-between gap-3">
+                  {step > 1 ? (
+                    <button onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+                      <ArrowLeft className="size-4" /> Kembali
+                    </button>
+                  ) : <span />}
+
+                  {step < 2 ? (
+                    <button onClick={next} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift">
+                      Lanjut <ArrowRight className="size-4" />
+                    </button>
+                  ) : (
+                    <div className="flex flex-col gap-3 items-end w-full">
+                      <label className="flex items-start gap-2.5 text-sm cursor-pointer">
+                        <Checkbox checked={data.agree} onCheckedChange={(c) => set("agree", !!c)} className="mt-0.5" />
+                        <span className="text-muted-foreground">Saya menyetujui syarat & ketentuan program Safar Iman.</span>
+                      </label>
+                      <button onClick={submit} disabled={submitting} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-3.5 text-sm font-bold shadow-gold hover-lift disabled:opacity-60">
+                        {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Daftar Sekarang <ArrowRight className="size-4" /></>}
+                      </button>
+                    </div>
                   )}
                 </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-[10px] sm:text-xs text-muted-foreground text-center">
-              <span>Data Diri</span>
-              <span>Essay</span>
-              <span>Review</span>
-            </div>
-          </div>
-
-          <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">
-            {step === 1 && <Step1 data={data} set={set} />}
-            {step === 2 && <Step2 data={data} set={set} />}
-            {step === 3 && <Step3 data={data} />}
-
-            <div className="mt-10 flex items-center justify-between gap-3">
-              {step > 1 ? (
-                <button onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="size-4" /> Kembali
-                </button>
-              ) : <span />}
-
-              {step < 3 ? (
-                <button onClick={next} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift">
-                  Lanjut <ArrowRight className="size-4" />
-                </button>
-              ) : (
-                <div className="flex flex-col gap-3 items-end w-full">
-                  <label className="flex items-start gap-2.5 text-sm cursor-pointer">
-                    <Checkbox checked={data.agree} onCheckedChange={(c) => set("agree", !!c)} className="mt-0.5" />
-                    <span className="text-muted-foreground">Saya menyetujui syarat & ketentuan program Safar Iman.</span>
-                  </label>
-                  <button onClick={submit} disabled={submitting} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-3.5 text-sm font-bold shadow-gold hover-lift disabled:opacity-60">
-                    {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim & Buat Twibbon <ArrowRight className="size-4" /></>}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </>
+          )}
         </main>
+      </div>
+    </div>
+  );
+}
+
+function SuccessCard({ code, name }: { code: string; name: string }) {
+  const copy = () => {
+    navigator.clipboard.writeText(code);
+    toast.success("Kode disalin");
+  };
+  return (
+    <div className="animate-fade-up">
+      <div className="text-center mb-8">
+        <div className="size-16 rounded-full bg-gradient-emerald grid place-items-center mx-auto mb-4 shadow-emerald">
+          <CheckCircle2 className="size-8 text-accent" />
+        </div>
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold">
+          Barakallah, <span className="text-gradient-gold">{name.split(" ")[0]}</span>!
+        </h1>
+        <p className="text-muted-foreground mt-3 max-w-md mx-auto">
+          Pendaftaranmu berhasil tercatat. Simpan <strong>Kode Pendaftaran</strong> di bawah ini —
+          kamu wajib memasukkannya saat mengirim berkas & essay.
+        </p>
+      </div>
+
+      <div className="bg-gradient-emerald rounded-3xl p-8 text-center shadow-emerald mb-8">
+        <div className="text-xs uppercase tracking-[0.3em] text-accent/80 mb-3">Kode Pendaftaran</div>
+        <div className="font-display text-4xl sm:text-6xl font-bold text-gradient-gold tracking-[0.2em] mb-4">
+          {code}
+        </div>
+        <button onClick={copy} className="inline-flex items-center gap-2 text-sm text-accent/90 hover:text-accent">
+          <Copy className="size-4" /> Salin Kode
+        </button>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
+          <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
+            <ImageIcon className="size-5 text-accent" />
+          </div>
+          <div>
+            <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+            <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
+          </div>
+        </Link>
+        <Link to="/berkas" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
+          <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
+            <FileText className="size-5 text-emerald-deep" />
+          </div>
+          <div>
+            <div className="font-display text-lg font-semibold">Kirim Berkas & Essay</div>
+            <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
+          </div>
+        </Link>
+      </div>
+
+      <div className="mt-8 text-center">
+        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Kembali ke Beranda</Link>
       </div>
     </div>
   );
@@ -195,7 +227,7 @@ function RegisterPage() {
 function StepHeader({ n, t, d }: { n: number; t: string; d: string }) {
   return (
     <div className="mb-7">
-      <div className="text-xs uppercase tracking-[0.3em] text-accent font-semibold">Step {n} / 3</div>
+      <div className="text-xs uppercase tracking-[0.3em] text-accent font-semibold">Step {n} / 2</div>
       <h2 className="font-display text-2xl sm:text-3xl font-semibold mt-1">{t}</h2>
       <p className="text-sm text-muted-foreground mt-1">{d}</p>
     </div>
@@ -252,29 +284,10 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
   );
 }
 
-function Step2({ data, set }: { data: FormData; set: <K extends keyof FormData>(k: K, v: FormData[K]) => void }) {
+function Step2Review({ data }: { data: FormData }) {
   return (
     <div>
-      <StepHeader n={2} t="Essay Singkat" d="Ceritakan visi dan dirimu — bagian terpenting dalam seleksi." />
-      <div className="grid gap-5">
-        <Field label="Kenapa kamu layak dipilih?">
-          <Textarea rows={4} value={data.essay_worthy} onChange={(e) => set("essay_worthy", e.target.value)} />
-        </Field>
-        <Field label="Apa impianmu setelah ke Tanah Suci?">
-          <Textarea rows={4} value={data.essay_dream} onChange={(e) => set("essay_dream", e.target.value)} />
-        </Field>
-        <Field label="Bagaimana kontribusimu untuk umat?">
-          <Textarea rows={4} value={data.essay_contribution} onChange={(e) => set("essay_contribution", e.target.value)} />
-        </Field>
-      </div>
-    </div>
-  );
-}
-
-function Step3({ data }: { data: FormData }) {
-  return (
-    <div>
-      <StepHeader n={3} t="Review & Submit" d="Periksa kembali data kamu sebelum mengirim." />
+      <StepHeader n={2} t="Review & Submit" d="Periksa kembali data kamu sebelum mengirim." />
       <div className="space-y-1 text-sm">
         <ReviewRow label="Nama" v={data.full_name} />
         <ReviewRow label="Email" v={data.email} />
@@ -286,8 +299,8 @@ function Step3({ data }: { data: FormData }) {
         <ReviewRow label="Pekerjaan" v={data.occupation} />
       </div>
       <div className="mt-6 rounded-2xl bg-accent/10 border border-accent/30 p-4 text-sm text-muted-foreground">
-        Setelah submit, kamu akan diarahkan ke halaman <strong className="text-foreground">Twibbon</strong> untuk
-        download frame & kirim bukti ke CP. Setelah itu baru upload <strong className="text-foreground">berkas program</strong>.
+        Setelah daftar, kamu akan mendapatkan <strong className="text-foreground">Kode Pendaftaran</strong>.
+        Gunakan kode itu untuk akses halaman <strong className="text-foreground">Kirim Berkas & Essay</strong>.
       </div>
     </div>
   );
