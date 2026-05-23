@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles, BookOpen, Utensils, Users } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles,
+  BookOpen, Utensils, Users, GraduationCap, MapPin,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -115,6 +118,53 @@ function DonasiPage() {
                 <div className="text-xs text-muted-foreground mt-1">{b.d}</div>
               </div>
             ))}
+          </div>
+
+          {/* Benefit included with donation */}
+          <div className="mb-8">
+            <div className="text-center mb-5">
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent font-bold bg-accent/10 px-3 py-1.5 rounded-full">
+                <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="bg-card border border-border rounded-2xl p-5 hover-lift">
+                <div className="size-11 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-3">
+                  <GraduationCap className="size-5 text-accent" />
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
+                <h4 className="font-display text-lg font-semibold mt-1 leading-snug">
+                  Fiqh Umrah Praktis: Dari Niat hingga Tahallul
+                </h4>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Panduan lengkap manasik umrah bersama ustadz pembimbing — dari persiapan hingga pulang. Termasuk e-sertifikat resmi.
+                </p>
+              </div>
+
+              <div className="bg-card border border-border rounded-2xl p-5 hover-lift">
+                <div className="size-11 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-3">
+                  <MapPin className="size-5 text-emerald-deep" />
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
+                <h4 className="font-display text-lg font-semibold mt-1 leading-snug">
+                  Jejak Cahaya: Makkah & Madinah
+                </h4>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi, pelajaran yang membekas.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 text-emerald" /> E-Sertifikat
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 text-emerald" /> Akses Rekaman Permanen
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 text-emerald" /> Akses Komunitas Alumni
+              </span>
+            </div>
           </div>
 
           {!info ? (
