@@ -97,12 +97,8 @@ function Hero() {
   const [panduanUrl, setPanduanUrl] = useState<string>("#program");
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("app_settings")
-        .select("value")
-        .eq("key", "panduan_url")
-        .maybeSingle();
-      if (data?.value) setPanduanUrl(data.value);
+      const { data } = await supabase.rpc("get_panduan_url");
+      if (data && typeof data === "string" && data.trim()) setPanduanUrl(data.trim());
     })();
   }, []);
   return (
