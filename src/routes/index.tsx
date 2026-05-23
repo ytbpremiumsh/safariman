@@ -550,6 +550,7 @@ function Landing() {
       <Nav />
       <main>
         <Hero />
+        <CountdownSection />
         <Benefits />
         <Quota />
         <Timeline />
