@@ -239,36 +239,59 @@ function AdminDashboard() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
           <Stat icon={<Users className="size-5" />} label="Total Peserta" value={stats.total} tint="emerald" />
           <Stat icon={<Clock className="size-5" />} label="Menunggu" value={stats.pending} tint="amber" />
           <Stat icon={<CheckCircle2 className="size-5" />} label="Diterima" value={stats.accepted} tint="emerald" />
           <Stat icon={<XCircle className="size-5" />} label="Ditolak" value={stats.rejected} tint="red" />
+          <Stat icon={<FileX className="size-5" />} label="Hanya Daftar" value={stats.registeredOnly} tint="amber" />
+          <Stat icon={<FileCheck className="size-5" />} label="Sudah Kirim Berkas" value={stats.submitted} tint="emerald" />
         </div>
 
-        {/* Filters */}
-        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, WA, kota..." className="pl-9" />
+        {/* Tabs + Filters */}
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {([
+              { key: "all", label: "Semua Peserta" },
+              { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
+              { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
+            ] as const).map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setDocFilter(t.key)}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                  docFilter === t.key
+                    ? "bg-emerald text-white border-emerald shadow-emerald"
+                    : "border-border bg-background hover:bg-secondary"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
-          <select value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Kategori</option>
-            <option value="fully_funded">Fully Funded</option>
-            <option value="partial_funded">Partial Funded</option>
-            <option value="self_funded">Self Funded</option>
-          </select>
-          <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="reviewed">Reviewed</option>
-            <option value="interview">Interview</option>
-            <option value="accepted">Accepted</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
-            <Download className="size-4" /> Export Excel
-          </button>
+          <div className="flex flex-col md:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, WA, kota..." className="pl-9" />
+            </div>
+            <select value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value="all">Semua Kategori</option>
+              <option value="fully_funded">Fully Funded</option>
+              <option value="partial_funded">Partial Funded</option>
+              <option value="self_funded">Self Funded</option>
+            </select>
+            <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value="all">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="interview">Interview</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
+              <Download className="size-4" /> Export Excel
+            </button>
+          </div>
         </div>
 
         {/* Table */}
