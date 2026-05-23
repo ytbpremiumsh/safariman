@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText, Instagram, CheckCircle2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText, Instagram, CheckCircle2, Upload, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
-import twibbonFrame from "@/assets/twibbon.png";
+import defaultFrame from "@/assets/twibbon.png";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const CP_WHATSAPP = "6281234567890";
@@ -15,37 +17,174 @@ const IG_ACCOUNTS = [
   { handle: "prestasikita", url: "https://instagram.com/prestasikita", label: "Prestasi Kita" },
 ];
 
+const EXPORT_SIZE = 1080;
+
 export const Route = createFileRoute("/twibbon")({
   head: () => ({
     meta: [
       { title: "Twibbon — Safar Iman" },
-      { name: "description", content: "Download twibbon Safar Iman, follow Instagram kami, posting di sosmed, lalu kirim ke CP." },
+      { name: "description", content: "Buat twibbon Safar Iman langsung di sini — upload foto, atur, lalu download." },
     ],
   }),
   component: TwibbonPage,
 });
 
 function TwibbonPage() {
-  const downloadTwibbon = async () => {
-    try {
-      const res = await fetch(twibbonFrame);
-      const blob = await res.blob();
+  const [frameUrl, setFrameUrl] = useState<string>(defaultFrame);
+  const [frameImg, setFrameImg] = useState<HTMLImageElement | null>(null);
+  const [photoImg, setPhotoImg] = useState<HTMLImageElement | null>(null);
+  const [scale, setScale] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
+  const [pinch, setPinch] = useState<{ dist: number; scale: number } | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // Load configurable frame URL
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("get_twibbon_frame_url");
+      if (data && typeof data === "string" && data.trim()) {
+        setFrameUrl(data.trim());
+      }
+    })();
+  }, []);
+
+  // Load frame image
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => setFrameImg(img);
+    img.onerror = () => {
+      // fallback to bundled default
+      const fb = new Image();
+      fb.onload = () => setFrameImg(fb);
+      fb.src = defaultFrame;
+    };
+    img.src = frameUrl;
+  }, [frameUrl]);
+
+  // Render canvas whenever inputs change
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    c.width = EXPORT_SIZE;
+    c.height = EXPORT_SIZE;
+    // background
+    ctx.fillStyle = "#0d3b2e";
+    ctx.fillRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+
+    if (photoImg) {
+      // base "cover" size
+      const ratio = photoImg.width / photoImg.height;
+      let baseW = EXPORT_SIZE;
+      let baseH = EXPORT_SIZE;
+      if (ratio > 1) baseW = EXPORT_SIZE * ratio; else baseH = EXPORT_SIZE / ratio;
+      const w = baseW * scale;
+      const h = baseH * scale;
+      const x = (EXPORT_SIZE - w) / 2 + pos.x;
+      const y = (EXPORT_SIZE - h) / 2 + pos.y;
+      ctx.drawImage(photoImg, x, y, w, h);
+    } else {
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.fillRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.font = "600 36px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Upload foto kamu di sini", EXPORT_SIZE / 2, EXPORT_SIZE / 2 - 10);
+      ctx.font = "400 22px system-ui, sans-serif";
+      ctx.fillText("Lalu atur posisi & zoom", EXPORT_SIZE / 2, EXPORT_SIZE / 2 + 30);
+    }
+
+    if (frameImg) {
+      ctx.drawImage(frameImg, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+    }
+  }, [frameImg, photoImg, scale, pos]);
+
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) { toast.error("File harus berupa gambar"); return; }
+    if (f.size > 10 * 1024 * 1024) { toast.error("Maks 10MB"); return; }
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      setPhotoImg(img);
+      setScale(1);
+      setPos({ x: 0, y: 0 });
+      toast.success("Foto siap — atur posisi & zoom");
+    };
+    img.onerror = () => toast.error("Gagal membaca gambar");
+    img.src = url;
+  };
+
+  const reset = () => { setScale(1); setPos({ x: 0, y: 0 }); };
+
+  const download = () => {
+    const c = canvasRef.current;
+    if (!c) return;
+    if (!photoImg) { toast.error("Upload foto kamu dulu"); return; }
+    c.toBlob((blob) => {
+      if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "safar-iman-twibbon.png";
+      a.download = "twibbon-safar-iman.png";
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
       toast.success("Twibbon berhasil didownload!");
-    } catch {
-      toast.error("Gagal download. Coba lagi.");
+    }, "image/png");
+  };
+
+  // Drag / pinch handlers (in CSS px → convert to canvas px via ratio)
+  const ratio = () => {
+    const c = canvasRef.current;
+    if (!c) return 1;
+    return EXPORT_SIZE / c.getBoundingClientRect().width;
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!photoImg) return;
+    (e.target as Element).setPointerCapture(e.pointerId);
+    setDrag({ x: e.clientX, y: e.clientY, px: pos.x, py: pos.y });
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!drag) return;
+    const r = ratio();
+    setPos({ x: drag.px + (e.clientX - drag.x) * r, y: drag.py + (e.clientY - drag.y) * r });
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    setDrag(null);
+    try { (e.target as Element).releasePointerCapture(e.pointerId); } catch {}
+  };
+  const onWheel = (e: React.WheelEvent) => {
+    if (!photoImg) return;
+    e.preventDefault();
+    const delta = -e.deltaY * 0.0015;
+    setScale((s) => Math.min(5, Math.max(0.3, s + delta)));
+  };
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      setPinch({ dist: Math.hypot(dx, dy), scale });
     }
   };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinch) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const d = Math.hypot(dx, dy);
+      setScale(Math.min(5, Math.max(0.3, pinch.scale * (d / pinch.dist))));
+    }
+  };
+  const onTouchEnd = () => setPinch(null);
 
   const waMessage = encodeURIComponent(
     `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Jazakallahu khairan 🙏`
   );
-
   const copyMessage = async () => {
     await navigator.clipboard.writeText(decodeURIComponent(waMessage));
     toast.success("Pesan disalin!");
@@ -70,86 +209,131 @@ function TwibbonPage() {
           <div className="text-center mb-10 animate-fade-up">
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Yuk Bikin <span className="text-gradient-gold">Twibbon</span>mu
+              Bikin <span className="text-gradient-gold">Twibbon</span> Otomatis
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Ikuti 4 langkah mudah di bawah. Terbuka untuk siapa saja — tidak perlu mendaftar dulu.
+              Upload fotomu, atur posisi & zoom — frame menyesuaikan otomatis. Lalu download dan share.
             </p>
           </div>
 
-          {/* Twibbon preview + download */}
           <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start mb-8">
-            <div className="lg:col-span-2 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up lg:sticky lg:top-24">
-              <div className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald">
-                <img src={twibbonFrame} alt="Twibbon Safar Iman" className="size-full object-cover" width={1024} height={1024} loading="lazy" />
-              </div>
-              <button
-                onClick={downloadTwibbon}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3.5 text-sm font-semibold shadow-emerald hover-lift"
+            {/* Composer */}
+            <div className="lg:col-span-3 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
+              <div
+                className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none"
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerCancel={onPointerUp}
+                onWheel={onWheel}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                style={{ cursor: photoImg ? (drag ? "grabbing" : "grab") : "default" }}
               >
-                <Download className="size-4" /> Download Twibbon
-              </button>
+                <canvas ref={canvasRef} className="size-full block" />
+              </div>
+
+              {/* Controls */}
+              <div className="mt-4 space-y-3">
+                <input ref={fileRef} type="file" accept="image/*" onChange={onPickFile} className="hidden" />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-3 text-sm font-semibold shadow-emerald hover-lift"
+                  >
+                    <Upload className="size-4" /> {photoImg ? "Ganti Foto" : "Upload Foto"}
+                  </button>
+                  <button
+                    onClick={download}
+                    disabled={!photoImg}
+                    className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 text-sm font-bold shadow-gold hover-lift disabled:opacity-50"
+                  >
+                    <Download className="size-4" /> Download Twibbon
+                  </button>
+                </div>
+
+                {photoImg && (
+                  <div className="flex items-center gap-3 rounded-2xl bg-secondary/60 border border-border px-4 py-3">
+                    <ZoomOut className="size-4 text-muted-foreground shrink-0" />
+                    <input
+                      type="range"
+                      min={0.3}
+                      max={5}
+                      step={0.01}
+                      value={scale}
+                      onChange={(e) => setScale(parseFloat(e.target.value))}
+                      className="flex-1 accent-emerald"
+                    />
+                    <ZoomIn className="size-4 text-muted-foreground shrink-0" />
+                    <button
+                      onClick={reset}
+                      className="ml-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                      title="Reset posisi"
+                    >
+                      <RotateCcw className="size-3.5" /> Reset
+                    </button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground text-center">
+                  Geser foto untuk memindahkan • scroll / pinch / slider untuk zoom
+                </p>
+              </div>
             </div>
 
             {/* Steps */}
-            <div className="lg:col-span-3 space-y-4">
-              <Step n={1} title="Download Twibbon" icon={<Download className="size-5" />}>
-                Klik tombol <strong className="text-foreground">"Download Twibbon"</strong> di samping untuk menyimpan frame ke perangkatmu.
+            <div className="lg:col-span-2 space-y-4">
+              <Step n={1} title="Upload Foto" icon={<ImageIcon className="size-5" />}>
+                Pilih foto terbaikmu. Frame Safar Iman akan otomatis menyesuaikan.
               </Step>
 
-              <Step n={2} title="Pasang Fotomu" icon={<ImageIcon className="size-5" />}>
-                Buka di aplikasi edit foto (Canva / PicsArt / Photoshop). Letakkan fotomu di area tengah frame.
-              </Step>
-
-              <Step n={3} title="Wajib Follow Instagram Kami" icon={<Instagram className="size-5" />} highlight>
+              <Step n={2} title="Wajib Follow Instagram" icon={<Instagram className="size-5" />} highlight>
                 <p className="mb-3">
-                  Sebelum lanjut, pastikan kamu sudah <strong className="text-foreground">follow keempat akun Instagram</strong> resmi berikut:
+                  Sebelum download, pastikan kamu sudah <strong className="text-foreground">follow keempat akun</strong> berikut:
                 </p>
-                <div className="grid sm:grid-cols-2 gap-2">
+                <div className="grid gap-2">
                   {IG_ACCOUNTS.map((acc) => (
                     <a
                       key={acc.handle}
                       href={acc.url}
                       target="_blank" rel="noopener noreferrer"
-                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2 transition-colors"
                     >
-                      <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
-                        <Instagram className="size-4" />
+                      <div className="size-7 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                        <Instagram className="size-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[11px] text-muted-foreground leading-tight">{acc.label}</div>
-                        <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                        <div className="text-[10px] text-muted-foreground leading-tight">{acc.label}</div>
+                        <div className="text-xs font-semibold text-foreground truncate">@{acc.handle}</div>
                       </div>
-                      <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                      <ArrowRight className="size-3 text-muted-foreground group-hover:text-foreground shrink-0" />
                     </a>
                   ))}
                 </div>
                 <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
                   <CheckCircle2 className="size-3.5 text-emerald shrink-0 mt-0.5" />
-                  <span>Screenshot bukti follow akan diminta CP saat verifikasi.</span>
+                  <span>Bukti follow akan diminta CP saat verifikasi.</span>
                 </div>
               </Step>
 
-              <Step n={4} title="Posting & Kirim Bukti ke CP" icon={<Sparkles className="size-5" />}>
+              <Step n={3} title="Posting & Kirim ke CP" icon={<Sparkles className="size-5" />}>
                 <p>
-                  Upload twibbon di feed/story Instagram dengan caption dakwah. Tag{" "}
-                  <strong className="text-foreground">@safariman.id</strong> & hashtag{" "}
-                  <strong className="text-foreground">#SafarIman #UmrahGratisBerprestasi</strong>.
+                  Upload di feed/story, tag <strong className="text-foreground">@safariman.id</strong> + hashtag{" "}
+                  <strong className="text-foreground">#SafarIman</strong>. Lalu kirim ke {CP_NAME}.
                 </p>
-                <p className="mt-2">Lalu screenshot postingan + bukti follow, kirim ke {CP_NAME} via WhatsApp.</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
                     href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold shadow-gold hover-lift"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-xs font-bold shadow-gold hover-lift"
                   >
-                    <MessageCircle className="size-4" /> Chat CP
+                    <MessageCircle className="size-3.5" /> Chat CP
                   </a>
                   <button
                     onClick={copyMessage}
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium hover:bg-secondary"
                   >
-                    <Copy className="size-4" /> Salin Pesan
+                    <Copy className="size-3.5" /> Salin Pesan
                   </button>
                 </div>
               </Step>
@@ -170,14 +354,14 @@ function TwibbonPage() {
 
 function Step({ n, title, icon, children, highlight }: { n: number; title: string; icon: React.ReactNode; children: React.ReactNode; highlight?: boolean }) {
   return (
-    <div className={`bg-card border rounded-2xl p-5 shadow-soft flex gap-4 animate-fade-up ${highlight ? "border-accent/40 ring-1 ring-accent/20" : "border-border"}`}>
-      <div className="size-11 shrink-0 rounded-xl bg-gradient-emerald grid place-items-center text-accent shadow-emerald">
+    <div className={`bg-card border rounded-2xl p-4 shadow-soft flex gap-3 animate-fade-up ${highlight ? "border-accent/40 ring-1 ring-accent/20" : "border-border"}`}>
+      <div className="size-10 shrink-0 rounded-xl bg-gradient-emerald grid place-items-center text-accent shadow-emerald">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-[10px] uppercase tracking-[0.25em] text-accent font-semibold">Langkah {n}</div>
-        <h3 className="font-display text-lg font-semibold mt-0.5">{title}</h3>
-        <div className="text-sm text-muted-foreground mt-2 leading-relaxed">{children}</div>
+        <h3 className="font-display text-base font-semibold mt-0.5">{title}</h3>
+        <div className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{children}</div>
       </div>
     </div>
   );
