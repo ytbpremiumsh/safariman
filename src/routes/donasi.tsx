@@ -229,10 +229,14 @@ function DonasiPage() {
                 </div>
               ) : (
                 <>
-                  <div className="rounded-2xl bg-gradient-emerald p-5 text-center">
-                    <div className="text-accent/80 text-xs uppercase tracking-[0.25em] mb-1">Selamat, kamu lolos berkas!</div>
-                    <div className="font-display text-white text-xl">Selangkah lagi menuju tahap Essay</div>
-                    <p className="text-accent/90 text-xs mt-2 leading-relaxed">
+                  <div className="rounded-2xl bg-gradient-emerald p-6 sm:p-8 text-center">
+                    <div className="text-accent text-sm sm:text-base uppercase tracking-[0.2em] font-bold mb-3">
+                      Selamat, kamu lolos berkas!
+                    </div>
+                    <div className="font-display text-white text-2xl sm:text-3xl leading-snug">
+                      Selangkah lagi menuju tahap Essay
+                    </div>
+                    <p className="text-accent/95 text-base sm:text-lg mt-4 leading-relaxed font-medium">
                       Tunaikan donasi terlebih dahulu untuk membuka akses ke tahap penulisan Essay.
                     </p>
                   </div>
@@ -245,10 +249,17 @@ function DonasiPage() {
                       <><HeartHandshake className="size-5" /> {info.payment_url ? "Lanjutkan Donasi" : "Tunaikan Donasi"} <ArrowRight className="size-4" /></>
                     )}
                   </button>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Donasi diproses aman melalui Mayar.
-
-                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <ShieldCheck className="size-4 text-emerald" /> Pembayaran Aman
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Lock className="size-3.5 text-emerald" /> Terenkripsi SSL
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <CheckCircle2 className="size-4 text-emerald" /> Diproses oleh Mayar
+                    </span>
+                  </div>
                 </>
               )}
             </div>
