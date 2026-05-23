@@ -51,6 +51,10 @@ export type Database = {
           id: string
           occupation: string
           organization_experience: string | null
+          paid_at: string | null
+          payment_invoice_id: string | null
+          payment_status: string
+          payment_url: string | null
           photo_url: string | null
           reason: string | null
           registration_code: string
@@ -78,6 +82,10 @@ export type Database = {
           id?: string
           occupation: string
           organization_experience?: string | null
+          paid_at?: string | null
+          payment_invoice_id?: string | null
+          payment_status?: string
+          payment_url?: string | null
           photo_url?: string | null
           reason?: string | null
           registration_code?: string
@@ -105,6 +113,10 @@ export type Database = {
           id?: string
           occupation?: string
           organization_experience?: string | null
+          paid_at?: string | null
+          payment_invoice_id?: string | null
+          payment_status?: string
+          payment_url?: string | null
           photo_url?: string | null
           reason?: string | null
           registration_code?: string
@@ -160,6 +172,18 @@ export type Database = {
           id: string
         }[]
       }
+      lookup_payment_status_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          full_name: string
+          id: string
+          paid_at: string
+          payment_status: string
+          payment_url: string
+          status: Database["public"]["Enums"]["participant_status"]
+        }[]
+      }
+      mark_payment_paid: { Args: { p_invoice_id: string }; Returns: boolean }
       register_participant:
         | {
             Args: {
@@ -196,6 +220,10 @@ export type Database = {
               registration_code: string
             }[]
           }
+      save_payment_invoice: {
+        Args: { p_code: string; p_invoice_id: string; p_url: string }
+        Returns: boolean
+      }
       submit_berkas_by_code:
         | {
             Args: {
