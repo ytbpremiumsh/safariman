@@ -25,6 +25,9 @@ function PengaturanPage() {
 
   const [webhookUrl, setWebhookUrl] = useState("");
 
+  const [panduanUrl, setPanduanUrl] = useState("");
+  const [savingPanduan, setSavingPanduan] = useState(false);
+
   useEffect(() => {
     if (!ready) return;
     (async () => {
