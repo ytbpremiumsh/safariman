@@ -67,6 +67,7 @@ function AdminDashboard() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [status, setStatus] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
+  const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">("all");
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
   const [templates, setTemplates] = useState<Record<string, string>>({});
