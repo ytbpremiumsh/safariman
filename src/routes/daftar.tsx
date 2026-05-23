@@ -86,6 +86,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         p_education: parsed.data.education,
         p_occupation: parsed.data.occupation,
         p_category: kind,
+        p_instagram: parsed.data.instagram.replace(/^@/, ""),
       });
       if (error) throw error;
       const row = rows?.[0];
