@@ -187,7 +187,7 @@ function AdminDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Stat icon={<Users className="size-5" />} label="Total Peserta" value={stats.total} tint="emerald" />
           <Stat icon={<Clock className="size-5" />} label="Menunggu" value={stats.pending} tint="amber" />
-          <Stat icon={<CheckCircle2 className="size-5" />} label="Disetujui" value={stats.approved} tint="emerald" />
+          <Stat icon={<CheckCircle2 className="size-5" />} label="Diterima" value={stats.accepted} tint="emerald" />
           <Stat icon={<XCircle className="size-5" />} label="Ditolak" value={stats.rejected} tint="red" />
         </div>
 
