@@ -60,10 +60,10 @@ export function RegisterPage({ kind }: { kind: Kind }) {
     const r = schema.safeParse(data);
     if (!r.success) { toast.error(r.error.issues[0].message); return; }
     setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const back = () => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const back = () => { setStep(1); };
+
 
   const submit = async () => {
     if (!data.agree) { toast.error("Harap setujui syarat & ketentuan"); return; }
