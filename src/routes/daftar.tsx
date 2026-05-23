@@ -123,6 +123,15 @@ export function RegisterPage({ kind }: { kind: Kind }) {
             <SuccessCard code={code} name={data.full_name} />
           ) : (
             <>
+              <div className="rounded-2xl border border-accent/40 bg-accent/10 p-4 sm:p-5 mb-8 flex items-start gap-3 animate-fade-up">
+                <div className={`size-10 rounded-xl grid place-items-center shrink-0 ${kind === "self_funded" ? "bg-emerald/15 text-emerald" : "bg-gradient-gold text-emerald-deep"}`}>
+                  <Sparkles className="size-5" />
+                </div>
+                <div className="text-sm">
+                  <div className="font-display text-lg font-semibold">{KIND_META.title}</div>
+                  <p className="text-muted-foreground">{KIND_META.note} {kind === "self_funded" ? <>Mau jalur Reguler? <Link to="/daftar" className="text-accent underline">Klik di sini</Link>.</> : <>Pilih jalur Mandiri? <Link to="/daftar-mandiri" className="text-accent underline">Klik di sini</Link>.</>}</p>
+                </div>
+              </div>
               <div className="mb-10">
                 <div className="flex items-center justify-between mb-3">
                   {[1, 2].map((n) => (
