@@ -94,6 +94,13 @@ function BerkasPage() {
       if (e3) throw e3;
       if (!ok) throw new Error("Kode tidak valid");
 
+      // Auto-kirim notifikasi WhatsApp konfirmasi berkas diterima
+      fetch("/api/public/wa-notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "berkas", code: code.trim().toUpperCase() }),
+      }).catch(() => {});
+
       toast.success("Berkas & essay terkirim. Barakallah!");
       navigate({ to: "/sukses" });
     } catch (e) {
@@ -150,9 +157,9 @@ function BerkasPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && verify()}
-                placeholder="CONTOH: A1B2C3D4"
-                className="text-center font-display text-2xl tracking-[0.3em] h-14"
-                maxLength={12}
+                placeholder="CONTOH: HXP-A1B2C3D4"
+                className="text-center font-display text-xl tracking-[0.2em] h-14"
+                maxLength={16}
               />
               <button
                 onClick={verify}

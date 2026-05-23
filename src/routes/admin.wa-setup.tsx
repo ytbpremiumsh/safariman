@@ -11,11 +11,12 @@ export const Route = createFileRoute("/admin/wa-setup")({
   component: WaSetupPage,
 });
 
-const TEMPLATE_KEYS = ["wa_template_pendaftaran", "wa_template_lolos", "wa_template_ditolak", "wa_template_custom"] as const;
+const TEMPLATE_KEYS = ["wa_template_pendaftaran", "wa_template_berkas", "wa_template_lolos", "wa_template_ditolak", "wa_template_custom"] as const;
 type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 const TEMPLATE_META: Record<TemplateKey, { title: string; desc: string }> = {
-  wa_template_pendaftaran: { title: "Notifikasi Pendaftaran", desc: "Dikirim saat peserta baru mendaftar." },
+  wa_template_pendaftaran: { title: "Notifikasi Pendaftaran", desc: "Dikirim otomatis saat peserta baru selesai mendaftar." },
+  wa_template_berkas: { title: "Notifikasi Berkas Diterima", desc: "Dikirim otomatis saat peserta selesai mengirim berkas & essay." },
   wa_template_lolos: { title: "Notifikasi Lolos", desc: "Dikirim saat peserta dinyatakan diterima." },
   wa_template_ditolak: { title: "Notifikasi Ditolak", desc: "Dikirim saat peserta tidak lolos." },
   wa_template_custom: { title: "Template Custom", desc: "Template bebas yang bisa dipakai admin sewaktu-waktu." },
@@ -27,7 +28,7 @@ function WaSetupPage() {
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
   const [tpl, setTpl] = useState<Record<TemplateKey, string>>({
-    wa_template_pendaftaran: "", wa_template_lolos: "", wa_template_ditolak: "", wa_template_custom: "",
+    wa_template_pendaftaran: "", wa_template_berkas: "", wa_template_lolos: "", wa_template_ditolak: "", wa_template_custom: "",
   });
   const [saving, setSaving] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
@@ -49,6 +50,7 @@ function WaSetupPage() {
       setSender(map.mpwa_sender ?? "");
       setTpl({
         wa_template_pendaftaran: map.wa_template_pendaftaran ?? "",
+        wa_template_berkas: map.wa_template_berkas ?? "",
         wa_template_lolos: map.wa_template_lolos ?? "",
         wa_template_ditolak: map.wa_template_ditolak ?? "",
         wa_template_custom: map.wa_template_custom ?? "",
