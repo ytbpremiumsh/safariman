@@ -44,12 +44,12 @@ export function Countdown() {
       {items.map((i) => (
         <div
           key={i.l}
-          className="glass rounded-2xl px-4 py-3 sm:px-6 sm:py-4 min-w-[68px] sm:min-w-[88px] text-center"
+          className="bg-gradient-emerald border border-accent/30 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 min-w-[72px] sm:min-w-[96px] text-center shadow-emerald"
         >
-          <div className="font-display text-3xl sm:text-5xl font-semibold text-gradient-gold tabular-nums">
+          <div className="font-display text-3xl sm:text-5xl font-semibold text-gradient-gold tabular-nums leading-none">
             {String(i.v).padStart(2, "0")}
           </div>
-          <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/70 mt-1">
+          <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-accent/90 mt-2 font-medium">
             {i.l}
           </div>
         </div>
