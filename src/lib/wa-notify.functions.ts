@@ -75,7 +75,7 @@ export const notifyWaEvent = createServerFn({ method: "POST" })
       nama: p.full_name,
       kode: p.registration_code,
       kategori: KATEGORI_LABEL[p.category ?? ""] ?? (p.category ?? "-"),
-      status: event === "pendaftaran" ? "Terdaftar" : "Berkas Lengkap",
+      status: event === "pendaftaran" ? "Terdaftar" : event === "berkas" ? "Berkas Lengkap" : "Essay Lengkap",
     });
 
     const number = normalizeNumber(p.whatsapp);
