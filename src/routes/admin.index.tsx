@@ -271,6 +271,31 @@ function AdminDashboard() {
           <Stat icon={<FileCheck className="size-5" />} label="Sudah Kirim Berkas" value={stats.submitted} tint="emerald" />
         </div>
 
+        {/* Countdown setting */}
+        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row md:items-end gap-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="size-4 text-accent" />
+              <div className="font-semibold text-sm">Waktu Penutupan Pendaftaran (Countdown Landing)</div>
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">Tanggal & waktu ini akan ditampilkan pada countdown di halaman utama.</p>
+            <Input
+              type="datetime-local"
+              value={countdownTarget}
+              onChange={(e) => setCountdownTarget(e.target.value)}
+              className="max-w-xs"
+            />
+          </div>
+          <button
+            onClick={saveCountdown}
+            disabled={savingCountdown}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingCountdown ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+            Simpan Countdown
+          </button>
+        </div>
+
         {/* Tabs + Filters */}
         <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
           <div className="flex flex-wrap gap-2">
