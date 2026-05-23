@@ -104,10 +104,11 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3 mb-10">
+          <div className="grid sm:grid-cols-3 gap-3 mb-10">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Setiap mushaf yang dibagikan menjadi amal jariyah." },
-              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan." },
+              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
+              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
+              { i: Users, t: "Operasional Program", d: "Menjaga keberlangsungan kegiatan dan ekosistem komunitas." },
             ].map((b) => (
               <div key={b.t} className="rounded-2xl bg-card border border-border p-5">
                 <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
@@ -154,18 +155,6 @@ function DonasiPage() {
                 </p>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col sm:col-span-2">
-                <div className="size-12 rounded-xl bg-emerald/10 grid place-items-center mb-4">
-                  <Users className="size-6 text-emerald" />
-                </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Operasional Program</div>
-                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
-                  Dukungan Keberlangsungan Safar Iman
-                </h4>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Kontribusi ini turut menjaga keberlangsungan kegiatan, pembimbingan, dan ekosistem komunitas Safar Iman bagi generasi berikutnya.
-                </p>
-              </div>
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
