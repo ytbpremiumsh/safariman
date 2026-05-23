@@ -38,10 +38,16 @@ function SuccessPage() {
         </p>
 
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
+          <Link
+            to="/donasi"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 font-bold shadow-gold hover-lift"
+          >
+            Lanjut ke Kontribusi <ArrowRight className="size-5" />
+          </Link>
           <a
             href="https://wa.me/6281234567890"
             target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 font-bold shadow-gold hover-lift"
+            className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 font-medium hover:bg-white/20"
           >
             <MessageCircle className="size-5" /> Gabung Grup WhatsApp
           </a>
