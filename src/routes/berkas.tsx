@@ -9,16 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 
-type Cat = "fully_funded" | "partial_funded" | "self_funded";
-
-const CATS: { v: Cat; t: string; d: string }[] = [
-  { v: "fully_funded", t: "Fully Funded", d: "Gratis total — 3 kuota" },
-  { v: "partial_funded", t: "Partial Funded", d: "Subsidi Rp2.000.000 — 30 kuota" },
-  { v: "self_funded", t: "Self Funded", d: "Jalur mandiri — 10 kuota" },
-];
-
 const essaySchema = z.object({
-  category: z.enum(["fully_funded", "partial_funded", "self_funded"]),
   essay_worthy: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
   essay_dream: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
   essay_contribution: z.string().trim().min(50, "Essay minimal 50 karakter").max(3000),
@@ -43,7 +34,6 @@ function BerkasPage() {
   const [participant, setParticipant] = useState<Participant | null>(null);
 
   const [d, setD] = useState({
-    category: "" as Cat | "",
     essay_worthy: "", essay_dream: "", essay_contribution: "",
   });
   const [cv, setCv] = useState<File | null>(null);
