@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen } from "lucide-react";
+import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,14 @@ function PengaturanPage() {
   const [savingMayar, setSavingMayar] = useState(false);
 
   const [webhookUrl, setWebhookUrl] = useState("");
+  const [mpwaWebhookUrl, setMpwaWebhookUrl] = useState("");
 
   const [panduanUrl, setPanduanUrl] = useState("");
   const [savingPanduan, setSavingPanduan] = useState(false);
+
+  const [mayarWebhookSecret, setMayarWebhookSecret] = useState("");
+  const [mpwaWebhookSecret, setMpwaWebhookSecret] = useState("");
+  const [savingSecrets, setSavingSecrets] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -45,8 +50,11 @@ function PengaturanPage() {
       setMayarAmount(map.mayar_donation_amount ?? "150000");
       setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
       setPanduanUrl(map.panduan_url ?? "");
+      setMayarWebhookSecret(map.mayar_webhook_secret ?? "");
+      setMpwaWebhookSecret(map.mpwa_webhook_secret ?? "");
       if (typeof window !== "undefined") {
         setWebhookUrl(`${window.location.origin}/api/public/mayar-webhook`);
+        setMpwaWebhookUrl(`${window.location.origin}/api/public/mpwa-webhook`);
       }
       setLoading(false);
     })();
