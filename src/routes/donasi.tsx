@@ -239,11 +239,12 @@ function DonasiPage() {
                     className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
                   >
                     {paying ? <><Loader2 className="size-4 animate-spin" /> Memproses...</> : (
-                      <><HeartHandshake className="size-5" /> {info.payment_url ? "Lanjutkan Pembayaran" : "Tunaikan Kontribusi"} <ArrowRight className="size-4" /></>
+                      <><HeartHandshake className="size-5" /> {info.payment_url ? "Lanjutkan Donasi" : "Tunaikan Donasi"} <ArrowRight className="size-4" /></>
                     )}
                   </button>
                   <p className="text-xs text-muted-foreground text-center">
-                    Pembayaran diproses aman melalui Mayar.
+                    Donasi diproses aman melalui Mayar.
+
                   </p>
                 </>
               )}
