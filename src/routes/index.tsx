@@ -145,12 +145,7 @@ function Hero() {
             </a>
           </div>
 
-          <div className="mt-12 sm:mt-16 animate-fade-up" style={{ animationDelay: "0.4s" }}>
-            <p className="text-white/70 text-xs uppercase tracking-[0.3em] mb-4 text-center sm:text-left">
-              Pendaftaran ditutup dalam
-            </p>
-            <Countdown />
-          </div>
+          {/* countdown moved to its own section above Program Benefit */}
         </div>
       </div>
 
