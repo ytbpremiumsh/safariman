@@ -131,21 +131,28 @@ function AdminDashboard() {
     setLoading(false);
   };
 
+  const hasSubmittedDocs = (p: Participant) =>
+    !!(p.cv_url || p.photo_url || p.essay_worthy || p.essay_dream || p.essay_contribution);
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
       if (cat !== "all" && r.category !== cat) return false;
       if (status !== "all" && r.status !== status) return false;
+      if (docFilter === "registered" && hasSubmittedDocs(r)) return false;
+      if (docFilter === "submitted" && !hasSubmittedDocs(r)) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city].some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, cat, status]);
+  }, [rows, q, cat, status, docFilter]);
 
   const stats = useMemo(() => ({
     total: rows.length,
     pending: rows.filter((r) => r.status === "pending").length,
     accepted: rows.filter((r) => r.status === "accepted").length,
     rejected: rows.filter((r) => r.status === "rejected").length,
+    registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
+    submitted: rows.filter((r) => hasSubmittedDocs(r)).length,
   }), [rows]);
 
   const exportExcel = () => {
