@@ -126,7 +126,11 @@ function DonasiPage() {
               <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent font-bold bg-accent/10 px-3 py-1.5 rounded-full">
                 <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
               </span>
+              <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Sebagai bentuk terima kasih, seluruh peserta yang turut berkontribusi juga kami persembahkan akses penuh ke program pembelajaran berikut.
+              </p>
             </div>
+
 
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col">
