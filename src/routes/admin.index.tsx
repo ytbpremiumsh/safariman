@@ -383,15 +383,13 @@ function AdminDashboard() {
                   className="w-full min-h-[90px] rounded-md border border-input bg-background p-3 text-sm"
                 />
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nTerima kasih telah mendaftar program SAFAR IMAN ✨\nStatus pendaftaranmu saat ini: *${detail.status.toUpperCase()}*.\n\nMohon pantau email & WA untuk info selanjutnya.\n\nBarakallahu fiik 🤲`)}
-                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
-                  >Template Status</button>
-                  <button
-                    onClick={() => setWaMsg(`Assalamu'alaikum ${detail.full_name},\n\nSelamat! 🎉 Kamu LOLOS seleksi program SAFAR IMAN.\nSilakan menunggu info teknis selanjutnya dari panitia.\n\nBarakallahu fiik 🤲`)}
-                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary"
-                  >Template Lolos</button>
-                  <button
+                  {(["pendaftaran","lolos","ditolak","custom"] as const).map((k) => (
+                    <button
+                      key={k}
+                      onClick={() => setWaMsg(fillTemplate(templates[k] ?? "", detail))}
+                      className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary capitalize"
+                    >Template {k}</button>
+                  ))}
                     disabled={waSending || !waMsg.trim()}
                     onClick={() => sendWa(detail.whatsapp, waMsg)}
                     className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold disabled:opacity-50 hover:bg-emerald-deep"
