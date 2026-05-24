@@ -126,7 +126,7 @@ function DonasiPage() {
           {/* Benefit included with donation */}
           <div className="mb-10">
             <div className="text-center mb-6">
-              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent font-bold bg-accent/10 px-3 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-bold bg-gradient-emerald px-4 py-2 rounded-full shadow-emerald">
                 <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
               </span>
               <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
