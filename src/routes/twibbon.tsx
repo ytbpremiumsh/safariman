@@ -281,6 +281,7 @@ function TwibbonPage() {
                 </p>
               </div>
             </div>
+            </div>
 
             {/* Steps */}
             <div className="lg:col-span-2 space-y-4">
