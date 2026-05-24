@@ -98,6 +98,29 @@ function Nav() {
   );
 }
 
+function Typewriter({ text, speed = 110 }: { text: string; speed?: number }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    setI(0);
+    const id = setInterval(() => {
+      setI((n) => {
+        if (n >= text.length) {
+          clearInterval(id);
+          return n;
+        }
+        return n + 1;
+      });
+    }, speed);
+    return () => clearInterval(id);
+  }, [text, speed]);
+  return (
+    <span>
+      {text.slice(0, i)}
+      <span className="inline-block w-[0.08em] -mb-[0.05em] h-[0.9em] align-middle bg-current ml-1 animate-pulse" />
+    </span>
+  );
+}
+
 function Hero() {
   const [panduanUrl, setPanduanUrl] = useState<string>("#program");
   useEffect(() => {
