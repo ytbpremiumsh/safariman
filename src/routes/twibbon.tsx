@@ -154,7 +154,7 @@ function TwibbonPage() {
   const ratio = () => {
     const c = canvasRef.current;
     if (!c) return 1;
-    return EXPORT_SIZE / c.getBoundingClientRect().width;
+    return EW / c.getBoundingClientRect().width;
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
