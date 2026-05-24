@@ -147,64 +147,107 @@ function Hero() {
       <div className="absolute bottom-40 right-10 size-40 rounded-full bg-emerald/30 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-32 pb-16 w-full">
-        <div className="max-w-4xl">
-          {/* Exclusive eyebrow ornament */}
-          <div className="flex items-center gap-3 mb-6 animate-fade-up">
-            <span className="h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
-            <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.45em] font-medium">
-              Safar Iman · Exclusive Edition
-            </span>
-            <span className="h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* LEFT: copy */}
+          <div className="lg:col-span-7">
+            {/* Exclusive eyebrow ornament */}
+            <div className="flex items-center gap-3 mb-6 animate-fade-up">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
+              <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.45em] font-medium">
+                Safar Iman · Exclusive Edition
+              </span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
+            </div>
+
+            <h1
+              className="font-display font-semibold text-white leading-[0.98] animate-fade-up tracking-tight"
+              style={{ animationDelay: "0.1s" }}
+            >
+              <span className="block text-5xl sm:text-7xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white">
+                Safar Iman
+              </span>
+              <span className="block mt-3 text-4xl sm:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.1em]">
+                <Typewriter text="Umrah Gratis" />
+              </span>
+            </h1>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+              <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 border border-accent/40 text-accent px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+                ✦ 100% Fully Funded
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald/20 border border-emerald/40 text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+                ✦ Tanpa Dipungut Biaya
+              </span>
+            </div>
+
+            <p
+              className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl leading-relaxed animate-fade-up"
+              style={{ animationDelay: "0.2s" }}
+            >
+              Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
+              bagi anak muda Indonesia — pengalaman Umrah, Leadership, dan Seminar Internasional
+              yang sepenuhnya dibiayai, tanpa biaya pendaftaran sepeser pun.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+              <Link
+                to="/daftar"
+                className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
+              >
+                Daftar Sekarang
+                <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <a
+                href={panduanUrl}
+                {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors border border-white/20"
+              >
+                Panduan
+              </a>
+            </div>
           </div>
 
-          <h1
-            className="font-display font-semibold text-white leading-[0.98] animate-fade-up tracking-tight"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <span className="block text-5xl sm:text-7xl lg:text-8xl xl:text-[6rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white">
-              Safar Iman
-            </span>
-            <span className="block mt-3 text-4xl sm:text-6xl lg:text-7xl xl:text-[5rem] text-gradient-gold min-h-[1.1em]">
-              <Typewriter text="Umrah Gratis" />
-            </span>
-          </h1>
+          {/* RIGHT: stacked image collage */}
+          <div className="lg:col-span-5 hidden lg:block animate-fade-up" style={{ animationDelay: "0.25s" }}>
+            <div className="relative aspect-[4/5] w-full max-w-md ml-auto">
+              {/* gold frame glow */}
+              <div className="absolute -inset-3 rounded-[2rem] bg-gradient-gold opacity-20 blur-2xl" />
 
-          <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
-            <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 border border-accent/40 text-accent px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
-              ✦ 100% Fully Funded
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-emerald/20 border border-emerald/40 text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
-              ✦ Tanpa Dipungut Biaya
-            </span>
-          </div>
+              {/* main card — Madinah */}
+              <div className="absolute inset-0 rounded-[1.75rem] overflow-hidden border border-accent/30 shadow-gold">
+                <img
+                  src={madinahImg}
+                  alt="Masjid Nabawi Madinah"
+                  className="size-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/80 via-transparent to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 text-emerald-deep px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
+                    ✦ Destinasi
+                  </span>
+                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Makkah · Madinah</p>
+                  <p className="text-xs text-white/80">Turki · Dubai</p>
+                </div>
+              </div>
 
-          <p
-            className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl leading-relaxed animate-fade-up"
-            style={{ animationDelay: "0.2s" }}
-          >
-            Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
-            bagi anak muda Indonesia — pengalaman Umrah, Leadership, dan Seminar Internasional
-            yang sepenuhnya dibiayai, tanpa biaya pendaftaran sepeser pun.
-          </p>
+              {/* floating logo badge */}
+              <div className="absolute -top-6 -left-6 size-28 rounded-2xl glass border border-accent/40 backdrop-blur-xl shadow-gold flex items-center justify-center p-3 rotate-[-6deg] hover:rotate-0 transition-transform">
+                <img src={logoSafarIman} alt="Safar Iman" className="size-full object-contain" />
+              </div>
 
-          <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-            <Link
-              to="/daftar"
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
-            >
-              Daftar Sekarang
-              <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <a
-              href={panduanUrl}
-              {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors border border-white/20"
-            >
-              Panduan
-            </a>
+              {/* floating mini card — Cappadocia */}
+              <div className="absolute -bottom-6 -right-6 size-32 rounded-2xl overflow-hidden border border-accent/40 shadow-emerald rotate-[6deg] hover:rotate-0 transition-transform">
+                <img src={cappadociaImg} alt="Cappadocia" className="size-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/70 to-transparent" />
+                <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wider text-accent">
+                  Cappadocia
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
 
       <div className="absolute bottom-6 inset-x-0 flex justify-center text-white/50 text-xs animate-float">
         ↓ Scroll
