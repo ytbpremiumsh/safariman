@@ -705,10 +705,35 @@ function Footer() {
             <p className="mt-5 text-sm text-white/70 leading-relaxed max-w-sm">
               Program Umrah Gratis untuk generasi muda berprestasi Indonesia — kolaborasi <strong className="text-white">Hasanah Tour & Travel</strong> × <strong className="text-white">Prestasi Kita</strong>.
             </p>
-            <div className="mt-5 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-accent">
-                <BadgeCheck className="size-3.5" /> Berizin Kemenag
-              </span>
+
+            {/* Partner logo: Hasanah Travel */}
+            <div className="mt-5">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-2">Partner Resmi</p>
+              <div className="bg-white rounded-xl px-4 py-3 inline-flex items-center shadow-gold">
+                <img src={logoHasanah} alt="Hasanah Tour & Travel" className="h-12 w-auto" loading="lazy" />
+              </div>
+            </div>
+
+            {/* Perizinan & sertifikasi */}
+            <div className="mt-5">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-2">Perizinan & Legalitas</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-accent/30 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                  <BadgeCheck className="size-3.5" /> Kemenag RI
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
+                  <BadgeCheck className="size-3.5 text-accent" /> PPIU
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
+                  <BadgeCheck className="size-3.5 text-accent" /> IATA
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
+                  <BadgeCheck className="size-3.5 text-accent" /> ASITA
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
+                  <BadgeCheck className="size-3.5 text-accent" /> AMPHURI
+                </span>
+              </div>
             </div>
           </div>
 
