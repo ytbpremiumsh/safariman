@@ -414,12 +414,37 @@ WhatsApp : ${CP_WHATSAPP}`;
             </div>
           </div>
 
+          {/* Caption Section */}
+          <div className="max-w-4xl mx-auto mb-8 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
+            <div className="flex items-start sm:items-center justify-between gap-3 flex-col sm:flex-row mb-4">
+              <div className="flex items-center gap-3">
+                <div className="size-10 shrink-0 rounded-xl bg-gradient-gold grid place-items-center text-emerald-deep shadow-gold">
+                  <FileText className="size-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-semibold">Caption Siap Pakai</h3>
+                  <p className="text-xs text-muted-foreground">Salin caption ini untuk posting Instagram-mu</p>
+                </div>
+              </div>
+              <button
+                onClick={copyCaption}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
+              >
+                <Copy className="size-4" /> Salin Caption
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap break-words text-xs sm:text-sm text-foreground/90 bg-secondary/50 border border-border rounded-2xl p-4 max-h-80 overflow-y-auto font-sans leading-relaxed">
+{caption}
+            </pre>
+          </div>
+
           <Link
             to="/berkas"
             className="w-full max-w-2xl mx-auto flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift"
           >
             <FileText className="size-4" /> Lanjut Kirim Berkas <ArrowRight className="size-4" />
           </Link>
+
         </main>
       </div>
     </div>
