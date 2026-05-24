@@ -19,7 +19,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import heroImg from "@/assets/hero-kaaba.jpg";
 import madinahImg from "@/assets/madinah.jpg";
 import dubaiImg from "@/assets/dubai.jpg";
-import cappadociaImg from "@/assets/cappadocia.jpg";
+import makkahEscalatorImg from "@/assets/makkah-escalator.jpg";
 import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
@@ -233,16 +233,16 @@ function Hero() {
               </div>
 
               {/* floating logo badge */}
-              <div className="absolute -top-6 -left-6 size-28 rounded-2xl glass border border-accent/40 backdrop-blur-xl shadow-gold flex items-center justify-center p-3 rotate-[-6deg] hover:rotate-0 transition-transform">
+              <div className="absolute -top-6 -left-6 size-28 rounded-2xl bg-white border border-accent/40 shadow-gold flex items-center justify-center p-3 rotate-[-6deg] hover:rotate-0 transition-transform">
                 <img src={logoSafarIman} alt="Safar Iman" className="size-full object-contain" />
               </div>
 
-              {/* floating mini card — Cappadocia */}
+              {/* floating mini card — Eskalator Masjidil Haram */}
               <div className="absolute -bottom-6 -right-6 size-32 rounded-2xl overflow-hidden border border-accent/40 shadow-emerald rotate-[6deg] hover:rotate-0 transition-transform">
-                <img src={cappadociaImg} alt="Cappadocia" className="size-full object-cover" />
+                <img src={makkahEscalatorImg} alt="Eskalator Masjidil Haram Makkah" className="size-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/70 to-transparent" />
                 <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Cappadocia
+                  Masjidil Haram
                 </span>
               </div>
             </div>
@@ -565,7 +565,7 @@ function Gallery() {
     { src: madinahImg, alt: "Madinah", c: "" },
     { src: seminarImg, alt: "Seminar", c: "" },
     { src: dubaiImg, alt: "Dubai", c: "" },
-    { src: cappadociaImg, alt: "Cappadocia", c: "col-span-2" },
+    { src: makkahEscalatorImg, alt: "Eskalator Masjidil Haram", c: "col-span-2" },
     { src: sharingImg, alt: "Berbagi", c: "" },
   ];
   return (
