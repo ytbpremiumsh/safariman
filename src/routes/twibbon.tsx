@@ -218,7 +218,8 @@ function TwibbonPage() {
 
           <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start mb-8">
             {/* Composer */}
-            <div className="lg:col-span-3 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
+            <div className="lg:col-span-3 flex justify-center">
+              <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
               <div
                 className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none"
                 onPointerDown={onPointerDown}
@@ -279,6 +280,7 @@ function TwibbonPage() {
                   Geser foto untuk memindahkan • scroll / pinch / slider untuk zoom
                 </p>
               </div>
+            </div>
             </div>
 
             {/* Steps */}
