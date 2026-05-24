@@ -124,23 +124,58 @@ function Hero() {
       <div className="absolute bottom-40 right-10 size-40 rounded-full bg-emerald/30 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-32 pb-16 w-full">
-        <div className="max-w-3xl">
-          <div className="flex flex-wrap gap-2 mb-6 animate-fade-up">
-            {["Fully Funded", "International Program", "Limited Seat", "Hasanah × Prestasi"].map((b) => (
-              <span key={b} className="glass text-white text-xs sm:text-sm px-3 py-1.5 rounded-full">
+        <div className="max-w-4xl">
+          {/* Exclusive eyebrow ornament */}
+          <div className="flex items-center gap-3 mb-6 animate-fade-up">
+            <span className="h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
+            <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.45em] font-medium">
+              Safar Iman · Exclusive Edition
+            </span>
+            <span className="h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
+          </div>
+
+          <div className="flex flex-wrap gap-2 mb-7 animate-fade-up" style={{ animationDelay: "0.05s" }}>
+            {["Fully Funded", "Tanpa Dipungut Biaya", "International Program", "Limited Seat"].map((b) => (
+              <span
+                key={b}
+                className="glass text-white text-xs sm:text-sm px-3.5 py-1.5 rounded-full border border-accent/30 backdrop-blur-md"
+              >
                 ✦ {b}
               </span>
             ))}
           </div>
 
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-semibold text-white leading-[0.95] animate-fade-up" style={{ animationDelay: "0.1s" }}>
-            Umrah Gratis untuk{" "}
-            <span className="text-gradient-gold">Generasi Berprestasi</span>
+          <h1
+            className="font-display font-semibold text-white leading-[0.98] animate-fade-up tracking-tight"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <span className="block text-4xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] text-white/95">
+              Safar Iman
+            </span>
+            <span className="block mt-2 text-4xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] text-gradient-gold">
+              Umrah Gratis
+            </span>
+            <span className="block mt-3 text-2xl sm:text-4xl lg:text-5xl text-white/90 font-medium">
+              untuk Generasi Berprestasi
+            </span>
           </h1>
 
-          <p className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl leading-relaxed animate-fade-up" style={{ animationDelay: "0.2s" }}>
-            Program <strong>Safar Iman</strong> hadir untuk membuka jalan menuju Baitullah
-            bagi anak muda Indonesia melalui prestasi, kontribusi, dan semangat kebaikan.
+          <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+            <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 border border-accent/40 text-accent px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+              ✦ 100% Fully Funded
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald/20 border border-emerald/40 text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+              ✦ Tanpa Dipungut Biaya
+            </span>
+          </div>
+
+          <p
+            className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl leading-relaxed animate-fade-up"
+            style={{ animationDelay: "0.2s" }}
+          >
+            Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
+            bagi anak muda Indonesia — pengalaman Umrah, Leadership, dan Seminar Internasional
+            yang sepenuhnya dibiayai, tanpa biaya pendaftaran sepeser pun.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
@@ -154,13 +189,11 @@ function Hero() {
             <a
               href={panduanUrl}
               {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors border border-white/20"
             >
               Panduan
             </a>
           </div>
-
-          {/* countdown moved to its own section above Program Benefit */}
         </div>
       </div>
 
