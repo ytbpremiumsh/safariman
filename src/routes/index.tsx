@@ -15,6 +15,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 import heroImg from "@/assets/hero-kaaba.jpg";
 import madinahImg from "@/assets/madinah.jpg";
@@ -63,23 +64,29 @@ function Nav() {
               )
             )}
           </nav>
-          <Link
-            to="/daftar"
-            className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
-          >
-            Daftar Sekarang <ArrowRight className="size-4" />
-          </Link>
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden text-foreground p-2"
-            aria-label="Menu"
-          >
-            <div className="size-5 flex flex-col justify-between">
-              <span className="h-0.5 bg-foreground" />
-              <span className="h-0.5 bg-foreground" />
-              <span className="h-0.5 bg-foreground" />
-            </div>
-          </button>
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              to="/daftar"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
+            >
+              Daftar Sekarang <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setOpen(!open)}
+              className="text-foreground p-2"
+              aria-label="Menu"
+            >
+              <div className="size-5 flex flex-col justify-between">
+                <span className="h-0.5 bg-foreground" />
+                <span className="h-0.5 bg-foreground" />
+                <span className="h-0.5 bg-foreground" />
+              </div>
+            </button>
+          </div>
         </div>
         {open && (
           <div className="bg-white rounded-2xl mt-2 p-4 md:hidden animate-fade-up shadow-lg ring-1 ring-black/5">
@@ -794,6 +801,7 @@ function Footer() {
             <Link to="/tentang" className="hover:text-accent transition-colors">Tentang</Link>
             <Link to="/daftar" className="hover:text-accent transition-colors">Daftar</Link>
             <Link to="/admin/login" className="hover:text-accent transition-colors">Admin</Link>
+            <ThemeToggle className="!size-9 !bg-white/10 !border-white/20 text-white hover:!bg-white/20" />
           </div>
         </div>
       </div>
