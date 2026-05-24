@@ -17,7 +17,7 @@ const IG_ACCOUNTS = [
   { handle: "prestasikita", url: "https://instagram.com/prestasikita", label: "Prestasi Kita" },
 ];
 
-const EXPORT_SIZE = 1080;
+const EXPORT_MAX = 1080;
 
 export const Route = createFileRoute("/twibbon")({
   head: () => ({
