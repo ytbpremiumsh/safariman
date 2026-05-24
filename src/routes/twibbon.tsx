@@ -233,7 +233,8 @@ function TwibbonPage() {
             <div className="lg:col-span-3 flex justify-center">
               <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
               <div
-                className="aspect-square rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none"
+                className="rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none mx-auto w-full"
+                style={{ aspectRatio: `${EW} / ${EH}`, maxHeight: "70vh" }}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
@@ -242,7 +243,7 @@ function TwibbonPage() {
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                style={{ cursor: photoImg ? (drag ? "grabbing" : "grab") : "default" }}
+                style2={undefined as never}
               >
                 <canvas ref={canvasRef} className="size-full block" />
               </div>
