@@ -134,20 +134,39 @@ function TwibbonPage() {
 
   const reset = () => { setScale(1); setPos({ x: 0, y: 0 }); };
 
-  const download = () => {
+  const download = async () => {
     const c = canvasRef.current;
     if (!c) return;
     if (!photoImg) { toast.error("Upload foto kamu dulu"); return; }
-    c.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
+
+    const triggerDownload = (href: string, revoke?: () => void) => {
       const a = document.createElement("a");
-      a.href = url;
+      a.href = href;
       a.download = "twibbon-safar-iman.png";
       document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
+      if (revoke) setTimeout(revoke, 1000);
       toast.success("Twibbon berhasil didownload!");
-    }, "image/png");
+    };
+
+    // Try blob first
+    try {
+      const blob: Blob | null = await new Promise((resolve) => c.toBlob((b) => resolve(b), "image/png"));
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        triggerDownload(url, () => URL.revokeObjectURL(url));
+        return;
+      }
+    } catch (e) {
+      // canvas tainted — try re-rendering with same-origin proxied frame, fallback below
+    }
+
+    // Fallback: try dataURL (also fails if tainted)
+    try {
+      const dataUrl = c.toDataURL("image/png");
+      triggerDownload(dataUrl);
+    } catch {
+      toast.error("Gagal download. Frame gambar tidak mengizinkan CORS — hubungi admin untuk mengganti frame.");
+    }
   };
 
   // Drag / pinch handlers (in CSS px → convert to canvas px via ratio)
