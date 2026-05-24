@@ -228,7 +228,7 @@ function Hero() {
                     ✦ Destinasi
                   </span>
                   <p className="mt-2 font-display text-2xl text-white drop-shadow">Makkah · Madinah</p>
-                  <p className="text-xs text-white/80">Turki · Dubai</p>
+                  <p className="text-xs text-white/80">Tanah Suci · Saudi Arabia</p>
                 </div>
               </div>
 
@@ -275,7 +275,7 @@ function CountdownSection() {
 function Benefits() {
   const items = [
     { i: Plane, t: "Umrah Full Experience", d: "Perjalanan ibadah lengkap dengan bimbingan ustadz." },
-    { i: Globe2, t: "City Tour Internasional", d: "Eksplorasi Madinah, Dubai, dan kota islami lainnya." },
+    { i: Globe2, t: "City Tour Tanah Suci", d: "Eksplorasi Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dan situs bersejarah Makkah-Madinah." },
     { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional." },
     { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu." },
     { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang." },
@@ -388,7 +388,7 @@ function Quota() {
     { icon: Compass, label: "Tour Leader" },
     { icon: Luggage, label: "Handling" },
     { icon: ShoppingBag, label: "Perlengkapan Lengkap" },
-    { icon: MapPin, label: "City Tour Internasional" },
+    { icon: MapPin, label: "City Tour Makkah & Madinah" },
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
@@ -396,7 +396,7 @@ function Quota() {
         <SectionHeading
           eyebrow="Kuota Program"
           title={<>Kesempatan menuju <span className="text-gradient-gold">Baitullah</span></>}
-          subtitle="Program fully funded dengan fasilitas lengkap plus city tour internasional untuk pengalaman tak terlupakan."
+          subtitle="Program fully funded dengan fasilitas lengkap plus city tour situs bersejarah Makkah & Madinah untuk pengalaman tak terlupakan."
         />
 
         {/* Single facility card */}
@@ -605,7 +605,7 @@ function Gallery() {
 
 function FAQ() {
   const items = [
-    { q: "Apakah benar program ini gratis?", a: "Ya, untuk jalur Fully Funded seluruh biaya ditanggung 100% termasuk tiket, visa, hotel, dan uang saku. Jalur Partial mendapat subsidi, jalur Self Funded bersifat mandiri." },
+    { q: "Apakah benar program ini gratis?", a: "Ya, untuk jalur Fully Funded seluruh biaya ditanggung 100% termasuk tiket, visa, dan hotel. Jalur Partial mendapat subsidi, jalur Self Funded bersifat mandiri." },
     { q: "Apakah wajib bisa berbahasa Arab?", a: "Tidak wajib. Namun kemampuan dasar bahasa Arab atau Inggris menjadi nilai tambah dalam seleksi." },
     { q: "Apakah mahasiswa atau pelajar boleh mendaftar?", a: "Boleh. Program ini terbuka untuk anak muda usia 17–30 tahun, baik pelajar, mahasiswa, maupun profesional muda." },
     { q: "Bagaimana sistem seleksi peserta?", a: "Seleksi terdiri dari verifikasi administrasi, penilaian essay, dan wawancara online. Penilaian mencakup prestasi, kontribusi sosial, dan motivasi." },
