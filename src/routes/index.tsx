@@ -377,7 +377,7 @@ function Timeline() {
         <SectionHeading
           eyebrow="Timeline Program"
           title={<>Perjalanan menuju <span className="text-gradient-emerald">keberangkatan</span></>}
-          subtitle="Sembilan tahap yang akan kamu lalui menuju Baitullah."
+          subtitle="Sebelas tahap yang akan kamu lalui menuju Baitullah."
         />
         <div className="relative mt-16">
           <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent" />
