@@ -722,7 +722,7 @@ function Footer() {
                 <img
                   src={legalitasBadges}
                   alt="Perizinan & Legalitas: IATA, SITU, Kemenag, AMPHURI, KAN, IATA Certified"
-                  className="h-20 sm:h-24 w-auto object-contain"
+                  className="h-12 sm:h-14 w-auto object-contain"
                   loading="lazy"
                 />
               </div>
