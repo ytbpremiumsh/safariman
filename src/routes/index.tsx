@@ -134,29 +134,15 @@ function Hero() {
             <span className="h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-7 animate-fade-up" style={{ animationDelay: "0.05s" }}>
-            {["Fully Funded", "Tanpa Dipungut Biaya", "International Program", "Limited Seat"].map((b) => (
-              <span
-                key={b}
-                className="glass text-white text-xs sm:text-sm px-3.5 py-1.5 rounded-full border border-accent/30 backdrop-blur-md"
-              >
-                ✦ {b}
-              </span>
-            ))}
-          </div>
-
           <h1
             className="font-display font-semibold text-white leading-[0.98] animate-fade-up tracking-tight"
             style={{ animationDelay: "0.1s" }}
           >
-            <span className="block text-4xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] text-white/95">
+            <span className="block text-5xl sm:text-7xl lg:text-8xl xl:text-[6rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white">
               Safar Iman
             </span>
-            <span className="block mt-2 text-4xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] text-gradient-gold">
-              Umrah Gratis
-            </span>
-            <span className="block mt-3 text-2xl sm:text-4xl lg:text-5xl text-white/90 font-medium">
-              untuk Generasi Berprestasi
+            <span className="block mt-3 text-4xl sm:text-6xl lg:text-7xl xl:text-[5rem] text-gradient-gold min-h-[1.1em]">
+              <Typewriter text="Umrah Gratis" />
             </span>
           </h1>
 
