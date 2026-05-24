@@ -364,8 +364,10 @@ function Timeline() {
     { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "1 Juni – 10 Agustus 2026", cta: { label: "Kirim Berkas", to: "/berkas" } },
     { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami", date: "1 Juni – 10 Agustus 2026" },
     { i: ClipboardList, t: "Pengisian Essay", d: "Setelah tunaikan kontribusi, lanjut isi essay", date: "1 Juni – 10 Agustus 2026", cta: { label: "Kirim Essay", to: "/essay" } },
+    { i: Megaphone, t: "Pengumuman Lolos Essay", d: "Pengumuman peserta yang lolos tahap essay & berhak lanjut ke Leadership Discussion Session", date: "15 Agustus 2026" },
+    { i: Users2, t: "Leadership Discussion Session", d: "Sesi diskusi kepemimpinan bersama mentor & panitia untuk peserta yang lolos essay", date: "20 – 31 Agustus 2026" },
     { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online", date: "15 – 30 September 2026" },
-    { i: Megaphone, t: "Pengumuman", d: "Diumumkan via email & web", date: "10 Oktober 2026" },
+    { i: Megaphone, t: "Pengumuman Final", d: "Diumumkan via email & web", date: "10 Oktober 2026" },
     { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan", date: "Akhir Oktober 2026" },
     { i: Rocket, t: "Keberangkatan", d: "Perjalanan ke Tanah Suci", date: "November 2026" },
   ];
@@ -375,7 +377,7 @@ function Timeline() {
         <SectionHeading
           eyebrow="Timeline Program"
           title={<>Perjalanan menuju <span className="text-gradient-emerald">keberangkatan</span></>}
-          subtitle="Sembilan tahap yang akan kamu lalui menuju Baitullah."
+          subtitle="Sebelas tahap yang akan kamu lalui menuju Baitullah."
         />
         <div className="relative mt-16">
           <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent" />
