@@ -19,7 +19,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import heroImg from "@/assets/hero-kaaba.jpg";
 import madinahImg from "@/assets/madinah.jpg";
 import dubaiImg from "@/assets/dubai.jpg";
-import cappadociaImg from "@/assets/cappadocia.jpg";
+import makkahEscalatorImg from "@/assets/makkah-escalator.jpg";
 import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
