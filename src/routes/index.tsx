@@ -24,6 +24,7 @@ import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import logoHasanah from "@/assets/logo-hasanah.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
