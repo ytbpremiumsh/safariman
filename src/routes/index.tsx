@@ -565,7 +565,7 @@ function Gallery() {
     { src: madinahImg, alt: "Madinah", c: "" },
     { src: seminarImg, alt: "Seminar", c: "" },
     { src: dubaiImg, alt: "Dubai", c: "" },
-    { src: cappadociaImg, alt: "Cappadocia", c: "col-span-2" },
+    { src: makkahEscalatorImg, alt: "Eskalator Masjidil Haram", c: "col-span-2" },
     { src: sharingImg, alt: "Berbagi", c: "" },
   ];
   return (
