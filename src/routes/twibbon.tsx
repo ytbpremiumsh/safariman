@@ -64,44 +64,56 @@ function TwibbonPage() {
     img.src = frameUrl;
   }, [frameUrl]);
 
+  // Derive export dimensions from frame's natural size (longest side = EXPORT_MAX)
+  const exportDims = (() => {
+    if (!frameImg) return { w: EXPORT_MAX, h: EXPORT_MAX };
+    const fw = frameImg.naturalWidth || frameImg.width;
+    const fh = frameImg.naturalHeight || frameImg.height;
+    const s = EXPORT_MAX / Math.max(fw, fh);
+    return { w: Math.round(fw * s), h: Math.round(fh * s) };
+  })();
+  const EW = exportDims.w;
+  const EH = exportDims.h;
+
   // Render canvas whenever inputs change
   useEffect(() => {
     const c = canvasRef.current;
     if (!c) return;
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    c.width = EXPORT_SIZE;
-    c.height = EXPORT_SIZE;
+    c.width = EW;
+    c.height = EH;
     // background
     ctx.fillStyle = "#0d3b2e";
-    ctx.fillRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+    ctx.fillRect(0, 0, EW, EH);
 
     if (photoImg) {
-      // base "cover" size
+      // base "cover" size relative to frame dims
       const ratio = photoImg.width / photoImg.height;
-      let baseW = EXPORT_SIZE;
-      let baseH = EXPORT_SIZE;
-      if (ratio > 1) baseW = EXPORT_SIZE * ratio; else baseH = EXPORT_SIZE / ratio;
+      const frameRatio = EW / EH;
+      let baseW = EW;
+      let baseH = EH;
+      if (ratio > frameRatio) baseW = EH * ratio; else baseH = EW / ratio;
       const w = baseW * scale;
       const h = baseH * scale;
-      const x = (EXPORT_SIZE - w) / 2 + pos.x;
-      const y = (EXPORT_SIZE - h) / 2 + pos.y;
+      const x = (EW - w) / 2 + pos.x;
+      const y = (EH - h) / 2 + pos.y;
       ctx.drawImage(photoImg, x, y, w, h);
     } else {
       ctx.fillStyle = "rgba(255,255,255,0.08)";
-      ctx.fillRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+      ctx.fillRect(0, 0, EW, EH);
       ctx.fillStyle = "rgba(255,255,255,0.6)";
       ctx.font = "600 36px system-ui, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("Upload foto kamu di sini", EXPORT_SIZE / 2, EXPORT_SIZE / 2 - 10);
+      ctx.fillText("Upload foto kamu di sini", EW / 2, EH / 2 - 10);
       ctx.font = "400 22px system-ui, sans-serif";
-      ctx.fillText("Lalu atur posisi & zoom", EXPORT_SIZE / 2, EXPORT_SIZE / 2 + 30);
+      ctx.fillText("Lalu atur posisi & zoom", EW / 2, EH / 2 + 30);
     }
 
     if (frameImg) {
-      ctx.drawImage(frameImg, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
+      ctx.drawImage(frameImg, 0, 0, EW, EH);
     }
-  }, [frameImg, photoImg, scale, pos]);
+  }, [frameImg, photoImg, scale, pos, EW, EH]);
 
   const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
