@@ -25,6 +25,7 @@ import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
+import legalitasBadges from "@/assets/legalitas-badges-hd.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -717,22 +718,13 @@ function Footer() {
             {/* Perizinan & sertifikasi */}
             <div className="mt-5">
               <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-2">Perizinan & Legalitas</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-accent/30 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
-                  <BadgeCheck className="size-3.5" /> Kemenag RI
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
-                  <BadgeCheck className="size-3.5 text-accent" /> PPIU
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
-                  <BadgeCheck className="size-3.5 text-accent" /> IATA
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
-                  <BadgeCheck className="size-3.5 text-accent" /> ASITA
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
-                  <BadgeCheck className="size-3.5 text-accent" /> AMPHURI
-                </span>
+              <div className="bg-white rounded-xl p-3 shadow-gold inline-block max-w-full">
+                <img
+                  src={legalitasBadges}
+                  alt="Perizinan & Legalitas: IATA, SITU, Kemenag, AMPHURI, KAN, IATA Certified"
+                  className="h-20 sm:h-24 w-auto object-contain"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
