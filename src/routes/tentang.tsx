@@ -7,6 +7,7 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoPrestasiKita from "@/assets/logo-prestasi-kita.png";
+import legalitasBadges from "@/assets/legalitas-badges-hd.png";
 
 export const Route = createFileRoute("/tentang")({
   head: () => ({
@@ -99,6 +100,20 @@ function TentangPage() {
                   </li>
                 ))}
               </ul>
+
+              {/* Perizinan & Legalitas */}
+              <div className="mt-6">
+                <div className="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-deep/80 mb-3">
+                  Perizinan & Legalitas
+                </div>
+                <div className="bg-white rounded-xl p-3 shadow-sm ring-1 ring-black/5">
+                  <img
+                    src={legalitasBadges}
+                    alt="Perizinan & Legalitas Hasanah Tour & Travel: IATA, SITU, Kemenag, AMPHURI, KAN"
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </div>
             </div>
           </section>
 
