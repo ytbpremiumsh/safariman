@@ -214,11 +214,52 @@ function TwibbonPage() {
   const onTouchEnd = () => setPinch(null);
 
   const waMessage = encodeURIComponent(
-    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Jazakallahu khairan 🙏`
+    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Terima kasih 🙏`
   );
   const copyMessage = async () => {
     await navigator.clipboard.writeText(decodeURIComponent(waMessage));
     toast.success("Pesan disalin!");
+  };
+
+  const caption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA BERPRESTASI]
+
+✨ Program perjalanan iman & wawasan global untuk generasi muda Indonesia — Umrah, Leadership, Seminar Internasional, hingga Islamic Journey Experience ke 3 negara!
+
+🎉 Hadir kembali — Safar Iman by Hasanah Tours & Travel x Prestasi Kita
+🌍 Destinasi : Makkah, Madinah, Turki (Cappadocia), & Dubai
+
+📎 Rangkaian Kegiatan :
+- Umrah + City Tour Makkah & Madinah (Jabal Uhud, Masjid Quba, Jabal Rahmah, dll)
+- City Tour Turki Cappadocia & Dubai
+- Seminar Internasional & Leadership Session
+- Berbagi Makanan & Wakaf Al-Qur'an di Masjidil Haram & Masjid Nabawi
+- Campus & Cultural Tour
+
+🪪 Dapatkan Sertifikat Internasional!
+
+✈️ FULLY FUNDED PP PESAWAT
+💰 Uang saku & fasilitas lengkap untuk peserta terpilih
+🎟️ GRATIS BIAYA PENDAFTARAN
+(Dibantu pembuatan Paspor & VISA)
+
+⚠️ Tidak ada syarat wajib bisa Bahasa Arab/Inggris — peserta akan didampingi Tour Leader berbahasa Indonesia.
+
+📍 Meeting point menyesuaikan lokasi bandara terdekat peserta terpilih.
+
+Tersedia juga jalur Self Funded & Partial Funded (kuota terbatas).
+
+Yuk jadi bagian dari Safar Iman — perjalanan iman yang mengubah hidupmu.
+Sampai jumpa di Makkah, Madinah, Turki & Dubai! 🕋✨
+
+#SafarIman #UmrahGratis #FullyFunded #AnakMudaBerprestasi
+_______
+Contact Person:
+Instagram : @safariman.id
+WhatsApp : ${CP_WHATSAPP}`;
+
+  const copyCaption = async () => {
+    await navigator.clipboard.writeText(caption);
+    toast.success("Caption disalin! Siap di-paste ke Instagram 🎉");
   };
 
   return (
