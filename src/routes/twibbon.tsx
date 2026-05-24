@@ -214,11 +214,52 @@ function TwibbonPage() {
   const onTouchEnd = () => setPinch(null);
 
   const waMessage = encodeURIComponent(
-    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Jazakallahu khairan 🙏`
+    `Assalamu'alaikum, saya ingin mengirimkan bukti twibbon program Safar Iman. Saya sudah follow seluruh akun Instagram resmi. Terima kasih 🙏`
   );
   const copyMessage = async () => {
     await navigator.clipboard.writeText(decodeURIComponent(waMessage));
     toast.success("Pesan disalin!");
+  };
+
+  const caption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA BERPRESTASI]
+
+✨ Program perjalanan iman & wawasan global untuk generasi muda Indonesia — Umrah, Leadership, Seminar Internasional, hingga Islamic Journey Experience ke 3 negara!
+
+🎉 Hadir kembali — Safar Iman by Hasanah Tours & Travel x Prestasi Kita
+🌍 Destinasi : Makkah, Madinah, Turki (Cappadocia), & Dubai
+
+📎 Rangkaian Kegiatan :
+- Umrah + City Tour Makkah & Madinah (Jabal Uhud, Masjid Quba, Jabal Rahmah, dll)
+- City Tour Turki Cappadocia & Dubai
+- Seminar Internasional & Leadership Session
+- Berbagi Makanan & Wakaf Al-Qur'an di Masjidil Haram & Masjid Nabawi
+- Campus & Cultural Tour
+
+🪪 Dapatkan Sertifikat Internasional!
+
+✈️ FULLY FUNDED PP PESAWAT
+💰 Uang saku & fasilitas lengkap untuk peserta terpilih
+🎟️ GRATIS BIAYA PENDAFTARAN
+(Dibantu pembuatan Paspor & VISA)
+
+⚠️ Tidak ada syarat wajib bisa Bahasa Arab/Inggris — peserta akan didampingi Tour Leader berbahasa Indonesia.
+
+📍 Meeting point menyesuaikan lokasi bandara terdekat peserta terpilih.
+
+Tersedia juga jalur Self Funded & Partial Funded (kuota terbatas).
+
+Yuk jadi bagian dari Safar Iman — perjalanan iman yang mengubah hidupmu.
+Sampai jumpa di Makkah, Madinah, Turki & Dubai! 🕋✨
+
+#SafarIman #UmrahGratis #FullyFunded #AnakMudaBerprestasi
+_______
+Contact Person:
+Instagram : @safariman.id
+WhatsApp : ${CP_WHATSAPP}`;
+
+  const copyCaption = async () => {
+    await navigator.clipboard.writeText(caption);
+    toast.success("Caption disalin! Siap di-paste ke Instagram 🎉");
   };
 
   return (
@@ -373,12 +414,37 @@ function TwibbonPage() {
             </div>
           </div>
 
+          {/* Caption Section */}
+          <div className="max-w-4xl mx-auto mb-8 bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
+            <div className="flex items-start sm:items-center justify-between gap-3 flex-col sm:flex-row mb-4">
+              <div className="flex items-center gap-3">
+                <div className="size-10 shrink-0 rounded-xl bg-gradient-gold grid place-items-center text-emerald-deep shadow-gold">
+                  <FileText className="size-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-semibold">Caption Siap Pakai</h3>
+                  <p className="text-xs text-muted-foreground">Salin caption ini untuk posting Instagram-mu</p>
+                </div>
+              </div>
+              <button
+                onClick={copyCaption}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
+              >
+                <Copy className="size-4" /> Salin Caption
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap break-words text-xs sm:text-sm text-foreground/90 bg-secondary/50 border border-border rounded-2xl p-4 max-h-80 overflow-y-auto font-sans leading-relaxed">
+{caption}
+            </pre>
+          </div>
+
           <Link
             to="/berkas"
             className="w-full max-w-2xl mx-auto flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-4 text-base font-bold shadow-emerald hover-lift"
           >
             <FileText className="size-4" /> Lanjut Kirim Berkas <ArrowRight className="size-4" />
           </Link>
+
         </main>
       </div>
     </div>
