@@ -374,7 +374,7 @@ function Persyaratan() {
             </p>
             <Link
               to="/daftar"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-3 text-sm font-semibold shadow-gold hover-lift"
             >
               Daftar Sekarang <ArrowRight className="size-4" />
             </Link>
