@@ -136,7 +136,11 @@ function DonasiPage() {
             <div className="grid sm:grid-cols-2 gap-5">
 
               <div className="bg-card border-2 border-emerald/30 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
-                <span className="absolute top-3 right-3 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white px-2 py-1 rounded-full">Eksklusif</span>
+                <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white pl-1.5 pr-2.5 py-1 rounded-full animate-badge-glow">
+                  <Sparkles className="size-2.5 animate-twinkle" />
+                  <Sparkles className="size-1.5 -ml-0.5 animate-twinkle-delay text-accent" />
+                  Eksklusif
+                </span>
                 <div className="size-12 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-4">
                   <GraduationCap className="size-6 text-accent" />
                 </div>
