@@ -141,7 +141,7 @@ function DonasiPage() {
                   <GraduationCap className="size-6 text-accent" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
-                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
+                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
                   Fiqh Umrah Praktis: Dari Niat hingga Tahallul
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
