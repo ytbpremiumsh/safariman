@@ -156,6 +156,7 @@ export type Database = {
     Functions: {
       claim_admin_if_first: { Args: never; Returns: boolean }
       gen_registration_code: { Args: never; Returns: string }
+      get_countdown_enabled: { Args: never; Returns: boolean }
       get_countdown_target: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
       get_twibbon_frame_url: { Args: never; Returns: string }
