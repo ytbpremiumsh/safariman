@@ -155,7 +155,7 @@ function DonasiPage() {
                   <MapPin className="size-6 text-emerald-deep" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
-                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
+                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
                   Jejak Cahaya: Makkah dan Madinah
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
