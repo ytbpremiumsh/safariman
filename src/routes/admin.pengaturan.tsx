@@ -4,6 +4,7 @@ import { Clock, HeartHandshake, Loader2, CheckCircle2, Copy, Webhook, BookOpen, 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan")({
