@@ -30,8 +30,8 @@ import legalitasBadges from "@/assets/legalitas-badges-hd.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Safar Iman — Umrah Gratis Fully Funded untuk Anak Muda Berprestasi" },
-      { name: "description", content: "Program Umrah Gratis untuk generasi muda berprestasi: Umrah, Leadership, Seminar Internasional, Wakaf & Islamic Journey Experience." },
+      { title: "Safar Iman — Umrah Gratis Fully Funded untuk Anak Muda Indonesia" },
+      { name: "description", content: "Program Umrah Gratis untuk generasi muda Indonesia: Umrah, Leadership, Seminar Internasional, Wakaf & Islamic Journey Experience." },
     ],
   }),
   component: Landing,
@@ -192,7 +192,7 @@ function Hero() {
                 Safar Iman
               </span>
               <span className="block mt-3 text-4xl sm:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.1em]">
-                <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Berprestasi", "Makkah & Madinah"]} />
+                <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua", "Makkah & Madinah"]} />
               </span>
             </h1>
 
@@ -302,7 +302,7 @@ function Benefits() {
     { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional." },
     { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu." },
     { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang." },
-    { i: Users, t: "Networking Nasional", d: "Bertemu pemuda berprestasi dari seluruh Indonesia." },
+    { i: Users, t: "Networking Nasional", d: "Bertemu pemuda Indonesia dari berbagai daerah." },
     { i: GraduationCap, t: "Campus Visit Timur Tengah", d: "Kunjungan ke universitas terkemuka di Timur Tengah." },
     { i: Heart, t: "Mentor & Pembinaan", d: "Pendampingan langsung dari mentor berpengalaman." },
   ];
@@ -436,7 +436,7 @@ function Quota() {
                   <Sparkles className="size-3.5 text-accent" /> Fasilitas Lengkap
                 </span>
                 <h3 className="font-display text-4xl sm:text-5xl font-semibold">Fully Funded</h3>
-                <p className="text-white/70 mt-1">Kuota: 3 Orang Berprestasi</p>
+                <p className="text-white/70 mt-1">Kuota: 3 Orang Terpilih</p>
               </div>
               <div className="text-right">
                 <div className="font-display text-4xl sm:text-5xl font-semibold text-gradient-gold">{"\n"}</div>
@@ -727,7 +727,7 @@ function Footer() {
               <img src={logoSafarIman} alt="Safar Iman" className="h-10 w-auto" />
             </div>
             <p className="mt-5 text-sm text-white/70 leading-relaxed max-w-sm">
-              Program Umrah Gratis untuk generasi muda berprestasi Indonesia — kolaborasi <strong className="text-white">Hasanah Tour & Travel</strong> × <strong className="text-white">Prestasi Kita</strong>.
+              Program Umrah Gratis untuk generasi muda Indonesia — kolaborasi <strong className="text-white">Hasanah Tour & Travel</strong> × <strong className="text-white">Prestasi Kita</strong>.
             </p>
 
             {/* Partner logo: Hasanah Travel */}
