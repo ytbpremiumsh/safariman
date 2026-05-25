@@ -154,7 +154,11 @@ function DonasiPage() {
               </div>
 
               <div className="bg-card border-2 border-accent/40 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
-                <span className="absolute top-3 right-3 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep px-2 py-1 rounded-full">Eksklusif</span>
+                <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep pl-1.5 pr-2.5 py-1 rounded-full animate-badge-glow">
+                  <Sparkles className="size-2.5 animate-twinkle" />
+                  <Sparkles className="size-1.5 -ml-0.5 animate-twinkle-slow" />
+                  Eksklusif
+                </span>
                 <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-4">
                   <MapPin className="size-6 text-emerald-deep" />
                 </div>
