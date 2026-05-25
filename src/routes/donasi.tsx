@@ -92,28 +92,26 @@ function DonasiPage() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          <div className="mb-10 animate-fade-up">
-            <div className="relative rounded-3xl overflow-hidden shadow-emerald ring-1 ring-accent/30">
-              <img
-                src={donasiHeader}
-                alt="Tunaikan Kontribusi Kebaikan — Safar Iman"
-                width={1536}
-                height={1024}
-                className="w-full h-auto object-cover"
-              />
-            </div>
-            <p className="mt-6 text-center text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">operasional program, kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
+          <div className="mb-12 animate-fade-up text-center">
+            <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-emerald font-bold bg-emerald/10 border border-emerald/20 px-4 py-1.5 rounded-full">
+              <HeartHandshake className="size-3.5" /> Kontribusi Kebaikan
+            </span>
+            <h1 className="mt-5 font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Tunaikan Kebaikan,<br />
+              <span className="text-emerald">Raih Berkah</span> di Tanah Suci
+            </h1>
+            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Kontribusi peserta digunakan untuk mendukung <strong className="text-foreground">kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-3 mb-10">
+          <div className="grid sm:grid-cols-3 gap-4 mb-12">
             {[
               { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman." },
             ].map((b) => (
-              <div key={b.t} className="rounded-2xl bg-card border border-border p-5">
+              <div key={b.t} className="rounded-2xl bg-card border border-border p-5 hover-lift">
                 <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
                   <b.i className="size-5 text-emerald" />
                 </div>
@@ -124,21 +122,19 @@ function DonasiPage() {
           </div>
 
           {/* Benefit included with donation */}
-          <div className="mb-10">
-            <div className="text-center mb-6">
+          <div className="mb-12">
+            <div className="text-center mb-8">
               <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-bold bg-gradient-emerald px-4 py-2 rounded-full shadow-emerald">
                 <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
               </span>
-              <h3 className="mt-4 font-display text-2xl sm:text-3xl font-bold leading-tight max-w-2xl mx-auto">
-                Seluruh peserta yang berkontribusi <span className="text-emerald">mendapatkan akses Eksklusif</span> ke <span className="bg-gradient-gold bg-clip-text text-transparent">Kelas Online</span> &amp; <span className="bg-gradient-gold bg-clip-text text-transparent">Kajian Sirah</span>
+              <h3 className="mt-5 font-display text-2xl sm:text-3xl font-bold leading-tight max-w-2xl mx-auto">
+                Seluruh peserta yang berkontribusi <span className="text-emerald">mendapatkan akses Eksklusif</span> ke <span className="text-accent">Kelas Online</span> &amp; <span className="text-accent">Kajian Sirah</span>
               </h3>
-              <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Tetap dalam koridor <strong className="text-foreground">syariat</strong> — kontribusi kebaikan dipadukan dengan manfaat ilmu yang langsung kamu terima.
-              </p>
             </div>
 
 
             <div className="grid sm:grid-cols-2 gap-5">
+
               <div className="bg-card border-2 border-emerald/30 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
                 <span className="absolute top-3 right-3 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white px-2 py-1 rounded-full">Eksklusif</span>
                 <div className="size-12 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-4">
