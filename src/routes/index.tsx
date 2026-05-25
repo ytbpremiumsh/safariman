@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 
-import heroImg from "@/assets/hero-kaaba.jpg";
+import heroImg from "@/assets/hero-jamaah-madinah.jpg";
 import madinahImg from "@/assets/madinah.jpg";
 import dubaiImg from "@/assets/dubai.jpg";
 import makkahEscalatorImg from "@/assets/makkah-escalator.jpg";
@@ -159,10 +159,10 @@ function Hero() {
     <section className="relative min-h-screen flex items-center overflow-hidden">
       <img
         src={heroImg}
-        alt="Ka'bah di malam hari"
+        alt="Jamaah Umrah Safar Iman di Madinah"
         width={1920}
         height={1080}
-        className="absolute inset-0 size-full object-cover"
+        className="absolute inset-0 size-full object-cover object-center"
       />
       <div className="absolute inset-0 bg-gradient-hero" />
       <div className="absolute inset-0 bg-gradient-glow" />
@@ -176,23 +176,22 @@ function Hero() {
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* LEFT: copy */}
           <div className="lg:col-span-7">
-            {/* Exclusive eyebrow ornament */}
-            <div className="flex items-center gap-3 mb-6 animate-fade-up">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
-              <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.45em] font-medium">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6 animate-fade-up">
+              <span className="hidden sm:block h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
+              <span className="text-accent text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.45em] font-medium break-words">
                 Safar Iman · Exclusive Edition
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
+              <span className="hidden sm:block h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
             </div>
 
             <h1
-              className="font-display font-semibold text-white leading-[0.98] animate-fade-up tracking-tight"
+              className="font-display font-semibold text-white leading-[1] animate-fade-up tracking-tight"
               style={{ animationDelay: "0.1s" }}
             >
-              <span className="block text-5xl sm:text-7xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white">
+              <span className="block text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white break-words">
                 Safar Iman
               </span>
-              <span className="block mt-3 text-4xl sm:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.1em]">
+              <span className="block mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.2em] break-words">
                 <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua", "Makkah & Madinah"]} />
               </span>
             </h1>
