@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Safar Iman — Umrah Gratis Fully Funded untuk Anak Muda Indonesia" },
-      { name: "description", content: "Program Umrah Gratis untuk generasi muda Indonesia: Umrah, Leadership, Seminar Internasional, Wakaf & Islamic Journey Experience." },
+      { name: "description", content: "Program Umrah Gratis untuk generasi muda Indonesia: Umrah, Ibadah, City Tour, Wakaf & Islamic Journey Experience." },
     ],
   }),
   component: Landing,
@@ -210,7 +210,7 @@ function Hero() {
               style={{ animationDelay: "0.2s" }}
             >
               Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
-              bagi anak muda Indonesia — pengalaman Umrah, Leadership, dan Seminar Internasional
+              bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour
               yang sepenuhnya dibiayai, tanpa biaya pendaftaran sepeser pun.
             </p>
 

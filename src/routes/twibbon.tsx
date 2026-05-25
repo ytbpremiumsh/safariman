@@ -221,17 +221,17 @@ function TwibbonPage() {
     toast.success("Pesan disalin!");
   };
 
-  const caption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA BERPRESTASI]
+  const caption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA INDONESIA]
 
-✨ Program perjalanan iman & wawasan untuk generasi muda Indonesia — Umrah, Leadership, Seminar Internasional, hingga Islamic Journey Experience ke Tanah Suci!
+✨ Program perjalanan iman & wawasan untuk generasi muda Indonesia — Umrah, Ibadah, City Tour, hingga Islamic Journey Experience ke Tanah Suci!
 
 🎉 Hadir kembali — Safar Iman by Hasanah Tours & Travel x Prestasi Kita
 🌍 Destinasi : Makkah & Madinah
 
 📎 Rangkaian Kegiatan :
 - Umrah + City Tour Makkah & Madinah (Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dll)
-- Seminar Internasional & Leadership Session
-- Berbagi Makanan & Wakaf Al-Qur'an di Masjidil Haram & Masjid Nabawi
+- Ibadah & Ziarah di Masjidil Haram & Masjid Nabawi
+- Berbagi Makanan & Wakaf Al-Qur'an di Tanah Suci
 - Cultural Tour Tanah Suci
 
 🪪 Dapatkan Sertifikat Internasional!
@@ -246,7 +246,7 @@ function TwibbonPage() {
 
 Sampai jumpa di Makkah & Madinah! 🕋✨
 
-#SafarIman #UmrahGratis #FullyFunded #AnakMudaBerprestasi
+#SafarIman #UmrahGratis #FullyFunded #AnakMudaIndonesia
 _______
 Contact Person:
 Instagram : @safariman.id
