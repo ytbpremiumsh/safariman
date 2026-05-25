@@ -141,7 +141,7 @@ function DonasiPage() {
                   <GraduationCap className="size-6 text-accent" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
-                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
+                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
                   Fiqh Umrah Praktis: Dari Niat hingga Tahallul
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -155,7 +155,7 @@ function DonasiPage() {
                   <MapPin className="size-6 text-emerald-deep" />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
-                <h4 className="font-display text-lg font-semibold mt-1.5 leading-snug">
+                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
                   Jejak Cahaya: Makkah dan Madinah
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
@@ -168,7 +168,7 @@ function DonasiPage() {
             <div className="mt-6 grid sm:grid-cols-2 gap-3">
               {[
                 { t: "E-Sertifikat Resmi", d: "Sertifikat digital setelah menyelesaikan kelas" },
-                { t: "Akses Rekaman Permanen", d: "Tonton ulang kapan saja, selamanya" },
+                { t: "Akses Rekaman", d: "Tonton ulang kapan saja, selamanya" },
               ].map((f) => (
                 <div key={f.t} className="flex items-start gap-3 rounded-xl bg-emerald/5 border border-emerald/20 px-4 py-3">
                   <div className="size-8 rounded-lg bg-gradient-emerald grid place-items-center shrink-0 shadow-emerald">
