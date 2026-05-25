@@ -159,6 +159,31 @@ function PesertaPage() {
     toast.success("Status diperbarui");
   };
 
+  const markPaidManual = async (id: string) => {
+    if (!confirm("Tandai donasi sebagai VALID secara manual? Peserta akan langsung bisa lanjut ke tahap Essay.")) return;
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("participants")
+      .update({ payment_status: "paid", paid_at: now })
+      .eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "paid", paid_at: now } : r)));
+    if (detail?.id === id) setDetail({ ...detail, payment_status: "paid", paid_at: now });
+    toast.success("Donasi ditandai valid");
+  };
+
+  const unmarkPaidManual = async (id: string) => {
+    if (!confirm("Batalkan status donasi valid peserta ini?")) return;
+    const { error } = await supabase
+      .from("participants")
+      .update({ payment_status: "unpaid", paid_at: null })
+      .eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "unpaid", paid_at: null } : r)));
+    if (detail?.id === id) setDetail({ ...detail, payment_status: "unpaid", paid_at: null });
+    toast.success("Status donasi dibatalkan");
+  };
+
   const downloadCv = async (path: string, name: string) => {
     const { data, error } = await supabase.storage.from("participant-cv").createSignedUrl(path, 60);
     if (error || !data) { toast.error("Gagal generate link"); return; }
