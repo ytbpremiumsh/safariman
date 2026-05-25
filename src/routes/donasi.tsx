@@ -168,7 +168,7 @@ function DonasiPage() {
             <div className="mt-6 grid sm:grid-cols-2 gap-3">
               {[
                 { t: "E-Sertifikat Resmi", d: "Sertifikat digital setelah menyelesaikan kelas" },
-                { t: "Akses Rekaman Permanen", d: "Tonton ulang kapan saja, selamanya" },
+                { t: "Akses Rekaman", d: "Tonton ulang kapan saja, selamanya" },
               ].map((f) => (
                 <div key={f.t} className="flex items-start gap-3 rounded-xl bg-emerald/5 border border-emerald/20 px-4 py-3">
                   <div className="size-8 rounded-lg bg-gradient-emerald grid place-items-center shrink-0 shadow-emerald">
