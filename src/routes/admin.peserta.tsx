@@ -433,6 +433,39 @@ function PesertaPage() {
                 )}
               </div>
 
+              <div className="mt-6 pt-4 border-t border-border">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Donasi Peserta</div>
+                {detail.payment_status === "paid" ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-sm font-bold border border-accent/40">
+                      <HeartHandshake className="size-4" /> Donasi Valid · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
+                    </span>
+                    <button
+                      onClick={() => unmarkPaidManual(detail.id)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10"
+                    >
+                      <XCircle className="size-3.5" /> Batalkan
+                    </button>
+                  </div>
+                ) : detail.status === "accepted" ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      Peserta lolos berkas. Jika peserta sudah membayar di luar sistem (transfer manual, dll), kamu bisa tandai langsung di sini.
+                    </p>
+                    <button
+                      onClick={() => markPaidManual(detail.id)}
+                      className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold border border-accent/40 shadow-gold hover-lift"
+                    >
+                      <HeartHandshake className="size-4" /> Tandai Donasi Valid (Manual)
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Status donasi terbuka setelah peserta dinyatakan <strong>Lolos</strong>.
+                  </p>
+                )}
+              </div>
+
               <div className="mt-6 pt-4 border-t border-border space-y-2">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Kirim WhatsApp ({detail.whatsapp})</div>
                 <textarea
