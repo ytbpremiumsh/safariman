@@ -210,7 +210,7 @@ function DonasiPage() {
               </button>
             </div>
           ) : (
-            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-6">
               <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
                 <CheckCircle2 className="size-5 text-emerald shrink-0" />
                 <div className="text-sm">
