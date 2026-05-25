@@ -5,15 +5,20 @@ const DEFAULT_TARGET = new Date("2026-08-15T23:59:59+07:00").getTime();
 
 export function Countdown() {
   const [target, setTarget] = useState<number>(DEFAULT_TARGET);
+  const [enabled, setEnabled] = useState<boolean>(true);
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.rpc("get_countdown_target");
-      if (data && typeof data === "string") {
-        const parsed = new Date(data).getTime();
+      const [{ data: tgt }, { data: en }] = await Promise.all([
+        supabase.rpc("get_countdown_target"),
+        supabase.rpc("get_countdown_enabled"),
+      ]);
+      if (tgt && typeof tgt === "string") {
+        const parsed = new Date(tgt).getTime();
         if (!Number.isNaN(parsed)) setTarget(parsed);
       }
+      if (typeof en === "boolean") setEnabled(en);
     })();
   }, []);
 
