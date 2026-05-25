@@ -533,17 +533,8 @@ function Timeline() {
           {steps.map((s, idx) => {
             const btnColors = [
               { bg: "bg-gradient-gold", text: "text-emerald-deep", shadow: "shadow-gold" },
-              { bg: "bg-gradient-emerald", text: "text-white", shadow: "shadow-emerald" },
-              { bg: "bg-gradient-to-r from-sky-400 to-sky-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.6_0.1_220_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-rose-400 to-rose-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.6_0.15_20_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-amber-400 to-orange-500", text: "text-emerald-deep", shadow: "shadow-[0_20px_60px_-20px_oklch(0.75_0.13_60_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-violet-400 to-violet-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.55_0.15_300_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-teal-400 to-teal-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.55_0.1_180_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-fuchsia-400 to-fuchsia-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.55_0.18_330_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-lime-500 to-green-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.6_0.15_140_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-indigo-400 to-indigo-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.5_0.15_260_/_0.45)]" },
-              { bg: "bg-gradient-to-r from-cyan-400 to-cyan-600", text: "text-white", shadow: "shadow-[0_20px_60px_-20px_oklch(0.6_0.12_210_/_0.45)]" },
             ];
+
             const c = btnColors[idx % btnColors.length];
             return (
               <div
