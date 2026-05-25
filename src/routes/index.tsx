@@ -380,18 +380,18 @@ function Persyaratan() {
             </Link>
           </div>
 
-          <div className="relative animate-scale-in">
-            <div className="absolute -inset-3 bg-gradient-gold opacity-20 blur-2xl rounded-3xl" />
-            <div className="relative rounded-3xl overflow-hidden shadow-emerald ring-1 ring-accent/30">
-              <img
-                src={persyaratanPoster}
-                alt="Pemuda Indonesia dalam perjalanan ibadah Safar Iman"
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="w-full h-auto object-cover"
-              />
-            </div>
+          <div className="relative animate-scale-in flex items-end justify-center">
+            {/* Decorative stroke line */}
+            <div aria-hidden className="absolute inset-x-4 bottom-6 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
+            <div aria-hidden className="absolute inset-x-12 bottom-3 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+            <img
+              src={jamaahIhram}
+              alt="Jamaah muda berikhram"
+              loading="lazy"
+              width={1024}
+              height={1024}
+              className="relative w-full max-w-md h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)]"
+            />
           </div>
         </div>
       </div>
