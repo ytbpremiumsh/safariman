@@ -738,19 +738,19 @@ function FinalCTA() {
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       <img src={heroImg} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" />
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-deep/90 via-emerald-deep/85 to-emerald-deep/95" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/80 to-white/90" />
       <div className="absolute inset-0 bg-gradient-glow" />
-      <IslamicPattern className="absolute inset-0 size-full text-accent/10" />
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/5" />
       <div className="absolute top-20 left-1/4 size-32 rounded-full bg-accent/20 blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-1/4 size-40 rounded-full bg-emerald/40 blur-3xl animate-float" style={{ animationDelay: "1s" }} />
+      <div className="absolute bottom-20 right-1/4 size-40 rounded-full bg-gold/30 blur-3xl animate-float" style={{ animationDelay: "1s" }} />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 text-center">
-        <GeometricOrnament className="w-40 h-10 text-accent mx-auto mb-6 opacity-70" />
-        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-semibold text-white leading-tight">
+        <GeometricOrnament className="w-40 h-10 text-emerald mx-auto mb-6 opacity-70" />
+        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-tight">
           Langkah kecil hari ini,<br />
           <span className="text-gradient-gold">menuju Baitullah esok hari</span>
         </h2>
-        <p className="mt-6 text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
           Jangan lewatkan kesempatan emas ini. Daftarkan dirimu sekarang dan jadilah bagian dari perjalanan transformatif Safar Iman.
         </p>
         <Link
@@ -788,8 +788,8 @@ function Footer() {
     },
   ];
   return (
-    <footer className="bg-emerald-deep text-white/80 pt-16 pb-8 relative overflow-hidden">
-      <IslamicPattern className="absolute inset-0 size-full text-white/5" />
+    <footer className="bg-gradient-to-b from-white via-secondary/30 to-background text-foreground/80 pt-16 pb-8 relative overflow-hidden border-t border-border">
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/5" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid md:grid-cols-12 gap-10">
           {/* Brand */}
@@ -797,13 +797,13 @@ function Footer() {
             <div className="bg-white inline-flex rounded-xl px-3 py-2 shadow-gold">
               <img src={logoSafarIman} alt="Safar Iman" className="h-10 w-auto" />
             </div>
-            <p className="mt-5 text-sm text-white/70 leading-relaxed max-w-sm">
-              Program Umrah Gratis untuk generasi muda Indonesia — kolaborasi <strong className="text-white">Hasanah Tour & Travel</strong> × <strong className="text-white">Prestasi Kita</strong>.
+            <p className="mt-5 text-sm text-muted-foreground leading-relaxed max-w-sm">
+              Program Umrah Gratis untuk generasi muda Indonesia — kolaborasi <strong className="text-foreground">Hasanah Tour & Travel</strong> × <strong className="text-foreground">Prestasi Kita</strong>.
             </p>
 
             {/* Partner logo: Hasanah Travel */}
             <div className="mt-5">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-2">Partner Resmi</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-2">Partner Resmi</p>
               <div className="bg-white rounded-xl px-4 py-3 inline-flex items-center shadow-gold">
                 <img src={logoHasanah} alt="Hasanah Tour & Travel" className="h-12 w-auto" loading="lazy" />
               </div>
@@ -811,7 +811,7 @@ function Footer() {
 
             {/* Perizinan & sertifikasi */}
             <div className="mt-5">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 mb-2">Perizinan & Legalitas</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-2">Perizinan & Legalitas</p>
               <div className="bg-white rounded-xl p-3 shadow-gold inline-block max-w-full">
                 <img
                   src={legalitasBadges}
@@ -825,30 +825,30 @@ function Footer() {
 
           {/* Navigation */}
           <div className="md:col-span-2">
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Navigasi</h4>
+            <h4 className="text-foreground font-semibold mb-4 text-sm uppercase tracking-wider">Navigasi</h4>
             <ul className="space-y-2.5 text-sm">
-              <li><a href="#program" className="hover:text-accent transition-colors">Program</a></li>
-              <li><a href="#kuota" className="hover:text-accent transition-colors">Kuota</a></li>
-              <li><a href="#timeline" className="hover:text-accent transition-colors">Timeline</a></li>
-              <li><a href="#faq" className="hover:text-accent transition-colors">FAQ</a></li>
-              <li><Link to="/tentang" className="hover:text-accent transition-colors">Tentang</Link></li>
+              <li><a href="#program" className="hover:text-emerald transition-colors">Program</a></li>
+              <li><a href="#kuota" className="hover:text-emerald transition-colors">Kuota</a></li>
+              <li><a href="#timeline" className="hover:text-emerald transition-colors">Timeline</a></li>
+              <li><a href="#faq" className="hover:text-emerald transition-colors">FAQ</a></li>
+              <li><Link to="/tentang" className="hover:text-emerald transition-colors">Tentang</Link></li>
             </ul>
           </div>
 
           {/* Kontak */}
           <div className="md:col-span-3">
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Kontak</h4>
+            <h4 className="text-foreground font-semibold mb-4 text-sm uppercase tracking-wider">Kontak</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
-                <Phone className="size-4 text-accent shrink-0 mt-0.5" />
-                <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">+62 812-3456-7890</a>
+                <Phone className="size-4 text-emerald shrink-0 mt-0.5" />
+                <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="hover:text-emerald transition-colors">+62 812-3456-7890</a>
               </li>
               <li className="flex items-start gap-2.5">
-                <Mail className="size-4 text-accent shrink-0 mt-0.5" />
-                <a href="mailto:hello@safariman.id" className="hover:text-accent transition-colors">hello@safariman.id</a>
+                <Mail className="size-4 text-emerald shrink-0 mt-0.5" />
+                <a href="mailto:hello@safariman.id" className="hover:text-emerald transition-colors">hello@safariman.id</a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPinned className="size-4 text-accent shrink-0 mt-0.5" />
+                <MapPinned className="size-4 text-emerald shrink-0 mt-0.5" />
                 <span>Semarang, Indonesia</span>
               </li>
             </ul>
@@ -856,7 +856,7 @@ function Footer() {
 
           {/* Instagram */}
           <div className="md:col-span-3">
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Ikuti Kami di Instagram</h4>
+            <h4 className="text-foreground font-semibold mb-4 text-sm uppercase tracking-wider">Ikuti Kami di Instagram</h4>
             <ul className="space-y-2.5">
               {socials.map((s) => (
                 <li key={s.handle}>
@@ -864,14 +864,14 @@ function Footer() {
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 transition-colors"
+                    className="group flex items-center gap-3 rounded-lg bg-muted/40 hover:bg-muted/70 border border-border px-3 py-2 transition-colors"
                   >
                     <div className="size-8 rounded-lg bg-gradient-to-br from-pink-500 via-fuchsia-500 to-amber-400 grid place-items-center shrink-0">
                       <Instagram className="size-4 text-white" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-xs text-white/60 truncate">{s.brand}</div>
-                      <div className="text-sm text-white font-medium truncate group-hover:text-accent transition-colors">{s.handle}</div>
+                      <div className="text-xs text-muted-foreground/70 truncate">{s.brand}</div>
+                      <div className="text-sm text-foreground font-medium truncate group-hover:text-emerald transition-colors">{s.handle}</div>
                     </div>
                   </a>
                 </li>
@@ -882,12 +882,12 @@ function Footer() {
 
         <div className="ornament-divider my-10" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground/60">
           <div>© {new Date().getFullYear()} Safar Iman — Hasanah Tour & Travel × Prestasi Kita. Semua hak dilindungi.</div>
           <div className="flex items-center gap-4">
-            <Link to="/tentang" className="hover:text-accent transition-colors">Tentang</Link>
-            <Link to="/daftar" className="hover:text-accent transition-colors">Daftar</Link>
-            <Link to="/admin/login" className="hover:text-accent transition-colors">Admin</Link>
+            <Link to="/tentang" className="hover:text-emerald transition-colors">Tentang</Link>
+            <Link to="/daftar" className="hover:text-emerald transition-colors">Daftar</Link>
+            <Link to="/admin/login" className="hover:text-emerald transition-colors">Admin</Link>
           </div>
         </div>
       </div>
