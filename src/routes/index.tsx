@@ -192,7 +192,7 @@ function Hero() {
                 Safar Iman
               </span>
               <span className="block mt-3 text-4xl sm:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.1em]">
-                <Typewriter text="Umrah Gratis" />
+                <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Berprestasi", "Makkah & Madinah"]} />
               </span>
             </h1>
 
