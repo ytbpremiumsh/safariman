@@ -21,11 +21,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminPesertaRouteImport } from './routes/admin.peserta'
-import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
 import { Route as ApiPublicMpwaWebhookRouteImport } from './routes/api/public/mpwa-webhook'
 import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
 import { Route as ApiPublicMayarCreateInvoiceRouteImport } from './routes/api/public/mayar-create-invoice'
+import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
+import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
+import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
+import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
 
 const TwibbonRoute = TwibbonRouteImport.update({
@@ -88,14 +92,14 @@ const AdminPesertaRoute = AdminPesertaRouteImport.update({
   path: '/admin/peserta',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
-  id: '/admin/pengaturan',
-  path: '/admin/pengaturan',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanIndexRoute = AdminPengaturanIndexRouteImport.update({
+  id: '/admin/pengaturan/',
+  path: '/admin/pengaturan/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMpwaWebhookRoute = ApiPublicMpwaWebhookRouteImport.update({
@@ -112,6 +116,27 @@ const ApiPublicMayarCreateInvoiceRoute =
   ApiPublicMayarCreateInvoiceRouteImport.update({
     id: '/api/public/mayar-create-invoice',
     path: '/api/public/mayar-create-invoice',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanTwibbonRoute = AdminPengaturanTwibbonRouteImport.update({
+  id: '/admin/pengaturan/twibbon',
+  path: '/admin/pengaturan/twibbon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanPanduanRoute = AdminPengaturanPanduanRouteImport.update({
+  id: '/admin/pengaturan/panduan',
+  path: '/admin/pengaturan/panduan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
+  id: '/admin/pengaturan/donasi',
+  path: '/admin/pengaturan/donasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanCountdownRoute =
+  AdminPengaturanCountdownRouteImport.update({
+    id: '/admin/pengaturan/countdown',
+    path: '/admin/pengaturan/countdown',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicMpwaSplatRoute = ApiPublicMpwaSplatRouteImport.update({
@@ -131,13 +156,17 @@ export interface FileRoutesByFullPath {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
+  '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
+  '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesByTo {
@@ -151,13 +180,17 @@ export interface FileRoutesByTo {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
+  '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
+  '/admin/pengaturan': typeof AdminPengaturanIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRoutesById {
@@ -172,13 +205,17 @@ export interface FileRoutesById {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
+  '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
+  '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/api/public/mpwa/$': typeof ApiPublicMpwaSplatRoute
 }
 export interface FileRouteTypes {
@@ -194,13 +231,17 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/panduan'
+    | '/admin/pengaturan/twibbon'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
+    | '/admin/pengaturan/'
     | '/api/public/mpwa/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -214,13 +255,17 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin'
+    | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/panduan'
+    | '/admin/pengaturan/twibbon'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
+    | '/admin/pengaturan'
     | '/api/public/mpwa/$'
   id:
     | '__root__'
@@ -234,13 +279,17 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
+    | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/panduan'
+    | '/admin/pengaturan/twibbon'
     | '/api/public/mayar-create-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
+    | '/admin/pengaturan/'
     | '/api/public/mpwa/$'
   fileRoutesById: FileRoutesById
 }
@@ -255,13 +304,17 @@ export interface RootRouteChildren {
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminPesertaRoute: typeof AdminPesertaRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
+  AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
+  AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
+  AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
   ApiPublicMayarCreateInvoiceRoute: typeof ApiPublicMayarCreateInvoiceRoute
   ApiPublicMayarWebhookRoute: typeof ApiPublicMayarWebhookRoute
   ApiPublicMpwaWebhookRoute: typeof ApiPublicMpwaWebhookRoute
+  AdminPengaturanIndexRoute: typeof AdminPengaturanIndexRoute
   ApiPublicMpwaSplatRoute: typeof ApiPublicMpwaSplatRoute
 }
 
@@ -351,18 +404,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/pengaturan': {
-      id: '/admin/pengaturan'
-      path: '/admin/pengaturan'
-      fullPath: '/admin/pengaturan'
-      preLoaderRoute: typeof AdminPengaturanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/': {
+      id: '/admin/pengaturan/'
+      path: '/admin/pengaturan'
+      fullPath: '/admin/pengaturan/'
+      preLoaderRoute: typeof AdminPengaturanIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/mpwa-webhook': {
@@ -386,6 +439,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMayarCreateInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/twibbon': {
+      id: '/admin/pengaturan/twibbon'
+      path: '/admin/pengaturan/twibbon'
+      fullPath: '/admin/pengaturan/twibbon'
+      preLoaderRoute: typeof AdminPengaturanTwibbonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/panduan': {
+      id: '/admin/pengaturan/panduan'
+      path: '/admin/pengaturan/panduan'
+      fullPath: '/admin/pengaturan/panduan'
+      preLoaderRoute: typeof AdminPengaturanPanduanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/donasi': {
+      id: '/admin/pengaturan/donasi'
+      path: '/admin/pengaturan/donasi'
+      fullPath: '/admin/pengaturan/donasi'
+      preLoaderRoute: typeof AdminPengaturanDonasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/countdown': {
+      id: '/admin/pengaturan/countdown'
+      path: '/admin/pengaturan/countdown'
+      fullPath: '/admin/pengaturan/countdown'
+      preLoaderRoute: typeof AdminPengaturanCountdownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mpwa/$': {
       id: '/api/public/mpwa/$'
       path: '/api/public/mpwa/$'
@@ -407,13 +488,17 @@ const rootRouteChildren: RootRouteChildren = {
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
-  AdminPengaturanRoute: AdminPengaturanRoute,
   AdminPesertaRoute: AdminPesertaRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
+  AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
+  AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
+  AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
   ApiPublicMayarCreateInvoiceRoute: ApiPublicMayarCreateInvoiceRoute,
   ApiPublicMayarWebhookRoute: ApiPublicMayarWebhookRoute,
   ApiPublicMpwaWebhookRoute: ApiPublicMpwaWebhookRoute,
+  AdminPengaturanIndexRoute: AdminPengaturanIndexRoute,
   ApiPublicMpwaSplatRoute: ApiPublicMpwaSplatRoute,
 }
 export const routeTree = rootRouteImport
