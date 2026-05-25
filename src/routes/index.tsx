@@ -491,7 +491,37 @@ function Timeline() {
           subtitle="Sebelas tahap yang akan kamu lalui menuju Baitullah."
         />
         <div className="relative mt-16">
-          <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent" />
+          {/* Main vertical rail */}
+          <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-accent/10 via-accent to-emerald/40" />
+          {/* Animated shimmer overlay on the rail */}
+          <div
+            className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-[3px] rounded-full opacity-70 pointer-events-none"
+            style={{
+              backgroundImage:
+                "linear-gradient(180deg, transparent 0%, oklch(0.92 0.1 90 / 0.9) 50%, transparent 100%)",
+              backgroundSize: "100% 200px",
+              backgroundRepeat: "no-repeat",
+              animation: "timeline-flow 6s linear infinite",
+            }}
+          />
+          {/* Decorative dashed line behind, for texture */}
+          <div
+            className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px pointer-events-none opacity-60"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(to bottom, oklch(0.78 0.13 85 / 0.5) 0 6px, transparent 6px 14px)",
+            }}
+          />
+          <style>{`
+            @keyframes timeline-flow {
+              0% { background-position: 0 -200px; }
+              100% { background-position: 0 calc(100% + 200px); }
+            }
+            @keyframes node-ping {
+              0% { transform: scale(1); opacity: 0.6; }
+              80%, 100% { transform: scale(1.8); opacity: 0; }
+            }
+          `}</style>
           {steps.map((s, idx) => (
             <div
               key={s.t}
@@ -501,9 +531,29 @@ function Timeline() {
               style={{ animationDelay: `${idx * 0.1}s` }}
             >
               <div className={`pl-16 sm:pl-0 ${idx % 2 === 0 ? "sm:text-right sm:pr-12" : "sm:pl-12"}`}>
-                <div className="bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent font-semibold">
-                    <span>Tahap {idx + 1}</span>
+                <div className="relative bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift group">
+                  {/* Connector dash from card to center rail (desktop) */}
+                  <div
+                    className={`hidden sm:block absolute top-8 h-px w-10 pointer-events-none ${
+                      idx % 2 === 0 ? "right-[-2.5rem]" : "left-[-2.5rem]"
+                    }`}
+                    style={{
+                      backgroundImage:
+                        "repeating-linear-gradient(to right, oklch(0.78 0.13 85 / 0.7) 0 6px, transparent 6px 10px)",
+                    }}
+                  />
+                  {/* Connector dash from card to left rail (mobile) */}
+                  <div
+                    className="sm:hidden absolute top-8 left-[-2.5rem] h-px w-10 pointer-events-none"
+                    style={{
+                      backgroundImage:
+                        "repeating-linear-gradient(to right, oklch(0.78 0.13 85 / 0.7) 0 6px, transparent 6px 10px)",
+                    }}
+                  />
+                  <div className={`flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent font-semibold ${idx % 2 === 0 ? "sm:justify-end" : ""}`}>
+                    <span className="inline-flex items-center justify-center size-6 rounded-full bg-gradient-gold text-emerald-deep text-[11px] font-bold shadow-gold">
+                      {idx + 1}
+                    </span>
                     <span className="text-muted-foreground/60">•</span>
                     <span className="text-foreground/70 normal-case tracking-normal font-medium">{s.date}</span>
                   </div>
@@ -521,10 +571,15 @@ function Timeline() {
                   )}
                 </div>
               </div>
-              <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-4">
+              <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-4 z-10">
                 <div className="relative">
+                  {/* Pulsing ring */}
+                  <div
+                    className="absolute inset-0 rounded-full bg-accent/50"
+                    style={{ animation: `node-ping 2.4s cubic-bezier(0,0,0.2,1) infinite`, animationDelay: `${idx * 0.2}s` }}
+                  />
                   <div className="absolute inset-0 bg-accent/40 rounded-full blur-lg" />
-                  <div className="relative size-12 rounded-full bg-gradient-gold grid place-items-center shadow-gold">
+                  <div className="relative size-12 rounded-full bg-gradient-gold grid place-items-center shadow-gold ring-4 ring-background">
                     <s.i className="size-5 text-emerald-deep" />
                   </div>
                 </div>
