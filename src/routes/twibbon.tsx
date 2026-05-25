@@ -244,9 +244,6 @@ function TwibbonPage() {
 
 📍 Meeting point menyesuaikan lokasi bandara terdekat peserta terpilih.
 
-Tersedia juga jalur Self Funded & Partial Funded (kuota terbatas).
-
-Yuk jadi bagian dari Safar Iman — perjalanan iman yang mengubah hidupmu.
 Sampai jumpa di Makkah & Madinah! 🕋✨
 
 #SafarIman #UmrahGratis #FullyFunded #AnakMudaBerprestasi
