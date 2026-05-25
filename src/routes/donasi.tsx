@@ -165,17 +165,23 @@ function DonasiPage() {
 
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald" /> E-Sertifikat Resmi
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald" /> Akses Rekaman Permanen
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-emerald" /> Akses Komunitas Alumni
-              </span>
+            <div className="mt-6 grid sm:grid-cols-2 gap-3">
+              {[
+                { t: "E-Sertifikat Resmi", d: "Sertifikat digital setelah menyelesaikan kelas" },
+                { t: "Akses Rekaman Permanen", d: "Tonton ulang kapan saja, selamanya" },
+              ].map((f) => (
+                <div key={f.t} className="flex items-start gap-3 rounded-xl bg-emerald/5 border border-emerald/20 px-4 py-3">
+                  <div className="size-8 rounded-lg bg-gradient-emerald grid place-items-center shrink-0 shadow-emerald">
+                    <CheckCircle2 className="size-4 text-accent" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">{f.t}</div>
+                    <div className="text-xs text-muted-foreground leading-relaxed">{f.d}</div>
+                  </div>
+                </div>
+              ))}
             </div>
+
           </div>
 
           {!info ? (
