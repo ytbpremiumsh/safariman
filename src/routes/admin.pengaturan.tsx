@@ -222,6 +222,17 @@ function PengaturanPage() {
           <div className="font-semibold">Waktu Penutupan Pendaftaran (Countdown Landing)</div>
         </div>
         <p className="text-xs text-muted-foreground">Tanggal & waktu ini akan ditampilkan pada countdown di halaman utama.</p>
+
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3">
+          <div>
+            <div className="text-sm font-medium">Tampilkan Countdown di Landing</div>
+            <div className="text-xs text-muted-foreground">
+              {countdownEnabled ? "Aktif — section countdown ditampilkan." : "Nonaktif — section countdown disembunyikan dari halaman utama."}
+            </div>
+          </div>
+          <Switch checked={countdownEnabled} onCheckedChange={toggleCountdownEnabled} />
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-center gap-3">
           <Input type="datetime-local" value={countdownTarget} onChange={(e) => setCountdownTarget(e.target.value)} className="max-w-xs" />
           <button onClick={saveCountdown} disabled={savingCountdown} className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60 w-fit">
