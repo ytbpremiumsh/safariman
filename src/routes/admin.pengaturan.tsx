@@ -72,13 +72,25 @@ function PengaturanPage() {
     if (!countdownTarget) { toast.error("Pilih tanggal & waktu"); return; }
     setSavingCountdown(true);
     const iso = new Date(countdownTarget).toISOString();
-    const { error } = await supabase.from("app_settings").upsert({
-      key: "countdown_target", value: iso, updated_at: new Date().toISOString(),
-    });
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "countdown_target", value: iso, updated_at: now },
+      { key: "countdown_enabled", value: countdownEnabled ? "true" : "false", updated_at: now },
+    ]);
     setSavingCountdown(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Waktu countdown disimpan");
+    toast.success("Pengaturan countdown disimpan");
   };
+
+  const toggleCountdownEnabled = async (next: boolean) => {
+    setCountdownEnabled(next);
+    const { error } = await supabase.from("app_settings").upsert({
+      key: "countdown_enabled", value: next ? "true" : "false", updated_at: new Date().toISOString(),
+    });
+    if (error) { toast.error(error.message); setCountdownEnabled(!next); return; }
+    toast.success(next ? "Countdown diaktifkan" : "Countdown dinonaktifkan");
+  };
+
 
   const savePanduan = async () => {
     const v = panduanUrl.trim();
