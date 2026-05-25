@@ -596,7 +596,7 @@ function Gallery() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Galeri"
-          title={<>Jejak <span className="text-gradient-emerald">Safar Iman</span></>}
+          title={<>Hasanah <span className="text-gradient-emerald">Tour & Travel</span></>}
           subtitle="Momen ibadah, ilmu, dan kebaikan dari perjalanan sebelumnya."
         />
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-14 auto-rows-[180px] sm:auto-rows-[220px]">
