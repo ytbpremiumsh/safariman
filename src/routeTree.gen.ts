@@ -21,7 +21,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminPesertaRouteImport } from './routes/admin.peserta'
-import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicMpwaWebhookRouteImport } from './routes/api/public/mpwa-webhook'
 import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
@@ -88,11 +87,6 @@ const AdminPesertaRoute = AdminPesertaRouteImport.update({
   path: '/admin/peserta',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
-  id: '/admin/pengaturan',
-  path: '/admin/pengaturan',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -131,7 +125,6 @@ export interface FileRoutesByFullPath {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
@@ -151,7 +144,6 @@ export interface FileRoutesByTo {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
@@ -172,7 +164,6 @@ export interface FileRoutesById {
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/peserta': typeof AdminPesertaRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
@@ -194,7 +185,6 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
@@ -214,7 +204,6 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin'
@@ -234,7 +223,6 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/twibbon'
     | '/admin/login'
-    | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/wa-setup'
     | '/admin/'
@@ -255,7 +243,6 @@ export interface RootRouteChildren {
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminPesertaRoute: typeof AdminPesertaRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -351,13 +338,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/pengaturan': {
-      id: '/admin/pengaturan'
-      path: '/admin/pengaturan'
-      fullPath: '/admin/pengaturan'
-      preLoaderRoute: typeof AdminPengaturanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -407,7 +387,6 @@ const rootRouteChildren: RootRouteChildren = {
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
   AdminLoginRoute: AdminLoginRoute,
-  AdminPengaturanRoute: AdminPengaturanRoute,
   AdminPesertaRoute: AdminPesertaRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -419,3 +398,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
