@@ -185,7 +185,7 @@ function DonasiPage() {
           </div>
 
           {!info ? (
-            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto">
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">
               <div className="size-14 rounded-2xl bg-gradient-emerald grid place-items-center mx-auto mb-5 shadow-emerald">
                 <KeyRound className="size-6 text-accent" />
               </div>
