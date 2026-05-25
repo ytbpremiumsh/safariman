@@ -111,7 +111,7 @@ function DonasiPage() {
             {[
               { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
-              { i: Users, t: "Operasional Program", d: "Menjaga keberlangsungan kegiatan dan ekosistem komunitas." },
+              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman." },
             ].map((b) => (
               <div key={b.t} className="rounded-2xl bg-card border border-border p-5">
                 <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
@@ -129,14 +129,18 @@ function DonasiPage() {
               <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-bold bg-gradient-emerald px-4 py-2 rounded-full shadow-emerald">
                 <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
               </span>
+              <h3 className="mt-4 font-display text-2xl sm:text-3xl font-bold leading-tight max-w-2xl mx-auto">
+                Seluruh peserta yang berkontribusi <span className="text-emerald">mendapatkan akses Eksklusif</span> ke <span className="bg-gradient-gold bg-clip-text text-transparent">Kelas Online</span> &amp; <span className="bg-gradient-gold bg-clip-text text-transparent">Kajian Sirah</span>
+              </h3>
               <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Sebagai bentuk terima kasih, seluruh peserta yang turut berkontribusi juga kami persembahkan akses penuh ke program pembelajaran berikut.
+                Tetap dalam koridor <strong className="text-foreground">syariat</strong> — kontribusi kebaikan dipadukan dengan manfaat ilmu yang langsung kamu terima.
               </p>
             </div>
 
 
             <div className="grid sm:grid-cols-2 gap-5">
-              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col">
+              <div className="bg-card border-2 border-emerald/30 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
+                <span className="absolute top-3 right-3 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white px-2 py-1 rounded-full">Eksklusif</span>
                 <div className="size-12 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-4">
                   <GraduationCap className="size-6 text-accent" />
                 </div>
@@ -149,7 +153,8 @@ function DonasiPage() {
                 </p>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-6 hover-lift flex flex-col">
+              <div className="bg-card border-2 border-accent/40 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
+                <span className="absolute top-3 right-3 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep px-2 py-1 rounded-full">Eksklusif</span>
                 <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-4">
                   <MapPin className="size-6 text-emerald-deep" />
                 </div>
