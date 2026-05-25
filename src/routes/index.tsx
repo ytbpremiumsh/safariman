@@ -738,19 +738,19 @@ function FinalCTA() {
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       <img src={heroImg} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" />
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-deep/90 via-emerald-deep/85 to-emerald-deep/95" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/80 to-white/90" />
       <div className="absolute inset-0 bg-gradient-glow" />
-      <IslamicPattern className="absolute inset-0 size-full text-accent/10" />
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/5" />
       <div className="absolute top-20 left-1/4 size-32 rounded-full bg-accent/20 blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-1/4 size-40 rounded-full bg-emerald/40 blur-3xl animate-float" style={{ animationDelay: "1s" }} />
+      <div className="absolute bottom-20 right-1/4 size-40 rounded-full bg-gold/30 blur-3xl animate-float" style={{ animationDelay: "1s" }} />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 text-center">
-        <GeometricOrnament className="w-40 h-10 text-accent mx-auto mb-6 opacity-70" />
-        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-semibold text-white leading-tight">
+        <GeometricOrnament className="w-40 h-10 text-emerald mx-auto mb-6 opacity-70" />
+        <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-semibold text-foreground leading-tight">
           Langkah kecil hari ini,<br />
           <span className="text-gradient-gold">menuju Baitullah esok hari</span>
         </h2>
-        <p className="mt-6 text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
           Jangan lewatkan kesempatan emas ini. Daftarkan dirimu sekarang dan jadilah bagian dari perjalanan transformatif Safar Iman.
         </p>
         <Link
