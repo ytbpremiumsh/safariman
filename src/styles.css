@@ -227,4 +227,19 @@
     transform: translateY(-6px);
     box-shadow: var(--shadow-gold);
   }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.15) rotate(180deg); }
+  }
+  .animate-twinkle { animation: twinkle 1.6s ease-in-out infinite; }
+  .animate-twinkle-delay { animation: twinkle 1.6s ease-in-out infinite 0.4s; }
+  .animate-twinkle-slow { animation: twinkle 2.2s ease-in-out infinite 0.8s; }
+
+  @keyframes badge-glow {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 50%, transparent), 0 0 12px color-mix(in oklab, var(--accent) 30%, transparent); }
+    50% { box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 0%, transparent), 0 0 24px color-mix(in oklab, var(--accent) 60%, transparent); }
+  }
+  .animate-badge-glow { animation: badge-glow 2s ease-in-out infinite; }
 }
+
