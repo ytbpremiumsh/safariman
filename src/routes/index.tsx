@@ -283,6 +283,14 @@ function Hero() {
 }
 
 function CountdownSection() {
+  const [enabled, setEnabled] = useState<boolean>(true);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("get_countdown_enabled");
+      if (typeof data === "boolean") setEnabled(data);
+    })();
+  }, []);
+  if (!enabled) return null;
   return (
     <section className="relative py-16 sm:py-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/40 to-background" />
