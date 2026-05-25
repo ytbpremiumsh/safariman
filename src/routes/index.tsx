@@ -25,6 +25,7 @@ import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
+import logoSafarImanBadge from "@/assets/logo-safar-iman-badge.png";
 import legalitasBadges from "@/assets/legalitas-badges-hd.png";
 
 export const Route = createFileRoute("/")({
@@ -257,7 +258,7 @@ function Hero() {
 
               {/* floating logo badge */}
               <div className="absolute -top-6 -left-6 size-28 rounded-2xl bg-white border border-accent/40 shadow-gold flex items-center justify-center p-3 rotate-[-6deg] hover:rotate-0 transition-transform">
-                <img src={logoSafarIman} alt="Safar Iman" className="size-full object-contain" />
+                <img src={logoSafarImanBadge} alt="Safar Iman" className="size-full object-contain" />
               </div>
 
               {/* floating mini card — Eskalator Masjidil Haram */}
