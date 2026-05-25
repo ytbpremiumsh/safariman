@@ -17,6 +17,7 @@ function PengaturanPage() {
   const [loading, setLoading] = useState(true);
 
   const [countdownTarget, setCountdownTarget] = useState("");
+  const [countdownEnabled, setCountdownEnabled] = useState(true);
   const [savingCountdown, setSavingCountdown] = useState(false);
 
   const [mayarKey, setMayarKey] = useState("");
