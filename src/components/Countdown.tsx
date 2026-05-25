@@ -44,6 +44,8 @@ export function Countdown() {
     { v: t.s, l: "Detik" },
   ];
 
+  if (!enabled) return null;
+
   return (
     <div className="flex gap-3 sm:gap-4 justify-center">
       {items.map((i) => (
