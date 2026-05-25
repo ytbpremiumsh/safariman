@@ -100,24 +100,47 @@ function Nav() {
   );
 }
 
-function Typewriter({ text, speed = 110 }: { text: string; speed?: number }) {
-  const [i, setI] = useState(0);
+function Typewriter({
+  words,
+  typeSpeed = 110,
+  deleteSpeed = 55,
+  holdTime = 1600,
+}: {
+  words: string[];
+  typeSpeed?: number;
+  deleteSpeed?: number;
+  holdTime?: number;
+}) {
+  const [wordIndex, setWordIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
-    setI(0);
-    const id = setInterval(() => {
-      setI((n) => {
-        if (n >= text.length) {
-          clearInterval(id);
-          return n;
-        }
-        return n + 1;
-      });
-    }, speed);
-    return () => clearInterval(id);
-  }, [text, speed]);
+    const current = words[wordIndex] ?? "";
+    let delay = deleting ? deleteSpeed : typeSpeed;
+    if (!deleting && charCount === current.length) delay = holdTime;
+    if (deleting && charCount === 0) delay = 300;
+
+    const id = setTimeout(() => {
+      if (!deleting && charCount < current.length) {
+        setCharCount(charCount + 1);
+      } else if (!deleting && charCount === current.length) {
+        if (words.length > 1) setDeleting(true);
+      } else if (deleting && charCount > 0) {
+        setCharCount(charCount - 1);
+      } else {
+        setDeleting(false);
+        setWordIndex((wordIndex + 1) % words.length);
+      }
+    }, delay);
+
+    return () => clearTimeout(id);
+  }, [charCount, deleting, wordIndex, words, typeSpeed, deleteSpeed, holdTime]);
+
+  const current = words[wordIndex] ?? "";
   return (
     <span>
-      {text.slice(0, i)}
+      {current.slice(0, charCount)}
       <span className="inline-block w-[0.08em] -mb-[0.05em] h-[0.9em] align-middle bg-current ml-1 animate-pulse" />
     </span>
   );
