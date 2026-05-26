@@ -125,7 +125,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           {code ? (
-            <SuccessCard code={code} name={data.full_name} />
+            <SuccessCard code={code} name={data.full_name} kind={kind} />
+
           ) : (
             <>
               <div className="text-center mb-8 animate-fade-up">
