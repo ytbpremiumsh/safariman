@@ -610,9 +610,9 @@ function Timeline() {
 
 function Testimonials() {
   const items = [
-    { n: "Aisyah R.", r: "Alumni Umrah 2024", q: "Pengalaman spiritual dan profesional yang berubah hidup. Networking-nya luar biasa.", rating: 5 },
-    { n: "Fahri H.", r: "Mahasiswa UI", q: "Seleksi yang adil, fasilitas premium. Saya pulang dengan motivasi baru.", rating: 5 },
-    { n: "Salma K.", r: "Influencer Muslim", q: "Konsep program-nya brilian. Memadukan ibadah, ilmu, dan kontribusi.", rating: 5 },
+    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Pengalaman spiritual dan profesional yang berubah hidup. Networking-nya luar biasa.", rating: 5 },
+    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Seleksi yang adil, fasilitas premium. Saya pulang dengan motivasi baru.", rating: 5 },
+    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Konsep program-nya brilian. Memadukan ibadah, ilmu, dan kontribusi.", rating: 5 },
     { n: "Rizky A.", r: "Pelajar SMA", q: "Awalnya tidak percaya gratis, ternyata benar fully funded. Alhamdulillah.", rating: 5 },
   ];
   return (
