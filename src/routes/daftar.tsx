@@ -208,7 +208,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   );
 }
 
-function SuccessCard({ code, name }: { code: string; name: string }) {
+function SuccessCard({ code, name, kind }: { code: string; name: string; kind: Kind }) {
+  const isSelf = kind === "self_funded";
   const copy = () => {
     navigator.clipboard.writeText(code);
     toast.success("Kode disalin");
@@ -224,7 +225,9 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
         </h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto">
           Pendaftaranmu berhasil tercatat. Simpan <strong>Kode Pendaftaran</strong> di bawah ini —
-          kamu wajib memasukkannya saat mengirim berkas & essay.
+          {isSelf
+            ? " gunakan untuk mengecek status pendaftaranmu kapan saja."
+            : " kamu wajib memasukkannya saat mengirim berkas & essay."}
         </p>
       </div>
 
@@ -238,26 +241,49 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
         </button>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
-          <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
-            <ImageIcon className="size-5 text-accent" />
-          </div>
-          <div>
-            <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
-            <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
-          </div>
-        </Link>
-        <Link to="/berkas" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
-          <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
-            <FileText className="size-5 text-emerald-deep" />
-          </div>
-          <div>
-            <div className="font-display text-lg font-semibold">Kirim Berkas & Essay</div>
-            <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
-          </div>
-        </Link>
-      </div>
+      {isSelf ? (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
+            <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
+              <ImageIcon className="size-5 text-accent" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
+            </div>
+          </Link>
+          <Link to="/sukses" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
+            <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
+              <CheckCircle2 className="size-5 text-emerald-deep" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Cek Status Pendaftaran</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
+            </div>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
+            <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
+              <ImageIcon className="size-5 text-accent" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
+            </div>
+          </Link>
+          <Link to="/berkas" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
+            <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
+              <FileText className="size-5 text-emerald-deep" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Kirim Berkas & Essay</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
+            </div>
+          </Link>
+        </div>
+      )}
 
       <div className="mt-8 text-center">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Kembali ke Beranda</Link>
@@ -265,6 +291,7 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
     </div>
   );
 }
+
 
 function StepHeader({ n, t, d }: { n: number; t: string; d: string }) {
   return (
