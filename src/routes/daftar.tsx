@@ -125,7 +125,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           {code ? (
-            <SuccessCard code={code} name={data.full_name} />
+            <SuccessCard code={code} name={data.full_name} kind={kind} />
+
           ) : (
             <>
               <div className="text-center mb-8 animate-fade-up">
@@ -173,7 +174,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
 
               <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">
                 {step === 1 && <Step1 data={data} set={set} />}
-                {step === 2 && <Step2Review data={data} />}
+                {step === 2 && <Step2Review data={data} kind={kind} />}
 
                 <div className="mt-10 flex items-center justify-between gap-3">
                   {step > 1 ? (
@@ -207,7 +208,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   );
 }
 
-function SuccessCard({ code, name }: { code: string; name: string }) {
+function SuccessCard({ code, name, kind }: { code: string; name: string; kind: Kind }) {
+  const isSelf = kind === "self_funded";
   const copy = () => {
     navigator.clipboard.writeText(code);
     toast.success("Kode disalin");
@@ -223,7 +225,9 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
         </h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto">
           Pendaftaranmu berhasil tercatat. Simpan <strong>Kode Pendaftaran</strong> di bawah ini —
-          kamu wajib memasukkannya saat mengirim berkas & essay.
+          {isSelf
+            ? " gunakan untuk mengecek status pendaftaranmu kapan saja."
+            : " kamu wajib memasukkannya saat mengirim berkas & essay."}
         </p>
       </div>
 
@@ -237,26 +241,49 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
         </button>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
-          <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
-            <ImageIcon className="size-5 text-accent" />
-          </div>
-          <div>
-            <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
-            <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
-          </div>
-        </Link>
-        <Link to="/berkas" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
-          <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
-            <FileText className="size-5 text-emerald-deep" />
-          </div>
-          <div>
-            <div className="font-display text-lg font-semibold">Kirim Berkas & Essay</div>
-            <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
-          </div>
-        </Link>
-      </div>
+      {isSelf ? (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
+            <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
+              <ImageIcon className="size-5 text-accent" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
+            </div>
+          </Link>
+          <Link to="/sukses" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
+            <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
+              <CheckCircle2 className="size-5 text-emerald-deep" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Cek Status Pendaftaran</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
+            </div>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
+            <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
+              <ImageIcon className="size-5 text-accent" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
+            </div>
+          </Link>
+          <Link to="/berkas" className="group bg-card border border-accent rounded-2xl p-5 hover-lift flex items-start gap-4 shadow-gold/50">
+            <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shrink-0">
+              <FileText className="size-5 text-emerald-deep" />
+            </div>
+            <div>
+              <div className="font-display text-lg font-semibold">Kirim Berkas & Essay</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Gunakan kode pendaftaran di atas</div>
+            </div>
+          </Link>
+        </div>
+      )}
 
       <div className="mt-8 text-center">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Kembali ke Beranda</Link>
@@ -264,6 +291,7 @@ function SuccessCard({ code, name }: { code: string; name: string }) {
     </div>
   );
 }
+
 
 function StepHeader({ n, t, d }: { n: number; t: string; d: string }) {
   return (
@@ -328,7 +356,8 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
   );
 }
 
-function Step2Review({ data }: { data: FormData }) {
+function Step2Review({ data, kind }: { data: FormData; kind: Kind }) {
+  const isSelf = kind === "self_funded";
   return (
     <div>
       <StepHeader n={2} t="Review & Submit" d="Periksa kembali data kamu sebelum mengirim." />
@@ -345,7 +374,9 @@ function Step2Review({ data }: { data: FormData }) {
       </div>
       <div className="mt-6 rounded-2xl bg-accent/10 border border-accent/30 p-4 text-sm text-muted-foreground">
         Setelah daftar, kamu akan mendapatkan <strong className="text-foreground">Kode Pendaftaran</strong>.
-        Gunakan kode itu untuk akses halaman <strong className="text-foreground">Kirim Berkas & Essay</strong>.
+        {isSelf
+          ? <> Simpan kode ini untuk <strong className="text-foreground">mengecek status pendaftaran</strong> kapan saja. Jalur Self Funded tidak memerlukan pengiriman berkas maupun essay.</>
+          : <> Gunakan kode itu untuk akses halaman <strong className="text-foreground">Kirim Berkas & Essay</strong>.</>}
       </div>
     </div>
   );
