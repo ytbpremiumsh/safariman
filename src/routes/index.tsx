@@ -212,7 +212,7 @@ function Hero() {
             >
               Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
               bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour
-              yang sepenuhnya dibiayai, tanpa biaya pendaftaran.
+              yang sepenuhnya dibiayai.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
