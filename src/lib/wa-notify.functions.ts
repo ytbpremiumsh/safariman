@@ -13,6 +13,9 @@ const TPL_KEY: Record<Event, string> = {
   berkas: "wa_template_berkas",
   essay: "wa_template_essay",
 };
+const TPL_KEY_SELF: Partial<Record<Event, string>> = {
+  pendaftaran: "wa_template_pendaftaran_self",
+};
 
 const KATEGORI_LABEL: Record<string, string> = {
   fully_funded: "Reguler (Fully Funded)",
