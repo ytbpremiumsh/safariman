@@ -356,7 +356,8 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
   );
 }
 
-function Step2Review({ data }: { data: FormData }) {
+function Step2Review({ data, kind }: { data: FormData; kind: Kind }) {
+  const isSelf = kind === "self_funded";
   return (
     <div>
       <StepHeader n={2} t="Review & Submit" d="Periksa kembali data kamu sebelum mengirim." />
@@ -373,7 +374,9 @@ function Step2Review({ data }: { data: FormData }) {
       </div>
       <div className="mt-6 rounded-2xl bg-accent/10 border border-accent/30 p-4 text-sm text-muted-foreground">
         Setelah daftar, kamu akan mendapatkan <strong className="text-foreground">Kode Pendaftaran</strong>.
-        Gunakan kode itu untuk akses halaman <strong className="text-foreground">Kirim Berkas & Essay</strong>.
+        {isSelf
+          ? <> Simpan kode ini untuk <strong className="text-foreground">mengecek status pendaftaran</strong> kapan saja. Jalur Self Funded tidak memerlukan pengiriman berkas maupun essay.</>
+          : <> Gunakan kode itu untuk akses halaman <strong className="text-foreground">Kirim Berkas & Essay</strong>.</>}
       </div>
     </div>
   );
