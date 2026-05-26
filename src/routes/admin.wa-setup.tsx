@@ -59,11 +59,12 @@ export const Route = createFileRoute("/admin/wa-setup")({
 });
 
 
-const TEMPLATE_KEYS = ["wa_template_pendaftaran", "wa_template_berkas", "wa_template_lolos", "wa_template_ditolak", "wa_template_custom"] as const;
+const TEMPLATE_KEYS = ["wa_template_pendaftaran", "wa_template_pendaftaran_self", "wa_template_berkas", "wa_template_lolos", "wa_template_ditolak", "wa_template_custom"] as const;
 type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 const TEMPLATE_META: Record<TemplateKey, { title: string; desc: string }> = {
-  wa_template_pendaftaran: { title: "Notifikasi Pendaftaran", desc: "Dikirim otomatis saat peserta baru selesai mendaftar." },
+  wa_template_pendaftaran: { title: "Notifikasi Pendaftaran (Reguler)", desc: "Dikirim otomatis saat peserta jalur Reguler / Fully Funded selesai mendaftar. Sertakan info tahap Berkas & Essay." },
+  wa_template_pendaftaran_self: { title: "Notifikasi Pendaftaran (Self Funded)", desc: "Dikirim otomatis untuk peserta jalur Self Funded. Tidak perlu menyebut tahap Berkas / Essay — cukup info Kode Pendaftaran untuk cek status." },
   wa_template_berkas: { title: "Notifikasi Berkas Diterima", desc: "Dikirim otomatis saat peserta selesai mengirim berkas & essay." },
   wa_template_lolos: { title: "Notifikasi Lolos", desc: "Dikirim saat peserta dinyatakan diterima." },
   wa_template_ditolak: { title: "Notifikasi Ditolak", desc: "Dikirim saat peserta tidak lolos." },
