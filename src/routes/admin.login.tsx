@@ -104,13 +104,14 @@ function AdminLoginPage() {
             {busy ? <Loader2 className="size-4 animate-spin" /> : mode === "login" ? "Masuk" : "Daftar"}
           </button>
 
-          <div className="mt-5 text-center text-xs text-muted-foreground">
-            {mode === "login" ? (
-              <>Belum ada admin? <button type="button" onClick={() => setMode("signup")} className="text-accent font-semibold hover:underline">Daftar admin pertama</button></>
-            ) : (
-              <>Sudah punya akun? <button type="button" onClick={() => setMode("login")} className="text-accent font-semibold hover:underline">Login</button></>
-            )}
-          </div>
+          {mode === "signup" && (
+            <div className="mt-5 text-center text-xs text-muted-foreground">
+              Sudah punya akun?{" "}
+              <button type="button" onClick={() => setMode("login")} className="text-accent font-semibold hover:underline">
+                Login
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>
