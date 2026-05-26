@@ -106,6 +106,7 @@ function WaSetupPage() {
       setSender(map.mpwa_sender ?? "");
       setTpl({
         wa_template_pendaftaran: map.wa_template_pendaftaran ?? "",
+        wa_template_pendaftaran_self: map.wa_template_pendaftaran_self ?? "",
         wa_template_berkas: map.wa_template_berkas ?? "",
         wa_template_lolos: map.wa_template_lolos ?? "",
         wa_template_ditolak: map.wa_template_ditolak ?? "",
