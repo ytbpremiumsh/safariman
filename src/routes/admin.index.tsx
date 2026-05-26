@@ -227,3 +227,22 @@ function QuickLink({ to, title, desc }: { to: string; title: string; desc: strin
     </Link>
   );
 }
+
+function TodayCard({
+  label, value, icon, tone,
+}: { label: string; value: number; icon: React.ReactNode; tone: "emerald" | "accent" | "rose" }) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald",
+    accent: "bg-accent/10 text-accent",
+    rose: "bg-rose-500/10 text-rose-600",
+  } as const;
+  return (
+    <div className="rounded-xl border border-border bg-secondary/40 p-4 flex items-center gap-3">
+      <div className={`size-10 rounded-xl grid place-items-center ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="font-display text-2xl font-semibold tracking-tight leading-tight">{value}</div>
+      </div>
+    </div>
+  );
+}
