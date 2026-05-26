@@ -34,10 +34,13 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
           // Cari peserta
           const { data: p } = await supabaseAdmin
             .from("participants")
-            .select("full_name, email, whatsapp, status, payment_status, payment_url, registration_code")
+            .select("full_name, email, whatsapp, status, payment_status, payment_url, registration_code, category")
             .ilike("registration_code", code)
             .maybeSingle();
           if (!p) return Response.json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
+          if (p.category === "self_funded") {
+            return Response.json({ ok: false, error: "Peserta Self Funded tidak diwajibkan donasi" }, { status: 403 });
+          }
           if (p.status !== "accepted") {
             return Response.json({ ok: false, error: "Peserta belum dinyatakan lolos berkas administrasi" }, { status: 403 });
           }
