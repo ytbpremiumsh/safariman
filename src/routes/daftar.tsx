@@ -174,7 +174,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
 
               <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">
                 {step === 1 && <Step1 data={data} set={set} />}
-                {step === 2 && <Step2Review data={data} />}
+                {step === 2 && <Step2Review data={data} kind={kind} />}
 
                 <div className="mt-10 flex items-center justify-between gap-3">
                   {step > 1 ? (
