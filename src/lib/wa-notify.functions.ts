@@ -13,6 +13,9 @@ const TPL_KEY: Record<Event, string> = {
   berkas: "wa_template_berkas",
   essay: "wa_template_essay",
 };
+const TPL_KEY_SELF: Partial<Record<Event, string>> = {
+  pendaftaran: "wa_template_pendaftaran_self",
+};
 
 const KATEGORI_LABEL: Record<string, string> = {
   fully_funded: "Reguler (Fully Funded)",
@@ -48,10 +51,22 @@ export const notifyWaEvent = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { event, code } = data;
 
+    // Ambil peserta dulu untuk tahu kategori → pilih template yg sesuai
+    const { data: p } = await supabaseAdmin
+      .from("participants")
+      .select("full_name, whatsapp, registration_code, category")
+      .ilike("registration_code", code)
+      .maybeSingle();
+    if (!p) return { ok: false, error: "Peserta tidak ditemukan" };
+
+    const isSelf = p.category === "self_funded";
+    const selfKey = TPL_KEY_SELF[event];
+    const tplKey = isSelf && selfKey ? selfKey : TPL_KEY[event];
+
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
-      .in("key", ["mpwa_api_key", "mpwa_sender", TPL_KEY[event]]);
+      .in("key", ["mpwa_api_key", "mpwa_sender", tplKey, TPL_KEY[event]]);
 
     const cfg = Object.fromEntries((settings ?? []).map((r) => [r.key, r.value ?? ""])) as Record<
       string,
@@ -59,17 +74,11 @@ export const notifyWaEvent = createServerFn({ method: "POST" })
     >;
     const apiKey = cfg.mpwa_api_key;
     const sender = cfg.mpwa_sender;
-    const tpl = cfg[TPL_KEY[event]];
+    // Fallback ke template umum kalau template self-funded kosong
+    const tpl = cfg[tplKey] || cfg[TPL_KEY[event]];
     if (!apiKey || !sender || !tpl) {
       return { ok: false, error: "MPWA belum dikonfigurasi" };
     }
-
-    const { data: p } = await supabaseAdmin
-      .from("participants")
-      .select("full_name, whatsapp, registration_code, category")
-      .ilike("registration_code", code)
-      .maybeSingle();
-    if (!p) return { ok: false, error: "Peserta tidak ditemukan" };
 
     const message = fill(tpl, {
       nama: p.full_name,

@@ -181,6 +181,7 @@ export type Database = {
       lookup_payment_status_by_code: {
         Args: { p_code: string }
         Returns: {
+          category: Database["public"]["Enums"]["program_category"]
           full_name: string
           id: string
           paid_at: string
