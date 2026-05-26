@@ -228,7 +228,24 @@ function DonasiPage() {
                 </div>
               </div>
 
-              {info.payment_status === "paid" ? (
+              {info.category === "self_funded" ? (
+                <div className="text-center py-4">
+                  <div className="size-16 rounded-full bg-gradient-gold grid place-items-center mx-auto mb-4 shadow-gold">
+                    <Sparkles className="size-8 text-emerald-deep" />
+                  </div>
+                  <h3 className="font-display text-2xl font-semibold">Jalur Self Funded</h3>
+                  <p className="text-muted-foreground text-sm mt-2 mb-6 max-w-md mx-auto">
+                    Peserta jalur <strong className="text-foreground">Self Funded</strong> tidak diwajibkan menunaikan donasi.
+                    Silakan menunggu informasi selanjutnya dari tim Safar Iman melalui WhatsApp.
+                  </p>
+                  <Link
+                    to="/"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift"
+                  >
+                    Kembali ke Beranda
+                  </Link>
+                </div>
+              ) : info.payment_status === "paid" ? (
                 <div className="text-center py-4">
                   <div className="size-16 rounded-full bg-gradient-gold grid place-items-center mx-auto mb-4 shadow-gold">
                     <HeartHandshake className="size-8 text-emerald-deep" />
