@@ -30,6 +30,7 @@ type Lookup = {
   payment_status: string;
   payment_url: string | null;
   paid_at: string | null;
+  category: string | null;
 };
 
 function DonasiPage() {
