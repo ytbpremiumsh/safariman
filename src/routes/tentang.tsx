@@ -212,7 +212,7 @@ function TentangPage() {
               </div>
               <h3 className="font-display text-2xl font-semibold mb-3">Menjadi Jembatan Hasanah</h3>
               <p className="text-white/90 leading-relaxed">
-                Menjembatani pemuda-pemudi Indonesia berprestasi untuk menunaikan ibadah ke Baitullah, sekaligus melahirkan generasi pemimpin yang berakhlak mulia dan berdampak bagi umat.
+                Menjembatani seluruh pemuda-pemudi Indonesia untuk menunaikan ibadah ke Baitullah, sekaligus melahirkan generasi pemimpin yang berakhlak mulia dan berdampak bagi umat.
               </p>
             </div>
             <div className="rounded-3xl bg-card border border-border p-8 shadow-sm">
@@ -221,7 +221,7 @@ function TentangPage() {
               </div>
               <h3 className="font-display text-2xl font-semibold mb-3">Membina dengan Amanah</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex gap-2"><BadgeCheck className="size-4 text-accent shrink-0 mt-0.5" /><span>Membuka akses Umrah bagi pemuda berprestasi tanpa hambatan biaya.</span></li>
+                <li className="flex gap-2"><BadgeCheck className="size-4 text-accent shrink-0 mt-0.5" /><span>Membuka akses Umrah bagi seluruh pemuda Indonesia tanpa hambatan biaya.</span></li>
                 <li className="flex gap-2"><BadgeCheck className="size-4 text-accent shrink-0 mt-0.5" /><span>Menyelenggarakan program pengembangan kepemimpinan berbasis nilai Islam.</span></li>
                 <li className="flex gap-2"><BadgeCheck className="size-4 text-accent shrink-0 mt-0.5" /><span>Mendorong kontribusi sosial dan wakaf sebagai budaya generasi muda.</span></li>
               </ul>
