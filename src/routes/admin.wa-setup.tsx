@@ -77,7 +77,7 @@ function WaSetupPage() {
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
   const [tpl, setTpl] = useState<Record<TemplateKey, string>>({
-    wa_template_pendaftaran: "", wa_template_berkas: "", wa_template_lolos: "", wa_template_ditolak: "", wa_template_custom: "",
+    wa_template_pendaftaran: "", wa_template_pendaftaran_self: "", wa_template_berkas: "", wa_template_lolos: "", wa_template_ditolak: "", wa_template_custom: "",
   });
   const [saving, setSaving] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
