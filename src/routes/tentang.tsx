@@ -212,7 +212,7 @@ function TentangPage() {
               </div>
               <h3 className="font-display text-2xl font-semibold mb-3">Menjadi Jembatan Hasanah</h3>
               <p className="text-white/90 leading-relaxed">
-                Menjembatani pemuda-pemudi Indonesia berprestasi untuk menunaikan ibadah ke Baitullah, sekaligus melahirkan generasi pemimpin yang berakhlak mulia dan berdampak bagi umat.
+                Menjembatani seluruh pemuda-pemudi Indonesia untuk menunaikan ibadah ke Baitullah, sekaligus melahirkan generasi pemimpin yang berakhlak mulia dan berdampak bagi umat.
               </p>
             </div>
             <div className="rounded-3xl bg-card border border-border p-8 shadow-sm">
