@@ -44,10 +44,10 @@ function AdminSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarHeader className="border-b border-border">
-        <Link to="/admin" className="flex items-center gap-2 px-2 py-2">
-          <img src={logoSafarIman} alt="Safar Iman" className="h-9 w-auto shrink-0 group-data-[collapsible=icon]:h-7" />
-          <div className="group-data-[collapsible=icon]:hidden">
-            <div className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground">Admin Panel</div>
+        <Link to="/admin" className="flex flex-col items-center gap-1.5 px-2 py-3">
+          <img src={logoSafarIman} alt="Safar Iman" className="h-12 w-auto shrink-0 group-data-[collapsible=icon]:h-7" />
+          <div className="text-[10px] tracking-[0.28em] uppercase text-muted-foreground font-medium group-data-[collapsible=icon]:hidden">
+            Admin Panel
           </div>
         </Link>
       </SidebarHeader>

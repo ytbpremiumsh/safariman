@@ -13,6 +13,7 @@ export const Route = createFileRoute("/admin/")({
 });
 
 type Row = {
+  id: string;
   created_at: string;
   updated_at: string;
   category: string | null;
@@ -22,23 +23,49 @@ type Row = {
   essay_dream: string | null;
   essay_contribution: string | null;
   payment_status: string;
+  paid_at: string | null;
 };
+
+const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at";
 
 function AdminOverview() {
   const ready = useAdminGuard();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState<7 | 14 | 30>(14);
+  const [live, setLive] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const { data } = await supabase
-        .from("participants")
-        .select("created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status");
+      const { data } = await supabase.from("participants").select(COLS);
       setRows((data ?? []) as Row[]);
       setLoading(false);
     })();
+
+    const channel = supabase
+      .channel("admin-participants")
+      .on("postgres_changes", { event: "*", schema: "public", table: "participants" }, (payload) => {
+        setRows((prev) => {
+          if (payload.eventType === "INSERT") {
+            const n = payload.new as Row;
+            if (prev.some((r) => r.id === n.id)) return prev;
+            return [n, ...prev];
+          }
+          if (payload.eventType === "UPDATE") {
+            const n = payload.new as Row;
+            return prev.map((r) => (r.id === n.id ? { ...r, ...n } : r));
+          }
+          if (payload.eventType === "DELETE") {
+            const o = payload.old as Partial<Row>;
+            return prev.filter((r) => r.id !== o.id);
+          }
+          return prev;
+        });
+      })
+      .subscribe((status) => setLive(status === "SUBSCRIBED"));
+
+    return () => { supabase.removeChannel(channel); };
   }, [ready]);
 
   const submitted = (r: Row) =>
@@ -53,6 +80,21 @@ function AdminOverview() {
       self: self.length,
       submitted: rows.filter(submitted).length,
       paid: rows.filter((r) => r.payment_status === "paid").length,
+    };
+  }, [rows]);
+
+  const todayStats = useMemo(() => {
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const end = new Date(start); end.setDate(start.getDate() + 1);
+    const inToday = (iso?: string | null) => {
+      if (!iso) return false;
+      const t = new Date(iso).getTime();
+      return t >= start.getTime() && t < end.getTime();
+    };
+    return {
+      daftar: rows.filter((r) => inToday(r.created_at)).length,
+      berkas: rows.filter((r) => submitted(r) && inToday(r.updated_at)).length,
+      donasi: rows.filter((r) => r.payment_status === "paid" && inToday(r.paid_at)).length,
     };
   }, [rows]);
 
@@ -89,6 +131,31 @@ function AdminOverview() {
         <MiniStat label="Kirim Berkas" value={stats.submitted} icon={<FileCheck className="size-4" />} />
         <MiniStat label="Donasi Valid" value={stats.paid} icon={<HeartHandshake className="size-4" />} accent />
       </div>
+
+      <section className="bg-card border border-border rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div>
+            <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+              Aktivitas Hari Ini
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-normal px-2 py-0.5 rounded-full bg-emerald/10 text-emerald">
+                <span className="relative inline-flex size-1.5">
+                  {live && <span className="absolute inline-flex h-full w-full rounded-full bg-emerald animate-ping opacity-75" />}
+                  <span className="relative inline-flex size-1.5 rounded-full bg-emerald" />
+                </span>
+                {live ? "Live" : "Menghubungkan…"}
+              </span>
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <TodayCard label="Pendaftaran" value={todayStats.daftar} icon={<Users className="size-4" />} tone="emerald" />
+          <TodayCard label="Kirim Berkas" value={todayStats.berkas} icon={<FileCheck className="size-4" />} tone="accent" />
+          <TodayCard label="Donasi Valid" value={todayStats.donasi} icon={<HeartHandshake className="size-4" />} tone="rose" />
+        </div>
+      </section>
 
       <section className="bg-card border border-border rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
@@ -158,5 +225,24 @@ function QuickLink({ to, title, desc }: { to: string; title: string; desc: strin
       </div>
       <ArrowUpRight className="size-4 text-muted-foreground group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition" />
     </Link>
+  );
+}
+
+function TodayCard({
+  label, value, icon, tone,
+}: { label: string; value: number; icon: React.ReactNode; tone: "emerald" | "accent" | "rose" }) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald",
+    accent: "bg-accent/10 text-accent",
+    rose: "bg-rose-500/10 text-rose-600",
+  } as const;
+  return (
+    <div className="rounded-xl border border-border bg-secondary/40 p-4 flex items-center gap-3">
+      <div className={`size-10 rounded-xl grid place-items-center ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="font-display text-2xl font-semibold tracking-tight leading-tight">{value}</div>
+      </div>
+    </div>
   );
 }
