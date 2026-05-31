@@ -357,7 +357,8 @@ function Persyaratan() {
   ];
   return (
     <section id="persyaratan" className="relative py-24 sm:py-32 bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.035]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Persyaratan Umum"
           title={<>Siapa saja yang <span className="text-gradient-gold">dapat mendaftar</span></>}
