@@ -148,6 +148,20 @@
   .bg-gradient-emerald { background: var(--gradient-emerald); }
   .bg-gradient-hero { background: var(--gradient-hero); }
   .bg-gradient-glow { background: var(--gradient-glow); }
+  .bg-gradient-orange { background: var(--gradient-orange); }
+  .text-gradient-orange {
+    background: var(--gradient-orange);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-cream-ornament {
+    background-color: oklch(0.975 0.012 88);
+    background-image:
+      radial-gradient(circle at 1px 1px, oklch(0.8 0.15 78 / 0.12) 1px, transparent 0),
+      radial-gradient(circle at 20px 20px, oklch(0.42 0.13 155 / 0.06) 1.5px, transparent 0);
+    background-size: 40px 40px, 80px 80px;
+  }
 
   .glass {
     background: oklch(1 0 0 / 0.08);
