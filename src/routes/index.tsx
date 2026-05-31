@@ -621,8 +621,9 @@ function Testimonials() {
     { n: "Rizky A.", r: "Pelajar SMA", q: "Awalnya tidak percaya gratis, ternyata benar fully funded. Alhamdulillah.", rating: 5 },
   ];
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section className="relative py-24 sm:py-32">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Testimoni"
           title={<>Cerita dari para <span className="text-gradient-gold">alumni</span></>}
