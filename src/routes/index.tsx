@@ -427,7 +427,8 @@ function Quota() {
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Kuota Program"
           title={<>Kesempatan menuju <span className="text-gradient-gold">Baitullah</span></>}
