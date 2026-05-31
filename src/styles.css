@@ -35,6 +35,8 @@
   --color-gold-soft: var(--gold-soft);
   --color-emerald: var(--emerald);
   --color-emerald-deep: var(--emerald-deep);
+  --color-orange-accent: var(--orange-accent);
+  --color-navy-deep: var(--navy-deep);
 
   --font-display: "Cormorant Garamond", "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
