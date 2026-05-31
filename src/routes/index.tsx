@@ -295,6 +295,9 @@ function CountdownSection() {
     <section className="relative py-16 sm:py-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/40 to-background" />
       <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.04]" />
+      {/* Decorative corner ornaments */}
+      <div className="absolute top-4 left-4 size-24 border border-accent/20 rounded-full opacity-40" />
+      <div className="absolute bottom-4 right-4 size-16 border border-primary/20 rounded-full opacity-40" />
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center">
         <span className="inline-flex items-center gap-2 bg-emerald-deep text-accent text-xs uppercase tracking-[0.3em] px-4 py-1.5 rounded-full mb-6 shadow-emerald">
           <Sparkles className="size-3.5 text-accent" /> Pendaftaran ditutup dalam
