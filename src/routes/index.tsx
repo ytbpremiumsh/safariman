@@ -629,6 +629,9 @@ function Testimonials() {
   return (
     <section className="relative py-24 sm:py-32">
       <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative floating shapes */}
+      <div className="absolute top-12 left-10 size-28 rounded-full bg-gradient-emerald opacity-[0.05] blur-2xl animate-float" />
+      <div className="absolute bottom-16 right-16 size-20 rounded-full bg-gradient-gold opacity-[0.06] blur-2xl animate-float" style={{ animationDelay: "1.5s" }} />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Testimoni"
