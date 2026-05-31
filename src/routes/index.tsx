@@ -724,6 +724,9 @@ function FAQ() {
   return (
     <section id="faq" className="relative py-24 sm:py-32">
       <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative corner elements */}
+      <div className="absolute top-8 right-8 size-20 border border-accent/10 rounded-2xl rotate-12 opacity-50" />
+      <div className="absolute bottom-12 left-12 size-14 border border-primary/10 rounded-full opacity-40" />
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="FAQ"
