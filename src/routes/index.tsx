@@ -319,6 +319,7 @@ function Benefits() {
   return (
     <section id="program" className="relative py-24 sm:py-32">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/30 to-background" />
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.04]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Program Benefit"
