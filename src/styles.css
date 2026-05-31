@@ -46,7 +46,7 @@
   --radius: 0.875rem;
 
   /* Brand palette — Safar Iman Brochure: Emerald + Gold + Orange + Cream */
-  --background: oklch(0.975 0.012 88);
+  --background: oklch(0.99 0.004 260);
   --foreground: oklch(0.2 0.05 158);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.05 158);
@@ -56,10 +56,10 @@
   --primary: oklch(0.42 0.13 155);            /* Vibrant emerald (brochure green) */
   --primary-foreground: oklch(0.98 0.01 90);
 
-  --secondary: oklch(0.95 0.025 88);
+  --secondary: oklch(0.97 0.008 260);
   --secondary-foreground: oklch(0.24 0.06 158);
 
-  --muted: oklch(0.94 0.02 88);
+  --muted: oklch(0.96 0.006 260);
   --muted-foreground: oklch(0.46 0.03 158);
 
   --accent: oklch(0.8 0.15 78);               /* Brighter gold */
@@ -68,8 +68,8 @@
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.89 0.025 88);
-  --input: oklch(0.92 0.022 88);
+  --border: oklch(0.92 0.01 260);
+  --input: oklch(0.95 0.008 260);
   --ring: oklch(0.8 0.15 78);
 
   --gold: oklch(0.8 0.15 78);
@@ -156,10 +156,10 @@
     color: transparent;
   }
   .bg-cream-ornament {
-    background-color: oklch(0.975 0.012 88);
+    background-color: oklch(0.99 0.004 260);
     background-image:
-      radial-gradient(circle at 1px 1px, oklch(0.8 0.15 78 / 0.12) 1px, transparent 0),
-      radial-gradient(circle at 20px 20px, oklch(0.42 0.13 155 / 0.06) 1.5px, transparent 0);
+      radial-gradient(circle at 1px 1px, oklch(0.8 0.15 78 / 0.08) 1px, transparent 0),
+      radial-gradient(circle at 20px 20px, oklch(0.42 0.13 155 / 0.04) 1.5px, transparent 0);
     background-size: 40px 40px, 80px 80px;
   }
 
