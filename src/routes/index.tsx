@@ -431,6 +431,9 @@ function Quota() {
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
       <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative floating shapes */}
+      <div className="absolute top-16 right-12 size-32 rounded-full bg-gradient-gold opacity-[0.07] blur-2xl animate-float" />
+      <div className="absolute bottom-24 left-8 size-24 rounded-full bg-emerald opacity-[0.06] blur-2xl animate-float" style={{ animationDelay: "2s" }} />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Kuota Program"
