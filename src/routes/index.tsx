@@ -294,6 +294,10 @@ function CountdownSection() {
   return (
     <section className="relative py-16 sm:py-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/40 to-background" />
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.04]" />
+      {/* Decorative corner ornaments */}
+      <div className="absolute top-4 left-4 size-24 border border-accent/20 rounded-full opacity-40" />
+      <div className="absolute bottom-4 right-4 size-16 border border-primary/20 rounded-full opacity-40" />
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 text-center">
         <span className="inline-flex items-center gap-2 bg-emerald-deep text-accent text-xs uppercase tracking-[0.3em] px-4 py-1.5 rounded-full mb-6 shadow-emerald">
           <Sparkles className="size-3.5 text-accent" /> Pendaftaran ditutup dalam
@@ -318,6 +322,7 @@ function Benefits() {
   return (
     <section id="program" className="relative py-24 sm:py-32">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/30 to-background" />
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.04]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Program Benefit"
@@ -355,7 +360,8 @@ function Persyaratan() {
   ];
   return (
     <section id="persyaratan" className="relative py-24 sm:py-32 bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.035]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Persyaratan Umum"
           title={<>Siapa saja yang <span className="text-gradient-gold">dapat mendaftar</span></>}
@@ -424,7 +430,11 @@ function Quota() {
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative floating shapes */}
+      <div className="absolute top-16 right-12 size-32 rounded-full bg-gradient-gold opacity-[0.07] blur-2xl animate-float" />
+      <div className="absolute bottom-24 left-8 size-24 rounded-full bg-emerald opacity-[0.06] blur-2xl animate-float" style={{ animationDelay: "2s" }} />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Kuota Program"
           title={<>Kesempatan menuju <span className="text-gradient-gold">Baitullah</span></>}
@@ -492,7 +502,8 @@ function Timeline() {
   ];
   return (
     <section id="timeline" className="relative py-24 sm:py-32 bg-secondary/30">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.035]" />
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Timeline Program"
           title={<>Perjalanan menuju <span className="text-gradient-emerald">keberangkatan</span></>}
@@ -616,8 +627,12 @@ function Testimonials() {
     { n: "Rizky A.", r: "Pelajar SMA", q: "Awalnya tidak percaya gratis, ternyata benar fully funded. Alhamdulillah.", rating: 5 },
   ];
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section className="relative py-24 sm:py-32">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative floating shapes */}
+      <div className="absolute top-12 left-10 size-28 rounded-full bg-gradient-emerald opacity-[0.05] blur-2xl animate-float" />
+      <div className="absolute bottom-16 right-16 size-20 rounded-full bg-gradient-gold opacity-[0.06] blur-2xl animate-float" style={{ animationDelay: "1.5s" }} />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Testimoni"
           title={<>Cerita dari para <span className="text-gradient-gold">alumni</span></>}
@@ -663,8 +678,9 @@ function Gallery() {
     { src: sharingImg, alt: "Berbagi", c: "" },
   ];
   return (
-    <section id="galeri" className="py-24 sm:py-32 bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="galeri" className="relative py-24 sm:py-32 bg-secondary/30">
+      <IslamicPattern className="absolute inset-0 size-full text-emerald/[0.035]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Galeri"
           title={<>Hasanah <span className="text-gradient-emerald">Tour & Travel</span></>}
@@ -706,8 +722,12 @@ function FAQ() {
     { q: "Apakah ada biaya tersembunyi?", a: "Tidak ada. Semua biaya transparan sesuai jalur yang dipilih. Kami menjamin tidak ada pungutan tambahan di luar yang tercantum." },
   ];
   return (
-    <section id="faq" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+    <section id="faq" className="relative py-24 sm:py-32">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      {/* Decorative corner elements */}
+      <div className="absolute top-8 right-8 size-20 border border-accent/10 rounded-2xl rotate-12 opacity-50" />
+      <div className="absolute bottom-12 left-12 size-14 border border-primary/10 rounded-full opacity-40" />
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="FAQ"
           title={<>Pertanyaan yang <span className="text-gradient-gold">sering diajukan</span></>}
