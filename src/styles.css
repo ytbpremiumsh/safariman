@@ -45,47 +45,50 @@
 :root {
   --radius: 0.875rem;
 
-  /* Brand palette — Emerald + Gold + Ivory */
-  --background: oklch(0.985 0.008 95);
-  --foreground: oklch(0.18 0.04 160);
+  /* Brand palette — Safar Iman Brochure: Emerald + Gold + Orange + Cream */
+  --background: oklch(0.975 0.012 88);
+  --foreground: oklch(0.2 0.05 158);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.04 160);
+  --card-foreground: oklch(0.2 0.05 158);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.04 160);
+  --popover-foreground: oklch(0.2 0.05 158);
 
-  --primary: oklch(0.36 0.09 160);            /* Emerald deep */
-  --primary-foreground: oklch(0.98 0.01 95);
+  --primary: oklch(0.42 0.13 155);            /* Vibrant emerald (brochure green) */
+  --primary-foreground: oklch(0.98 0.01 90);
 
-  --secondary: oklch(0.96 0.02 90);
-  --secondary-foreground: oklch(0.22 0.05 160);
+  --secondary: oklch(0.95 0.025 88);
+  --secondary-foreground: oklch(0.24 0.06 158);
 
-  --muted: oklch(0.95 0.015 90);
-  --muted-foreground: oklch(0.45 0.03 160);
+  --muted: oklch(0.94 0.02 88);
+  --muted-foreground: oklch(0.46 0.03 158);
 
-  --accent: oklch(0.78 0.13 85);              /* Gold */
-  --accent-foreground: oklch(0.18 0.04 160);
+  --accent: oklch(0.8 0.15 78);               /* Brighter gold */
+  --accent-foreground: oklch(0.2 0.05 158);
 
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.9 0.02 90);
-  --input: oklch(0.92 0.02 90);
-  --ring: oklch(0.78 0.13 85);
+  --border: oklch(0.89 0.025 88);
+  --input: oklch(0.92 0.022 88);
+  --ring: oklch(0.8 0.15 78);
 
-  --gold: oklch(0.78 0.13 85);
-  --gold-soft: oklch(0.88 0.08 88);
-  --emerald: oklch(0.5 0.13 160);
-  --emerald-deep: oklch(0.28 0.08 160);
+  --gold: oklch(0.8 0.15 78);
+  --gold-soft: oklch(0.9 0.09 86);
+  --emerald: oklch(0.52 0.15 155);            /* Brand green */
+  --emerald-deep: oklch(0.3 0.09 158);        /* Deep forest green */
+  --orange-accent: oklch(0.72 0.19 52);       /* "GRATIS" orange */
+  --navy-deep: oklch(0.22 0.08 260);          /* Berbagi/Wakaf navy */
 
-  --gradient-gold: linear-gradient(135deg, oklch(0.85 0.13 92), oklch(0.7 0.15 75));
-  --gradient-emerald: linear-gradient(135deg, oklch(0.36 0.09 160), oklch(0.22 0.06 165));
-  --gradient-hero: linear-gradient(180deg, oklch(0.12 0.03 160 / 0.55) 0%, oklch(0.1 0.04 165 / 0.85) 100%);
-  --gradient-glow: radial-gradient(circle at 50% 0%, oklch(0.85 0.15 90 / 0.35), transparent 60%);
+  --gradient-gold: linear-gradient(135deg, oklch(0.88 0.14 90), oklch(0.72 0.17 70));
+  --gradient-emerald: linear-gradient(135deg, oklch(0.42 0.13 155), oklch(0.26 0.08 160));
+  --gradient-hero: linear-gradient(180deg, oklch(0.14 0.04 158 / 0.55) 0%, oklch(0.1 0.05 160 / 0.88) 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, oklch(0.85 0.16 88 / 0.4), transparent 60%);
+  --gradient-orange: linear-gradient(135deg, oklch(0.78 0.19 60), oklch(0.65 0.21 45));
 
-  --shadow-gold: 0 20px 60px -20px oklch(0.78 0.13 85 / 0.45);
-  --shadow-emerald: 0 25px 70px -20px oklch(0.36 0.09 160 / 0.45);
-  --shadow-soft: 0 10px 40px -10px oklch(0.18 0.04 160 / 0.15);
-  --shadow-glow: 0 0 60px oklch(0.78 0.13 85 / 0.4);
+  --shadow-gold: 0 20px 60px -20px oklch(0.8 0.15 78 / 0.5);
+  --shadow-emerald: 0 25px 70px -20px oklch(0.42 0.13 155 / 0.5);
+  --shadow-soft: 0 10px 40px -10px oklch(0.2 0.05 158 / 0.15);
+  --shadow-glow: 0 0 60px oklch(0.8 0.15 78 / 0.45);
 }
 
 .dark {
