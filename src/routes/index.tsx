@@ -713,8 +713,9 @@ function FAQ() {
     { q: "Apakah ada biaya tersembunyi?", a: "Tidak ada. Semua biaya transparan sesuai jalur yang dipilih. Kami menjamin tidak ada pungutan tambahan di luar yang tercantum." },
   ];
   return (
-    <section id="faq" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+    <section id="faq" className="relative py-24 sm:py-32">
+      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="FAQ"
           title={<>Pertanyaan yang <span className="text-gradient-gold">sering diajukan</span></>}
