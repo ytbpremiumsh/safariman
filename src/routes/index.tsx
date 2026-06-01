@@ -355,8 +355,8 @@ function Persyaratan() {
     "Muslim/Muslimah yang siap menjalankan ibadah dengan niat yang lurus.",
     "Pemuda-pemudi Indonesia berusia 12 – 40 tahun, terbuka untuk pelajar, mahasiswa, hingga alumni dari berbagai jenjang.",
     "Bersedia mengikuti seluruh rangkaian kegiatan dari awal hingga akhir sesuai jadwal program.",
-    "Tidak perlu mahir Bahasa Inggris maupun Bahasa Arab — peserta didampingi pembimbing berbahasa Indonesia.",
-    "Tidak harus memiliki latar belakang ilmu agama yang mendalam — kita akan belajar bersama mentor.",
+    "Belum fasih Bahasa Inggris atau Arab? Tenang, selama program kamu akan ditemani pembimbing yang berbicara Bahasa Indonesia.",
+    "Belum punya bekal ilmu agama yang luas juga tidak masalah — semua materi akan dipelajari bertahap bersama mentor, mulai dari dasar sampai siap beribadah di Tanah Suci.",
   ];
   return (
     <section id="persyaratan" className="relative py-24 sm:py-32 bg-secondary/30">
