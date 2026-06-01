@@ -352,11 +352,14 @@ function Benefits() {
 
 function Persyaratan() {
   const items = [
-    "Muslim/Muslimah yang siap menjalankan ibadah dengan niat yang lurus.",
-    "Pemuda-pemudi Indonesia berusia 12 – 40 tahun, terbuka untuk pelajar, mahasiswa, hingga alumni dari berbagai jenjang.",
-    "Bersedia mengikuti seluruh rangkaian kegiatan dari awal hingga akhir sesuai jadwal program.",
-    "Belum fasih Bahasa Inggris atau Arab? Tenang, selama program kamu akan ditemani pembimbing yang berbicara Bahasa Indonesia.",
-    "Belum punya bekal ilmu agama yang luas juga tidak masalah — semua materi akan dipelajari bertahap bersama mentor, mulai dari dasar sampai siap beribadah di Tanah Suci.",
+    "Muslim/Muslimah yang memiliki niat kuat untuk beribadah dan belajar.",
+    "Warga Negara Indonesia usia 12–45 tahun.",
+    "Terbuka untuk pelajar, mahasiswa, santri, maupun umum.",
+    "Bersedia mengikuti seluruh tahapan dan ketentuan program.",
+    "Memiliki sikap disiplin, bertanggung jawab, dan berakhlak baik.",
+    "Siap mengikuti pembinaan, mentoring, dan kegiatan program.",
+    "Tidak wajib fasih Bahasa Arab atau Bahasa Inggris.",
+    "Terbuka bagi peserta dari berbagai latar belakang pendidikan.",
   ];
   return (
     <section id="persyaratan" className="relative py-24 sm:py-32 bg-secondary/30">
@@ -371,7 +374,7 @@ function Persyaratan() {
           <div className="rounded-3xl border border-border bg-card p-7 sm:p-9 shadow-soft animate-fade-up">
             <div className="flex items-center gap-2 mb-6">
               <CheckCircle2 className="size-5 text-accent" />
-              <h3 className="font-display text-2xl font-semibold text-gradient-gold">Kriteria Peserta</h3>
+              <h3 className="font-display text-2xl font-semibold text-gradient-gold">Persyaratan Umum</h3>
             </div>
             <ul className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
               {items.map((t, i) => (
