@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Image as ImageIcon, Loader2, Upload } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
@@ -10,21 +10,47 @@ export const Route = createFileRoute("/admin/pengaturan/twibbon")({
   component: TwibbonSetting,
 });
 
+type DayStat = { day: string; count: number };
+
 function TwibbonSetting() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [twibbonFrameUrl, setTwibbonFrameUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [stats, setStats] = useState<DayStat[]>([]);
+  const [rangeDays, setRangeDays] = useState(30);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loadStats = async (days: number) => {
+    const { data } = await supabase.rpc("get_twibbon_download_stats", { p_days: days });
+    if (Array.isArray(data)) {
+      setStats(data.map((r: any) => ({ day: r.day as string, count: Number(r.count) })));
+    }
+  };
 
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle();
+      const [{ data }] = await Promise.all([
+        supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle(),
+        loadStats(rangeDays),
+      ]);
       setTwibbonFrameUrl(data?.value ?? "");
       setLoading(false);
     })();
+     
   }, [ready]);
+
+  useEffect(() => {
+    if (ready && !loading) loadStats(rangeDays);
+     
+  }, [rangeDays]);
+
+  const totalAll = useMemo(() => stats.reduce((a, b) => a + b.count, 0), [stats]);
+  const today = stats[0]?.count ?? 0;
+  const yesterday = stats[1]?.count ?? 0;
+  const maxCount = useMemo(() => Math.max(1, ...stats.map((s) => s.count)), [stats]);
+
 
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
