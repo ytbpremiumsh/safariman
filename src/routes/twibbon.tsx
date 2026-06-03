@@ -153,6 +153,8 @@ function TwibbonPage() {
       document.body.appendChild(a); a.click(); a.remove();
       if (revoke) setTimeout(revoke, 1000);
       toast.success("Twibbon berhasil didownload!");
+      // Log download for admin stats (fire-and-forget)
+      supabase.rpc("log_twibbon_download").then(() => {}, () => {});
     };
 
     // Try blob first
