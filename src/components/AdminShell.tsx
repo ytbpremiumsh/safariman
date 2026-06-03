@@ -118,11 +118,20 @@ export function AdminShell({ children, title }: { children: ReactNode; title?: s
             <header className="h-14 flex items-center gap-2 border-b border-border bg-card/60 backdrop-blur sticky top-0 z-10 px-3">
               <SidebarTrigger />
               <div className="h-5 w-px bg-border mx-1" />
-              <div className="text-sm font-medium text-muted-foreground">Dashboard Admin</div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Dashboard Admin</div>
+              {title && (
+                <>
+                  <div className="text-muted-foreground/50">/</div>
+                  <div className="text-sm font-semibold text-foreground truncate">{title}</div>
+                </>
+              )}
             </header>
             <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
               {title && (
-                <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
+                <div className="space-y-1">
+                  <div className="text-xs font-medium text-accent uppercase tracking-[0.2em]">Admin Panel</div>
+                  <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
+                </div>
               )}
               {children}
             </main>
