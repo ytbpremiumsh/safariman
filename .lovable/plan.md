@@ -1,31 +1,32 @@
+## Diagnosa
+
+Error **"new row violates row-level security policy"** muncul saat admin upload frame twibbon baru. Penyebabnya:
+
+- Policy `Admins can update twibbon assets` di `storage.objects` punya klausa `USING` admin, **tapi `WITH CHECK`-nya kosong**.
+- Kode di `src/routes/admin.pengaturan.twibbon.tsx` upload dengan `upsert: true`. Saat Supabase Storage menjalankan jalur UPDATE (atau saat metadata baris di-update setelah insert), RLS butuh `WITH CHECK` lolos — karena kosong, baris baru dianggap melanggar policy.
+- User yang sedang login sudah benar admin (`user_roles` berisi 1 baris admin), jadi root cause murni di policy storage.
+
 ## Perubahan
 
-### 1. `src/components/AdminShell.tsx` — Logo & label
-- Ubah header sidebar jadi layout **vertikal (stacked)**: logo di atas, tulisan **"ADMIN PANEL"** (uppercase, tracking lebar, ukuran kecil, warna `text-muted-foreground`) tepat di bawah logo — mirip gaya pada lampiran.
-- Saat sidebar collapsed (`group-data-[collapsible=icon]`), label "ADMIN PANEL" disembunyikan, hanya logo (ukuran lebih kecil) yang tampil.
-- Tidak ada perubahan navigasi / route lain.
+### 1. Migration: tambah `WITH CHECK` pada UPDATE policy storage twibbon-assets
+Drop policy lama dan buat ulang dengan dua klausa:
 
-### 2. `src/routes/admin.index.tsx` — Aktivitas Harian Realtime
-- Tambah **section baru "Aktivitas Hari Ini (Realtime)"** di atas chart aktivitas harian, berisi 3 kartu kecil:
-  - Pendaftaran hari ini
-  - Kirim berkas hari ini
-  - Donasi valid hari ini
-- Angka dihitung dari `rows` yang sudah ada (filter `created_at` / `updated_at` / `paid_at` = hari ini, timezone lokal).
-- Tambah **realtime subscription** ke tabel `participants` via `supabase.channel(...).on('postgres_changes', { event: '*', schema: 'public', table: 'participants' }, ...)`:
-  - Saat ada INSERT → tambahkan row baru ke state.
-  - Saat ada UPDATE → replace row di state berdasarkan `id` (butuh ambil kolom `id` juga di select awal).
-  - Saat ada DELETE → hapus dari state.
-  - Cleanup channel di unmount.
-- Indikator kecil titik hijau berdenyut + label "Live" di header section supaya jelas realtime.
-- Chart "Aktivitas Harian" yang lama tetap, otomatis ikut update karena pakai state yang sama.
+```sql
+DROP POLICY IF EXISTS "Admins can update twibbon assets" ON storage.objects;
 
-### 3. Database
-- Pastikan tabel `participants` masuk publication realtime. Tambah migration:
-  ```sql
-  ALTER TABLE public.participants REPLICA IDENTITY FULL;
-  ALTER PUBLICATION supabase_realtime ADD TABLE public.participants;
-  ```
-  (idempotent guard dengan `DO $$ ... EXCEPTION WHEN duplicate_object THEN NULL; END $$;`)
+CREATE POLICY "Admins can update twibbon assets"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'twibbon-assets' AND public.has_role(auth.uid(), 'admin'))
+WITH CHECK (bucket_id = 'twibbon-assets' AND public.has_role(auth.uid(), 'admin'));
+```
+
+INSERT, SELECT (lewat bucket public), DELETE policy sudah benar — tidak diubah.
+
+### 2. Tidak ada perubahan kode frontend
+Logika upload di `admin.pengaturan.twibbon.tsx` sudah benar (path `frame-{timestamp}.{ext}` + upsert + simpan URL ke `app_settings`). Setelah policy diperbaiki, klik **Upload Frame Baru** akan langsung sukses.
 
 ## Tidak diubah
-- RLS, server functions, route lain, styling halaman selain admin overview & sidebar header.
+- Bucket `twibbon-assets` (tetap public).
+- Tabel `app_settings` dan policy-nya.
+- Halaman/komponen lain.
