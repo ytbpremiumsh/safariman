@@ -125,6 +125,75 @@ function TwibbonSetting() {
           </div>
         </div>
       </div>
+
+      {/* Download Statistics */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="size-5 text-accent" />
+            <div className="font-display text-lg font-semibold">Statistik Download Twibbon</div>
+          </div>
+          <select
+            value={rangeDays}
+            onChange={(e) => setRangeDays(Number(e.target.value))}
+            className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium"
+          >
+            <option value={7}>7 hari terakhir</option>
+            <option value={14}>14 hari terakhir</option>
+            <option value={30}>30 hari terakhir</option>
+            <option value={90}>90 hari terakhir</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <StatCard icon={<Download className="size-4" />} label="Total" value={totalAll} />
+          <StatCard icon={<Calendar className="size-4" />} label="Hari ini" value={today} />
+          <StatCard icon={<Calendar className="size-4" />} label="Kemarin" value={yesterday} />
+        </div>
+
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Per Hari</div>
+          {stats.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-6 text-center">Belum ada data download.</div>
+          ) : (
+            <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-2">
+              {stats.map((s) => (
+                <div key={s.day} className="flex items-center gap-3 text-sm">
+                  <div className="w-24 shrink-0 text-xs text-muted-foreground tabular-nums">
+                    {formatDay(s.day)}
+                  </div>
+                  <div className="flex-1 h-6 bg-secondary rounded-md overflow-hidden relative">
+                    <div
+                      className="h-full bg-gradient-emerald transition-all"
+                      style={{ width: `${(s.count / maxCount) * 100}%` }}
+                    />
+                  </div>
+                  <div className="w-12 shrink-0 text-right text-sm font-semibold tabular-nums">
+                    {s.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </AdminShell>
   );
+}
+
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-border bg-secondary/40 p-4">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <div className="mt-1.5 text-2xl font-bold font-display tabular-nums">{value}</div>
+    </div>
+  );
+}
+
+function formatDay(day: string) {
+  const d = new Date(day + "T00:00:00");
+  return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
 }
