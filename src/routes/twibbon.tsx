@@ -295,8 +295,8 @@ WhatsApp : ${CP_WHATSAPP}`;
             <div className="lg:col-span-3 flex justify-center">
               <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-5 sm:p-6 shadow-soft animate-fade-up">
               <div
-                className="rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none mx-auto w-full"
-                style={{ aspectRatio: `${EW} / ${EH}`, maxHeight: "70vh", cursor: photoImg ? (drag ? "grabbing" : "grab") : "default" }}
+                className="rounded-2xl overflow-hidden bg-secondary relative shadow-emerald select-none touch-none mx-auto inline-block max-w-full"
+                style={{ cursor: photoImg ? (drag ? "grabbing" : "grab") : "default" }}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
@@ -306,7 +306,11 @@ WhatsApp : ${CP_WHATSAPP}`;
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
               >
-                <canvas ref={canvasRef} className="size-full block" />
+                <canvas
+                  ref={canvasRef}
+                  className="block max-w-full h-auto"
+                  style={{ maxHeight: "75vh", width: "auto" }}
+                />
               </div>
 
               {/* Controls */}
