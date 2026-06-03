@@ -62,10 +62,20 @@ function AdminSidebar() {
                 const active = isActive(n.to, n.exact);
                 return (
                   <SidebarMenuItem key={n.to}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={n.label}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      tooltip={n.label}
+                      className={
+                        "h-10 rounded-lg border transition-all " +
+                        (active
+                          ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
+                          : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
+                      }
+                    >
                       <Link to={n.to} className="flex items-center gap-2.5">
                         <Icon className="size-4" />
-                        <span>{n.label}</span>
+                        <span className="font-medium">{n.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -79,17 +89,17 @@ function AdminSidebar() {
       <SidebarFooter className="border-t border-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Beranda">
+            <SidebarMenuButton asChild tooltip="Beranda" className="h-10 rounded-lg border border-border/70 bg-card hover:bg-accent/10 hover:border-accent/40">
               <Link to="/" className="flex items-center gap-2.5">
                 <ArrowLeft className="size-4" />
-                <span>Beranda</span>
+                <span className="font-medium">Beranda</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut} tooltip="Keluar" className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30">
+            <SidebarMenuButton onClick={signOut} tooltip="Keluar" className="h-10 rounded-lg border border-red-200 dark:border-red-900/50 bg-card text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30">
               <LogOut className="size-4" />
-              <span>Keluar</span>
+              <span className="font-medium">Keluar</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -108,11 +118,20 @@ export function AdminShell({ children, title }: { children: ReactNode; title?: s
             <header className="h-14 flex items-center gap-2 border-b border-border bg-card/60 backdrop-blur sticky top-0 z-10 px-3">
               <SidebarTrigger />
               <div className="h-5 w-px bg-border mx-1" />
-              <div className="text-sm font-medium text-muted-foreground">Dashboard Admin</div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Dashboard Admin</div>
+              {title && (
+                <>
+                  <div className="text-muted-foreground/50">/</div>
+                  <div className="text-sm font-semibold text-foreground truncate">{title}</div>
+                </>
+              )}
             </header>
             <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
               {title && (
-                <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
+                <div className="space-y-1">
+                  <div className="text-xs font-medium text-accent uppercase tracking-[0.2em]">Admin Panel</div>
+                  <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
+                </div>
               )}
               {children}
             </main>
