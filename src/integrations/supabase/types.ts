@@ -128,6 +128,24 @@ export type Database = {
         }
         Relationships: []
       }
+      twibbon_downloads: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          day?: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -159,6 +177,13 @@ export type Database = {
       get_countdown_enabled: { Args: never; Returns: boolean }
       get_countdown_target: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
+      get_twibbon_download_stats: {
+        Args: { p_days?: number }
+        Returns: {
+          count: number
+          day: string
+        }[]
+      }
       get_twibbon_frame_url: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -167,6 +192,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_twibbon_download: { Args: never; Returns: undefined }
       lookup_participant_by_code: {
         Args: { p_code: string }
         Returns: {
