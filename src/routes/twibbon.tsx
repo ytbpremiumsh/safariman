@@ -30,7 +30,7 @@ export const Route = createFileRoute("/twibbon")({
 });
 
 function TwibbonPage() {
-  const [frameUrl, setFrameUrl] = useState<string>(defaultFrame);
+  const [frameUrl, setFrameUrl] = useState<string>("");
   const [frameImg, setFrameImg] = useState<HTMLImageElement | null>(null);
   const [photoImg, setPhotoImg] = useState<HTMLImageElement | null>(null);
   const [scale, setScale] = useState(1);
@@ -40,28 +40,34 @@ function TwibbonPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Load configurable frame URL
+  // Load configurable frame URL — falls back to bundled default if none configured
   useEffect(() => {
     (async () => {
       const { data } = await supabase.rpc("get_twibbon_frame_url");
-      if (data && typeof data === "string" && data.trim()) {
-        setFrameUrl(data.trim());
-      }
+      const url = (typeof data === "string" && data.trim()) ? data.trim() : defaultFrame;
+      setFrameUrl(url);
     })();
   }, []);
 
-  // Load frame image
+  // Load frame image — ignore stale loads when frameUrl changes
   useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => setFrameImg(img);
-    img.onerror = () => {
-      // fallback to bundled default
-      const fb = new Image();
-      fb.onload = () => setFrameImg(fb);
-      fb.src = defaultFrame;
+    if (!frameUrl) return;
+    let cancelled = false;
+    const loadInto = (src: string, withCors: boolean) => {
+      const img = new Image();
+      if (withCors) img.crossOrigin = "anonymous";
+      img.onload = () => { if (!cancelled) setFrameImg(img); };
+      img.onerror = () => {
+        if (cancelled) return;
+        // Fallback to bundled default
+        const fb = new Image();
+        fb.onload = () => { if (!cancelled) setFrameImg(fb); };
+        fb.src = defaultFrame;
+      };
+      img.src = src;
     };
-    img.src = frameUrl;
+    loadInto(frameUrl, true);
+    return () => { cancelled = true; };
   }, [frameUrl]);
 
   // Derive export dimensions from frame's natural size — keep width = EXPORT_MAX
