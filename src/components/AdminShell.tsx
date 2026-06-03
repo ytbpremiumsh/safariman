@@ -89,17 +89,17 @@ function AdminSidebar() {
       <SidebarFooter className="border-t border-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Beranda">
+            <SidebarMenuButton asChild tooltip="Beranda" className="h-10 rounded-lg border border-border/70 bg-card hover:bg-accent/10 hover:border-accent/40">
               <Link to="/" className="flex items-center gap-2.5">
                 <ArrowLeft className="size-4" />
-                <span>Beranda</span>
+                <span className="font-medium">Beranda</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut} tooltip="Keluar" className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30">
+            <SidebarMenuButton onClick={signOut} tooltip="Keluar" className="h-10 rounded-lg border border-red-200 dark:border-red-900/50 bg-card text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30">
               <LogOut className="size-4" />
-              <span>Keluar</span>
+              <span className="font-medium">Keluar</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
