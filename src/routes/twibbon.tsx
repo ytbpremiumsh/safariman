@@ -64,13 +64,14 @@ function TwibbonPage() {
     img.src = frameUrl;
   }, [frameUrl]);
 
-  // Derive export dimensions from frame's natural size (longest side = EXPORT_MAX)
+  // Derive export dimensions from frame's natural size — keep width = EXPORT_MAX
+  // so 1:1 frames export at 1080×1080 and 4:5 (IG portrait) frames at 1080×1350.
   const exportDims = (() => {
     if (!frameImg) return { w: EXPORT_MAX, h: EXPORT_MAX };
     const fw = frameImg.naturalWidth || frameImg.width;
     const fh = frameImg.naturalHeight || frameImg.height;
-    const s = EXPORT_MAX / Math.max(fw, fh);
-    return { w: Math.round(fw * s), h: Math.round(fh * s) };
+    if (!fw || !fh) return { w: EXPORT_MAX, h: EXPORT_MAX };
+    return { w: EXPORT_MAX, h: Math.round((fh / fw) * EXPORT_MAX) };
   })();
   const EW = exportDims.w;
   const EH = exportDims.h;

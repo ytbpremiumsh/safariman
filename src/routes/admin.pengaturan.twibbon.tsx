@@ -72,11 +72,13 @@ function TwibbonSetting() {
           Setelah upload, frame baru langsung berlaku untuk semua pengunjung.
         </p>
         <div className="flex items-start gap-5 flex-wrap pt-2">
-          <div className="size-40 rounded-2xl overflow-hidden border border-border bg-secondary grid place-items-center shrink-0">
+          <div className="w-40 rounded-2xl overflow-hidden border border-border bg-secondary shrink-0">
             {twibbonFrameUrl ? (
-              <img src={twibbonFrameUrl} alt="Frame Twibbon aktif" className="size-full object-cover" />
+              <img src={twibbonFrameUrl} alt="Frame Twibbon aktif" className="w-full h-auto block" />
             ) : (
-              <span className="text-xs text-muted-foreground text-center px-2">Pakai frame default</span>
+              <div className="aspect-square grid place-items-center">
+                <span className="text-xs text-muted-foreground text-center px-2">Pakai frame default</span>
+              </div>
             )}
           </div>
           <div className="flex-1 min-w-[220px] space-y-3">
