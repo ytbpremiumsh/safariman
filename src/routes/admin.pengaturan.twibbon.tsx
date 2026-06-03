@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Image as ImageIcon, Loader2, Upload } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
@@ -10,21 +10,47 @@ export const Route = createFileRoute("/admin/pengaturan/twibbon")({
   component: TwibbonSetting,
 });
 
+type DayStat = { day: string; count: number };
+
 function TwibbonSetting() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [twibbonFrameUrl, setTwibbonFrameUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [stats, setStats] = useState<DayStat[]>([]);
+  const [rangeDays, setRangeDays] = useState(30);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loadStats = async (days: number) => {
+    const { data } = await supabase.rpc("get_twibbon_download_stats", { p_days: days });
+    if (Array.isArray(data)) {
+      setStats(data.map((r: any) => ({ day: r.day as string, count: Number(r.count) })));
+    }
+  };
 
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const { data } = await supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle();
+      const [{ data }] = await Promise.all([
+        supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle(),
+        loadStats(rangeDays),
+      ]);
       setTwibbonFrameUrl(data?.value ?? "");
       setLoading(false);
     })();
+     
   }, [ready]);
+
+  useEffect(() => {
+    if (ready && !loading) loadStats(rangeDays);
+     
+  }, [rangeDays]);
+
+  const totalAll = useMemo(() => stats.reduce((a, b) => a + b.count, 0), [stats]);
+  const today = stats[0]?.count ?? 0;
+  const yesterday = stats[1]?.count ?? 0;
+  const maxCount = useMemo(() => Math.max(1, ...stats.map((s) => s.count)), [stats]);
+
 
   const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -99,6 +125,75 @@ function TwibbonSetting() {
           </div>
         </div>
       </div>
+
+      {/* Download Statistics */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="size-5 text-accent" />
+            <div className="font-display text-lg font-semibold">Statistik Download Twibbon</div>
+          </div>
+          <select
+            value={rangeDays}
+            onChange={(e) => setRangeDays(Number(e.target.value))}
+            className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium"
+          >
+            <option value={7}>7 hari terakhir</option>
+            <option value={14}>14 hari terakhir</option>
+            <option value={30}>30 hari terakhir</option>
+            <option value={90}>90 hari terakhir</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <StatCard icon={<Download className="size-4" />} label="Total" value={totalAll} />
+          <StatCard icon={<Calendar className="size-4" />} label="Hari ini" value={today} />
+          <StatCard icon={<Calendar className="size-4" />} label="Kemarin" value={yesterday} />
+        </div>
+
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Per Hari</div>
+          {stats.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-6 text-center">Belum ada data download.</div>
+          ) : (
+            <div className="space-y-1.5 max-h-[420px] overflow-y-auto pr-2">
+              {stats.map((s) => (
+                <div key={s.day} className="flex items-center gap-3 text-sm">
+                  <div className="w-24 shrink-0 text-xs text-muted-foreground tabular-nums">
+                    {formatDay(s.day)}
+                  </div>
+                  <div className="flex-1 h-6 bg-secondary rounded-md overflow-hidden relative">
+                    <div
+                      className="h-full bg-gradient-emerald transition-all"
+                      style={{ width: `${(s.count / maxCount) * 100}%` }}
+                    />
+                  </div>
+                  <div className="w-12 shrink-0 text-right text-sm font-semibold tabular-nums">
+                    {s.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </AdminShell>
   );
+}
+
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-border bg-secondary/40 p-4">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <div className="mt-1.5 text-2xl font-bold font-display tabular-nums">{value}</div>
+    </div>
+  );
+}
+
+function formatDay(day: string) {
+  const d = new Date(day + "T00:00:00");
+  return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
 }
