@@ -97,12 +97,14 @@ function DonasiPage() {
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           <div className="mb-12 animate-fade-up text-center">
-            <Link
-              to="/berkas"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
-            >
-              <ArrowLeft className="size-4" /> Kembali
-            </Link>
+            <div className="flex justify-center mb-8">
+              <Link
+                to="/berkas"
+                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 backdrop-blur px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-accent/50 hover:bg-card transition-all shadow-sm hover:shadow-md"
+              >
+                <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" /> Kembali
+              </Link>
+            </div>
             <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-emerald font-bold bg-emerald/10 border border-emerald/20 px-4 py-1.5 rounded-full">
               <HeartHandshake className="size-3.5" /> Kontribusi Kebaikan
             </span>
