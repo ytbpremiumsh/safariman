@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
-  FileCheck, FileX, HeartHandshake, CheckCircle2, XCircle, Copy,
+  FileCheck, FileX, HeartHandshake, CheckCircle2, XCircle, Copy, Wallet,
 } from "lucide-react";
+
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +14,7 @@ import {
 import { AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 type Status = "pending" | "reviewed" | "interview" | "accepted" | "rejected";
-type Category = "fully_funded" | "partial_funded" | "self_funded";
+type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 
 export type PesertaKind = "reguler" | "self_funded";
 
@@ -44,7 +45,20 @@ const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
   self_funded: "Self Funded",
+  gelombang_1: "Gelombang 1",
+  gelombang_2: "Gelombang 2",
 };
+
+const CAT_COLOR: Record<Category, string> = {
+  fully_funded: "bg-emerald/10 text-emerald border-emerald/30",
+  partial_funded: "bg-emerald/10 text-emerald border-emerald/30",
+  self_funded: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
+  gelombang_1: "bg-accent/15 text-accent border-accent/40",
+  gelombang_2: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
+};
+
+const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
+
 
 const STATUS_LABEL: Record<Status, string> = {
   pending: "Menunggu",
@@ -77,6 +91,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
 
+  const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
+
   useEffect(() => {
     if (!ready) return;
     (async () => {
@@ -84,7 +100,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       const [{ data: list, error }, { data: cfg }] = await Promise.all([
         isSelf
           ? query.eq("category", "self_funded")
-          : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded"),
+          : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2"),
         supabase.from("app_settings").select("key,value"),
       ]);
       if (error) toast.error(error.message);
@@ -103,6 +119,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     })();
   }, [ready, isSelf]);
 
+
   const hasSubmittedDocs = (p: Participant) =>
     !!(p.cv_url || p.photo_url || p.essay_worthy || p.essay_dream || p.essay_contribution);
 
@@ -112,18 +129,28 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       if (status === "paid") { if (r.payment_status !== "paid") return false; }
       else if (status !== "all" && r.status !== status) return false;
       if (!isSelf) {
+        if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
+        if (catFilter === "gelombang_1" && r.category !== "gelombang_1") return false;
+        if (catFilter === "gelombang_2" && r.category !== "gelombang_2") return false;
         if (docFilter === "registered" && hasSubmittedDocs(r)) return false;
         if (docFilter === "submitted" && !hasSubmittedDocs(r)) return false;
       }
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code].some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, status, docFilter, isSelf]);
+  }, [rows, q, status, docFilter, catFilter, isSelf]);
 
   const stats = useMemo(() => ({
     registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
     submitted: rows.filter(hasSubmittedDocs).length,
+    regulerCount: rows.filter((r) => !isGelombang(r.category)).length,
+    g1Count: rows.filter((r) => r.category === "gelombang_1").length,
+    g2Count: rows.filter((r) => r.category === "gelombang_2").length,
+    g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
+    g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
+    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.payment_status === "paid").length,
   }), [rows]);
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -134,13 +161,15 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       "Pendidikan": r.education, "Pekerjaan": r.occupation,
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[r.status],
-      "Donasi": r.payment_status === "paid" ? "Valid" : "Belum",
-      "Tanggal Donasi": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
+      "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
+      "Status Pembayaran": r.payment_status === "paid" ? "Valid" : (r.payment_status === "pending" ? "Pending" : "Belum"),
+      "Tanggal Pembayaran": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
         "Essay Layak": r.essay_worthy,
         "Essay Impian": r.essay_dream,
         "Essay Kontribusi": r.essay_contribution,
       }),
+
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -223,18 +252,39 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     <>
       <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
         {!isSelf && (
-          <div className="flex flex-wrap gap-2">
-            {([
-              { key: "all", label: `Semua (${rows.length})` },
-              { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
-              { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
-            ] as const).map((t) => (
-              <button key={t.key} onClick={() => setDocFilter(t.key)}
-                className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
-                  docFilter === t.key ? "bg-emerald text-white border-emerald shadow-emerald" : "border-border bg-background hover:bg-secondary"
-                }`}>{t.label}</button>
-            ))}
-          </div>
+          <>
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Jalur Peserta</div>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "fully_partial", label: `Reguler (${stats.regulerCount})` },
+                  { key: "gelombang_1", label: `Gelombang 1 (${stats.g1Count} · ${stats.g1Paid} bayar)` },
+                  { key: "gelombang_2", label: `Gelombang 2 (${stats.g2Count} · ${stats.g2Paid} bayar)` },
+                ] as const).map((t) => (
+                  <button key={t.key} onClick={() => setCatFilter(t.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      catFilter === t.key ? "bg-accent text-accent-foreground border-accent shadow-sm" : "border-border bg-background hover:bg-secondary"
+                    }`}>{t.label}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Tahap Berkas</div>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
+                  { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
+                ] as const).map((t) => (
+                  <button key={t.key} onClick={() => setDocFilter(t.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      docFilter === t.key ? "bg-emerald text-white border-emerald shadow-emerald" : "border-border bg-background hover:bg-secondary"
+                    }`}>{t.label}</button>
+                ))}
+              </div>
+            </div>
+          </>
         )}
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -246,7 +296,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
             <option value="pending">Menunggu</option>
             {!isSelf && <option value="accepted">Lolos</option>}
             {!isSelf && <option value="rejected">Belum Lolos</option>}
-            {!isSelf && <option value="paid">Donasi Valid</option>}
+            {!isSelf && <option value="paid">Sudah Bayar / Donasi</option>}
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
             <Download className="size-4" /> Export
@@ -254,22 +304,28 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
         </div>
       </div>
 
+
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
-                <Th>Kode</Th><Th>Nama</Th><Th>Kontak</Th><Th>Kota</Th>
+                <Th>Kode</Th><Th>Nama</Th>
+                {!isSelf && <Th>Jalur</Th>}
+                <Th>Kontak</Th><Th>Kota</Th>
                 {!isSelf && <Th>Berkas</Th>}
                 <Th>Status</Th>
-                {!isSelf && <Th>Donasi</Th>}
+                {!isSelf && <Th>Pembayaran</Th>}
                 <Th>Aksi</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={isSelf ? 6 : 8} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
-              ) : filtered.map((r) => (
+                <tr><td colSpan={isSelf ? 6 : 9} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+              ) : filtered.map((r) => {
+                const gel = isGelombang(r.category);
+                const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
+                return (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                   <Td>
                     <button onClick={() => copyCode(r.registration_code)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-emerald/10 text-emerald hover:bg-emerald/20">
@@ -280,6 +336,17 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <div className="font-medium">{r.full_name}</div>
                     <div className="text-xs text-muted-foreground">{r.education}</div>
                   </Td>
+                  {!isSelf && (
+                    <Td>
+                      {r.category ? (
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium border ${CAT_COLOR[r.category]}`}>
+                          {CAT_LABEL[r.category]}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">—</span>
+                      )}
+                    </Td>
+                  )}
                   <Td>
                     <div className="text-xs">{r.email}</div>
                     <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
@@ -301,15 +368,20 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </Td>
                   {!isSelf && (
                     <Td>
-                      {r.payment_status === "paid" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gradient-gold text-emerald-deep border border-accent/40">
-                          <HeartHandshake className="size-3.5" /> Valid
-                        </span>
-                      ) : r.payment_status === "pending" ? (
-                        <span className="text-[11px] text-amber-600">Pending</span>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">—</span>
-                      )}
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
+                        {r.payment_status === "paid" ? (
+                          <span className={`inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
+                            gel ? "bg-accent/15 text-accent border-accent/40" : "bg-gradient-gold text-emerald-deep border-accent/40"
+                          }`}>
+                            {gel ? <Wallet className="size-3.5" /> : <HeartHandshake className="size-3.5" />} Valid
+                          </span>
+                        ) : r.payment_status === "pending" ? (
+                          <span className="text-[11px] text-amber-600 font-medium">Pending</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">Belum</span>
+                        )}
+                      </div>
                     </Td>
                   )}
                   <Td>
@@ -318,11 +390,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     </button>
                   </Td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
+
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -365,10 +439,16 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                       </a>
                     )}
                     {detail.payment_status === "paid" && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-sm font-bold border border-accent/40">
-                        <HeartHandshake className="size-4" /> Donasi Valid · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
+                        isGelombang(detail.category)
+                          ? "bg-accent/15 text-accent border-accent/40"
+                          : "bg-gradient-gold text-emerald-deep border-accent/40"
+                      }`}>
+                        {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
+                        {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
                       </span>
                     )}
+
                   </div>
 
                   <div className="mt-6 space-y-4">
@@ -400,19 +480,33 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-border">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Donasi Peserta</div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                      {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
+                    </div>
                     {detail.payment_status === "paid" ? (
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-sm font-bold border border-accent/40">
-                          <HeartHandshake className="size-4" /> Donasi Valid · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
+                          isGelombang(detail.category)
+                            ? "bg-accent/15 text-accent border-accent/40"
+                            : "bg-gradient-gold text-emerald-deep border-accent/40"
+                        }`}>
+                          {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
+                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
                         </span>
                         <button onClick={() => unmarkPaidManual(detail.id)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10">
                           <XCircle className="size-3.5" /> Batalkan
                         </button>
                       </div>
+                    ) : isGelombang(detail.category) ? (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Peserta jalur <strong>{CAT_LABEL[detail.category!]}</strong> wajib membayar biaya pendaftaran sebelum melanjutkan. Jika sudah membayar di luar sistem, tandai manual.</p>
+                        <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-accent text-accent-foreground px-5 py-2.5 text-sm font-bold border border-accent/40 hover-lift">
+                          <Wallet className="size-4" /> Tandai Bayar Pendaftaran (Manual)
+                        </button>
+                      </div>
                     ) : detail.status === "accepted" ? (
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Jika peserta sudah membayar di luar sistem, tandai di sini.</p>
+                        <p className="text-sm text-muted-foreground">Jika peserta sudah membayar donasi di luar sistem, tandai di sini.</p>
                         <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold border border-accent/40 shadow-gold hover-lift">
                           <HeartHandshake className="size-4" /> Tandai Donasi Valid (Manual)
                         </button>
@@ -423,6 +517,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </div>
                 </>
               )}
+
 
               {isSelf && (
                 <div className="mt-5 p-4 rounded-xl bg-accent/10 border border-accent/30 text-sm">

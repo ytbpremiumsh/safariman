@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight } from "lucide-react";
+import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight, Wallet, Layers } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
+
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Dashboard Admin — Safar Iman" }] }),
@@ -71,15 +72,26 @@ function AdminOverview() {
   const submitted = (r: Row) =>
     !!(r.cv_url || r.photo_url || r.essay_worthy || r.essay_dream || r.essay_contribution);
 
+  const isGelombang = (r: Row) => r.category === "gelombang_1" || r.category === "gelombang_2";
+  const isReguler = (r: Row) =>
+    r.category === null || r.category === "fully_funded" || r.category === "partial_funded";
+
   const stats = useMemo(() => {
-    const reguler = rows.filter((r) => r.category !== "self_funded");
+    const reguler = rows.filter(isReguler);
     const self = rows.filter((r) => r.category === "self_funded");
+    const g1 = rows.filter((r) => r.category === "gelombang_1");
+    const g2 = rows.filter((r) => r.category === "gelombang_2");
     return {
       total: rows.length,
       reguler: reguler.length,
       self: self.length,
+      g1: g1.length,
+      g2: g2.length,
+      g1Paid: g1.filter((r) => r.payment_status === "paid").length,
+      g2Paid: g2.filter((r) => r.payment_status === "paid").length,
       submitted: rows.filter(submitted).length,
-      paid: rows.filter((r) => r.payment_status === "paid").length,
+      donasi: reguler.filter((r) => r.payment_status === "paid").length,
+      pendaftaranPaid: rows.filter((r) => isGelombang(r) && r.payment_status === "paid").length,
     };
   }, [rows]);
 
@@ -94,7 +106,8 @@ function AdminOverview() {
     return {
       daftar: rows.filter((r) => inToday(r.created_at)).length,
       berkas: rows.filter((r) => submitted(r) && inToday(r.updated_at)).length,
-      donasi: rows.filter((r) => r.payment_status === "paid" && inToday(r.paid_at)).length,
+      donasi: rows.filter((r) => isReguler(r) && r.payment_status === "paid" && inToday(r.paid_at)).length,
+      pendaftaranPaid: rows.filter((r) => isGelombang(r) && r.payment_status === "paid" && inToday(r.paid_at)).length,
     };
   }, [rows]);
 
@@ -124,12 +137,30 @@ function AdminOverview() {
 
   return (
     <AdminShell title="Ringkasan">
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <MiniStat label="Total Peserta" value={stats.total} />
         <MiniStat label="Reguler" value={stats.reguler} to="/admin/peserta/reguler" icon={<Users className="size-4" />} />
         <MiniStat label="Self Funded" value={stats.self} to="/admin/peserta/self-funded" icon={<UserCheck className="size-4" />} />
-        <MiniStat label="Kirim Berkas" value={stats.submitted} icon={<FileCheck className="size-4" />} />
-        <MiniStat label="Donasi Valid" value={stats.paid} icon={<HeartHandshake className="size-4" />} accent />
+        <MiniStat label="Gelombang 1" value={stats.g1} sub={`${stats.g1Paid} bayar`} icon={<Layers className="size-4" />} />
+        <MiniStat label="Gelombang 2" value={stats.g2} sub={`${stats.g2Paid} bayar`} icon={<Layers className="size-4" />} />
+        <MiniStat label="Donasi Valid" value={stats.donasi} icon={<HeartHandshake className="size-4" />} accent />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <SummaryCard
+          title="Biaya Pendaftaran (Gelombang)"
+          desc="Total peserta Gelombang 1 & 2 yang telah membayar biaya pendaftaran."
+          value={stats.pendaftaranPaid}
+          icon={<Wallet className="size-5" />}
+          tone="accent"
+        />
+        <SummaryCard
+          title="Donasi Peserta Reguler"
+          desc="Donasi yang masuk dari peserta jalur Fully / Partial Funded."
+          value={stats.donasi}
+          icon={<HeartHandshake className="size-5" />}
+          tone="emerald"
+        />
       </div>
 
       <section className="bg-card border border-border rounded-2xl p-5">
@@ -150,12 +181,14 @@ function AdminOverview() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <TodayCard label="Pendaftaran" value={todayStats.daftar} icon={<Users className="size-4" />} tone="emerald" />
           <TodayCard label="Kirim Berkas" value={todayStats.berkas} icon={<FileCheck className="size-4" />} tone="accent" />
+          <TodayCard label="Bayar Pendaftaran" value={todayStats.pendaftaranPaid} icon={<Wallet className="size-4" />} tone="accent" />
           <TodayCard label="Donasi Valid" value={todayStats.donasi} icon={<HeartHandshake className="size-4" />} tone="rose" />
         </div>
       </section>
+
 
       <section className="bg-card border border-border rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
@@ -202,8 +235,8 @@ function AdminOverview() {
 }
 
 function MiniStat({
-  label, value, icon, to, accent,
-}: { label: string; value: number; icon?: React.ReactNode; to?: string; accent?: boolean }) {
+  label, value, icon, to, accent, sub,
+}: { label: string; value: number; icon?: React.ReactNode; to?: string; accent?: boolean; sub?: string }) {
   const inner = (
     <div className={`bg-card border rounded-2xl p-4 transition ${to ? "hover:border-accent/50 hover:shadow-soft" : "border-border"} ${accent ? "border-accent/40" : "border-border"}`}>
       <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -211,10 +244,31 @@ function MiniStat({
         {to && <ArrowUpRight className="size-3.5 opacity-50" />}
       </div>
       <div className={`mt-2 font-display text-3xl font-semibold tracking-tight ${accent ? "text-accent" : ""}`}>{value}</div>
+      {sub && <div className="text-[11px] text-muted-foreground mt-0.5">{sub}</div>}
     </div>
   );
   return to ? <Link to={to}>{inner}</Link> : inner;
 }
+
+function SummaryCard({
+  title, desc, value, icon, tone,
+}: { title: string; desc: string; value: number; icon: React.ReactNode; tone: "emerald" | "accent" }) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald border-emerald/30",
+    accent: "bg-accent/15 text-accent border-accent/40",
+  } as const;
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5 flex items-start gap-4">
+      <div className={`size-12 rounded-xl grid place-items-center border ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0 flex-1">
+        <div className="font-display text-base font-semibold">{title}</div>
+        <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
+      </div>
+      <div className="font-display text-3xl font-semibold tracking-tight">{value}</div>
+    </div>
+  );
+}
+
 
 function QuickLink({ to, title, desc }: { to: string; title: string; desc: string }) {
   return (
