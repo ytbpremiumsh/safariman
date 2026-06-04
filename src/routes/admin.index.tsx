@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight } from "lucide-react";
+import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight, Wallet, Layers } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
+
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Dashboard Admin — Safar Iman" }] }),
