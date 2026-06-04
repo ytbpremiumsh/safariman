@@ -66,7 +66,7 @@ function Nav() {
             )}
           </nav>
           <Link
-            to="/daftar"
+            to="/pendaftaran"
             className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
           >
             Daftar Sekarang <ArrowRight className="size-4" />
@@ -92,7 +92,7 @@ function Nav() {
                 <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
               )
             )}
-            <Link to="/daftar" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
+            <Link to="/pendaftaran" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
             </Link>
           </div>
@@ -217,7 +217,7 @@ function Hero() {
 
             <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               <Link
-                to="/daftar"
+                to="/pendaftaran"
                 className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
               >
                 Daftar Sekarang
@@ -390,7 +390,7 @@ function Persyaratan() {
               *Ketentuan selengkapnya tersedia pada buku panduan program.
             </p>
             <Link
-              to="/daftar"
+              to="/pendaftaran"
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-3 text-sm font-semibold shadow-gold hover-lift"
             >
               Daftar Sekarang <ArrowRight className="size-4" />
@@ -477,7 +477,7 @@ function Quota() {
             </div>
 
             <Link
-              to="/daftar"
+              to="/pendaftaran"
               className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-4 font-semibold shadow-gold hover-lift"
             >
               Daftar Fully Funded <ArrowRight className="size-4" />
@@ -777,7 +777,7 @@ function FinalCTA() {
           Jangan lewatkan kesempatan emas ini. Daftarkan dirimu sekarang dan jadilah bagian dari perjalanan transformatif Safar Iman.
         </p>
         <Link
-          to="/daftar"
+          to="/pendaftaran"
           className="mt-10 inline-flex items-center gap-3 rounded-full bg-gradient-gold text-emerald-deep px-10 py-5 text-lg font-bold shadow-gold hover-lift animate-glow-pulse"
         >
           Daftar Sekarang <ArrowRight className="size-5" />
@@ -909,7 +909,7 @@ function Footer() {
           <div>© {new Date().getFullYear()} Safar Iman — Hasanah Tour & Travel × Prestasi Kita. Semua hak dilindungi.</div>
           <div className="flex items-center gap-4">
             <Link to="/tentang" className="hover:text-emerald transition-colors">Tentang</Link>
-            <Link to="/daftar" className="hover:text-emerald transition-colors">Daftar</Link>
+            <Link to="/pendaftaran" className="hover:text-emerald transition-colors">Daftar</Link>
             <Link to="/admin/login" className="hover:text-emerald transition-colors">Admin</Link>
           </div>
         </div>
