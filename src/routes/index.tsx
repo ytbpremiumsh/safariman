@@ -458,7 +458,7 @@ function Quota() {
                   <Sparkles className="size-3.5 text-accent" /> Fasilitas Lengkap
                 </span>
                 <h3 className="font-display text-4xl sm:text-5xl font-semibold">Fully Funded</h3>
-                <p className="text-white/70 mt-1">Kuota: 3 Orang Terpilih</p>
+                <p className="text-white/70 mt-1">Kuota: 2 Orang Terpilih</p>
               </div>
               <div className="text-right">
                 <div className="font-display text-4xl sm:text-5xl font-semibold text-gradient-gold">{"\n"}</div>
