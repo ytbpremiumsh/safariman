@@ -128,18 +128,28 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       if (status === "paid") { if (r.payment_status !== "paid") return false; }
       else if (status !== "all" && r.status !== status) return false;
       if (!isSelf) {
+        if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
+        if (catFilter === "gelombang_1" && r.category !== "gelombang_1") return false;
+        if (catFilter === "gelombang_2" && r.category !== "gelombang_2") return false;
         if (docFilter === "registered" && hasSubmittedDocs(r)) return false;
         if (docFilter === "submitted" && !hasSubmittedDocs(r)) return false;
       }
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code].some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, status, docFilter, isSelf]);
+  }, [rows, q, status, docFilter, catFilter, isSelf]);
 
   const stats = useMemo(() => ({
     registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
     submitted: rows.filter(hasSubmittedDocs).length,
+    regulerCount: rows.filter((r) => !isGelombang(r.category)).length,
+    g1Count: rows.filter((r) => r.category === "gelombang_1").length,
+    g2Count: rows.filter((r) => r.category === "gelombang_2").length,
+    g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
+    g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
+    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.payment_status === "paid").length,
   }), [rows]);
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
