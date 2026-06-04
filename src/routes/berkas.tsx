@@ -316,58 +316,84 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
 function FastTrackCard({ participant, code, onReset }: { participant: Participant; code: string; onReset: () => void }) {
   const paid = participant.donation_status === "paid";
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
-      <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
-        <CheckCircle2 className="size-5 text-emerald shrink-0" />
-        <div className="text-sm">
-          <div className="font-semibold">{participant.full_name}</div>
-          <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code}</span></div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
-        <div className="flex items-start gap-3">
-          <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
-              Jalur {fastTrackLabel(participant.category)}
+    <div className="relative bg-card border border-border/80 rounded-3xl shadow-soft animate-fade-up max-w-xl mx-auto overflow-hidden">
+      {/* Top identity strip */}
+      <div className="bg-gradient-to-br from-emerald/5 via-card to-card border-b border-border/60 px-6 sm:px-8 py-5">
+        <div className="flex items-center gap-3">
+          <div className="size-11 rounded-full bg-emerald/15 border border-emerald/30 grid place-items-center shrink-0">
+            <CheckCircle2 className="size-5 text-emerald" />
+          </div>
+          <div className="min-w-0">
+            <div className="font-semibold leading-tight truncate">{participant.full_name}</div>
+            <div className="text-muted-foreground text-xs mt-0.5">
+              Kode Pendaftaran: <span className="font-mono text-foreground">{code}</span>
             </div>
-            <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
-              Alhamdulillah, kamu masuk jalur Fast Track.
-            </div>
-            <p className="text-sm text-emerald-deep/90">
-              Tidak perlu mengirim berkas. {paid
-                ? <>Kontribusimu sudah tertunai — silakan lanjut langsung ke tahap <strong>Essay</strong>.</>
-                : <>Pastikan kamu sudah menunaikan <strong>kontribusi / donasi</strong> terlebih dahulu, lalu lanjut ke tahap <strong>Essay</strong>.</>}
-            </p>
           </div>
         </div>
       </div>
 
-      {paid ? (
+      <div className="px-6 sm:px-8 py-7 space-y-6">
+        {/* Fast Track hero */}
+        <div className="relative rounded-2xl bg-gradient-gold border border-accent/40 p-6 shadow-gold overflow-hidden">
+          <div className="absolute -right-6 -top-6 size-24 rounded-full bg-white/15 blur-2xl pointer-events-none" />
+          <div className="relative flex items-start gap-4">
+            <div className="size-11 rounded-xl bg-emerald-deep/15 border border-emerald-deep/20 grid place-items-center shrink-0">
+              <Sparkles className="size-5 text-emerald-deep" />
+            </div>
+            <div className="space-y-2 min-w-0">
+              <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] font-bold text-emerald-deep/85 bg-emerald-deep/10 rounded-full px-2.5 py-1">
+                Jalur {fastTrackLabel(participant.category)}
+              </div>
+              <h3 className="font-display text-xl font-semibold text-emerald-deep leading-snug">
+                Alhamdulillah, kamu masuk jalur Fast Track.
+              </h3>
+              <p className="text-sm text-emerald-deep/90 leading-relaxed">
+                Tidak perlu mengirim berkas. Silakan langsung lanjut ke tahap <strong>Essay</strong>
+                {paid ? <> — kontribusimu sudah tertunai.</> : <>. Pastikan kontribusi sudah ditunaikan terlebih dahulu agar essay bisa diproses.</>}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Status row */}
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="rounded-xl border border-emerald/30 bg-emerald/5 px-3 py-2.5">
+            <div className="text-muted-foreground">Berkas</div>
+            <div className="font-semibold text-emerald flex items-center gap-1 mt-0.5">
+              <CheckCircle2 className="size-3.5" /> Otomatis Lolos
+            </div>
+          </div>
+          <div className={`rounded-xl border px-3 py-2.5 ${paid ? "border-emerald/30 bg-emerald/5" : "border-amber-500/30 bg-amber-500/5"}`}>
+            <div className="text-muted-foreground">Kontribusi</div>
+            <div className={`font-semibold flex items-center gap-1 mt-0.5 ${paid ? "text-emerald" : "text-amber-600 dark:text-amber-500"}`}>
+              {paid ? <><CheckCircle2 className="size-3.5" /> Tertunai</> : <><HeartHandshake className="size-3.5" /> Belum Dibayar</>}
+            </div>
+          </div>
+        </div>
+
+        {/* Primary action */}
         <Link
           to="/essay"
           search={{ code }}
           className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
         >
-          <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
+          <FileText className="size-5" /> Kirim Essay <ArrowRight className="size-4" />
         </Link>
-      ) : (
-        <Link
-          to="/donasi"
-          search={{ code }}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
-        >
-          <HeartHandshake className="size-5" /> Tunaikan Kontribusi Dulu <ArrowRight className="size-4" />
-        </Link>
-      )}
 
-      <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">
-        Cek kode lain
-      </button>
+        {!paid && (
+          <p className="text-center text-xs text-muted-foreground -mt-2">
+            Belum bayar kontribusi? Kamu akan diarahkan untuk menunaikannya di tahap berikutnya.
+          </p>
+        )}
+
+        <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">
+          Cek kode lain
+        </button>
+      </div>
     </div>
   );
 }
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
