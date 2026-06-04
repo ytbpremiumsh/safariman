@@ -116,12 +116,18 @@ function SlotCard({
   slotKey,
   slot,
   accent,
+  forceActive,
+  forceClosed,
+  closedLabel,
 }: {
   slotKey: SlotKey;
   slot: GelombangSlot;
   accent: "gold" | "emerald";
+  forceActive?: boolean;
+  forceClosed?: boolean;
+  closedLabel?: string;
 }) {
-  const active = isSlotActive(slot);
+  const active = forceClosed ? false : forceActive ? true : isSlotActive(slot);
   const bullets = slot.description.split("\n").filter((s) => s.trim());
   const free = slot.price === 0;
 
