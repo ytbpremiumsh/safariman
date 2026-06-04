@@ -235,8 +235,8 @@ function AdminOverview() {
 }
 
 function MiniStat({
-  label, value, icon, to, accent,
-}: { label: string; value: number; icon?: React.ReactNode; to?: string; accent?: boolean }) {
+  label, value, icon, to, accent, sub,
+}: { label: string; value: number; icon?: React.ReactNode; to?: string; accent?: boolean; sub?: string }) {
   const inner = (
     <div className={`bg-card border rounded-2xl p-4 transition ${to ? "hover:border-accent/50 hover:shadow-soft" : "border-border"} ${accent ? "border-accent/40" : "border-border"}`}>
       <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -244,10 +244,31 @@ function MiniStat({
         {to && <ArrowUpRight className="size-3.5 opacity-50" />}
       </div>
       <div className={`mt-2 font-display text-3xl font-semibold tracking-tight ${accent ? "text-accent" : ""}`}>{value}</div>
+      {sub && <div className="text-[11px] text-muted-foreground mt-0.5">{sub}</div>}
     </div>
   );
   return to ? <Link to={to}>{inner}</Link> : inner;
 }
+
+function SummaryCard({
+  title, desc, value, icon, tone,
+}: { title: string; desc: string; value: number; icon: React.ReactNode; tone: "emerald" | "accent" }) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald border-emerald/30",
+    accent: "bg-accent/15 text-accent border-accent/40",
+  } as const;
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5 flex items-start gap-4">
+      <div className={`size-12 rounded-xl grid place-items-center border ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0 flex-1">
+        <div className="font-display text-base font-semibold">{title}</div>
+        <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
+      </div>
+      <div className="font-display text-3xl font-semibold tracking-tight">{value}</div>
+    </div>
+  );
+}
+
 
 function QuickLink({ to, title, desc }: { to: string; title: string; desc: string }) {
   return (
