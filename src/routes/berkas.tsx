@@ -156,6 +156,12 @@ function BerkasPage() {
               code={code.toUpperCase()}
               onReset={() => { setParticipant(null); setCode(""); }}
             />
+          ) : isFastTrack(participant.category) ? (
+            <FastTrackCard
+              participant={participant}
+              code={code.toUpperCase()}
+              onReset={() => { setParticipant(null); setCode(""); }}
+            />
           ) : (
             <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
               <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
@@ -165,26 +171,6 @@ function BerkasPage() {
                   <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code.toUpperCase()}</span></div>
                 </div>
               </div>
-
-              {isFastTrack(participant.category) && (
-                <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
-                    <div className="space-y-1">
-                      <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
-                        Jalur {fastTrackLabel(participant.category)}
-                      </div>
-                      <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
-                        Alhamdulillah, kamu masuk jalur Fast Track.
-                      </div>
-                      <p className="text-sm text-emerald-deep/90">
-                        Tanpa syarat twibbon &amp; follow sosmed. Cukup lengkapi berkas di bawah,
-                        lalu langsung lanjut ke tahap <strong>Essay</strong>.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <Section title="Data & Berkas Pendukung">
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
