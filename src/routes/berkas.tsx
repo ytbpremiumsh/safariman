@@ -166,7 +166,25 @@ function BerkasPage() {
                 </div>
               </div>
 
-              <Section title="Data & Berkas Pendukung">
+              {isFastTrack(participant.category) && (
+                <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
+                        Jalur {fastTrackLabel(participant.category)}
+                      </div>
+                      <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
+                        Alhamdulillah, kamu masuk jalur Fast Track.
+                      </div>
+                      <p className="text-sm text-emerald-deep/90">
+                        Tanpa syarat twibbon &amp; follow sosmed. Cukup lengkapi berkas di bawah,
+                        lalu langsung lanjut ke tahap <strong>Essay</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
                   <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
                   <div>
