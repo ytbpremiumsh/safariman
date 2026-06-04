@@ -160,13 +160,15 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       "Pendidikan": r.education, "Pekerjaan": r.occupation,
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[r.status],
-      "Donasi": r.payment_status === "paid" ? "Valid" : "Belum",
-      "Tanggal Donasi": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
+      "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
+      "Status Pembayaran": r.payment_status === "paid" ? "Valid" : (r.payment_status === "pending" ? "Pending" : "Belum"),
+      "Tanggal Pembayaran": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
         "Essay Layak": r.essay_worthy,
         "Essay Impian": r.essay_dream,
         "Essay Kontribusi": r.essay_contribution,
       }),
+
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
