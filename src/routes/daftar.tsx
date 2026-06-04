@@ -48,10 +48,15 @@ const schema = z.object({
     .regex(/^@?[A-Za-z0-9._]+$/, "Format username Instagram tidak valid"),
 });
 
+const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string; paid: boolean }> = {
+  fully_funded: { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi).", paid: false },
+  self_funded: { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri).", paid: false },
+  gelombang_1: { title: "Pendaftaran Gelombang 1", tagline: "Reguler Gelombang 1", note: "Jalur Gelombang 1 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
+  gelombang_2: { title: "Pendaftaran Gelombang 2", tagline: "Reguler Gelombang 2", note: "Jalur Gelombang 2 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
+};
+
 export function RegisterPage({ kind }: { kind: Kind }) {
-  const KIND_META = kind === "self_funded"
-    ? { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri)." }
-    : { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi)." };
+  const KIND_META = KIND_META_MAP[kind];
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
