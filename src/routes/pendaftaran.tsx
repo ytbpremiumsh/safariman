@@ -60,21 +60,21 @@ function PendaftaranHub() {
 
         <main className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16">
           <div className="text-center mb-12 animate-fade-up">
-            <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/30 px-4 py-1.5 text-xs font-medium text-accent uppercase tracking-[0.2em] mb-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-1.5 text-xs font-medium text-primary uppercase tracking-[0.2em] mb-4">
               <Sparkles className="size-3.5" /> Pendaftaran Program
             </div>
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Pilih <span className="text-gradient-gold">Jalur Pendaftaran</span>
+              Pilih <span className="text-gradient-emerald">Jalur Pendaftaran</span>
             </h1>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              Reguler <strong>GRATIS</strong> dengan persyaratan lengkap, atau jalur <strong>Gelombang</strong> berbayar
+              Reguler <strong className="text-foreground">GRATIS</strong> dengan persyaratan lengkap, atau jalur <strong className="text-foreground">Fast Track</strong> berbayar
               tanpa syarat tambahan.
             </p>
           </div>
 
           {loading || !cfg ? (
             <div className="grid place-items-center py-20">
-              <Loader2 className="size-8 animate-spin text-accent" />
+              <Loader2 className="size-8 animate-spin text-primary" />
             </div>
           ) : (
             <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
@@ -84,7 +84,7 @@ function PendaftaranHub() {
                 const g1Ended = !cfg.gelombang_1.enabled || today.getTime() > g1End.getTime();
                 return (
                   <>
-                    <SlotCard slotKey="reguler" slot={cfg.reguler} accent="gold" forceActive />
+                    <SlotCard slotKey="reguler" slot={cfg.reguler} accent="emerald" forceActive />
                     {!g1Ended ? (
                       <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" forceActive />
                     ) : (
@@ -101,7 +101,7 @@ function PendaftaranHub() {
 
           <div className="mt-10 text-center text-sm text-muted-foreground">
             Bingung memilih? Hubungi tim kami via{" "}
-            <a href="https://wa.me/6281234567890" className="text-accent underline">
+            <a href="https://wa.me/6281234567890" className="text-primary underline">
               WhatsApp
             </a>
             .
@@ -122,7 +122,7 @@ function SlotCard({
 }: {
   slotKey: SlotKey;
   slot: GelombangSlot;
-  accent: "gold" | "emerald";
+  accent: "emerald";
   forceActive?: boolean;
   forceClosed?: boolean;
   closedLabel?: string;
@@ -135,12 +135,12 @@ function SlotCard({
     <div
       className={
         "relative w-full sm:w-[340px] lg:w-[360px] rounded-3xl border bg-card p-6 sm:p-7 shadow-soft flex flex-col animate-fade-up transition " +
-        (active ? "border-accent/50 hover:shadow-gold" : "border-border opacity-75")
+        (active ? "border-primary/40 hover:shadow-emerald" : "border-border opacity-75")
       }
     >
-      {accent === "gold" && (
+      {free && (
         <div className="absolute -top-3 left-6">
-          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold bg-gradient-gold text-emerald-deep px-3 py-1.5 rounded-full shadow-gold">
+          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold bg-gradient-emerald text-white px-3 py-1.5 rounded-full shadow-emerald">
             <Sparkles className="size-3" /> Paling Populer
           </span>
         </div>
@@ -149,7 +149,7 @@ function SlotCard({
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-            {slotKey === "reguler" ? "Jalur Mujahadah" : "Jalur Barakah"}
+            {slotKey === "reguler" ? "Jalur Reguler" : "Jalur Fast Track"}
           </div>
           <h3 className="mt-1 font-display text-2xl font-semibold leading-tight">{slot.name}</h3>
         </div>
@@ -163,28 +163,31 @@ function SlotCard({
       <div
         className={
           "rounded-2xl p-4 mb-5 text-center " +
-          (free ? "bg-gradient-gold text-emerald-deep shadow-gold" : "bg-gradient-emerald text-white shadow-emerald")
+          (free ? "bg-gradient-emerald text-white shadow-emerald" : "bg-gradient-gold text-emerald-deep shadow-gold")
         }
       >
         <div className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-80">Biaya Pendaftaran</div>
         <div className="font-display text-3xl sm:text-4xl font-bold mt-1">{formatRupiah(slot.price)}</div>
       </div>
 
-      <div className="text-xs text-muted-foreground mb-4">
-        <Clock className="inline size-3.5 mr-1 -mt-0.5" />
+      <div className="inline-flex items-center gap-2 self-start rounded-full bg-primary/8 border border-primary/20 px-3.5 py-1.5 text-xs font-semibold text-primary mb-5">
+        <Clock className="size-3.5" />
         {formatDateRange(slot.start, slot.end)}
       </div>
 
-      <ul className="space-y-2 mb-6 flex-1">
-        {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm">
-            <CheckCircle2
-              className={"size-4 mt-0.5 shrink-0 " + (slotKey === "reguler" ? "text-emerald" : "text-accent")}
-            />
-            <span className="leading-relaxed">{b}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="bg-secondary/60 rounded-2xl p-4 mb-6 flex-1">
+        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-3">
+          Ketentuan & Syarat
+        </div>
+        <ul className="space-y-2.5">
+          {bullets.map((b, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-sm font-medium">
+              <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-primary" />
+              <span className="leading-relaxed">{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {active ? (
         <Link
@@ -192,7 +195,7 @@ function SlotCard({
           className={
             "w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-bold hover-lift " +
             (free
-              ? "bg-gradient-emerald text-accent shadow-emerald"
+              ? "bg-gradient-emerald text-white shadow-emerald"
               : "bg-gradient-gold text-emerald-deep shadow-gold")
           }
         >
