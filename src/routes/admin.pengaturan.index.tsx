@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -8,6 +8,12 @@ export const Route = createFileRoute("/admin/pengaturan/")({
 });
 
 const ITEMS = [
+  {
+    to: "/admin/pengaturan/gelombang",
+    icon: Layers,
+    title: "Gelombang Pendaftaran",
+    desc: "Atur nama, tanggal, harga, dan keterangan untuk Reguler, Gelombang 1, dan Gelombang 2.",
+  },
   {
     to: "/admin/pengaturan/twibbon",
     icon: ImageIcon,

@@ -21,7 +21,7 @@ export const Route = createFileRoute("/daftar")({
   component: () => <RegisterPage kind="fully_funded" />,
 });
 
-type Kind = "fully_funded" | "self_funded";
+type Kind = "fully_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 
 type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
@@ -48,10 +48,15 @@ const schema = z.object({
     .regex(/^@?[A-Za-z0-9._]+$/, "Format username Instagram tidak valid"),
 });
 
+const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string; paid: boolean }> = {
+  fully_funded: { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi).", paid: false },
+  self_funded: { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri).", paid: false },
+  gelombang_1: { title: "Pendaftaran Gelombang 1", tagline: "Reguler Gelombang 1", note: "Jalur Gelombang 1 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
+  gelombang_2: { title: "Pendaftaran Gelombang 2", tagline: "Reguler Gelombang 2", note: "Jalur Gelombang 2 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
+};
+
 export function RegisterPage({ kind }: { kind: Kind }) {
-  const KIND_META = kind === "self_funded"
-    ? { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri)." }
-    : { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi)." };
+  const KIND_META = KIND_META_MAP[kind];
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
@@ -91,6 +96,32 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       if (error) throw error;
       const row = rows?.[0];
       if (!row) throw new Error("Tidak ada respons dari server");
+
+      // Untuk gelombang berbayar: buat invoice Mayar dulu, langsung redirect ke pembayaran.
+      // Kode pendaftaran baru ditampilkan setelah pembayaran sukses (via halaman /pendaftaran-sukses).
+      if (KIND_META.paid) {
+        try {
+          const res = await fetch("/api/public/mayar-pendaftaran-invoice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: row.registration_code }),
+          });
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
+          if (json.url) {
+            toast.success("Mengarahkan ke halaman pembayaran…");
+            window.location.href = json.url;
+            return;
+          }
+          throw new Error("URL pembayaran tidak tersedia");
+        } catch (e: any) {
+          // Fallback: arahkan ke halaman cek status agar bisa retry pembayaran
+          toast.error(e?.message || "Gagal membuat invoice — silakan coba lagi di halaman cek status");
+          window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+          return;
+        }
+      }
+
       setCode(row.registration_code);
       // Auto-kirim notifikasi WhatsApp (fire & forget) via server function
       import("@/lib/wa-notify.functions")
