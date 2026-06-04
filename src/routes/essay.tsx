@@ -188,7 +188,7 @@ function BodyByStatus({
   );
 
   const fastTrack = isFastTrack(participant.category);
-  const paid = participant.payment_status === "paid";
+  const paid = participant.donation_status === "paid";
   const fastTrackBanner = fastTrack ? (
     <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
       <div className="flex items-start gap-3">
