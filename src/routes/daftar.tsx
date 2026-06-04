@@ -96,6 +96,32 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       if (error) throw error;
       const row = rows?.[0];
       if (!row) throw new Error("Tidak ada respons dari server");
+
+      // Untuk gelombang berbayar: buat invoice Mayar dulu, langsung redirect ke pembayaran.
+      // Kode pendaftaran baru ditampilkan setelah pembayaran sukses (via halaman /pendaftaran-sukses).
+      if (KIND_META.paid) {
+        try {
+          const res = await fetch("/api/public/mayar-pendaftaran-invoice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: row.registration_code }),
+          });
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
+          if (json.url) {
+            toast.success("Mengarahkan ke halaman pembayaran…");
+            window.location.href = json.url;
+            return;
+          }
+          throw new Error("URL pembayaran tidak tersedia");
+        } catch (e: any) {
+          // Fallback: arahkan ke halaman cek status agar bisa retry pembayaran
+          toast.error(e?.message || "Gagal membuat invoice — silakan coba lagi di halaman cek status");
+          window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+          return;
+        }
+      }
+
       setCode(row.registration_code);
       // Auto-kirim notifikasi WhatsApp (fire & forget) via server function
       import("@/lib/wa-notify.functions")
