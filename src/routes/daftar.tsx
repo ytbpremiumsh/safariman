@@ -160,10 +160,16 @@ export function RegisterPage({ kind }: { kind: Kind }) {
 
           ) : (
             <>
-              <div className="text-center mb-8 animate-fade-up">
-                <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/30 px-4 py-1.5 text-xs font-medium text-accent uppercase tracking-[0.2em] mb-4">
-                  <Sparkles className="size-3.5" /> {KIND_META.tagline}
-                </div>
+          <div className="text-center mb-8 animate-fade-up">
+            <Link
+              to="/pendaftaran"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
+            >
+              <ArrowLeft className="size-4" /> Kembali
+            </Link>
+            <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/30 px-4 py-1.5 text-xs font-medium text-accent uppercase tracking-[0.2em] mb-4">
+              <Sparkles className="size-3.5" /> {KIND_META.tagline}
+            </div>
                 <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
                   Formulir <span className="text-gradient-gold">{KIND_META.title.replace("Pendaftaran ", "")}</span>
                 </h1>

@@ -97,6 +97,12 @@ function DonasiPage() {
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           <div className="mb-12 animate-fade-up text-center">
+            <Link
+              to="/berkas"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
+            >
+              <ArrowLeft className="size-4" /> Kembali
+            </Link>
             <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-emerald font-bold bg-emerald/10 border border-emerald/20 px-4 py-1.5 rounded-full">
               <HeartHandshake className="size-3.5" /> Kontribusi Kebaikan
             </span>
