@@ -45,8 +45,8 @@ const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
   self_funded: "Self Funded",
-  gelombang_1: "Gelombang 1",
-  gelombang_2: "Gelombang 2",
+  gelombang_1: "Fast Track • Gelombang 1",
+  gelombang_2: "Fast Track • Gelombang 2",
 };
 
 const CAT_COLOR: Record<Category, string> = {
