@@ -45,8 +45,8 @@ const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
   self_funded: "Self Funded",
-  gelombang_1: "Gelombang 1",
-  gelombang_2: "Gelombang 2",
+  gelombang_1: "Fast Track • Gelombang 1",
+  gelombang_2: "Fast Track • Gelombang 2",
 };
 
 const CAT_COLOR: Record<Category, string> = {
@@ -368,7 +368,11 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   <Td>{r.city}</Td>
                   {!isSelf && (
                     <Td>
-                      {hasSubmittedDocs(r) ? (
+                      {isGelombang(r.category) ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-accent" title="Fast Track: berkas otomatis terkonfirmasi">
+                          <FileCheck className="size-3.5" /> Auto (Fast Track)
+                        </span>
+                      ) : hasSubmittedDocs(r) ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald"><FileCheck className="size-3.5" /> Sudah</span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600"><FileX className="size-3.5" /> Belum</span>

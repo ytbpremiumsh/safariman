@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList, Sparkles } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,7 +42,13 @@ type Participant = {
   has_essay: boolean;
   status: string;
   payment_status: string;
+  category: string | null;
 };
+
+const isFastTrack = (cat: string | null | undefined) =>
+  cat === "gelombang_1" || cat === "gelombang_2";
+const fastTrackLabel = (cat: string | null | undefined) =>
+  cat === "gelombang_1" ? "Fast Track Gelombang 1" : "Fast Track Gelombang 2";
 
 function EssayPage() {
   const navigate = useNavigate();
@@ -53,18 +59,22 @@ function EssayPage() {
 
   const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "" });
   const [submitting, setSubmitting] = useState(false);
-  const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
+  const set = <K extends keyof typeof d,>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
 
   const verify = async (autoCode?: string) => {
     const c = (autoCode ?? code).trim().toUpperCase();
     if (c.length < 4) { toast.error("Masukkan kode pendaftaran"); return; }
     setChecking(true);
     try {
-      const { data, error } = await supabase.rpc("lookup_participant_by_code", { p_code: c });
+      const [{ data, error }, { data: payData }] = await Promise.all([
+        supabase.rpc("lookup_participant_by_code", { p_code: c }),
+        supabase.rpc("lookup_payment_status_by_code", { p_code: c }),
+      ]);
       if (error) throw error;
       const row = data?.[0];
       if (!row) { toast.error("Kode tidak ditemukan."); return; }
-      setParticipant(row as Participant);
+      const category = (payData?.[0]?.category as string | null) ?? null;
+      setParticipant({ ...(row as Omit<Participant, "category">), category });
     } catch (e) {
       console.error(e);
       toast.error("Gagal memverifikasi kode.");
@@ -176,7 +186,27 @@ function BodyByStatus({
     </div>
   );
 
-  if (!participant.has_berkas) {
+  const fastTrack = isFastTrack(participant.category);
+  const fastTrackBanner = fastTrack ? (
+    <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
+      <div className="flex items-start gap-3">
+        <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
+            Jalur {fastTrackLabel(participant.category)}
+          </div>
+          <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
+            Berkas otomatis terkonfirmasi.
+          </div>
+          <p className="text-sm text-emerald-deep/90">
+            Kamu tidak perlu mengirim berkas. Langsung lanjut isi essay di bawah.
+          </p>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  if (!fastTrack && !participant.has_berkas) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
@@ -196,6 +226,7 @@ function BodyByStatus({
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
+        {fastTrackBanner}
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
           <div className="font-semibold mb-1">Belum bisa mengisi Essay</div>
           <p className="text-muted-foreground">
@@ -228,6 +259,7 @@ function BodyByStatus({
   return (
     <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
       {header}
+      {fastTrackBanner}
       <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
         Tulis essaymu dengan jujur dan reflektif. Semua essay <strong>wajib diisi</strong>, minimal{" "}
         <strong>{MIN_ESSAY_WORDS} kata</strong> per essay.
