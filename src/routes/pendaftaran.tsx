@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Clock, BadgeCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import {
@@ -77,7 +77,7 @@ function PendaftaranHub() {
               <Loader2 className="size-8 animate-spin text-accent" />
             </div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-5 sm:gap-6">
+            <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
               {(() => {
                 const today = new Date();
                 const g1End = new Date(cfg.gelombang_1.end + "T23:59:59+07:00");
@@ -134,7 +134,7 @@ function SlotCard({
   return (
     <div
       className={
-        "relative rounded-3xl border bg-card p-6 sm:p-7 shadow-soft flex flex-col animate-fade-up transition " +
+        "relative w-full sm:w-[340px] lg:w-[360px] rounded-3xl border bg-card p-6 sm:p-7 shadow-soft flex flex-col animate-fade-up transition " +
         (active ? "border-accent/50 hover:shadow-gold" : "border-border opacity-75")
       }
     >
@@ -149,15 +149,11 @@ function SlotCard({
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-            {slotKey === "reguler" ? "Jalur Gratis" : "Jalur Berbayar"}
+            {slotKey === "reguler" ? "Jalur Mujahadah" : "Jalur Barakah"}
           </div>
           <h3 className="mt-1 font-display text-2xl font-semibold leading-tight">{slot.name}</h3>
         </div>
-        {active ? (
-          <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-emerald/15 text-emerald text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider">
-            <BadgeCheck className="size-3" /> Aktif
-          </span>
-        ) : (
+        {!active && (
           <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-muted text-muted-foreground text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider">
             <Clock className="size-3" /> Tutup
           </span>

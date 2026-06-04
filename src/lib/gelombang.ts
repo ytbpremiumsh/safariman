@@ -31,7 +31,7 @@ export const DEFAULT_GELOMBANG_CONFIG: GelombangConfig = {
     price: 20000,
     enabled: true,
     description:
-      "Tanpa Membagikan Twibbon & Poster\nTanpa Follow Instagram & Tiktok\nTanpa Mengirimkan Berkas Administrasi",
+      "Tanpa Membagikan Twibbon & Poster\nTanpa Follow Instagram & Tiktok\nKomitmen Donasi sebelum Kirim Berkas\nLanjut Kirim Berkas & Essay",
   },
   gelombang_2: {
     name: "Reguler Gelombang 2",
@@ -40,7 +40,7 @@ export const DEFAULT_GELOMBANG_CONFIG: GelombangConfig = {
     price: 50000,
     enabled: true,
     description:
-      "Tanpa Membagikan Twibbon & Poster\nTanpa Follow Instagram & Tiktok\nTanpa Mengirimkan Berkas Administrasi",
+      "Tanpa Membagikan Twibbon & Poster\nTanpa Follow Instagram & Tiktok\nKomitmen Donasi sebelum Kirim Berkas\nLanjut Kirim Berkas & Essay",
   },
 };
 
