@@ -13,7 +13,7 @@ import {
 import { AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 type Status = "pending" | "reviewed" | "interview" | "accepted" | "rejected";
-type Category = "fully_funded" | "partial_funded" | "self_funded";
+type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 
 export type PesertaKind = "reguler" | "self_funded";
 
@@ -44,7 +44,20 @@ const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
   self_funded: "Self Funded",
+  gelombang_1: "Gelombang 1",
+  gelombang_2: "Gelombang 2",
 };
+
+const CAT_COLOR: Record<Category, string> = {
+  fully_funded: "bg-emerald/10 text-emerald border-emerald/30",
+  partial_funded: "bg-emerald/10 text-emerald border-emerald/30",
+  self_funded: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
+  gelombang_1: "bg-accent/15 text-accent border-accent/40",
+  gelombang_2: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
+};
+
+const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
+
 
 const STATUS_LABEL: Record<Status, string> = {
   pending: "Menunggu",
