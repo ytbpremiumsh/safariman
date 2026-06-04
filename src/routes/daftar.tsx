@@ -21,7 +21,7 @@ export const Route = createFileRoute("/daftar")({
   component: () => <RegisterPage kind="fully_funded" />,
 });
 
-type Kind = "fully_funded" | "self_funded";
+type Kind = "fully_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 
 type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
