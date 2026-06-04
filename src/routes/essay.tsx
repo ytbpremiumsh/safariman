@@ -259,6 +259,7 @@ function BodyByStatus({
   return (
     <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up space-y-8">
       {header}
+      {fastTrackBanner}
       <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
         Tulis essaymu dengan jujur dan reflektif. Semua essay <strong>wajib diisi</strong>, minimal{" "}
         <strong>{MIN_ESSAY_WORDS} kata</strong> per essay.
