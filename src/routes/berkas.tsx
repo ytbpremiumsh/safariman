@@ -56,8 +56,8 @@ function BerkasPage() {
   const [texts, setTexts] = useState({ pengalaman_sosial: "", skill: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  const setLink = <K extends keyof typeof links>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
-  const setText = <K extends keyof typeof texts>(k: K, v: string) => setTexts((x) => ({ ...x, [k]: v }));
+  const setLink = <K extends keyof typeof links,>(k: K, v: string) => setLinks((x) => ({ ...x, [k]: v }));
+  const setText = <K extends keyof typeof texts,>(k: K, v: string) => setTexts((x) => ({ ...x, [k]: v }));
 
   const verify = async () => {
     const c = code.trim().toUpperCase();
