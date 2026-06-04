@@ -38,7 +38,13 @@ type Participant = {
   has_essay: boolean;
   status: string;
   payment_status: string;
+  category: string | null;
 };
+
+const isFastTrack = (cat: string | null | undefined) =>
+  cat === "gelombang_1" || cat === "gelombang_2";
+const fastTrackLabel = (cat: string | null | undefined) =>
+  cat === "gelombang_1" ? "Fast Track Gelombang 1" : "Fast Track Gelombang 2";
 
 function BerkasPage() {
   const navigate = useNavigate();
@@ -58,11 +64,15 @@ function BerkasPage() {
     if (c.length < 4) { toast.error("Masukkan kode pendaftaran"); return; }
     setChecking(true);
     try {
-      const { data, error } = await supabase.rpc("lookup_participant_by_code", { p_code: c });
+      const [{ data, error }, { data: payData }] = await Promise.all([
+        supabase.rpc("lookup_participant_by_code", { p_code: c }),
+        supabase.rpc("lookup_payment_status_by_code", { p_code: c }),
+      ]);
       if (error) throw error;
       const row = data?.[0];
       if (!row) { toast.error("Kode tidak ditemukan. Pastikan kamu sudah mendaftar."); return; }
-      setParticipant(row as Participant);
+      const category = (payData?.[0]?.category as string | null) ?? null;
+      setParticipant({ ...(row as Omit<Participant, "category">), category });
     } catch (e) {
       console.error(e);
       toast.error("Gagal memverifikasi kode.");
