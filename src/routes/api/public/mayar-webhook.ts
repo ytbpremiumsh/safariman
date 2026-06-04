@@ -69,13 +69,23 @@ export const Route = createFileRoute("/api/public/mayar-webhook")({
             return Response.json({ ok: true, ignored: true });
           }
 
-          const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", {
+          // Coba cocokkan invoice ini sebagai REGISTRATION (Fast Track) dulu.
+          const { data: updatedReg } = await supabaseAdmin.rpc("mark_payment_paid", {
             p_invoice_id: invoiceId,
           });
 
+          let updatedDonation = false;
+          if (!updatedReg) {
+            // Bukan invoice pendaftaran — coba sebagai invoice DONASI.
+            const { data: ud } = await supabaseAdmin.rpc("mark_donation_paid", {
+              p_invoice_id: invoiceId,
+            });
+            updatedDonation = !!ud;
+          }
+
           // Auto kirim WA notif untuk peserta jalur Fast Track (Gelombang 1/2)
           // setelah biaya pendaftaran tercatat lunas.
-          if (updated) {
+          if (updatedReg) {
             try {
               const { data: p } = await supabaseAdmin
                 .from("participants")
@@ -94,7 +104,7 @@ export const Route = createFileRoute("/api/public/mayar-webhook")({
             }
           }
 
-          return Response.json({ ok: true, updated });
+          return Response.json({ ok: true, updated: updatedReg || updatedDonation, type: updatedReg ? "registration" : updatedDonation ? "donation" : "none" });
         } catch (e) {
           console.error("Mayar webhook error", e);
           return Response.json({ ok: false, error: "Internal error" }, { status: 500 });
