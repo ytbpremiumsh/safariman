@@ -176,6 +176,7 @@ export type Database = {
       gen_registration_code: { Args: never; Returns: string }
       get_countdown_enabled: { Args: never; Returns: boolean }
       get_countdown_target: { Args: never; Returns: string }
+      get_gelombang_config: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
       get_twibbon_download_stats: {
         Args: { p_days?: number }
@@ -333,7 +334,12 @@ export type Database = {
         | "interview"
         | "accepted"
         | "rejected"
-      program_category: "fully_funded" | "partial_funded" | "self_funded"
+      program_category:
+        | "fully_funded"
+        | "partial_funded"
+        | "self_funded"
+        | "gelombang_1"
+        | "gelombang_2"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -469,7 +475,13 @@ export const Constants = {
         "accepted",
         "rejected",
       ],
-      program_category: ["fully_funded", "partial_funded", "self_funded"],
+      program_category: [
+        "fully_funded",
+        "partial_funded",
+        "self_funded",
+        "gelombang_1",
+        "gelombang_2",
+      ],
     },
   },
 } as const
