@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList, Sparkles } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
