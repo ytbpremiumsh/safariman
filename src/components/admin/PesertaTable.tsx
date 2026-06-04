@@ -90,6 +90,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
 
+  const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
+
   useEffect(() => {
     if (!ready) return;
     (async () => {
@@ -97,7 +99,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       const [{ data: list, error }, { data: cfg }] = await Promise.all([
         isSelf
           ? query.eq("category", "self_funded")
-          : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded"),
+          : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2"),
         supabase.from("app_settings").select("key,value"),
       ]);
       if (error) toast.error(error.message);
@@ -115,6 +117,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       setLoading(false);
     })();
   }, [ready, isSelf]);
+
 
   const hasSubmittedDocs = (p: Participant) =>
     !!(p.cv_url || p.photo_url || p.essay_worthy || p.essay_dream || p.essay_contribution);
