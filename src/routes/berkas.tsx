@@ -38,6 +38,7 @@ type Participant = {
   has_essay: boolean;
   status: string;
   payment_status: string;
+  donation_status: string;
   category: string | null;
 };
 
