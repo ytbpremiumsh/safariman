@@ -208,7 +208,7 @@ function SlotCard({
           disabled
           className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-muted text-muted-foreground px-5 py-3.5 text-sm font-bold cursor-not-allowed"
         >
-          <Clock className="size-4" /> Belum / Sudah Berakhir
+          <Clock className="size-4" /> {closedLabel ?? "Belum / Sudah Berakhir"}
         </button>
       )}
     </div>
