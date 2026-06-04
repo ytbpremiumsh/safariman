@@ -187,6 +187,7 @@ function BodyByStatus({
   );
 
   const fastTrack = isFastTrack(participant.category);
+  const paid = participant.payment_status === "paid";
   const fastTrackBanner = fastTrack ? (
     <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
       <div className="flex items-start gap-3">
@@ -199,7 +200,9 @@ function BodyByStatus({
             Berkas otomatis terkonfirmasi.
           </div>
           <p className="text-sm text-emerald-deep/90">
-            Kamu tidak perlu mengirim berkas. Langsung lanjut isi essay di bawah.
+            {paid
+              ? "Kontribusi sudah tercatat. Silakan lanjut isi essay di bawah."
+              : "Sebelum mengisi essay, kamu wajib menunaikan kontribusi / donasi terlebih dahulu — sama seperti jalur reguler."}
           </p>
         </div>
       </div>
