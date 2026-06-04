@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
 import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
 import { Route as EssayRouteImport } from './routes/essay'
 import { Route as DonasiRouteImport } from './routes/donasi'
@@ -34,6 +35,7 @@ import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peser
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
+import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
 import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
 import { Route as ApiPublicMpwaSplatRouteImport } from './routes/api/public/mpwa.$'
@@ -51,6 +53,11 @@ const TentangRoute = TentangRouteImport.update({
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
+  id: '/pendaftaran-sukses',
+  path: '/pendaftaran-sukses',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PendaftaranRoute = PendaftaranRouteImport.update({
@@ -165,6 +172,12 @@ const AdminPengaturanPanduanRoute = AdminPengaturanPanduanRouteImport.update({
   path: '/admin/pengaturan/panduan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanGelombangRoute =
+  AdminPengaturanGelombangRouteImport.update({
+    id: '/admin/pengaturan/gelombang',
+    path: '/admin/pengaturan/gelombang',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
   id: '/admin/pengaturan/donasi',
   path: '/admin/pengaturan/donasi',
@@ -192,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
   '/pendaftaran': typeof PendaftaranRoute
+  '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -200,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
@@ -222,6 +237,7 @@ export interface FileRoutesByTo {
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
   '/pendaftaran': typeof PendaftaranRoute
+  '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -230,6 +246,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
@@ -253,6 +270,7 @@ export interface FileRoutesById {
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
   '/pendaftaran': typeof PendaftaranRoute
+  '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -261,6 +279,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
@@ -285,6 +304,7 @@ export interface FileRouteTypes {
     | '/donasi'
     | '/essay'
     | '/pendaftaran'
+    | '/pendaftaran-sukses'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -293,6 +313,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/reguler'
@@ -315,6 +336,7 @@ export interface FileRouteTypes {
     | '/donasi'
     | '/essay'
     | '/pendaftaran'
+    | '/pendaftaran-sukses'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -323,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/reguler'
@@ -345,6 +368,7 @@ export interface FileRouteTypes {
     | '/donasi'
     | '/essay'
     | '/pendaftaran'
+    | '/pendaftaran-sukses'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -353,6 +377,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/reguler'
@@ -376,6 +401,7 @@ export interface RootRouteChildren {
   DonasiRoute: typeof DonasiRoute
   EssayRoute: typeof EssayRoute
   PendaftaranRoute: typeof PendaftaranRoute
+  PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
@@ -384,6 +410,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
+  AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRoute
@@ -418,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/sukses'
       fullPath: '/sukses'
       preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran-sukses': {
+      id: '/pendaftaran-sukses'
+      path: '/pendaftaran-sukses'
+      fullPath: '/pendaftaran-sukses'
+      preLoaderRoute: typeof PendaftaranSuksesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pendaftaran': {
@@ -574,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanPanduanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/gelombang': {
+      id: '/admin/pengaturan/gelombang'
+      path: '/admin/pengaturan/gelombang'
+      fullPath: '/admin/pengaturan/gelombang'
+      preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/donasi': {
       id: '/admin/pengaturan/donasi'
       path: '/admin/pengaturan/donasi'
@@ -608,6 +649,7 @@ const rootRouteChildren: RootRouteChildren = {
   DonasiRoute: DonasiRoute,
   EssayRoute: EssayRoute,
   PendaftaranRoute: PendaftaranRoute,
+  PendaftaranSuksesRoute: PendaftaranSuksesRoute,
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
@@ -616,6 +658,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
+  AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
   AdminPesertaRegulerRoute: AdminPesertaRegulerRoute,
@@ -631,3 +674,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
