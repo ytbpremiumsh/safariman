@@ -78,9 +78,24 @@ function PendaftaranHub() {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-5 sm:gap-6">
-              <SlotCard slotKey="reguler" slot={cfg.reguler} accent="gold" />
-              <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" />
-              <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" />
+              {(() => {
+                const today = new Date();
+                const g1End = new Date(cfg.gelombang_1.end + "T23:59:59+07:00");
+                const g1Ended = !cfg.gelombang_1.enabled || today.getTime() > g1End.getTime();
+                return (
+                  <>
+                    <SlotCard slotKey="reguler" slot={cfg.reguler} accent="gold" forceActive />
+                    {!g1Ended ? (
+                      <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" forceActive />
+                    ) : (
+                      <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" forceClosed closedLabel="Gelombang 1 Berakhir" />
+                    )}
+                    {g1Ended && (
+                      <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" forceActive />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
 
@@ -101,12 +116,18 @@ function SlotCard({
   slotKey,
   slot,
   accent,
+  forceActive,
+  forceClosed,
+  closedLabel,
 }: {
   slotKey: SlotKey;
   slot: GelombangSlot;
   accent: "gold" | "emerald";
+  forceActive?: boolean;
+  forceClosed?: boolean;
+  closedLabel?: string;
 }) {
-  const active = isSlotActive(slot);
+  const active = forceClosed ? false : forceActive ? true : isSlotActive(slot);
   const bullets = slot.description.split("\n").filter((s) => s.trim());
   const free = slot.price === 0;
 
@@ -187,7 +208,7 @@ function SlotCard({
           disabled
           className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-muted text-muted-foreground px-5 py-3.5 text-sm font-bold cursor-not-allowed"
         >
-          <Clock className="size-4" /> Belum / Sudah Berakhir
+          <Clock className="size-4" /> {closedLabel ?? "Belum / Sudah Berakhir"}
         </button>
       )}
     </div>
