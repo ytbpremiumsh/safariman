@@ -251,18 +251,39 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     <>
       <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
         {!isSelf && (
-          <div className="flex flex-wrap gap-2">
-            {([
-              { key: "all", label: `Semua (${rows.length})` },
-              { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
-              { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
-            ] as const).map((t) => (
-              <button key={t.key} onClick={() => setDocFilter(t.key)}
-                className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
-                  docFilter === t.key ? "bg-emerald text-white border-emerald shadow-emerald" : "border-border bg-background hover:bg-secondary"
-                }`}>{t.label}</button>
-            ))}
-          </div>
+          <>
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Jalur Peserta</div>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "fully_partial", label: `Reguler (${stats.regulerCount})` },
+                  { key: "gelombang_1", label: `Gelombang 1 (${stats.g1Count} · ${stats.g1Paid} bayar)` },
+                  { key: "gelombang_2", label: `Gelombang 2 (${stats.g2Count} · ${stats.g2Paid} bayar)` },
+                ] as const).map((t) => (
+                  <button key={t.key} onClick={() => setCatFilter(t.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      catFilter === t.key ? "bg-accent text-accent-foreground border-accent shadow-sm" : "border-border bg-background hover:bg-secondary"
+                    }`}>{t.label}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Tahap Berkas</div>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
+                  { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
+                ] as const).map((t) => (
+                  <button key={t.key} onClick={() => setDocFilter(t.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      docFilter === t.key ? "bg-emerald text-white border-emerald shadow-emerald" : "border-border bg-background hover:bg-secondary"
+                    }`}>{t.label}</button>
+                ))}
+              </div>
+            </div>
+          </>
         )}
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -274,13 +295,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
             <option value="pending">Menunggu</option>
             {!isSelf && <option value="accepted">Lolos</option>}
             {!isSelf && <option value="rejected">Belum Lolos</option>}
-            {!isSelf && <option value="paid">Donasi Valid</option>}
+            {!isSelf && <option value="paid">Sudah Bayar / Donasi</option>}
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
             <Download className="size-4" /> Export
           </button>
         </div>
       </div>
+
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
