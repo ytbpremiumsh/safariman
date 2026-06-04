@@ -185,6 +185,8 @@ function BerkasPage() {
                   </div>
                 </div>
               )}
+
+              <Section title="Data & Berkas Pendukung">
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 text-xs flex gap-2 mb-4">
                   <Info className="size-4 shrink-0 text-amber-600 mt-0.5" />
                   <div>
