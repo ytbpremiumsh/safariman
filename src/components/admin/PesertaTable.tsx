@@ -439,10 +439,16 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                       </a>
                     )}
                     {detail.payment_status === "paid" && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-sm font-bold border border-accent/40">
-                        <HeartHandshake className="size-4" /> Donasi Valid · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
+                        isGelombang(detail.category)
+                          ? "bg-accent/15 text-accent border-accent/40"
+                          : "bg-gradient-gold text-emerald-deep border-accent/40"
+                      }`}>
+                        {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
+                        {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
                       </span>
                     )}
+
                   </div>
 
                   <div className="mt-6 space-y-4">
