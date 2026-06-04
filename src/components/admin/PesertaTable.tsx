@@ -480,19 +480,33 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-border">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Donasi Peserta</div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                      {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
+                    </div>
                     {detail.payment_status === "paid" ? (
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2 text-sm font-bold border border-accent/40">
-                          <HeartHandshake className="size-4" /> Donasi Valid · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
+                          isGelombang(detail.category)
+                            ? "bg-accent/15 text-accent border-accent/40"
+                            : "bg-gradient-gold text-emerald-deep border-accent/40"
+                        }`}>
+                          {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
+                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
                         </span>
                         <button onClick={() => unmarkPaidManual(detail.id)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10">
                           <XCircle className="size-3.5" /> Batalkan
                         </button>
                       </div>
+                    ) : isGelombang(detail.category) ? (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Peserta jalur <strong>{CAT_LABEL[detail.category!]}</strong> wajib membayar biaya pendaftaran sebelum melanjutkan. Jika sudah membayar di luar sistem, tandai manual.</p>
+                        <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-accent text-accent-foreground px-5 py-2.5 text-sm font-bold border border-accent/40 hover-lift">
+                          <Wallet className="size-4" /> Tandai Bayar Pendaftaran (Manual)
+                        </button>
+                      </div>
                     ) : detail.status === "accepted" ? (
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Jika peserta sudah membayar di luar sistem, tandai di sini.</p>
+                        <p className="text-sm text-muted-foreground">Jika peserta sudah membayar donasi di luar sistem, tandai di sini.</p>
                         <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold border border-accent/40 shadow-gold hover-lift">
                           <HeartHandshake className="size-4" /> Tandai Donasi Valid (Manual)
                         </button>
@@ -503,6 +517,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </div>
                 </>
               )}
+
 
               {isSelf && (
                 <div className="mt-5 p-4 rounded-xl bg-accent/10 border border-accent/30 text-sm">
