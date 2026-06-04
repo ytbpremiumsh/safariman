@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
-  FileCheck, FileX, HeartHandshake, CheckCircle2, XCircle, Copy,
+  FileCheck, FileX, HeartHandshake, CheckCircle2, XCircle, Copy, Wallet,
 } from "lucide-react";
+
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
