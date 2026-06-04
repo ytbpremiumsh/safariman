@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
 import { Route as EssayRouteImport } from './routes/essay'
 import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
+import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
+import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +28,7 @@ import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.in
 import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
 import { Route as ApiPublicMpwaWebhookRouteImport } from './routes/api/public/mpwa-webhook'
 import { Route as ApiPublicMayarWebhookRouteImport } from './routes/api/public/mayar-webhook'
+import { Route as ApiPublicMayarPendaftaranInvoiceRouteImport } from './routes/api/public/mayar-pendaftaran-invoice'
 import { Route as ApiPublicMayarCreateInvoiceRouteImport } from './routes/api/public/mayar-create-invoice'
 import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
@@ -49,6 +53,11 @@ const SuksesRoute = SuksesRouteImport.update({
   path: '/sukses',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PendaftaranRoute = PendaftaranRouteImport.update({
+  id: '/pendaftaran',
+  path: '/pendaftaran',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EssayRoute = EssayRouteImport.update({
   id: '/essay',
   path: '/essay',
@@ -62,6 +71,16 @@ const DonasiRoute = DonasiRouteImport.update({
 const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
   id: '/daftar-mandiri',
   path: '/daftar-mandiri',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarGelombang2Route = DaftarGelombang2RouteImport.update({
+  id: '/daftar-gelombang-2',
+  path: '/daftar-gelombang-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarGelombang1Route = DaftarGelombang1RouteImport.update({
+  id: '/daftar-gelombang-1',
+  path: '/daftar-gelombang-1',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarRoute = DaftarRouteImport.update({
@@ -114,6 +133,12 @@ const ApiPublicMayarWebhookRoute = ApiPublicMayarWebhookRouteImport.update({
   path: '/api/public/mayar-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMayarPendaftaranInvoiceRoute =
+  ApiPublicMayarPendaftaranInvoiceRouteImport.update({
+    id: '/api/public/mayar-pendaftaran-invoice',
+    path: '/api/public/mayar-pendaftaran-invoice',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicMayarCreateInvoiceRoute =
   ApiPublicMayarCreateInvoiceRouteImport.update({
     id: '/api/public/mayar-create-invoice',
@@ -161,9 +186,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-gelombang-1': typeof DaftarGelombang1Route
+  '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/pendaftaran': typeof PendaftaranRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -177,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-pendaftaran-invoice': typeof ApiPublicMayarPendaftaranInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
@@ -187,9 +216,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-gelombang-1': typeof DaftarGelombang1Route
+  '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/pendaftaran': typeof PendaftaranRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -203,6 +235,7 @@ export interface FileRoutesByTo {
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-pendaftaran-invoice': typeof ApiPublicMayarPendaftaranInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
@@ -214,9 +247,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/daftar': typeof DaftarRoute
+  '/daftar-gelombang-1': typeof DaftarGelombang1Route
+  '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/pendaftaran': typeof PendaftaranRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -230,6 +266,7 @@ export interface FileRoutesById {
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/api/public/mayar-create-invoice': typeof ApiPublicMayarCreateInvoiceRoute
+  '/api/public/mayar-pendaftaran-invoice': typeof ApiPublicMayarPendaftaranInvoiceRoute
   '/api/public/mayar-webhook': typeof ApiPublicMayarWebhookRoute
   '/api/public/mpwa-webhook': typeof ApiPublicMpwaWebhookRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
@@ -242,9 +279,12 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-gelombang-1'
+    | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/donasi'
     | '/essay'
+    | '/pendaftaran'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -258,6 +298,7 @@ export interface FileRouteTypes {
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-pendaftaran-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
     | '/admin/pengaturan/'
@@ -268,9 +309,12 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-gelombang-1'
+    | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/donasi'
     | '/essay'
+    | '/pendaftaran'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -284,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-pendaftaran-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
     | '/admin/pengaturan'
@@ -294,9 +339,12 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/daftar'
+    | '/daftar-gelombang-1'
+    | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/donasi'
     | '/essay'
+    | '/pendaftaran'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -310,6 +358,7 @@ export interface FileRouteTypes {
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/api/public/mayar-create-invoice'
+    | '/api/public/mayar-pendaftaran-invoice'
     | '/api/public/mayar-webhook'
     | '/api/public/mpwa-webhook'
     | '/admin/pengaturan/'
@@ -321,9 +370,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BerkasRoute: typeof BerkasRoute
   DaftarRoute: typeof DaftarRoute
+  DaftarGelombang1Route: typeof DaftarGelombang1Route
+  DaftarGelombang2Route: typeof DaftarGelombang2Route
   DaftarMandiriRoute: typeof DaftarMandiriRoute
   DonasiRoute: typeof DonasiRoute
   EssayRoute: typeof EssayRoute
+  PendaftaranRoute: typeof PendaftaranRoute
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
@@ -337,6 +389,7 @@ export interface RootRouteChildren {
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRoute
   AdminPesertaSelfFundedRoute: typeof AdminPesertaSelfFundedRoute
   ApiPublicMayarCreateInvoiceRoute: typeof ApiPublicMayarCreateInvoiceRoute
+  ApiPublicMayarPendaftaranInvoiceRoute: typeof ApiPublicMayarPendaftaranInvoiceRoute
   ApiPublicMayarWebhookRoute: typeof ApiPublicMayarWebhookRoute
   ApiPublicMpwaWebhookRoute: typeof ApiPublicMpwaWebhookRoute
   AdminPengaturanIndexRoute: typeof AdminPengaturanIndexRoute
@@ -367,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuksesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pendaftaran': {
+      id: '/pendaftaran'
+      path: '/pendaftaran'
+      fullPath: '/pendaftaran'
+      preLoaderRoute: typeof PendaftaranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/essay': {
       id: '/essay'
       path: '/essay'
@@ -386,6 +446,20 @@ declare module '@tanstack/react-router' {
       path: '/daftar-mandiri'
       fullPath: '/daftar-mandiri'
       preLoaderRoute: typeof DaftarMandiriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-gelombang-2': {
+      id: '/daftar-gelombang-2'
+      path: '/daftar-gelombang-2'
+      fullPath: '/daftar-gelombang-2'
+      preLoaderRoute: typeof DaftarGelombang2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-gelombang-1': {
+      id: '/daftar-gelombang-1'
+      path: '/daftar-gelombang-1'
+      fullPath: '/daftar-gelombang-1'
+      preLoaderRoute: typeof DaftarGelombang1RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/daftar': {
@@ -458,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMayarWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mayar-pendaftaran-invoice': {
+      id: '/api/public/mayar-pendaftaran-invoice'
+      path: '/api/public/mayar-pendaftaran-invoice'
+      fullPath: '/api/public/mayar-pendaftaran-invoice'
+      preLoaderRoute: typeof ApiPublicMayarPendaftaranInvoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mayar-create-invoice': {
       id: '/api/public/mayar-create-invoice'
       path: '/api/public/mayar-create-invoice'
@@ -521,9 +602,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BerkasRoute: BerkasRoute,
   DaftarRoute: DaftarRoute,
+  DaftarGelombang1Route: DaftarGelombang1Route,
+  DaftarGelombang2Route: DaftarGelombang2Route,
   DaftarMandiriRoute: DaftarMandiriRoute,
   DonasiRoute: DonasiRoute,
   EssayRoute: EssayRoute,
+  PendaftaranRoute: PendaftaranRoute,
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
@@ -537,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPesertaRegulerRoute: AdminPesertaRegulerRoute,
   AdminPesertaSelfFundedRoute: AdminPesertaSelfFundedRoute,
   ApiPublicMayarCreateInvoiceRoute: ApiPublicMayarCreateInvoiceRoute,
+  ApiPublicMayarPendaftaranInvoiceRoute: ApiPublicMayarPendaftaranInvoiceRoute,
   ApiPublicMayarWebhookRoute: ApiPublicMayarWebhookRoute,
   ApiPublicMpwaWebhookRoute: ApiPublicMpwaWebhookRoute,
   AdminPengaturanIndexRoute: AdminPengaturanIndexRoute,
