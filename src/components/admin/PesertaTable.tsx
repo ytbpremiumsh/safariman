@@ -309,17 +309,22 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
-                <Th>Kode</Th><Th>Nama</Th><Th>Kontak</Th><Th>Kota</Th>
+                <Th>Kode</Th><Th>Nama</Th>
+                {!isSelf && <Th>Jalur</Th>}
+                <Th>Kontak</Th><Th>Kota</Th>
                 {!isSelf && <Th>Berkas</Th>}
                 <Th>Status</Th>
-                {!isSelf && <Th>Donasi</Th>}
+                {!isSelf && <Th>Pembayaran</Th>}
                 <Th>Aksi</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={isSelf ? 6 : 8} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
-              ) : filtered.map((r) => (
+                <tr><td colSpan={isSelf ? 6 : 9} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+              ) : filtered.map((r) => {
+                const gel = isGelombang(r.category);
+                const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
+                return (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                   <Td>
                     <button onClick={() => copyCode(r.registration_code)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-emerald/10 text-emerald hover:bg-emerald/20">
@@ -330,6 +335,17 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <div className="font-medium">{r.full_name}</div>
                     <div className="text-xs text-muted-foreground">{r.education}</div>
                   </Td>
+                  {!isSelf && (
+                    <Td>
+                      {r.category ? (
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium border ${CAT_COLOR[r.category]}`}>
+                          {CAT_LABEL[r.category]}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">—</span>
+                      )}
+                    </Td>
+                  )}
                   <Td>
                     <div className="text-xs">{r.email}</div>
                     <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
@@ -351,15 +367,20 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </Td>
                   {!isSelf && (
                     <Td>
-                      {r.payment_status === "paid" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gradient-gold text-emerald-deep border border-accent/40">
-                          <HeartHandshake className="size-3.5" /> Valid
-                        </span>
-                      ) : r.payment_status === "pending" ? (
-                        <span className="text-[11px] text-amber-600">Pending</span>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">—</span>
-                      )}
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
+                        {r.payment_status === "paid" ? (
+                          <span className={`inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
+                            gel ? "bg-accent/15 text-accent border-accent/40" : "bg-gradient-gold text-emerald-deep border-accent/40"
+                          }`}>
+                            {gel ? <Wallet className="size-3.5" /> : <HeartHandshake className="size-3.5" />} Valid
+                          </span>
+                        ) : r.payment_status === "pending" ? (
+                          <span className="text-[11px] text-amber-600 font-medium">Pending</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">Belum</span>
+                        )}
+                      </div>
                     </Td>
                   )}
                   <Td>
@@ -368,11 +389,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     </button>
                   </Td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
+
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
