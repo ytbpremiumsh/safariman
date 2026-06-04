@@ -138,12 +138,14 @@ function EssayPage() {
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
           <div className="text-center mb-10 animate-fade-up">
-            <Link
-              to="/donasi"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
-            >
-              <ArrowLeft className="size-4" /> Kembali
-            </Link>
+            <div className="flex justify-center mb-8">
+              <Link
+                to="/donasi"
+                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 backdrop-blur px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-accent/50 hover:bg-card transition-all shadow-sm hover:shadow-md"
+              >
+                <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" /> Kembali
+              </Link>
+            </div>
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
               Kirim <span className="text-gradient-gold">Essay</span>
