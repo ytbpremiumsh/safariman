@@ -186,7 +186,27 @@ function BodyByStatus({
     </div>
   );
 
-  if (!participant.has_berkas) {
+  const fastTrack = isFastTrack(participant.category);
+  const fastTrackBanner = fastTrack ? (
+    <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
+      <div className="flex items-start gap-3">
+        <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
+            Jalur {fastTrackLabel(participant.category)}
+          </div>
+          <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
+            Berkas otomatis terkonfirmasi.
+          </div>
+          <p className="text-sm text-emerald-deep/90">
+            Kamu tidak perlu mengirim berkas. Langsung lanjut isi essay di bawah.
+          </p>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  if (!fastTrack && !participant.has_berkas) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
@@ -206,6 +226,7 @@ function BodyByStatus({
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
+        {fastTrackBanner}
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
           <div className="font-semibold mb-1">Belum bisa mengisi Essay</div>
           <p className="text-muted-foreground">
