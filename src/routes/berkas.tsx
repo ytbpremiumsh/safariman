@@ -304,6 +304,62 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
   );
 }
 
+function FastTrackCard({ participant, code, onReset }: { participant: Participant; code: string; onReset: () => void }) {
+  const paid = participant.payment_status === "paid";
+  return (
+    <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
+      <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
+        <CheckCircle2 className="size-5 text-emerald shrink-0" />
+        <div className="text-sm">
+          <div className="font-semibold">{participant.full_name}</div>
+          <div className="text-muted-foreground text-xs">Kode: <span className="font-mono">{code}</span></div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
+        <div className="flex items-start gap-3">
+          <Sparkles className="size-5 text-emerald-deep shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <div className="text-[10px] uppercase tracking-[0.25em] font-bold text-emerald-deep/80">
+              Jalur {fastTrackLabel(participant.category)}
+            </div>
+            <div className="font-display text-lg font-semibold text-emerald-deep leading-snug">
+              Alhamdulillah, kamu masuk jalur Fast Track.
+            </div>
+            <p className="text-sm text-emerald-deep/90">
+              Tidak perlu mengirim berkas. {paid
+                ? <>Kontribusimu sudah tertunai — silakan lanjut langsung ke tahap <strong>Essay</strong>.</>
+                : <>Pastikan kamu sudah menunaikan <strong>kontribusi / donasi</strong> terlebih dahulu, lalu lanjut ke tahap <strong>Essay</strong>.</>}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {paid ? (
+        <Link
+          to="/essay"
+          search={{ code }}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
+        >
+          <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
+        </Link>
+      ) : (
+        <Link
+          to="/donasi"
+          search={{ code }}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
+        >
+          <HeartHandshake className="size-5" /> Tunaikan Kontribusi Dulu <ArrowRight className="size-4" />
+        </Link>
+      )}
+
+      <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">
+        Cek kode lain
+      </button>
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
