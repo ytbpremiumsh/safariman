@@ -161,12 +161,14 @@ export function RegisterPage({ kind }: { kind: Kind }) {
           ) : (
             <>
           <div className="text-center mb-8 animate-fade-up">
-            <Link
-              to="/pendaftaran"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
-            >
-              <ArrowLeft className="size-4" /> Kembali
-            </Link>
+            <div className="flex justify-center mb-8">
+              <Link
+                to="/pendaftaran"
+                className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 backdrop-blur px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-accent/50 hover:bg-card transition-all shadow-sm hover:shadow-md"
+              >
+                <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" /> Kembali
+              </Link>
+            </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 border border-accent/30 px-4 py-1.5 text-xs font-medium text-accent uppercase tracking-[0.2em] mb-4">
               <Sparkles className="size-3.5" /> {KIND_META.tagline}
             </div>
