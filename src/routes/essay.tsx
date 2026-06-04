@@ -226,7 +226,7 @@ function BodyByStatus({
     );
   }
 
-  if (participant.payment_status !== "paid") {
+  if (!paid) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
