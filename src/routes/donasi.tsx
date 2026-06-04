@@ -31,6 +31,9 @@ type Lookup = {
   payment_url: string | null;
   paid_at: string | null;
   category: string | null;
+  donation_status: string;
+  donation_url: string | null;
+  donation_paid_at: string | null;
 };
 
 function DonasiPage() {
@@ -245,14 +248,14 @@ function DonasiPage() {
                     Kembali ke Beranda
                   </Link>
                 </div>
-              ) : info.payment_status === "paid" ? (
+              ) : info.donation_status === "paid" ? (
                 <div className="text-center py-4">
                   <div className="size-16 rounded-full bg-gradient-gold grid place-items-center mx-auto mb-4 shadow-gold">
                     <HeartHandshake className="size-8 text-emerald-deep" />
                   </div>
                   <h3 className="font-display text-2xl font-semibold">Barakallahu fiik!</h3>
                   <p className="text-muted-foreground text-sm mt-2 mb-6">
-                    Kontribusi kebaikanmu sudah tercatat pada {info.paid_at ? new Date(info.paid_at).toLocaleString("id-ID") : "-"}.
+                    Kontribusi kebaikanmu sudah tercatat pada {info.donation_paid_at ? new Date(info.donation_paid_at).toLocaleString("id-ID") : "-"}.
                   </p>
                   <Link
                     to="/essay"
@@ -262,7 +265,7 @@ function DonasiPage() {
                     <FileText className="size-5" /> Lanjut ke Tahap Essay <ArrowRight className="size-4" />
                   </Link>
                 </div>
-              ) : info.status !== "accepted" ? (
+              ) : info.category !== "gelombang_1" && info.category !== "gelombang_2" && info.status !== "accepted" ? (
                 <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
                   <div className="font-semibold mb-1">Belum dapat melanjutkan</div>
                   <p className="text-muted-foreground">
@@ -274,7 +277,9 @@ function DonasiPage() {
                 <>
                   <div className="rounded-2xl bg-gradient-emerald p-6 sm:p-8 text-center">
                     <div className="text-accent text-sm sm:text-base uppercase tracking-[0.2em] font-bold mb-3">
-                      Selamat, kamu lolos berkas!
+                      {info.category === "gelombang_1" || info.category === "gelombang_2"
+                        ? "Jalur Fast Track"
+                        : "Selamat, kamu lolos berkas!"}
                     </div>
                     <div className="font-display text-white text-2xl sm:text-3xl leading-snug">
                       Selangkah lagi menuju tahap Essay
@@ -289,7 +294,7 @@ function DonasiPage() {
                     className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
                   >
                     {paying ? <><Loader2 className="size-4 animate-spin" /> Memproses...</> : (
-                      <><HeartHandshake className="size-5" /> {info.payment_url ? "Lanjutkan Donasi" : "Tunaikan Donasi"} <ArrowRight className="size-4" /></>
+                      <><HeartHandshake className="size-5" /> {info.donation_url ? "Lanjutkan Donasi" : "Tunaikan Donasi"} <ArrowRight className="size-4" /></>
                     )}
                   </button>
                   <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-1">

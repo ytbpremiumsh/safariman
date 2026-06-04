@@ -34,22 +34,24 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
           // Cari peserta
           const { data: p } = await supabaseAdmin
             .from("participants")
-            .select("full_name, email, whatsapp, status, payment_status, payment_url, registration_code, category")
+            .select("full_name, email, whatsapp, status, donation_status, donation_url, registration_code, category")
             .ilike("registration_code", code)
             .maybeSingle();
           if (!p) return Response.json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
           if (p.category === "self_funded") {
             return Response.json({ ok: false, error: "Peserta Self Funded tidak diwajibkan donasi" }, { status: 403 });
           }
-          if (p.status !== "accepted") {
+          const isFastTrack = p.category === "gelombang_1" || p.category === "gelombang_2";
+          // Fast Track otomatis terkonfirmasi (tidak perlu status accepted).
+          if (!isFastTrack && p.status !== "accepted") {
             return Response.json({ ok: false, error: "Peserta belum dinyatakan lolos berkas administrasi" }, { status: 403 });
           }
-          if (p.payment_status === "paid") {
+          if (p.donation_status === "paid") {
             return Response.json({ ok: true, alreadyPaid: true });
           }
-          // Reuse existing payment link kalau masih valid dan tidak di-force refresh
-          if (!force && p.payment_url && p.payment_status === "pending") {
-            return Response.json({ ok: true, url: p.payment_url, reused: true });
+          // Reuse existing donation link kalau masih valid dan tidak di-force refresh
+          if (!force && p.donation_url && p.donation_status === "pending") {
+            return Response.json({ ok: true, url: p.donation_url, reused: true });
           }
 
           // Panggil Mayar
@@ -91,7 +93,7 @@ export const Route = createFileRoute("/api/public/mayar-create-invoice")({
             return Response.json({ ok: false, error: "Respon Mayar tidak lengkap", raw: json }, { status: 502 });
           }
 
-          await supabaseAdmin.rpc("save_payment_invoice", {
+          await supabaseAdmin.rpc("save_donation_invoice", {
             p_code: code,
             p_invoice_id: invoiceId,
             p_url: url,

@@ -40,6 +40,10 @@ export type Database = {
           city: string
           created_at: string
           cv_url: string | null
+          donation_invoice_id: string | null
+          donation_paid_at: string | null
+          donation_status: string
+          donation_url: string | null
           edit_token: string
           education: string
           email: string
@@ -71,6 +75,10 @@ export type Database = {
           city: string
           created_at?: string
           cv_url?: string | null
+          donation_invoice_id?: string | null
+          donation_paid_at?: string | null
+          donation_status?: string
+          donation_url?: string | null
           edit_token?: string
           education: string
           email: string
@@ -102,6 +110,10 @@ export type Database = {
           city?: string
           created_at?: string
           cv_url?: string | null
+          donation_invoice_id?: string | null
+          donation_paid_at?: string | null
+          donation_status?: string
+          donation_url?: string | null
           edit_token?: string
           education?: string
           email?: string
@@ -197,6 +209,8 @@ export type Database = {
       lookup_participant_by_code: {
         Args: { p_code: string }
         Returns: {
+          category: Database["public"]["Enums"]["program_category"]
+          donation_status: string
           full_name: string
           has_berkas: boolean
           has_essay: boolean
@@ -209,6 +223,9 @@ export type Database = {
         Args: { p_code: string }
         Returns: {
           category: Database["public"]["Enums"]["program_category"]
+          donation_paid_at: string
+          donation_status: string
+          donation_url: string
           full_name: string
           id: string
           paid_at: string
@@ -217,6 +234,7 @@ export type Database = {
           status: Database["public"]["Enums"]["participant_status"]
         }[]
       }
+      mark_donation_paid: { Args: { p_invoice_id: string }; Returns: boolean }
       mark_payment_paid: { Args: { p_invoice_id: string }; Returns: boolean }
       register_participant:
         | {
@@ -273,6 +291,10 @@ export type Database = {
               registration_code: string
             }[]
           }
+      save_donation_invoice: {
+        Args: { p_code: string; p_invoice_id: string; p_url: string }
+        Returns: boolean
+      }
       save_payment_invoice: {
         Args: { p_code: string; p_invoice_id: string; p_url: string }
         Returns: boolean

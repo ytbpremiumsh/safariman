@@ -42,6 +42,7 @@ type Participant = {
   has_essay: boolean;
   status: string;
   payment_status: string;
+  donation_status: string;
   category: string | null;
 };
 
@@ -187,7 +188,7 @@ function BodyByStatus({
   );
 
   const fastTrack = isFastTrack(participant.category);
-  const paid = participant.payment_status === "paid";
+  const paid = participant.donation_status === "paid";
   const fastTrackBanner = fastTrack ? (
     <div className="rounded-2xl bg-gradient-gold border border-accent/40 p-5 shadow-gold">
       <div className="flex items-start gap-3">
@@ -225,7 +226,7 @@ function BodyByStatus({
     );
   }
 
-  if (participant.payment_status !== "paid") {
+  if (!paid) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
         {header}
