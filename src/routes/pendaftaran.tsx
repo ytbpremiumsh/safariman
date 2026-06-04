@@ -78,9 +78,24 @@ function PendaftaranHub() {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-5 sm:gap-6">
-              <SlotCard slotKey="reguler" slot={cfg.reguler} accent="gold" />
-              <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" />
-              <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" />
+              {(() => {
+                const today = new Date();
+                const g1End = new Date(cfg.gelombang_1.end + "T23:59:59+07:00");
+                const g1Ended = !cfg.gelombang_1.enabled || today.getTime() > g1End.getTime();
+                return (
+                  <>
+                    <SlotCard slotKey="reguler" slot={cfg.reguler} accent="gold" forceActive />
+                    {!g1Ended ? (
+                      <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" forceActive />
+                    ) : (
+                      <SlotCard slotKey="gelombang_1" slot={cfg.gelombang_1} accent="emerald" forceClosed closedLabel="Gelombang 1 Berakhir" />
+                    )}
+                    {g1Ended && (
+                      <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" forceActive />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
 
