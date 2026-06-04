@@ -77,7 +77,7 @@ function PendaftaranHub() {
               <Loader2 className="size-8 animate-spin text-accent" />
             </div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-5 sm:gap-6">
+            <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
               {(() => {
                 const today = new Date();
                 const g1End = new Date(cfg.gelombang_1.end + "T23:59:59+07:00");
