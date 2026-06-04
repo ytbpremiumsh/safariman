@@ -187,13 +187,27 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   };
 
   const markPaidManual = async (id: string) => {
-    if (!confirm("Tandai donasi sebagai VALID secara manual?")) return;
+    const row = rows.find((r) => r.id === id);
+    const gel = row ? isGelombang(row.category) : false;
+    const label = gel ? "biaya pendaftaran" : "donasi";
+    if (!confirm(`Tandai ${label} sebagai VALID secara manual?`)) return;
     const now = new Date().toISOString();
     const { error } = await supabase.from("participants").update({ payment_status: "paid", paid_at: now }).eq("id", id);
     if (error) { toast.error(error.message); return; }
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "paid", paid_at: now } : r)));
     if (detail?.id === id) setDetail({ ...detail, payment_status: "paid", paid_at: now });
-    toast.success("Donasi ditandai valid");
+    toast.success(gel ? "Pendaftaran ditandai lunas" : "Donasi ditandai valid");
+
+    // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
+    if (gel && row?.registration_code) {
+      try {
+        const { notifyWaEvent } = await import("@/lib/wa-notify.functions");
+        await notifyWaEvent({ data: { event: "pendaftaran", code: row.registration_code } });
+        toast.success("Notifikasi WA terkirim");
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const unmarkPaidManual = async (id: string) => {

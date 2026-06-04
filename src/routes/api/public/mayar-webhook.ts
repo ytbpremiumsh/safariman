@@ -73,6 +73,27 @@ export const Route = createFileRoute("/api/public/mayar-webhook")({
             p_invoice_id: invoiceId,
           });
 
+          // Auto kirim WA notif untuk peserta jalur Fast Track (Gelombang 1/2)
+          // setelah biaya pendaftaran tercatat lunas.
+          if (updated) {
+            try {
+              const { data: p } = await supabaseAdmin
+                .from("participants")
+                .select("registration_code, category")
+                .eq("payment_invoice_id", invoiceId)
+                .maybeSingle();
+              if (
+                p?.registration_code &&
+                (p.category === "gelombang_1" || p.category === "gelombang_2")
+              ) {
+                const { sendWaForEvent } = await import("@/lib/wa-notify.server");
+                await sendWaForEvent("pendaftaran", p.registration_code);
+              }
+            } catch (e) {
+              console.error("Gagal kirim WA notif gelombang", e);
+            }
+          }
+
           return Response.json({ ok: true, updated });
         } catch (e) {
           console.error("Mayar webhook error", e);
