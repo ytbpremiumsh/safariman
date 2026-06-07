@@ -68,10 +68,8 @@ function PendaftaranSukses() {
   useEffect(() => {
     if (info?.payment_status === "paid" && !notifiedRef.current) {
       notifiedRef.current = true;
-      import("@/lib/wa-notify.functions")
-        .then(({ notifyWaEvent }) =>
-          notifyWaEvent({ data: { event: "pendaftaran", code } }),
-        )
+      import("@/lib/api")
+        .then(({ notifyWa }) => notifyWa("pendaftaran", code))
         .catch(() => {});
     }
   }, [info?.payment_status, code]);
@@ -79,12 +77,8 @@ function PendaftaranSukses() {
   const retryPayment = async () => {
     setRetrying(true);
     try {
-      const res = await fetch("/api/public/mayar-pendaftaran-invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-      });
-      const json = await res.json();
+      const { mayarPendaftaranInvoice } = await import("@/lib/api");
+      const json = await mayarPendaftaranInvoice(code);
       if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
       if (json.alreadyPaid) {
         await fetchStatus();

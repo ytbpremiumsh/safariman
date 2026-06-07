@@ -1,6 +1,5 @@
-// Server-only WA-send helper. Boleh dipanggil dari server route (webhook)
-// dan dari server function notifyWaEvent. JANGAN diimpor di kode browser.
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// deno-lint-ignore-file no-explicit-any
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export type WaEvent = "pendaftaran" | "berkas" | "essay";
 
@@ -32,7 +31,15 @@ function normalizeNumber(wa: string) {
   return digits;
 }
 
+export function getAdmin() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+}
+
 export async function sendWaForEvent(event: WaEvent, code: string) {
+  const supabaseAdmin = getAdmin();
   const { data: p } = await supabaseAdmin
     .from("participants")
     .select("full_name, whatsapp, registration_code, category")
@@ -49,10 +56,9 @@ export async function sendWaForEvent(event: WaEvent, code: string) {
     .select("key,value")
     .in("key", ["mpwa_api_key", "mpwa_sender", tplKey, TPL_KEY[event]]);
 
-  const cfg = Object.fromEntries((settings ?? []).map((r) => [r.key, r.value ?? ""])) as Record<
-    string,
-    string
-  >;
+  const cfg = Object.fromEntries(
+    (settings ?? []).map((r: any) => [r.key, r.value ?? ""]),
+  ) as Record<string, string>;
   const apiKey = cfg.mpwa_api_key;
   const sender = cfg.mpwa_sender;
   const tpl = cfg[tplKey] || cfg[TPL_KEY[event]];

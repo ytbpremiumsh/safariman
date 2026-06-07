@@ -34,9 +34,8 @@ function DonasiSetting() {
       setMayarAmount(map.mayar_donation_amount ?? "150000");
       setMayarDesc(map.mayar_donation_description ?? "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.");
       setMayarWebhookSecret(map.mayar_webhook_secret ?? "");
-      if (typeof window !== "undefined") {
-        setWebhookUrl(`${window.location.origin}/api/public/mayar-webhook`);
-      }
+      const { edgeFunctionUrl } = await import("@/lib/api");
+      setWebhookUrl(edgeFunctionUrl("mayar-webhook"));
       setLoading(false);
     })();
   }, [ready]);
