@@ -106,10 +106,8 @@ function BerkasPage() {
       if (error) throw error;
       if (!ok) throw new Error("Kode tidak valid");
 
-      import("@/lib/wa-notify.functions")
-        .then(({ notifyWaEvent }) =>
-          notifyWaEvent({ data: { event: "berkas", code: code.trim().toUpperCase() } }),
-        )
+      import("@/lib/api")
+        .then(({ notifyWa }) => notifyWa("berkas", code.trim().toUpperCase()))
         .catch(() => {});
 
       toast.success("Berkas terkirim. Barakallah!");

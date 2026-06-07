@@ -201,8 +201,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
     if (gel && row?.registration_code) {
       try {
-        const { notifyWaEvent } = await import("@/lib/wa-notify.functions");
-        await notifyWaEvent({ data: { event: "pendaftaran", code: row.registration_code } });
+        const { notifyWa } = await import("@/lib/api");
+        await notifyWa("pendaftaran", row.registration_code);
         toast.success("Notifikasi WA terkirim");
       } catch (e) {
         console.error(e);
@@ -243,13 +243,9 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     const clean = number.replace(/\D/g, "").replace(/^0/, "62");
     setWaSending(true);
     try {
-      const res = await fetch("/api/public/mpwa/send-message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ api_key: apiKey, sender, number: clean, message, footer: "Safar Iman" }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || (json.status === false && json.message)) throw new Error(json.message || "Gagal kirim");
+      const { mpwaProxy } = await import("@/lib/api");
+      const json: any = await mpwaProxy("send-message", { api_key: apiKey, sender, number: clean, message, footer: "Safar Iman" });
+      if (json?.status === false && json?.message) throw new Error(json.message);
       toast.success(`WA terkirim ke ${clean}`);
       return true;
     } catch (e: any) { toast.error(e.message || "Gagal kirim WA"); return false; }

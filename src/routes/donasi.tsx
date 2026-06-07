@@ -64,12 +64,8 @@ function DonasiPage() {
   const startPayment = async () => {
     setPaying(true);
     try {
-      const res = await fetch("/api/public/mayar-create-invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: code.trim().toUpperCase(), force: true }),
-      });
-      const json = await res.json();
+      const { mayarCreateInvoice } = await import("@/lib/api");
+      const json = await mayarCreateInvoice(code.trim().toUpperCase(), true);
       if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
       if (json.alreadyPaid) { toast.success("Alhamdulillah, kontribusi sudah tercatat"); await verify(); return; }
       if (json.url) window.location.href = json.url;

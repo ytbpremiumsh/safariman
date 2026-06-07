@@ -105,10 +105,8 @@ function EssayPage() {
       if (error) throw error;
       if (!ok) throw new Error("Kontribusi belum tercatat atau kode tidak valid");
 
-      import("@/lib/wa-notify.functions")
-        .then(({ notifyWaEvent }) =>
-          notifyWaEvent({ data: { event: "essay", code: code.trim().toUpperCase() } }),
-        )
+      import("@/lib/api")
+        .then(({ notifyWa }) => notifyWa("essay", code.trim().toUpperCase()))
         .catch(() => {});
 
       toast.success("Essay terkirim. Barakallah!");

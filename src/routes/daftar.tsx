@@ -101,12 +101,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       // Kode pendaftaran baru ditampilkan setelah pembayaran sukses (via halaman /pendaftaran-sukses).
       if (KIND_META.paid) {
         try {
-          const res = await fetch("/api/public/mayar-pendaftaran-invoice", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: row.registration_code }),
-          });
-          const json = await res.json();
+          const { mayarPendaftaranInvoice } = await import("@/lib/api");
+          const json = await mayarPendaftaranInvoice(row.registration_code);
           if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
           if (json.url) {
             toast.success("Mengarahkan ke halaman pembayaran…");
@@ -115,7 +111,6 @@ export function RegisterPage({ kind }: { kind: Kind }) {
           }
           throw new Error("URL pembayaran tidak tersedia");
         } catch (e: any) {
-          // Fallback: arahkan ke halaman cek status agar bisa retry pembayaran
           toast.error(e?.message || "Gagal membuat invoice — silakan coba lagi di halaman cek status");
           window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
           return;
@@ -123,11 +118,9 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       }
 
       setCode(row.registration_code);
-      // Auto-kirim notifikasi WhatsApp (fire & forget) via server function
-      import("@/lib/wa-notify.functions")
-        .then(({ notifyWaEvent }) =>
-          notifyWaEvent({ data: { event: "pendaftaran", code: row.registration_code } }),
-        )
+      // Auto-kirim notifikasi WhatsApp (fire & forget) via edge function
+      import("@/lib/api")
+        .then(({ notifyWa }) => notifyWa("pendaftaran", row.registration_code))
         .catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
       toast.success("Pendaftaran berhasil! Notifikasi WA sedang dikirim ✨");

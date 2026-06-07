@@ -115,9 +115,8 @@ function WaSetupPage() {
       setAiEnabled(map.wa_ai_enabled === "true");
       if (map.wa_ai_behavior) setAiBehavior(map.wa_ai_behavior);
       if (map.wa_ai_knowledge) setAiKnowledge(map.wa_ai_knowledge);
-      if (typeof window !== "undefined") {
-        setWebhookUrl(`${window.location.origin}/api/public/mpwa-webhook`);
-      }
+      const { edgeFunctionUrl } = await import("@/lib/api");
+      setWebhookUrl(edgeFunctionUrl("mpwa-webhook"));
       setLoading(false);
     })();
   }, [navigate]);
@@ -158,14 +157,10 @@ function WaSetupPage() {
     if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu, lalu Simpan"); return; }
     setQrLoading(true); setQr(null);
     try {
-      const res = await fetch("/api/public/mpwa/generate-qr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ device: sender, api_key: apiKey, force: true }),
-      });
-      const json = await res.json();
-      if (json.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp > Perangkat Tertaut"); }
-      else toast.success(json.msg || "Device sudah terhubung");
+      const { mpwaProxy } = await import("@/lib/api");
+      const json: any = await mpwaProxy("generate-qr", { device: sender, api_key: apiKey, force: true });
+      if (json?.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp > Perangkat Tertaut"); }
+      else toast.success(json?.msg || "Device sudah terhubung");
     } catch (e) {
       console.error(e);
       toast.error("Gagal generate QR");
@@ -180,17 +175,12 @@ function WaSetupPage() {
     const number = testNumber.replace(/\D/g, "").replace(/^0/, "62");
     setTesting(true);
     try {
-      const res = await fetch("/api/public/mpwa/send-message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          api_key: apiKey, sender, number,
-          message: "🔔 Test pesan dari Safar Iman Admin Dashboard. Jika kamu menerima ini, MPWA sudah terhubung.",
-          footer: "Safar Iman",
-        }),
+      const { mpwaProxy } = await import("@/lib/api");
+      await mpwaProxy("send-message", {
+        api_key: apiKey, sender, number,
+        message: "🔔 Test pesan dari Safar Iman Admin Dashboard. Jika kamu menerima ini, MPWA sudah terhubung.",
+        footer: "Safar Iman",
       });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.message || "Gagal kirim");
       toast.success(`Pesan test terkirim ke ${number}`);
     } catch (e: any) {
       toast.error(e.message || "Gagal kirim pesan test");
