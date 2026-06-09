@@ -330,14 +330,14 @@ function PesertaEssayPage() {
               <div className="pt-3 border-t border-border space-y-2">
                 <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan</div>
                 <div className="flex flex-wrap gap-2">
+                  <button onClick={() => updateStatus(detail.id, "reviewed")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-amber-500 text-white hover:opacity-90">
+                    Sedang Direview
+                  </button>
                   <button onClick={() => updateStatus(detail.id, "interview")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-emerald text-white hover:opacity-90">
-                    <CheckCircle2 className="size-3.5" /> LOLOS — Lanjut TPA/LDS
+                    <CheckCircle2 className="size-3.5" /> Lolos Tahap Selanjutnya
                   </button>
                   <button onClick={() => updateStatus(detail.id, "rejected")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-red-600 text-white hover:opacity-90">
-                    <XCircle className="size-3.5" /> Tidak Lolos
-                  </button>
-                  <button onClick={() => updateStatus(detail.id, "pending")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md border border-border hover:bg-secondary">
-                    <HelpCircle className="size-3.5" /> Reset (Belum Diputuskan)
+                    <XCircle className="size-3.5" /> Belum Lolos
                   </button>
                 </div>
               </div>
