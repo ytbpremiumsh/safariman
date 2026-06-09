@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Copy, FileText, CheckCircle2, XCircle, ExternalLink,
-  HelpCircle, ShieldCheck, ArrowRight,
+  ShieldCheck, ArrowRight,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin/peserta/essay")({
 });
 
 type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
-type Status = "pending" | "reviewed" | "interview" | "accepted" | "rejected";
+type Status = "reviewed" | "interview" | "rejected";
 
 type Row = {
   id: string;
@@ -53,20 +53,21 @@ const CAT_LABEL: Record<Category, string> = {
 };
 
 const STATUS_LABEL: Record<Status, string> = {
-  pending: "Belum Diputuskan",
   reviewed: "Sedang Direview",
-  interview: "LOLOS (Lanjut TPA/LDS)",
-  accepted: "LOLOS Final",
-  rejected: "TIDAK LOLOS",
+  interview: "Lolos Tahap Selanjutnya",
+  rejected: "Belum Lolos",
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  pending: "bg-secondary text-foreground border-border",
   reviewed: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30",
   interview: "bg-emerald/15 text-emerald border-emerald/40",
-  accepted: "bg-emerald text-white border-emerald",
   rejected: "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30",
 };
+
+const normalizeStatus = (s: string): Status =>
+  s === "interview" || s === "accepted" ? "interview"
+  : s === "rejected" ? "rejected"
+  : "reviewed";
 
 function PesertaEssayPage() {
   const ready = useAdminGuard();
@@ -80,7 +81,7 @@ function PesertaEssayPage() {
     setLoading(true);
     const { data, error } = await supabase.rpc("list_essay_complete_participants");
     if (error) toast.error(error.message);
-    else setRows((data ?? []) as Row[]);
+    else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
     setLoading(false);
   };
 
@@ -101,8 +102,8 @@ function PesertaEssayPage() {
 
   const stats = useMemo(() => ({
     total: rows.length,
-    pending: rows.filter((r) => r.status === "pending" || r.status === "reviewed").length,
-    lolos: rows.filter((r) => r.status === "interview" || r.status === "accepted").length,
+    pending: rows.filter((r) => r.status === "reviewed").length,
+    lolos: rows.filter((r) => r.status === "interview").length,
     tidak: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
@@ -255,7 +256,7 @@ function PesertaEssayPage() {
                       </button>
                       <button
                         onClick={() => updateStatus(r.id, "interview")}
-                        disabled={r.status === "interview" || r.status === "accepted"}
+                        disabled={r.status === "interview"}
                         title="Loloskan"
                         className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
                       >
@@ -329,14 +330,14 @@ function PesertaEssayPage() {
               <div className="pt-3 border-t border-border space-y-2">
                 <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan</div>
                 <div className="flex flex-wrap gap-2">
+                  <button onClick={() => updateStatus(detail.id, "reviewed")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-amber-500 text-white hover:opacity-90">
+                    Sedang Direview
+                  </button>
                   <button onClick={() => updateStatus(detail.id, "interview")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-emerald text-white hover:opacity-90">
-                    <CheckCircle2 className="size-3.5" /> LOLOS — Lanjut TPA/LDS
+                    <CheckCircle2 className="size-3.5" /> Lolos Tahap Selanjutnya
                   </button>
                   <button onClick={() => updateStatus(detail.id, "rejected")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-red-600 text-white hover:opacity-90">
-                    <XCircle className="size-3.5" /> Tidak Lolos
-                  </button>
-                  <button onClick={() => updateStatus(detail.id, "pending")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md border border-border hover:bg-secondary">
-                    <HelpCircle className="size-3.5" /> Reset (Belum Diputuskan)
+                    <XCircle className="size-3.5" /> Belum Lolos
                   </button>
                 </div>
               </div>
