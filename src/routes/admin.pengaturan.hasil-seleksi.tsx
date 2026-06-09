@@ -53,7 +53,7 @@ function HasilSeleksiSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
   });
 
   useEffect(() => {
@@ -66,6 +66,7 @@ function HasilSeleksiSettings() {
       const map = new Map((data ?? []).map((r) => [r.key, r.value ?? ""]));
       setForm({
         enabled: (map.get(KEYS.enabled) ?? "false") === "true",
+        revealAt: map.get(KEYS.revealAt) ?? "",
         title: map.get(KEYS.title) ?? "",
         subtitle: map.get(KEYS.subtitle) ?? "",
         lolos: map.get(KEYS.lolos) ?? "",
@@ -81,6 +82,7 @@ function HasilSeleksiSettings() {
     setSaving(true);
     const rows = [
       { key: KEYS.enabled, value: form.enabled ? "true" : "false" },
+      { key: KEYS.revealAt, value: form.revealAt },
       { key: KEYS.title, value: form.title },
       { key: KEYS.subtitle, value: form.subtitle },
       { key: KEYS.lolos, value: form.lolos },
