@@ -385,11 +385,11 @@ function PesertaEssayPage() {
 function Th({ children }: { children: React.ReactNode }) {
   return <th className="text-left px-3 py-2.5 font-semibold">{children}</th>;
 }
-function Info({ label, value }: { label: string; value: string }) {
+function KV({ k, v }: { k: string; v: string }) {
   return (
-    <div className="bg-secondary/40 rounded-lg p-2.5">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-medium text-foreground mt-0.5 break-words">{value || "—"}</div>
+    <div className="flex gap-2">
+      <span className="text-muted-foreground w-24 shrink-0">{k}</span>
+      <span className="font-medium break-all">{v || "—"}</span>
     </div>
   );
 }
