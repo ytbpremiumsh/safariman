@@ -460,11 +460,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
 
                   </div>
 
-                  <div className="mt-6 space-y-4">
-                    <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
-                    <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
-                    <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
-                  </div>
+                  {/* Pertanyaan essay disembunyikan — review essay dilakukan di menu Berkas Essay. */}
+
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
