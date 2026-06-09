@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -37,6 +37,12 @@ const ITEMS = [
     icon: HeartHandshake,
     title: "Donasi & Pembayaran Mayar",
     desc: "API Key Mayar, nominal & deskripsi invoice, webhook URL, dan webhook secrets.",
+  },
+  {
+    to: "/admin/pengaturan/hasil-seleksi",
+    icon: Megaphone,
+    title: "Pengumuman Hasil Seleksi",
+    desc: "Aktif/nonaktifkan halaman /cek-hasil, ubah teks lolos / tidak lolos / pending.",
   },
 ] as const;
 

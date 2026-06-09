@@ -231,6 +231,14 @@ export type Database = {
         }[]
       }
       log_twibbon_download: { Args: never; Returns: undefined }
+      lookup_hasil_seleksi_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          found: boolean
+          full_name: string
+          result: string
+        }[]
+      }
       lookup_participant_by_code: {
         Args: { p_code: string }
         Returns: {
