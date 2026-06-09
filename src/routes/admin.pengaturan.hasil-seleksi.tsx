@@ -14,6 +14,7 @@ export const Route = createFileRoute("/admin/pengaturan/hasil-seleksi")({
 
 type Form = {
   enabled: boolean;
+  revealAt: string; // ISO string or ""
   title: string;
   subtitle: string;
   lolos: string;
@@ -24,6 +25,7 @@ type Form = {
 
 const KEYS = {
   enabled: "hasil_seleksi_enabled",
+  revealAt: "hasil_reveal_at",
   title: "hasil_page_title",
   subtitle: "hasil_page_subtitle",
   lolos: "hasil_text_lolos",
@@ -31,6 +33,20 @@ const KEYS = {
   pending: "hasil_text_pending",
   disabled: "hasil_text_disabled",
 } as const;
+
+// Convert ISO ↔ datetime-local input value (local timezone).
+function isoToLocalInput(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function localInputToIso(local: string): string {
+  if (!local) return "";
+  const d = new Date(local);
+  return isNaN(d.getTime()) ? "" : d.toISOString();
+}
 
 function HasilSeleksiSettings() {
   const ready = useAdminGuard();
