@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowLeft, LayoutDashboard, Users, UserCheck, Settings, MessageCircle, LogOut, Loader2,
+  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -15,6 +15,7 @@ const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/peserta/reguler", label: "Peserta Reguler", icon: Users, exact: false },
   { to: "/admin/peserta/self-funded", label: "Peserta Self Funded", icon: UserCheck, exact: false },
+  { to: "/admin/peserta/essay", label: "Lolos Essay (CBT)", icon: FileText, exact: false },
   { to: "/admin/pengaturan", label: "Pengaturan", icon: Settings, exact: false },
   { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageCircle, exact: false },
 ] as const;

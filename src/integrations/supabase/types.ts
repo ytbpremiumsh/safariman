@@ -205,6 +205,31 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_essay_complete_participants: {
+        Args: never
+        Returns: {
+          birth_date: string
+          category: Database["public"]["Enums"]["program_category"]
+          city: string
+          created_at: string
+          cv_url: string
+          donation_paid_at: string
+          donation_status: string
+          education: string
+          email: string
+          essay_contribution: string
+          essay_dream: string
+          essay_worthy: string
+          full_name: string
+          gender: string
+          id: string
+          occupation: string
+          photo_url: string
+          registration_code: string
+          status: Database["public"]["Enums"]["participant_status"]
+          whatsapp: string
+        }[]
+      }
       log_twibbon_download: { Args: never; Returns: undefined }
       lookup_participant_by_code: {
         Args: { p_code: string }
