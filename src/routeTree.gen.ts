@@ -29,6 +29,7 @@ import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.in
 import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
 import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
+import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
@@ -135,6 +136,11 @@ const AdminPesertaRegulerRoute = AdminPesertaRegulerRouteImport.update({
   path: '/admin/peserta/reguler',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPesertaEssayRoute = AdminPesertaEssayRouteImport.update({
+  id: '/admin/peserta/essay',
+  path: '/admin/peserta/essay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanTwibbonRoute = AdminPengaturanTwibbonRouteImport.update({
   id: '/admin/pengaturan/twibbon',
   path: '/admin/pengaturan/twibbon',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRoute
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/peserta/essay'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/admin/pengaturan/'
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/peserta/essay'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/admin/pengaturan'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/peserta/essay'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/admin/pengaturan/'
@@ -351,6 +363,7 @@ export interface RootRouteChildren {
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
+  AdminPesertaEssayRoute: typeof AdminPesertaEssayRoute
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRoute
   AdminPesertaSelfFundedRoute: typeof AdminPesertaSelfFundedRoute
   AdminPengaturanIndexRoute: typeof AdminPengaturanIndexRoute
@@ -499,6 +512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaRegulerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/peserta/essay': {
+      id: '/admin/peserta/essay'
+      path: '/admin/peserta/essay'
+      fullPath: '/admin/peserta/essay'
+      preLoaderRoute: typeof AdminPesertaEssayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/twibbon': {
       id: '/admin/pengaturan/twibbon'
       path: '/admin/pengaturan/twibbon'
@@ -559,6 +579,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
+  AdminPesertaEssayRoute: AdminPesertaEssayRoute,
   AdminPesertaRegulerRoute: AdminPesertaRegulerRoute,
   AdminPesertaSelfFundedRoute: AdminPesertaSelfFundedRoute,
   AdminPengaturanIndexRoute: AdminPengaturanIndexRoute,
