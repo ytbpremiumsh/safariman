@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin/peserta/essay")({
 });
 
 type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
-type Status = "pending" | "reviewed" | "interview" | "accepted" | "rejected";
+type Status = "reviewed" | "interview" | "rejected";
 
 type Row = {
   id: string;
