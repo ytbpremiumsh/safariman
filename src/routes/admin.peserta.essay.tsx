@@ -81,7 +81,7 @@ function PesertaEssayPage() {
     setLoading(true);
     const { data, error } = await supabase.rpc("list_essay_complete_participants");
     if (error) toast.error(error.message);
-    else setRows((data ?? []) as Row[]);
+    else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
     setLoading(false);
   };
 
