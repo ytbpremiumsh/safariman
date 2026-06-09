@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Search, Download, Copy, Eye, Loader2, FileText, KeyRound, RefreshCw,
-  CheckCircle2, ExternalLink, ShieldCheck,
+  Search, Download, Copy, FileText, CheckCircle2, XCircle, ExternalLink,
+  HelpCircle, ShieldCheck, ArrowRight,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -12,7 +12,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
-import { edgeFunctionUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/peserta/essay")({
   head: () => ({ meta: [{ title: "Peserta Lolos Essay — Safar Iman Admin" }] }),
@@ -54,11 +53,19 @@ const CAT_LABEL: Record<Category, string> = {
 };
 
 const STATUS_LABEL: Record<Status, string> = {
-  pending: "Menunggu",
-  reviewed: "Direview",
-  interview: "Lanjut TPA/LDS",
-  accepted: "Lolos",
-  rejected: "Belum Lolos",
+  pending: "Belum Diputuskan",
+  reviewed: "Sedang Direview",
+  interview: "LOLOS (Lanjut TPA/LDS)",
+  accepted: "LOLOS Final",
+  rejected: "TIDAK LOLOS",
+};
+
+const STATUS_STYLE: Record<Status, string> = {
+  pending: "bg-secondary text-foreground border-border",
+  reviewed: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30",
+  interview: "bg-emerald/15 text-emerald border-emerald/40",
+  accepted: "bg-emerald text-white border-emerald",
+  rejected: "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30",
 };
 
 function PesertaEssayPage() {
@@ -69,22 +76,11 @@ function PesertaEssayPage() {
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
 
-  // CBT API key
-  const [apiKey, setApiKey] = useState("");
-  const [rotating, setRotating] = useState(false);
-  const [showKey, setShowKey] = useState(false);
-
-  const baseUrl = edgeFunctionUrl("cbt-api");
-
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, { data: cfg }] = await Promise.all([
-      supabase.rpc("list_essay_complete_participants"),
-      supabase.from("app_settings").select("value").eq("key", "cbt_api_key").maybeSingle(),
-    ]);
+    const { data, error } = await supabase.rpc("list_essay_complete_participants");
     if (error) toast.error(error.message);
     else setRows((data ?? []) as Row[]);
-    setApiKey((cfg?.value ?? "") as string);
     setLoading(false);
   };
 
@@ -105,9 +101,9 @@ function PesertaEssayPage() {
 
   const stats = useMemo(() => ({
     total: rows.length,
-    interview: rows.filter((r) => r.status === "interview").length,
-    accepted: rows.filter((r) => r.status === "accepted").length,
     pending: rows.filter((r) => r.status === "pending" || r.status === "reviewed").length,
+    lolos: rows.filter((r) => r.status === "interview" || r.status === "accepted").length,
+    tidak: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
   const updateStatus = async (id: string, s: Status) => {
@@ -115,7 +111,7 @@ function PesertaEssayPage() {
     if (error) { toast.error(error.message); return; }
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
     if (detail?.id === id) setDetail({ ...detail, status: s });
-    toast.success("Status diperbarui");
+    toast.success(`Status: ${STATUS_LABEL[s]}`);
   };
 
   const exportExcel = () => {
@@ -130,7 +126,7 @@ function PesertaEssayPage() {
       Pendidikan: r.education,
       Pekerjaan: r.occupation,
       Kategori: r.category ? CAT_LABEL[r.category] : "-",
-      Status: STATUS_LABEL[r.status],
+      Keputusan: STATUS_LABEL[r.status],
       Donasi: r.donation_status === "paid" ? "Valid" : r.donation_status,
       "Essay Layak": r.essay_worthy,
       "Essay Impian": r.essay_dream,
@@ -150,105 +146,44 @@ function PesertaEssayPage() {
     toast.success(label);
   };
 
-  const rotateKey = async () => {
-    if (!confirm("Rotate CBT API Key? Sistem CBT eksternal harus diupdate dengan key baru.")) return;
-    setRotating(true);
-    try {
-      const bytes = crypto.getRandomValues(new Uint8Array(24));
-      const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
-      const newKey = `cbt_${hex}`;
-      const { error } = await supabase
-        .from("app_settings")
-        .upsert({ key: "cbt_api_key", value: newKey }, { onConflict: "key" });
-      if (error) throw error;
-      setApiKey(newKey);
-      toast.success("API Key baru dibuat");
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setRotating(false);
-    }
-  };
-
   if (!ready || loading) return <AdminLoading />;
 
   return (
-    <AdminShell title="Peserta Lolos Essay (Calon TPA/LDS)">
+    <AdminShell title="Peserta Telah Mengirim Essay">
+      {/* Header actions — link to API docs in separate page */}
+      <div className="flex flex-wrap gap-2 items-center justify-between -mt-3">
+        <p className="text-sm text-muted-foreground">
+          Tentukan keputusan kelulusan tiap peserta untuk lanjut ke tahap <strong>TPA / LDS</strong>.
+        </p>
+        <div className="flex gap-2">
+          <Link
+            to="/admin/pengaturan/hasil-seleksi"
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border border-border bg-card hover:bg-secondary"
+          >
+            <CheckCircle2 className="size-3.5" /> Pengaturan Halaman Pengumuman
+          </Link>
+          <Link
+            to="/admin/peserta/essay-api"
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-gradient-emerald text-accent shadow-emerald hover-lift font-semibold"
+          >
+            <ShieldCheck className="size-3.5" /> API CBT &amp; Dokumentasi <ArrowRight className="size-3" />
+          </Link>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Total Kirim Essay", value: stats.total, color: "text-emerald" },
-          { label: "Menunggu Seleksi", value: stats.pending, color: "text-amber-600" },
-          { label: "Lanjut TPA/LDS", value: stats.interview, color: "text-accent" },
-          { label: "Lolos Final", value: stats.accepted, color: "text-emerald" },
+          { label: "Total Kirim Essay", value: stats.total, color: "text-foreground" },
+          { label: "Belum Diputuskan", value: stats.pending, color: "text-amber-600" },
+          { label: "LOLOS (Lanjut)", value: stats.lolos, color: "text-emerald" },
+          { label: "Tidak Lolos", value: stats.tidak, color: "text-red-600" },
         ].map((s) => (
           <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
             <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* CBT API Card */}
-      <div className="bg-gradient-to-br from-emerald-deep/95 via-emerald to-emerald-deep text-white border border-emerald-deep/30 rounded-2xl p-5 shadow-emerald">
-        <div className="flex items-start gap-3">
-          <div className="size-10 rounded-xl bg-white/15 grid place-items-center shrink-0">
-            <ShieldCheck className="size-5 text-accent" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="font-display text-lg font-semibold">API Integrasi CBT</div>
-            <p className="text-xs text-white/70 mt-0.5">
-              Untuk pihak ke-2/3 (penyedia CBT). Peserta login pakai <strong>Kode Pendaftaran</strong> sebagai token.
-            </p>
-
-            <div className="mt-4 grid gap-3 text-sm">
-              <div>
-                <div className="text-[11px] uppercase tracking-wider text-white/60 mb-1">Base URL</div>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 truncate bg-black/25 rounded-lg px-3 py-2 font-mono text-xs">{baseUrl}</code>
-                  <button onClick={() => copy(baseUrl, "Base URL disalin")} className="p-2 rounded-lg bg-white/10 hover:bg-white/20"><Copy className="size-4" /></button>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-[11px] uppercase tracking-wider text-white/60 mb-1 flex items-center gap-2">
-                  <KeyRound className="size-3" /> API Key (Authorization: Bearer …)
-                </div>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 truncate bg-black/25 rounded-lg px-3 py-2 font-mono text-xs">
-                    {showKey ? apiKey : apiKey.replace(/./g, "•").slice(0, 28) + "…"}
-                  </code>
-                  <button onClick={() => setShowKey((v) => !v)} className="p-2 rounded-lg bg-white/10 hover:bg-white/20" title="Lihat">
-                    <Eye className="size-4" />
-                  </button>
-                  <button onClick={() => copy(apiKey, "API Key disalin")} className="p-2 rounded-lg bg-white/10 hover:bg-white/20"><Copy className="size-4" /></button>
-                  <button onClick={rotateKey} disabled={rotating} className="p-2 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 disabled:opacity-50" title="Rotate">
-                    {rotating ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <details className="bg-black/20 rounded-lg p-3 text-xs">
-                <summary className="cursor-pointer font-semibold">Endpoints &amp; contoh request</summary>
-                <div className="mt-3 space-y-3 font-mono leading-relaxed">
-                  <div>
-                    <div className="text-accent">POST {baseUrl}/verify-token</div>
-                    <div className="text-white/70">Public · login peserta di CBT</div>
-                    <pre className="mt-1 whitespace-pre-wrap bg-black/30 p-2 rounded">{`{ "token": "HXP-XXXXXXXX" }`}</pre>
-                  </div>
-                  <div>
-                    <div className="text-accent">GET {baseUrl}/participants</div>
-                    <div className="text-white/70">Header: Authorization: Bearer &lt;API_KEY&gt;</div>
-                  </div>
-                  <div>
-                    <div className="text-accent">GET {baseUrl}/participant/HXP-XXXXXXXX</div>
-                    <div className="text-white/70">Header: Authorization: Bearer &lt;API_KEY&gt;</div>
-                  </div>
-                </div>
-              </details>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Filters */}
@@ -262,12 +197,10 @@ function PesertaEssayPage() {
           onChange={(e) => setStatusFilter(e.target.value as Status | "all")}
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
         >
-          <option value="all">Semua Status</option>
-          <option value="pending">Menunggu</option>
-          <option value="reviewed">Direview</option>
-          <option value="interview">Lanjut TPA/LDS</option>
-          <option value="accepted">Lolos</option>
-          <option value="rejected">Belum Lolos</option>
+          <option value="all">Semua Keputusan</option>
+          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+          ))}
         </select>
         <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
           <Download className="size-4" /> Export
@@ -281,7 +214,7 @@ function PesertaEssayPage() {
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
                 <Th>Token CBT</Th><Th>Nama</Th><Th>Kategori</Th>
-                <Th>Kontak</Th><Th>Kota</Th><Th>Status Seleksi</Th><Th>Aksi</Th>
+                <Th>Kontak</Th><Th>Kota</Th><Th>Keputusan</Th><Th>Aksi Cepat</Th>
               </tr>
             </thead>
             <tbody>
@@ -308,7 +241,7 @@ function PesertaEssayPage() {
                     <select
                       value={r.status}
                       onChange={(e) => updateStatus(r.id, e.target.value as Status)}
-                      className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                      className={"h-8 rounded-md border px-2 text-xs font-medium " + STATUS_STYLE[r.status]}
                     >
                       {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
                         <option key={s} value={s}>{STATUS_LABEL[s]}</option>
@@ -316,9 +249,27 @@ function PesertaEssayPage() {
                     </select>
                   </td>
                   <td className="px-3 py-3">
-                    <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-border hover:bg-secondary">
-                      <FileText className="size-3.5" /> Detail
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-border hover:bg-secondary" title="Detail">
+                        <FileText className="size-3.5" />
+                      </button>
+                      <button
+                        onClick={() => updateStatus(r.id, "interview")}
+                        disabled={r.status === "interview" || r.status === "accepted"}
+                        title="Loloskan"
+                        className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
+                      >
+                        <CheckCircle2 className="size-3.5" />
+                      </button>
+                      <button
+                        onClick={() => updateStatus(r.id, "rejected")}
+                        disabled={r.status === "rejected"}
+                        title="Tidak loloskan"
+                        className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-40 dark:bg-red-950/30"
+                      >
+                        <XCircle className="size-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -333,12 +284,15 @@ function PesertaEssayPage() {
           {detail && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+                <DialogTitle className="flex items-center gap-2 flex-wrap">
                   {detail.full_name}
                   <span className="text-xs font-mono px-2 py-0.5 rounded bg-accent/15 text-accent">{detail.registration_code}</span>
                 </DialogTitle>
                 <DialogDescription>
-                  {detail.category ? CAT_LABEL[detail.category] : "—"} · {detail.city}
+                  {detail.category ? CAT_LABEL[detail.category] : "—"} · {detail.city} ·{" "}
+                  <span className={"inline-flex text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border " + STATUS_STYLE[detail.status]}>
+                    {STATUS_LABEL[detail.status]}
+                  </span>
                 </DialogDescription>
               </DialogHeader>
 
@@ -350,7 +304,7 @@ function PesertaEssayPage() {
                 <Info label="Pendidikan" value={detail.education} />
                 <Info label="Pekerjaan" value={detail.occupation} />
                 <Info label="Donasi" value={detail.donation_status === "paid" ? "Valid" : detail.donation_status} />
-                <Info label="Status Seleksi" value={STATUS_LABEL[detail.status]} />
+                <Info label="Keputusan" value={STATUS_LABEL[detail.status]} />
               </div>
 
               {(detail.cv_url || detail.photo_url) && (
@@ -372,13 +326,19 @@ function PesertaEssayPage() {
               <Essay title="Impian setelah umrah" body={detail.essay_dream} />
               <Essay title="Kontribusi untuk umat" body={detail.essay_contribution} />
 
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-                <button onClick={() => updateStatus(detail.id, "interview")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-accent text-accent-foreground hover:opacity-90">
-                  <CheckCircle2 className="size-3.5" /> Lanjutkan ke TPA/LDS
-                </button>
-                <button onClick={() => updateStatus(detail.id, "rejected")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md border border-red-300 text-red-600 hover:bg-red-50">
-                  Belum Lolos
-                </button>
+              <div className="pt-3 border-t border-border space-y-2">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan</div>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => updateStatus(detail.id, "interview")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-emerald text-white hover:opacity-90">
+                    <CheckCircle2 className="size-3.5" /> LOLOS — Lanjut TPA/LDS
+                  </button>
+                  <button onClick={() => updateStatus(detail.id, "rejected")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-red-600 text-white hover:opacity-90">
+                    <XCircle className="size-3.5" /> Tidak Lolos
+                  </button>
+                  <button onClick={() => updateStatus(detail.id, "pending")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md border border-border hover:bg-secondary">
+                    <HelpCircle className="size-3.5" /> Reset (Belum Diputuskan)
+                  </button>
+                </div>
               </div>
             </>
           )}
