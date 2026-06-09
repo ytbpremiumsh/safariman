@@ -53,20 +53,21 @@ const CAT_LABEL: Record<Category, string> = {
 };
 
 const STATUS_LABEL: Record<Status, string> = {
-  pending: "Belum Diputuskan",
   reviewed: "Sedang Direview",
-  interview: "LOLOS (Lanjut TPA/LDS)",
-  accepted: "LOLOS Final",
-  rejected: "TIDAK LOLOS",
+  interview: "Lolos Tahap Selanjutnya",
+  rejected: "Belum Lolos",
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  pending: "bg-secondary text-foreground border-border",
   reviewed: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30",
   interview: "bg-emerald/15 text-emerald border-emerald/40",
-  accepted: "bg-emerald text-white border-emerald",
   rejected: "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30",
 };
+
+const normalizeStatus = (s: string): Status =>
+  s === "interview" || s === "accepted" ? "interview"
+  : s === "rejected" ? "rejected"
+  : "reviewed";
 
 function PesertaEssayPage() {
   const ready = useAdminGuard();
