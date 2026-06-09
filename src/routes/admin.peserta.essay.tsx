@@ -256,7 +256,7 @@ function PesertaEssayPage() {
                       </button>
                       <button
                         onClick={() => updateStatus(r.id, "interview")}
-                        disabled={r.status === "interview" || r.status === "accepted"}
+                        disabled={r.status === "interview"}
                         title="Loloskan"
                         className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
                       >
