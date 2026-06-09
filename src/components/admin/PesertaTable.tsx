@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
-  FileCheck, FileX, HeartHandshake, CheckCircle2, XCircle, Copy, Wallet,
+  FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
@@ -178,13 +178,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     toast.success(`${data.length} data diekspor`);
   };
 
-  const updateStatus = async (id: string, newStatus: Status) => {
-    const { error } = await supabase.from("participants").update({ status: newStatus }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)));
-    if (detail?.id === id) setDetail({ ...detail, status: newStatus });
-    toast.success("Status diperbarui");
-  };
+  // updateStatus removed — keputusan kelulusan dikelola di halaman Berkas Essay.
+
 
   const markPaidManual = async (id: string) => {
     const row = rows.find((r) => r.id === id);
@@ -473,25 +468,25 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                      {hasSubmittedDocs(detail) ? "Keputusan Seleksi Berkas" : "Status Pendaftaran"}
+                      {hasSubmittedDocs(detail) ? "Status Berkas & Essay" : "Status Pendaftaran"}
                     </div>
                     {hasSubmittedDocs(detail) ? (
-                      <div className="flex flex-wrap gap-2">
-                        <button onClick={() => updateStatus(detail.id, "accepted")}
-                          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                            detail.status === "accepted" ? "bg-emerald text-white border-emerald shadow-emerald" : "border-emerald/40 text-emerald hover:bg-emerald/10"
-                          }`}><CheckCircle2 className="size-4" /> Lolos (lanjut donasi)</button>
-                        <button onClick={() => updateStatus(detail.id, "rejected")}
-                          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                            detail.status === "rejected" ? "bg-red-500 text-white border-red-500" : "border-red-500/40 text-red-600 hover:bg-red-500/10"
-                          }`}><XCircle className="size-4" /> Belum Lolos</button>
-                        <button onClick={() => updateStatus(detail.id, "pending")}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-border hover:bg-secondary">Reset ke Menunggu</button>
+                      <div className="p-4 rounded-xl bg-accent/10 border border-accent/30 text-sm space-y-1">
+                        <p>
+                          Peserta sudah mengirim berkas & essay. Status saat ini:{" "}
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[detail.status]}`}>
+                            {STATUS_LABEL[detail.status]}
+                          </span>
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          Halaman ini hanya menampilkan informasi. Keputusan <strong>Lolos / Belum Lolos</strong> dilakukan pada menu <strong>Berkas Essay</strong>.
+                        </p>
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground">Peserta belum mengirim berkas. Keputusan <strong>Lolos / Belum Lolos</strong> tersedia setelah berkas dikirim.</p>
+                      <p className="text-sm text-muted-foreground">Peserta belum mengirim berkas. Keputusan kelulusan ditentukan setelah berkas & essay dikirim, melalui menu <strong>Berkas Essay</strong>.</p>
                     )}
                   </div>
+
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">

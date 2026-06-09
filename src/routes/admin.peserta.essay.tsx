@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Search, Download, Copy, FileText, CheckCircle2, XCircle, ExternalLink,
-  ShieldCheck, ArrowRight,
+  Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
+  ShieldCheck, ArrowRight, HeartHandshake,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -281,63 +281,96 @@ function PesertaEssayPage() {
 
       {/* Detail dialog */}
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           {detail && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 flex-wrap">
+                <DialogTitle className="font-display text-2xl flex items-center gap-2 flex-wrap">
                   {detail.full_name}
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-accent/15 text-accent">{detail.registration_code}</span>
-                </DialogTitle>
-                <DialogDescription>
-                  {detail.category ? CAT_LABEL[detail.category] : "—"} · {detail.city} ·{" "}
-                  <span className={"inline-flex text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border " + STATUS_STYLE[detail.status]}>
+                  <span className={"text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border " + STATUS_STYLE[detail.status]}>
                     {STATUS_LABEL[detail.status]}
                   </span>
+                </DialogTitle>
+                <DialogDescription>
+                  Kode <span className="font-mono text-foreground">{detail.registration_code}</span>
+                  {" · "}Terdaftar {new Date(detail.created_at).toLocaleString("id-ID")}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <Info label="Email" value={detail.email} />
-                <Info label="WhatsApp" value={detail.whatsapp} />
-                <Info label="Gender" value={detail.gender} />
-                <Info label="Tanggal Lahir" value={detail.birth_date} />
-                <Info label="Pendidikan" value={detail.education} />
-                <Info label="Pekerjaan" value={detail.occupation} />
-                <Info label="Donasi" value={detail.donation_status === "paid" ? "Valid" : detail.donation_status} />
-                <Info label="Keputusan" value={STATUS_LABEL[detail.status]} />
+              {/* Identitas */}
+              <div className="grid sm:grid-cols-[120px,1fr] gap-4 mt-2">
+                {detail.photo_url && (
+                  <img src={detail.photo_url} alt={detail.full_name} className="size-28 rounded-xl object-cover border border-border" />
+                )}
+                <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  <KV k="Email" v={detail.email} />
+                  <KV k="WhatsApp" v={detail.whatsapp} />
+                  <KV k="Gender" v={detail.gender} />
+                  <KV k="Tanggal Lahir" v={detail.birth_date} />
+                  <KV k="Kota" v={detail.city} />
+                  <KV k="Pendidikan" v={detail.education} />
+                  <KV k="Pekerjaan" v={detail.occupation} />
+                  <KV k="Kategori" v={detail.category ? CAT_LABEL[detail.category] : "—"} />
+                </div>
               </div>
 
-              {(detail.cv_url || detail.photo_url) && (
-                <div className="flex gap-2 flex-wrap">
-                  {detail.cv_url && (
-                    <a href={detail.cv_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">
-                      CV <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                  {detail.photo_url && (
-                    <a href={detail.photo_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">
-                      Foto <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                </div>
-              )}
+              {/* Berkas + donasi */}
+              <div className="mt-5 flex flex-wrap gap-2">
+                {detail.cv_url && (
+                  <button
+                    onClick={async () => {
+                      const { data, error } = await supabase.storage.from("participant-cv").createSignedUrl(detail.cv_url!, 60);
+                      if (error || !data) { toast.error("Gagal generate link"); return; }
+                      const a = document.createElement("a");
+                      a.href = data.signedUrl; a.download = `${detail.full_name}-CV.pdf`; a.target = "_blank";
+                      document.body.appendChild(a); a.click(); a.remove();
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-emerald/10 text-emerald px-4 py-2 text-sm font-medium hover:bg-emerald/20"
+                  >
+                    <FileDown className="size-4" /> Download CV
+                  </button>
+                )}
+                {detail.photo_url && (
+                  <a href={detail.photo_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent px-4 py-2 text-sm font-medium hover:bg-accent/25">
+                    <ImageIcon className="size-4" /> Lihat Foto
+                  </a>
+                )}
+                {detail.donation_status === "paid" && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border bg-gradient-gold text-emerald-deep border-accent/40">
+                    <HeartHandshake className="size-4" /> Donasi Valid
+                    {detail.donation_paid_at ? ` · ${new Date(detail.donation_paid_at).toLocaleDateString("id-ID")}` : ""}
+                  </span>
+                )}
+              </div>
 
-              <Essay title="Mengapa kamu layak?" body={detail.essay_worthy} />
-              <Essay title="Impian setelah umrah" body={detail.essay_dream} />
-              <Essay title="Kontribusi untuk umat" body={detail.essay_contribution} />
+              {/* Essays */}
+              <div className="mt-6 space-y-4">
+                <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
+                <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
+                <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
+              </div>
 
-              <div className="pt-3 border-t border-border space-y-2">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan</div>
+              {/* Keputusan */}
+              <div className="mt-6 pt-4 border-t border-border space-y-2">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan Essay</div>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => updateStatus(detail.id, "reviewed")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-amber-500 text-white hover:opacity-90">
+                  <button onClick={() => updateStatus(detail.id, "reviewed")}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                      detail.status === "reviewed" ? "bg-amber-500 text-white border-amber-500" : "border-amber-500/40 text-amber-600 hover:bg-amber-500/10"
+                    }`}>
                     Sedang Direview
                   </button>
-                  <button onClick={() => updateStatus(detail.id, "interview")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-emerald text-white hover:opacity-90">
-                    <CheckCircle2 className="size-3.5" /> Lolos Tahap Selanjutnya
+                  <button onClick={() => updateStatus(detail.id, "interview")}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                      detail.status === "interview" ? "bg-emerald text-white border-emerald shadow-emerald" : "border-emerald/40 text-emerald hover:bg-emerald/10"
+                    }`}>
+                    <CheckCircle2 className="size-4" /> Lolos Tahap Selanjutnya
                   </button>
-                  <button onClick={() => updateStatus(detail.id, "rejected")} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-red-600 text-white hover:opacity-90">
-                    <XCircle className="size-3.5" /> Belum Lolos
+                  <button onClick={() => updateStatus(detail.id, "rejected")}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                      detail.status === "rejected" ? "bg-red-500 text-white border-red-500" : "border-red-500/40 text-red-600 hover:bg-red-500/10"
+                    }`}>
+                    <XCircle className="size-4" /> Belum Lolos
                   </button>
                 </div>
               </div>
@@ -352,11 +385,11 @@ function PesertaEssayPage() {
 function Th({ children }: { children: React.ReactNode }) {
   return <th className="text-left px-3 py-2.5 font-semibold">{children}</th>;
 }
-function Info({ label, value }: { label: string; value: string }) {
+function KV({ k, v }: { k: string; v: string }) {
   return (
-    <div className="bg-secondary/40 rounded-lg p-2.5">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-medium text-foreground mt-0.5 break-words">{value || "—"}</div>
+    <div className="flex gap-2">
+      <span className="text-muted-foreground w-24 shrink-0">{k}</span>
+      <span className="font-medium break-all">{v || "—"}</span>
     </div>
   );
 }
