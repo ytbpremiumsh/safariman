@@ -14,6 +14,7 @@ export const Route = createFileRoute("/admin/pengaturan/hasil-seleksi")({
 
 type Form = {
   enabled: boolean;
+  revealAt: string; // ISO string or ""
   title: string;
   subtitle: string;
   lolos: string;
@@ -24,6 +25,7 @@ type Form = {
 
 const KEYS = {
   enabled: "hasil_seleksi_enabled",
+  revealAt: "hasil_reveal_at",
   title: "hasil_page_title",
   subtitle: "hasil_page_subtitle",
   lolos: "hasil_text_lolos",
@@ -32,12 +34,26 @@ const KEYS = {
   disabled: "hasil_text_disabled",
 } as const;
 
+// Convert ISO ↔ datetime-local input value (local timezone).
+function isoToLocalInput(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function localInputToIso(local: string): string {
+  if (!local) return "";
+  const d = new Date(local);
+  return isNaN(d.getTime()) ? "" : d.toISOString();
+}
+
 function HasilSeleksiSettings() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
   });
 
   useEffect(() => {
@@ -50,6 +66,7 @@ function HasilSeleksiSettings() {
       const map = new Map((data ?? []).map((r) => [r.key, r.value ?? ""]));
       setForm({
         enabled: (map.get(KEYS.enabled) ?? "false") === "true",
+        revealAt: map.get(KEYS.revealAt) ?? "",
         title: map.get(KEYS.title) ?? "",
         subtitle: map.get(KEYS.subtitle) ?? "",
         lolos: map.get(KEYS.lolos) ?? "",
@@ -65,6 +82,7 @@ function HasilSeleksiSettings() {
     setSaving(true);
     const rows = [
       { key: KEYS.enabled, value: form.enabled ? "true" : "false" },
+      { key: KEYS.revealAt, value: form.revealAt },
       { key: KEYS.title, value: form.title },
       { key: KEYS.subtitle, value: form.subtitle },
       { key: KEYS.lolos, value: form.lolos },
@@ -105,6 +123,36 @@ function HasilSeleksiSettings() {
             {form.enabled ? "Aktif" : "Nonaktif"}
           </button>
         </div>
+
+        <div className="border-t border-border pt-4">
+          <label className="block text-sm font-medium mb-1">Jadwal Otomatis Aktif (Tanggal &amp; Waktu)</label>
+          <p className="text-xs text-muted-foreground mb-2">
+            Halaman akan otomatis aktif pada tanggal &amp; waktu ini (zona waktu perangkat). Biarkan kosong untuk hanya menggunakan toggle manual di atas. Jika toggle sudah Aktif, halaman tetap tampil tanpa menunggu jadwal.
+          </p>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Input
+              type="datetime-local"
+              value={isoToLocalInput(form.revealAt)}
+              onChange={(e) => setForm({ ...form, revealAt: localInputToIso(e.target.value) })}
+              className="max-w-xs"
+            />
+            {form.revealAt && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, revealAt: "" })}
+                className="text-xs px-3 py-2 rounded-md border border-border hover:bg-secondary"
+              >
+                Hapus jadwal
+              </button>
+            )}
+          </div>
+          {form.revealAt && (
+            <p className="text-xs text-emerald mt-2">
+              Akan aktif otomatis: <strong>{new Date(form.revealAt).toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" })}</strong>
+            </p>
+          )}
+        </div>
+
         <div className="text-xs bg-secondary/40 rounded-lg p-3 flex items-center justify-between gap-3">
           <span>URL Halaman Publik:</span>
           <a href="/cek-hasil" target="_blank" rel="noreferrer" className="font-mono text-accent inline-flex items-center gap-1 hover:underline">
@@ -112,6 +160,7 @@ function HasilSeleksiSettings() {
           </a>
         </div>
       </div>
+
 
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
         <div className="font-display text-lg font-semibold">Header Halaman</div>

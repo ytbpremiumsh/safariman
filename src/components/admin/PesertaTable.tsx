@@ -460,11 +460,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
 
                   </div>
 
-                  <div className="mt-6 space-y-4">
-                    <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
-                    <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
-                    <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
-                  </div>
+                  {/* Pertanyaan essay disembunyikan — review essay dilakukan di menu Berkas Essay. */}
+
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -569,14 +566,6 @@ function Row({ k, v }: { k: string; v: string }) {
     <div className="flex gap-2">
       <span className="text-muted-foreground w-24 shrink-0">{k}</span>
       <span className="font-medium break-all">{v || "—"}</span>
-    </div>
-  );
-}
-function Essay({ title, body }: { title: string; body: string }) {
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-accent font-semibold">{title}</div>
-      <p className="text-sm text-foreground/90 mt-1 leading-relaxed whitespace-pre-line">{body}</p>
     </div>
   );
 }
