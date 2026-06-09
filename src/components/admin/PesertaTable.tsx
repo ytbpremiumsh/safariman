@@ -178,13 +178,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     toast.success(`${data.length} data diekspor`);
   };
 
-  const updateStatus = async (id: string, newStatus: Status) => {
-    const { error } = await supabase.from("participants").update({ status: newStatus }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)));
-    if (detail?.id === id) setDetail({ ...detail, status: newStatus });
-    toast.success("Status diperbarui");
-  };
+  // updateStatus removed — keputusan kelulusan dikelola di halaman Berkas Essay.
+
 
   const markPaidManual = async (id: string) => {
     const row = rows.find((r) => r.id === id);
