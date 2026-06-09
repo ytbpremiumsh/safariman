@@ -569,11 +569,3 @@ function Row({ k, v }: { k: string; v: string }) {
     </div>
   );
 }
-function Essay({ title, body }: { title: string; body: string }) {
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-accent font-semibold">{title}</div>
-      <p className="text-sm text-foreground/90 mt-1 leading-relaxed whitespace-pre-line">{body}</p>
-    </div>
-  );
-}
