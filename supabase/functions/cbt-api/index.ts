@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     }
 
     // -------- Protected: list / detail ----------
-    if (req.method === "GET" && (route === "participants" || route === "")) {
+    if (req.method === "GET" && route === "participants") {
       if (!(await isAuthorized(req))) {
         return json({ ok: false, error: "Unauthorized" }, { status: 401 });
       }
