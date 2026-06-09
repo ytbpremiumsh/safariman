@@ -51,6 +51,7 @@ function CekHasilPage() {
         .select("key, value")
         .in("key", [
           "hasil_seleksi_enabled",
+          "hasil_reveal_at",
           "hasil_page_title",
           "hasil_page_subtitle",
           "hasil_text_lolos",
@@ -59,8 +60,11 @@ function CekHasilPage() {
           "hasil_text_disabled",
         ]);
       const map = new Map((data ?? []).map((r) => [r.key, r.value ?? ""]));
+      const manualEnabled = (map.get("hasil_seleksi_enabled") ?? "false") === "true";
+      const revealAt = map.get("hasil_reveal_at") ?? "";
+      const scheduledOpen = !!revealAt && !isNaN(new Date(revealAt).getTime()) && Date.now() >= new Date(revealAt).getTime();
       setCfg({
-        enabled: (map.get("hasil_seleksi_enabled") ?? "false") === "true",
+        enabled: manualEnabled || scheduledOpen,
         title: map.get("hasil_page_title") || DEFAULTS.title,
         subtitle: map.get("hasil_page_subtitle") || DEFAULTS.subtitle,
         lolos: map.get("hasil_text_lolos") || DEFAULTS.lolos,
