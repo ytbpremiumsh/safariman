@@ -123,6 +123,36 @@ function HasilSeleksiSettings() {
             {form.enabled ? "Aktif" : "Nonaktif"}
           </button>
         </div>
+
+        <div className="border-t border-border pt-4">
+          <label className="block text-sm font-medium mb-1">Jadwal Otomatis Aktif (Tanggal &amp; Waktu)</label>
+          <p className="text-xs text-muted-foreground mb-2">
+            Halaman akan otomatis aktif pada tanggal &amp; waktu ini (zona waktu perangkat). Biarkan kosong untuk hanya menggunakan toggle manual di atas. Jika toggle sudah Aktif, halaman tetap tampil tanpa menunggu jadwal.
+          </p>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Input
+              type="datetime-local"
+              value={isoToLocalInput(form.revealAt)}
+              onChange={(e) => setForm({ ...form, revealAt: localInputToIso(e.target.value) })}
+              className="max-w-xs"
+            />
+            {form.revealAt && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, revealAt: "" })}
+                className="text-xs px-3 py-2 rounded-md border border-border hover:bg-secondary"
+              >
+                Hapus jadwal
+              </button>
+            )}
+          </div>
+          {form.revealAt && (
+            <p className="text-xs text-emerald mt-2">
+              Akan aktif otomatis: <strong>{new Date(form.revealAt).toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" })}</strong>
+            </p>
+          )}
+        </div>
+
         <div className="text-xs bg-secondary/40 rounded-lg p-3 flex items-center justify-between gap-3">
           <span>URL Halaman Publik:</span>
           <a href="/cek-hasil" target="_blank" rel="noreferrer" className="font-mono text-accent inline-flex items-center gap-1 hover:underline">
@@ -130,6 +160,7 @@ function HasilSeleksiSettings() {
           </a>
         </div>
       </div>
+
 
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
         <div className="font-display text-lg font-semibold">Header Halaman</div>
