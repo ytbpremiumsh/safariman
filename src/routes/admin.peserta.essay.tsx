@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Search, Download, Copy, FileText, CheckCircle2, XCircle, ExternalLink,
-  ShieldCheck, ArrowRight,
+  Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
+  ShieldCheck, ArrowRight, HeartHandshake,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
