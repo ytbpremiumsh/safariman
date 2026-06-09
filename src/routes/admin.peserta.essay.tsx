@@ -102,8 +102,8 @@ function PesertaEssayPage() {
 
   const stats = useMemo(() => ({
     total: rows.length,
-    pending: rows.filter((r) => r.status === "pending" || r.status === "reviewed").length,
-    lolos: rows.filter((r) => r.status === "interview" || r.status === "accepted").length,
+    pending: rows.filter((r) => r.status === "reviewed").length,
+    lolos: rows.filter((r) => r.status === "interview").length,
     tidak: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
