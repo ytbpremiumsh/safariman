@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, category, status, cv_url, photo_url, essay_worthy, essay_dream, essay_contribution, donation_status, donation_paid_at, created_at",
+          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, social_media, reason, achievements, organization_experience, category, status, cv_url, photo_url, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, payment_status, paid_at, donation_status, donation_paid_at, created_at, updated_at",
         )
         .ilike("registration_code", token)
         .maybeSingle();
@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, category, status, cv_url, photo_url, essay_worthy, essay_dream, essay_contribution, donation_status, donation_paid_at, created_at",
+          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, social_media, reason, achievements, organization_experience, category, status, cv_url, photo_url, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, payment_status, paid_at, donation_status, donation_paid_at, created_at, updated_at",
         )
         .ilike("registration_code", code)
         .maybeSingle();
