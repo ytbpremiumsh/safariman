@@ -98,6 +98,7 @@ function HasilSeleksiSettings() {
       { key: KEYS.pending, value: form.pending },
       { key: KEYS.disabled, value: form.disabled },
       { key: KEYS.autoLolos, value: form.autoLolos ? "true" : "false" },
+      { key: KEYS.autoLolosBerkas, value: form.autoLolosBerkas ? "true" : "false" },
     ];
 
     const { error } = await supabase.from("app_settings").upsert(rows, { onConflict: "key" });
