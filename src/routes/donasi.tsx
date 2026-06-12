@@ -270,8 +270,14 @@ function DonasiPage() {
                     <HeartHandshake className="size-8 text-emerald-deep" />
                   </div>
                   <h3 className="font-display text-2xl font-semibold">Barakallahu fiik!</h3>
-                  <p className="text-muted-foreground text-sm mt-2 mb-6">
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald/10 border border-emerald/30 px-4 py-2 text-sm font-semibold text-emerald">
+                    <CheckCircle2 className="size-4" /> Pembayaran Donasi Sudah Valid
+                  </div>
+                  <p className="text-muted-foreground text-sm mt-3 mb-2">
                     Kontribusi kebaikanmu sudah tercatat pada {info.donation_paid_at ? new Date(info.donation_paid_at).toLocaleString("id-ID") : "-"}.
+                  </p>
+                  <p className="text-sm text-foreground/80 mb-6 max-w-md mx-auto">
+                    Kamu tidak perlu melakukan pembayaran lagi. Silakan lanjutkan ke tahap berikutnya: <strong>Penulisan Essay</strong>.
                   </p>
                   <Link
                     to="/essay"
