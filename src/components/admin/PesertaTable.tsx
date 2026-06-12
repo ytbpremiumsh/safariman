@@ -200,7 +200,9 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     if (!confirm(`Tandai ${label} sebagai VALID secara manual?`)) return;
     const now = new Date().toISOString();
     const shouldAutoLolos = !gel && autoLolos;
-    const patch: any = { payment_status: "paid", paid_at: now };
+    const patch: any = gel
+      ? { payment_status: "paid", paid_at: now }
+      : { donation_status: "paid", donation_paid_at: now };
     if (shouldAutoLolos) patch.status = "accepted";
     const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
