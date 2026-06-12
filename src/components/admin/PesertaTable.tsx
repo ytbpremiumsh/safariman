@@ -90,8 +90,12 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const [templates, setTemplates] = useState<Record<string, string>>({});
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
+  const [autoLolos, setAutoLolos] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
+
 
   useEffect(() => {
     if (!ready) return;
@@ -115,7 +119,9 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
         ditolak: map.wa_template_ditolak ?? "",
         custom: map.wa_template_custom ?? "",
       });
+      setAutoLolos((map.auto_lolos_enabled ?? "false") === "true");
       setLoading(false);
+
     })();
   }, [ready, isSelf]);
 
@@ -193,11 +199,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     const label = gel ? "biaya pendaftaran" : "donasi";
     if (!confirm(`Tandai ${label} sebagai VALID secara manual?`)) return;
     const now = new Date().toISOString();
-    const { error } = await supabase.from("participants").update({ payment_status: "paid", paid_at: now }).eq("id", id);
+    const shouldAutoLolos = !gel && autoLolos;
+    const patch: any = { payment_status: "paid", paid_at: now };
+    if (shouldAutoLolos) patch.status = "accepted";
+    const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "paid", paid_at: now } : r)));
-    if (detail?.id === id) setDetail({ ...detail, payment_status: "paid", paid_at: now });
-    toast.success(gel ? "Pendaftaran ditandai lunas" : "Donasi ditandai valid");
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    if (detail?.id === id) setDetail({ ...detail, ...patch });
+    toast.success(gel ? "Pendaftaran ditandai lunas" : (shouldAutoLolos ? "Donasi valid · Status otomatis Lolos" : "Donasi ditandai valid"));
 
     // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
     if (gel && row?.registration_code) {
@@ -210,6 +219,42 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       }
     }
   };
+
+  // Bulk operations
+  const visibleIds = useMemo(() => filtered.map((r) => r.id), [filtered]);
+  const allChecked = selected.size > 0 && visibleIds.every((id) => selected.has(id));
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    setSelected((prev) => {
+      if (visibleIds.every((id) => prev.has(id))) {
+        const next = new Set(prev);
+        visibleIds.forEach((id) => next.delete(id));
+        return next;
+      }
+      const next = new Set(prev);
+      visibleIds.forEach((id) => next.add(id));
+      return next;
+    });
+  };
+  const bulkUpdateStatus = async (s: Status) => {
+    if (selected.size === 0) return;
+    if (!confirm(`Ubah status ${selected.size} peserta menjadi "${STATUS_LABEL[s]}"?`)) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase.from("participants").update({ status: s }).in("id", ids);
+    setBulkBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, status: s } : r)));
+    setSelected(new Set());
+    toast.success(`${ids.length} peserta → ${STATUS_LABEL[s]}`);
+  };
+
 
   const unmarkPaidManual = async (id: string) => {
     if (!confirm("Batalkan status donasi valid peserta ini?")) return;
@@ -316,11 +361,65 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       </div>
 
 
+
+      {!isSelf && selected.size > 0 && (
+        <div className="sticky top-14 z-10 bg-emerald/10 border border-emerald/30 rounded-2xl p-3 flex flex-wrap items-center gap-3">
+          <div className="text-sm font-semibold text-emerald-deep">
+            {selected.size} peserta dipilih
+          </div>
+          {autoLolos && (
+            <span className="text-[11px] px-2 py-1 rounded-full bg-emerald/20 text-emerald-deep border border-emerald/40">
+              Auto Lolos aktif
+            </span>
+          )}
+          <div className="ml-auto flex flex-wrap gap-2">
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("accepted")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-emerald text-white hover:bg-emerald-deep disabled:opacity-60"
+            >
+              <FileCheck className="size-4" /> Tandai Lolos
+            </button>
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("rejected")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-60"
+            >
+              <XCircle className="size-4" /> Belum Lolos
+            </button>
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("pending")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border border-border bg-background hover:bg-secondary disabled:opacity-60"
+            >
+              Reset Menunggu
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-border hover:bg-secondary"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
+                {!isSelf && (
+                  <Th>
+                    <input
+                      type="checkbox"
+                      aria-label="Pilih semua"
+                      checked={allChecked}
+                      onChange={toggleAll}
+                      className="size-4 rounded border-border accent-emerald cursor-pointer"
+                    />
+                  </Th>
+                )}
                 <Th>Kode</Th><Th>Nama</Th>
                 {!isSelf && <Th>Jalur</Th>}
                 <Th>Kontak</Th><Th>Kota</Th>
@@ -332,17 +431,29 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={isSelf ? 6 : 9} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+                <tr><td colSpan={isSelf ? 6 : 10} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
               ) : filtered.map((r) => {
                 const gel = isGelombang(r.category);
                 const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
                 return (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                  {!isSelf && (
+                    <Td>
+                      <input
+                        type="checkbox"
+                        aria-label={`Pilih ${r.full_name}`}
+                        checked={selected.has(r.id)}
+                        onChange={() => toggleOne(r.id)}
+                        className="size-4 rounded border-border accent-emerald cursor-pointer"
+                      />
+                    </Td>
+                  )}
                   <Td>
                     <button onClick={() => copyCode(r.registration_code)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-emerald/10 text-emerald hover:bg-emerald/20">
                       {r.registration_code} <Copy className="size-3" />
                     </button>
                   </Td>
+
                   <Td>
                     <div className="font-medium">{r.full_name}</div>
                     <div className="text-xs text-muted-foreground">{r.education}</div>

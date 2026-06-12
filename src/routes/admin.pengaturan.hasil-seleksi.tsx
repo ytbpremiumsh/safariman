@@ -21,6 +21,7 @@ type Form = {
   tidakLolos: string;
   pending: string;
   disabled: string;
+  autoLolos: boolean;
 };
 
 const KEYS = {
@@ -32,7 +33,9 @@ const KEYS = {
   tidakLolos: "hasil_text_tidak_lolos",
   pending: "hasil_text_pending",
   disabled: "hasil_text_disabled",
+  autoLolos: "auto_lolos_enabled",
 } as const;
+
 
 // Convert ISO ↔ datetime-local input value (local timezone).
 function isoToLocalInput(iso: string): string {
@@ -53,7 +56,7 @@ function HasilSeleksiSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false,
   });
 
   useEffect(() => {
@@ -73,10 +76,12 @@ function HasilSeleksiSettings() {
         tidakLolos: map.get(KEYS.tidakLolos) ?? "",
         pending: map.get(KEYS.pending) ?? "",
         disabled: map.get(KEYS.disabled) ?? "",
+        autoLolos: (map.get(KEYS.autoLolos) ?? "false") === "true",
       });
       setLoading(false);
     })();
   }, [ready]);
+
 
   const save = async () => {
     setSaving(true);
@@ -89,7 +94,9 @@ function HasilSeleksiSettings() {
       { key: KEYS.tidakLolos, value: form.tidakLolos },
       { key: KEYS.pending, value: form.pending },
       { key: KEYS.disabled, value: form.disabled },
+      { key: KEYS.autoLolos, value: form.autoLolos ? "true" : "false" },
     ];
+
     const { error } = await supabase.from("app_settings").upsert(rows, { onConflict: "key" });
     setSaving(false);
     if (error) toast.error(error.message);
@@ -162,7 +169,28 @@ function HasilSeleksiSettings() {
       </div>
 
 
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="font-display text-lg font-semibold">Auto Lolos Sistem</div>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+              Jika <strong>Aktif</strong>: peserta reguler otomatis berstatus <strong>Lolos</strong> begitu donasi ditandai valid (manual maupun via Mayar). Jika <strong>Nonaktif</strong>: admin harus memilih status Lolos / Belum Lolos secara manual.
+            </p>
+          </div>
+          <button
+            onClick={() => setForm((f) => ({ ...f, autoLolos: !f.autoLolos }))}
+            className={
+              "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition shrink-0 " +
+              (form.autoLolos ? "bg-emerald text-white" : "bg-secondary text-foreground border border-border")
+            }
+          >
+            {form.autoLolos ? "Aktif" : "Nonaktif"}
+          </button>
+        </div>
+      </div>
+
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+
         <div className="font-display text-lg font-semibold">Header Halaman</div>
         <Field label="Judul">
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
