@@ -58,7 +58,7 @@ function HasilSeleksiSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false,
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false, autoLolosBerkas: false,
   });
 
   useEffect(() => {
