@@ -59,19 +59,28 @@ function shape(p: Record<string, unknown>) {
     city: p.city,
     education: p.education,
     occupation: p.occupation,
+    social_media: p.social_media,
+    instagram: p.social_media,
+    reason: p.reason,
+    achievements: p.achievements,
+    organization_experience: p.organization_experience,
     category: p.category,
     category_label: p.category ? (CAT_LABEL[p.category as string] ?? null) : null,
     status: p.status,
     cv_url: p.cv_url,
     photo_url: p.photo_url,
+    twibbon_confirmed_at: p.twibbon_confirmed_at,
     essay: {
       worthy: p.essay_worthy,
       dream: p.essay_dream,
       contribution: p.essay_contribution,
     },
+    payment_status: p.payment_status,
+    paid_at: p.paid_at,
     donation_status: p.donation_status,
     donation_paid_at: p.donation_paid_at,
     created_at: p.created_at,
+    updated_at: p.updated_at,
   };
 }
 
@@ -95,7 +104,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, category, status, cv_url, photo_url, essay_worthy, essay_dream, essay_contribution, donation_status, donation_paid_at, created_at",
+          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, social_media, reason, achievements, organization_experience, category, status, cv_url, photo_url, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, payment_status, paid_at, donation_status, donation_paid_at, created_at, updated_at",
         )
         .ilike("registration_code", token)
         .maybeSingle();
@@ -137,7 +146,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, category, status, cv_url, photo_url, essay_worthy, essay_dream, essay_contribution, donation_status, donation_paid_at, created_at",
+          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, social_media, reason, achievements, organization_experience, category, status, cv_url, photo_url, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, payment_status, paid_at, donation_status, donation_paid_at, created_at, updated_at",
         )
         .ilike("registration_code", code)
         .maybeSingle();
