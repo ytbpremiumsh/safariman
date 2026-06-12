@@ -361,11 +361,65 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       </div>
 
 
+
+      {!isSelf && selected.size > 0 && (
+        <div className="sticky top-14 z-10 bg-emerald/10 border border-emerald/30 rounded-2xl p-3 flex flex-wrap items-center gap-3">
+          <div className="text-sm font-semibold text-emerald-deep">
+            {selected.size} peserta dipilih
+          </div>
+          {autoLolos && (
+            <span className="text-[11px] px-2 py-1 rounded-full bg-emerald/20 text-emerald-deep border border-emerald/40">
+              Auto Lolos aktif
+            </span>
+          )}
+          <div className="ml-auto flex flex-wrap gap-2">
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("accepted")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-emerald text-white hover:bg-emerald-deep disabled:opacity-60"
+            >
+              <FileCheck className="size-4" /> Tandai Lolos
+            </button>
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("rejected")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-60"
+            >
+              <XCircle className="size-4" /> Belum Lolos
+            </button>
+            <button
+              disabled={bulkBusy}
+              onClick={() => bulkUpdateStatus("pending")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border border-border bg-background hover:bg-secondary disabled:opacity-60"
+            >
+              Reset Menunggu
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-border hover:bg-secondary"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
+                {!isSelf && (
+                  <Th>
+                    <input
+                      type="checkbox"
+                      aria-label="Pilih semua"
+                      checked={allChecked}
+                      onChange={toggleAll}
+                      className="size-4 rounded border-border accent-emerald cursor-pointer"
+                    />
+                  </Th>
+                )}
                 <Th>Kode</Th><Th>Nama</Th>
                 {!isSelf && <Th>Jalur</Th>}
                 <Th>Kontak</Th><Th>Kota</Th>
@@ -377,17 +431,29 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={isSelf ? 6 : 9} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
+                <tr><td colSpan={isSelf ? 6 : 10} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
               ) : filtered.map((r) => {
                 const gel = isGelombang(r.category);
                 const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
                 return (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                  {!isSelf && (
+                    <Td>
+                      <input
+                        type="checkbox"
+                        aria-label={`Pilih ${r.full_name}`}
+                        checked={selected.has(r.id)}
+                        onChange={() => toggleOne(r.id)}
+                        className="size-4 rounded border-border accent-emerald cursor-pointer"
+                      />
+                    </Td>
+                  )}
                   <Td>
                     <button onClick={() => copyCode(r.registration_code)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-emerald/10 text-emerald hover:bg-emerald/20">
                       {r.registration_code} <Copy className="size-3" />
                     </button>
                   </Td>
+
                   <Td>
                     <div className="font-medium">{r.full_name}</div>
                     <div className="text-xs text-muted-foreground">{r.education}</div>
