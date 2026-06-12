@@ -260,10 +260,15 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
 
   const unmarkPaidManual = async (id: string) => {
     if (!confirm("Batalkan status donasi valid peserta ini?")) return;
-    const { error } = await supabase.from("participants").update({ payment_status: "unpaid", paid_at: null }).eq("id", id);
+    const row = rows.find((r) => r.id === id);
+    const gel = row ? isGelombang(row.category) : false;
+    const patch: any = gel
+      ? { payment_status: "unpaid", paid_at: null }
+      : { donation_status: "pending", donation_paid_at: null };
+    const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "unpaid", paid_at: null } : r)));
-    if (detail?.id === id) setDetail({ ...detail, payment_status: "unpaid", paid_at: null });
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    if (detail?.id === id) setDetail({ ...detail, ...patch });
     toast.success("Status donasi dibatalkan");
   };
 
