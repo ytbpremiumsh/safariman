@@ -178,7 +178,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     toast.success(`${data.length} data diekspor`);
   };
 
-  // updateStatus removed — keputusan kelulusan dikelola di halaman Berkas Essay.
+  const updateStatus = async (id: string, s: Status) => {
+    const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: s } : r)));
+    if (detail?.id === id) setDetail({ ...detail, status: s });
+    toast.success(`Status: ${STATUS_LABEL[s]}`);
+  };
 
 
   const markPaidManual = async (id: string) => {
