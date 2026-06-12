@@ -21,6 +21,7 @@ type Form = {
   tidakLolos: string;
   pending: string;
   disabled: string;
+  autoLolos: boolean;
 };
 
 const KEYS = {
@@ -32,7 +33,9 @@ const KEYS = {
   tidakLolos: "hasil_text_tidak_lolos",
   pending: "hasil_text_pending",
   disabled: "hasil_text_disabled",
+  autoLolos: "auto_lolos_enabled",
 } as const;
+
 
 // Convert ISO ↔ datetime-local input value (local timezone).
 function isoToLocalInput(iso: string): string {
