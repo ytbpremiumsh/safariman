@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles,
   BookOpen, Utensils, Users, GraduationCap, MapPin, ShieldCheck, Lock, FileText,
@@ -37,14 +37,15 @@ type Lookup = {
 };
 
 function DonasiPage() {
+  const navigate = useNavigate();
   const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const [code, setCode] = useState((search?.get("code") ?? "").toUpperCase());
   const [checking, setChecking] = useState(false);
   const [paying, setPaying] = useState(false);
   const [info, setInfo] = useState<Lookup | null>(null);
 
-  const verify = async () => {
-    const c = code.trim().toUpperCase();
+  const verify = async (autoCode?: string) => {
+    const c = (autoCode ?? code).trim().toUpperCase();
     if (c.length < 4) { toast.error("Masukkan kode pendaftaran"); return; }
     setChecking(true);
     try {
@@ -53,6 +54,10 @@ function DonasiPage() {
       const row = data?.[0];
       if (!row) { toast.error("Kode tidak ditemukan"); return; }
       setInfo(row as Lookup);
+      if (row.donation_status === "paid") {
+        navigate({ to: "/essay", search: { code: c } });
+        return;
+      }
     } catch (e) {
       console.error(e);
       toast.error("Gagal memverifikasi kode");
@@ -60,6 +65,14 @@ function DonasiPage() {
       setChecking(false);
     }
   };
+
+  useEffect(() => {
+    const urlCode = search?.get("code");
+    if (urlCode && urlCode.length >= 4 && !info) {
+      verify(urlCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startPayment = async () => {
     setPaying(true);
@@ -218,7 +231,7 @@ function DonasiPage() {
                 maxLength={16}
               />
               <button
-                onClick={verify}
+                onClick={() => verify()}
                 disabled={checking}
                 className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift disabled:opacity-60"
               >
