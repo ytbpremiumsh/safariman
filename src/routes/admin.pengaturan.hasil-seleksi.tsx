@@ -22,6 +22,7 @@ type Form = {
   pending: string;
   disabled: string;
   autoLolos: boolean;
+  autoLolosBerkas: boolean;
 };
 
 const KEYS = {
@@ -34,6 +35,7 @@ const KEYS = {
   pending: "hasil_text_pending",
   disabled: "hasil_text_disabled",
   autoLolos: "auto_lolos_enabled",
+  autoLolosBerkas: "auto_lolos_berkas_enabled",
 } as const;
 
 
@@ -56,7 +58,7 @@ function HasilSeleksiSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false,
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false, autoLolosBerkas: false,
   });
 
   useEffect(() => {
@@ -77,6 +79,7 @@ function HasilSeleksiSettings() {
         pending: map.get(KEYS.pending) ?? "",
         disabled: map.get(KEYS.disabled) ?? "",
         autoLolos: (map.get(KEYS.autoLolos) ?? "false") === "true",
+        autoLolosBerkas: (map.get(KEYS.autoLolosBerkas) ?? "false") === "true",
       });
       setLoading(false);
     })();
@@ -95,6 +98,7 @@ function HasilSeleksiSettings() {
       { key: KEYS.pending, value: form.pending },
       { key: KEYS.disabled, value: form.disabled },
       { key: KEYS.autoLolos, value: form.autoLolos ? "true" : "false" },
+      { key: KEYS.autoLolosBerkas, value: form.autoLolosBerkas ? "true" : "false" },
     ];
 
     const { error } = await supabase.from("app_settings").upsert(rows, { onConflict: "key" });
@@ -186,7 +190,27 @@ function HasilSeleksiSettings() {
           >
             {form.autoLolos ? "Aktif" : "Nonaktif"}
           </button>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="font-display text-lg font-semibold">Auto Lolos Pengiriman Berkas</div>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+              Jika <strong>Aktif</strong>: peserta yang mengirim berkas dokumen otomatis berstatus <strong>Lolos</strong> tanpa perlu admin koreksi manual. Jika <strong>Nonaktif</strong>: admin harus me-review berkas dan mengubah status secara manual.
+            </p>
+          </div>
+          <button
+            onClick={() => setForm((f) => ({ ...f, autoLolosBerkas: !f.autoLolosBerkas }))}
+            className={
+              "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition shrink-0 " +
+              (form.autoLolosBerkas ? "bg-emerald text-white" : "bg-secondary text-foreground border border-border")
+            }
+          >
+            {form.autoLolosBerkas ? "Aktif" : "Nonaktif"}
+          </button>
         </div>
+      </div>
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
