@@ -241,6 +241,7 @@ function CodeForm({ code, setCode, checking, verify }: { code: string; setCode: 
 }
 
 function AlreadySubmittedCard({ participant, code, onReset }: { participant: Participant; code: string; onReset: () => void }) {
+  const paid = participant.donation_status === "paid";
   return (
     <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
       <div className="flex items-center gap-3 rounded-2xl bg-emerald/10 border border-emerald/30 p-4">
@@ -261,23 +262,47 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
         </p>
       </div>
 
-      <div className="rounded-2xl bg-emerald/10 border border-emerald/30 p-5 text-sm">
-        <div className="font-semibold mb-1">Tahap Berkas selesai</div>
-        <p className="text-muted-foreground">
-          Berkas pendukungmu sudah kami terima. Mohon tunggu hasil seleksi administrasi.
-          Setelah dinyatakan <strong className="text-foreground">lolos</strong>, kamu bisa lanjut ke tahap
-          <strong className="text-foreground"> Kontribusi / Donasi</strong>, lalu tahap <strong className="text-foreground">Essay</strong>.
-        </p>
-        <p className="text-muted-foreground mt-2 text-xs">
-          Setiap tahap dibuka berurutan — cek statusmu melalui halaman <strong className="text-foreground">Cek Hasil</strong>.
-        </p>
-      </div>
-      <Link
-        to="/cek-hasil"
-        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
-      >
-        Cek Status Seleksi <ArrowRight className="size-4" />
-      </Link>
+      {paid ? (
+        participant.has_essay ? (
+          <div className="rounded-2xl bg-emerald/10 border border-emerald/30 p-5 text-sm text-center">
+            <div className="font-semibold mb-1">Semua tahap sudah selesai</div>
+            <p className="text-muted-foreground">
+              Berkas, kontribusi, dan essay sudah lengkap. Tunggu pengumuman seleksi berikutnya, ya.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="rounded-2xl bg-gradient-emerald p-6 text-center">
+              <div className="text-accent text-xs uppercase tracking-[0.2em] font-bold mb-2">Kontribusi sudah tertunai</div>
+              <div className="font-display text-white text-xl leading-snug">Lanjut ke tahap pengisian Essay</div>
+            </div>
+            <Link
+              to="/essay"
+              search={{ code }}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
+            >
+              <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
+            </Link>
+          </>
+        )
+      ) : (
+        <>
+          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
+            <div className="font-semibold mb-1">Belum bisa lanjut ke Essay</div>
+            <p className="text-muted-foreground">
+              Tahap Essay terbuka setelah kamu dinyatakan lolos seleksi administrasi
+              dan menunaikan <strong className="text-foreground">kontribusi / donasi</strong> terlebih dahulu.
+            </p>
+          </div>
+          <Link
+            to="/donasi"
+            search={{ code }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
+          >
+            <HeartHandshake className="size-5" /> Tunaikan Kontribusi <ArrowRight className="size-4" />
+          </Link>
+        </>
+      )}
 
       <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">
         Cek kode lain
