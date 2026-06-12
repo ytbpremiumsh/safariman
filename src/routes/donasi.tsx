@@ -55,8 +55,7 @@ function DonasiPage() {
       if (!row) { toast.error("Kode tidak ditemukan"); return; }
       setInfo(row as Lookup);
       if (row.donation_status === "paid") {
-        navigate({ to: "/essay", search: { code: c } });
-        return;
+        toast.success("Donasi sudah valid, silakan lanjut ke Essay");
       }
     } catch (e) {
       console.error(e);
