@@ -79,6 +79,7 @@ function HasilSeleksiSettings() {
         pending: map.get(KEYS.pending) ?? "",
         disabled: map.get(KEYS.disabled) ?? "",
         autoLolos: (map.get(KEYS.autoLolos) ?? "false") === "true",
+        autoLolosBerkas: (map.get(KEYS.autoLolosBerkas) ?? "false") === "true",
       });
       setLoading(false);
     })();
