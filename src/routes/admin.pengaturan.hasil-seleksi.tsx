@@ -169,7 +169,28 @@ function HasilSeleksiSettings() {
       </div>
 
 
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="font-display text-lg font-semibold">Auto Lolos Sistem</div>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+              Jika <strong>Aktif</strong>: peserta reguler otomatis berstatus <strong>Lolos</strong> begitu donasi ditandai valid (manual maupun via Mayar). Jika <strong>Nonaktif</strong>: admin harus memilih status Lolos / Belum Lolos secara manual.
+            </p>
+          </div>
+          <button
+            onClick={() => setForm((f) => ({ ...f, autoLolos: !f.autoLolos }))}
+            className={
+              "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition shrink-0 " +
+              (form.autoLolos ? "bg-emerald text-white" : "bg-secondary text-foreground border border-border")
+            }
+          >
+            {form.autoLolos ? "Aktif" : "Nonaktif"}
+          </button>
+        </div>
+      </div>
+
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+
         <div className="font-display text-lg font-semibold">Header Halaman</div>
         <Field label="Judul">
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
