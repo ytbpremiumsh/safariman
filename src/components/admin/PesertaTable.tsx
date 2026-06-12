@@ -119,7 +119,9 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
         ditolak: map.wa_template_ditolak ?? "",
         custom: map.wa_template_custom ?? "",
       });
+      setAutoLolos((map.auto_lolos_enabled ?? "false") === "true");
       setLoading(false);
+
     })();
   }, [ready, isSelf]);
 
