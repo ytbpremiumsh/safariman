@@ -56,7 +56,7 @@ function HasilSeleksiSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Form>({
-    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "",
+    enabled: false, revealAt: "", title: "", subtitle: "", lolos: "", tidakLolos: "", pending: "", disabled: "", autoLolos: false,
   });
 
   useEffect(() => {
@@ -76,10 +76,12 @@ function HasilSeleksiSettings() {
         tidakLolos: map.get(KEYS.tidakLolos) ?? "",
         pending: map.get(KEYS.pending) ?? "",
         disabled: map.get(KEYS.disabled) ?? "",
+        autoLolos: (map.get(KEYS.autoLolos) ?? "false") === "true",
       });
       setLoading(false);
     })();
   }, [ready]);
+
 
   const save = async () => {
     setSaving(true);
