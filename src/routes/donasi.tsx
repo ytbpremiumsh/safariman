@@ -231,7 +231,7 @@ function DonasiPage() {
                 maxLength={16}
               />
               <button
-                onClick={verify}
+                onClick={() => verify()}
                 disabled={checking}
                 className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-3.5 text-sm font-bold shadow-emerald hover-lift disabled:opacity-60"
               >
