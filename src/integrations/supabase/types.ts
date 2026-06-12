@@ -208,6 +208,7 @@ export type Database = {
       list_essay_complete_participants: {
         Args: never
         Returns: {
+          achievements: string
           birth_date: string
           category: Database["public"]["Enums"]["program_category"]
           city: string
@@ -224,9 +225,16 @@ export type Database = {
           gender: string
           id: string
           occupation: string
+          organization_experience: string
+          paid_at: string
+          payment_status: string
           photo_url: string
+          reason: string
           registration_code: string
+          social_media: string
           status: Database["public"]["Enums"]["participant_status"]
+          twibbon_confirmed_at: string
+          updated_at: string
           whatsapp: string
         }[]
       }
