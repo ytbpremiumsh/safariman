@@ -22,6 +22,7 @@ type Form = {
   pending: string;
   disabled: string;
   autoLolos: boolean;
+  autoLolosBerkas: boolean;
 };
 
 const KEYS = {
@@ -34,6 +35,7 @@ const KEYS = {
   pending: "hasil_text_pending",
   disabled: "hasil_text_disabled",
   autoLolos: "auto_lolos_enabled",
+  autoLolosBerkas: "auto_lolos_berkas_enabled",
 } as const;
 
 
