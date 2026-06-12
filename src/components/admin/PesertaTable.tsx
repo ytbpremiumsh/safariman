@@ -178,7 +178,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     toast.success(`${data.length} data diekspor`);
   };
 
-  // updateStatus removed — keputusan kelulusan dikelola di halaman Berkas Essay.
+  const updateStatus = async (id: string, s: Status) => {
+    const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: s } : r)));
+    if (detail?.id === id) setDetail({ ...detail, status: s });
+    toast.success(`Status: ${STATUS_LABEL[s]}`);
+  };
 
 
   const markPaidManual = async (id: string) => {
@@ -465,28 +471,6 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                      {hasSubmittedDocs(detail) ? "Status Berkas & Essay" : "Status Pendaftaran"}
-                    </div>
-                    {hasSubmittedDocs(detail) ? (
-                      <div className="p-4 rounded-xl bg-accent/10 border border-accent/30 text-sm space-y-1">
-                        <p>
-                          Peserta sudah mengirim berkas & essay. Status saat ini:{" "}
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[detail.status]}`}>
-                            {STATUS_LABEL[detail.status]}
-                          </span>
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          Halaman ini hanya menampilkan informasi. Keputusan <strong>Lolos / Belum Lolos</strong> dilakukan pada menu <strong>Berkas Essay</strong>.
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">Peserta belum mengirim berkas. Keputusan kelulusan ditentukan setelah berkas & essay dikirim, melalui menu <strong>Berkas Essay</strong>.</p>
-                    )}
-                  </div>
-
-
-                  <div className="mt-6 pt-4 border-t border-border">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                       {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
                     </div>
                     {detail.payment_status === "paid" ? (
@@ -510,17 +494,64 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                           <Wallet className="size-4" /> Tandai Bayar Pendaftaran (Manual)
                         </button>
                       </div>
-                    ) : detail.status === "accepted" ? (
+                    ) : hasSubmittedDocs(detail) ? (
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Jika peserta sudah membayar donasi di luar sistem, tandai di sini.</p>
+                        <p className="text-sm text-muted-foreground">Peserta sudah mengirim berkas. Jika sudah membayar donasi di luar sistem, tandai manual di sini agar keputusan kelulusan dapat ditentukan.</p>
                         <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold border border-accent/40 shadow-gold hover-lift">
                           <HeartHandshake className="size-4" /> Tandai Donasi Valid (Manual)
                         </button>
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground">Status donasi terbuka setelah peserta dinyatakan <strong>Lolos</strong>.</p>
+                      <p className="text-sm text-muted-foreground">Donasi dapat ditandai setelah peserta mengirim berkas.</p>
                     )}
                   </div>
+
+                  {!isGelombang(detail.category) && hasSubmittedDocs(detail) && (
+                    <div className="mt-6 pt-4 border-t border-border">
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Keputusan Kelulusan</div>
+                      {detail.payment_status !== "paid" ? (
+                        <p className="text-sm text-muted-foreground">
+                          Status <strong>Lolos / Belum Lolos</strong> dapat dipilih setelah donasi peserta ditandai valid.
+                        </p>
+                      ) : (
+                        <div className="space-y-3">
+                          <p className="text-sm text-muted-foreground">
+                            Status saat ini:{" "}
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[detail.status]}`}>
+                              {STATUS_LABEL[detail.status]}
+                            </span>
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => updateStatus(detail.id, "accepted")}
+                              disabled={detail.status === "accepted"}
+                              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                                detail.status === "accepted"
+                                  ? "bg-emerald text-white border-emerald shadow-emerald"
+                                  : "border-emerald/40 text-emerald hover:bg-emerald/10"
+                              }`}
+                            >
+                              <FileCheck className="size-4" /> Lolos
+                            </button>
+                            <button
+                              onClick={() => updateStatus(detail.id, "rejected")}
+                              disabled={detail.status === "rejected"}
+                              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                                detail.status === "rejected"
+                                  ? "bg-red-500 text-white border-red-500"
+                                  : "border-red-500/40 text-red-600 hover:bg-red-500/10"
+                              }`}
+                            >
+                              <XCircle className="size-4" /> Belum Lolos
+                            </button>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">
+                            Catatan: review essay tetap dapat dilakukan pada menu <strong>Berkas Essay</strong>.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
