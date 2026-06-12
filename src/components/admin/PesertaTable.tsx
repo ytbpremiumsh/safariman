@@ -199,11 +199,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     const label = gel ? "biaya pendaftaran" : "donasi";
     if (!confirm(`Tandai ${label} sebagai VALID secara manual?`)) return;
     const now = new Date().toISOString();
-    const { error } = await supabase.from("participants").update({ payment_status: "paid", paid_at: now }).eq("id", id);
+    const shouldAutoLolos = !gel && autoLolos;
+    const patch: any = { payment_status: "paid", paid_at: now };
+    if (shouldAutoLolos) patch.status = "accepted";
+    const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status: "paid", paid_at: now } : r)));
-    if (detail?.id === id) setDetail({ ...detail, payment_status: "paid", paid_at: now });
-    toast.success(gel ? "Pendaftaran ditandai lunas" : "Donasi ditandai valid");
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    if (detail?.id === id) setDetail({ ...detail, ...patch });
+    toast.success(gel ? "Pendaftaran ditandai lunas" : (shouldAutoLolos ? "Donasi valid · Status otomatis Lolos" : "Donasi ditandai valid"));
 
     // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
     if (gel && row?.registration_code) {
@@ -216,6 +219,42 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       }
     }
   };
+
+  // Bulk operations
+  const visibleIds = useMemo(() => filtered.map((r) => r.id), [filtered]);
+  const allChecked = selected.size > 0 && visibleIds.every((id) => selected.has(id));
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    setSelected((prev) => {
+      if (visibleIds.every((id) => prev.has(id))) {
+        const next = new Set(prev);
+        visibleIds.forEach((id) => next.delete(id));
+        return next;
+      }
+      const next = new Set(prev);
+      visibleIds.forEach((id) => next.add(id));
+      return next;
+    });
+  };
+  const bulkUpdateStatus = async (s: Status) => {
+    if (selected.size === 0) return;
+    if (!confirm(`Ubah status ${selected.size} peserta menjadi "${STATUS_LABEL[s]}"?`)) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase.from("participants").update({ status: s }).in("id", ids);
+    setBulkBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, status: s } : r)));
+    setSelected(new Set());
+    toast.success(`${ids.length} peserta → ${STATUS_LABEL[s]}`);
+  };
+
 
   const unmarkPaidManual = async (id: string) => {
     if (!confirm("Batalkan status donasi valid peserta ini?")) return;
