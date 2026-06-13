@@ -121,6 +121,12 @@ Deno.serve(async (req) => {
           { status: 403 },
         );
       }
+      if (p.status !== "interview" && p.status !== "accepted") {
+        return json(
+          { ok: false, error: "Peserta belum lolos ke tahap selanjutnya", eligible: false },
+          { status: 403 },
+        );
+      }
       return json({ ok: true, eligible: true, participant: shape(p) });
     }
 
