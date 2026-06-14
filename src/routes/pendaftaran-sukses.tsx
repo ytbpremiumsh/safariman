@@ -185,6 +185,110 @@ function PaidView({ code, info }: { code: string; info: Status }) {
           </div>
         </Link>
       </div>
+
+      {info.category === "self_funded" && (
+        <SelfFundedDocs code={code} fullName={info.full_name} />
+      )}
+    </div>
+  );
+}
+
+function SelfFundedDocs({ code, fullName }: { code: string; fullName: string }) {
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const run = async (key: string, fn: () => Promise<void>) => {
+    setBusy(key);
+    try {
+      const settings = await loadDocSettings();
+      // settings loaded inside each downloader; we just pass code/name
+      await fn();
+    } catch (e: any) {
+      toast.error(e?.message || "Gagal membuat dokumen");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const docs = [
+    {
+      key: "loa",
+      icon: FileSignature,
+      title: "Letter of Acceptance",
+      desc: "Surat resmi penerimaan sebagai peserta Self Funded.",
+      action: async () => {
+        const s = await loadDocSettings();
+        await downloadLOA({ fullName, code }, s);
+      },
+    },
+    {
+      key: "pay",
+      icon: Wallet,
+      title: "Panduan Pembayaran",
+      desc: "Rincian nominal, rekening, dan tata cara pembayaran.",
+      action: async () => {
+        const s = await loadDocSettings();
+        await downloadPaymentGuide({ fullName, code }, s);
+      },
+    },
+    {
+      key: "att",
+      icon: ClipboardCheck,
+      title: "Form Konfirmasi Kehadiran",
+      desc: "Cetak, isi, tanda tangani, lalu kirim kembali ke panitia.",
+      action: async () => {
+        const s = await loadDocSettings();
+        await downloadAttendance({ fullName, code }, s);
+      },
+    },
+    {
+      key: "prop",
+      icon: FileBadge,
+      title: "Surat Pengantar Proposal",
+      desc: "Untuk diajukan ke donatur/sponsor/instansi pendukung.",
+      action: async () => {
+        const s = await loadDocSettings();
+        await downloadProposalLetter({ fullName, code }, s);
+      },
+    },
+  ];
+
+  return (
+    <div className="mt-10">
+      <div className="text-center mb-5">
+        <h2 className="font-display text-2xl font-semibold">Dokumen Self Funded</h2>
+        <p className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto">
+          Sebagai peserta jalur Self Funded yang sudah <strong>Lolos</strong>, kamu bisa langsung
+          mengunduh dokumen-dokumen berikut.
+        </p>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {docs.map((d) => {
+          const Icon = d.icon;
+          const loading = busy === d.key;
+          return (
+            <button
+              key={d.key}
+              onClick={() => run(d.key, d.action)}
+              disabled={loading}
+              className="text-left bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4 disabled:opacity-60"
+            >
+              <div className="size-12 rounded-xl bg-emerald/10 text-emerald grid place-items-center shrink-0">
+                {loading ? <Loader2 className="size-5 animate-spin" /> : <Icon className="size-5" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-display text-base font-semibold flex items-center gap-1.5">
+                  {d.title}
+                  <Download className="size-3.5 opacity-60" />
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{d.desc}</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-muted-foreground text-center mt-3">
+        Dokumen di-generate otomatis. TTD, stempel, nama & isi teks dikelola panitia melalui Pengaturan Admin.
+      </p>
     </div>
   );
 }
