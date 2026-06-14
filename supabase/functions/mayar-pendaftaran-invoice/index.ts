@@ -18,30 +18,39 @@ Deno.serve(async (req) => {
       .ilike("registration_code", code)
       .maybeSingle();
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
-    if (p.category !== "gelombang_1" && p.category !== "gelombang_2")
+    const paidCategories = ["gelombang_1", "gelombang_2", "self_funded"];
+    if (!paidCategories.includes(p.category as string))
       return json({ ok: false, error: "Kategori ini tidak memerlukan biaya pendaftaran" }, { status: 400 });
     if (p.payment_status === "paid") return json({ ok: true, alreadyPaid: true });
 
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
-      .in("key", ["mayar_api_key", "gelombang_config"]);
+      .in("key", ["mayar_api_key", "gelombang_config", "self_funded_price"]);
     const cfg = Object.fromEntries((settings ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
     const apiKey = cfg.mayar_api_key;
     if (!apiKey) return json({ ok: false, error: "Pembayaran belum dikonfigurasi admin" }, { status: 503 });
 
-    let gelombangCfg: Record<string, GelombangCfg> = {};
-    try {
-      gelombangCfg = JSON.parse(cfg.gelombang_config || "{}");
-    } catch {
-      return json({ ok: false, error: "Konfigurasi gelombang rusak" }, { status: 500 });
+    let amount = 0;
+    let slotName = "";
+    if (p.category === "self_funded") {
+      amount = Number(cfg.self_funded_price || "50000");
+      slotName = "Self Funded";
+    } else {
+      let gelombangCfg: Record<string, GelombangCfg> = {};
+      try {
+        gelombangCfg = JSON.parse(cfg.gelombang_config || "{}");
+      } catch {
+        return json({ ok: false, error: "Konfigurasi gelombang rusak" }, { status: 500 });
+      }
+      const slot = gelombangCfg[p.category as string];
+      if (!slot) return json({ ok: false, error: "Gelombang belum dikonfigurasi" }, { status: 500 });
+      amount = Number(slot.price || 0);
+      slotName = slot.name;
     }
-    const slot = gelombangCfg[p.category];
-    if (!slot) return json({ ok: false, error: "Gelombang belum dikonfigurasi" }, { status: 500 });
-    const amount = Number(slot.price || 0);
     if (!amount || amount < 1000) return json({ ok: false, error: "Nominal pendaftaran tidak valid" }, { status: 500 });
 
-    const description = `Biaya pendaftaran ${slot.name} — Safar Iman`;
+    const description = `Biaya pendaftaran ${slotName} — Safar Iman`;
     const origin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
     const redirectUrl = `${origin}/pendaftaran-sukses?code=${encodeURIComponent(p.registration_code)}`;
 
