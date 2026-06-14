@@ -213,18 +213,14 @@ async function buildBase(
   return pdf;
 }
 
-export async function downloadLOA(p: PeserPDF, s: DocSettings) {
+async function buildLOA(p: PeserPDF, s: DocSettings) {
   const intro = `Assalamu'alaikum warahmatullahi wabarakatuh,\n\nDengan memanjatkan rasa syukur kehadirat Allah SWT, bersama surat ini kami sampaikan:`;
-  const pdf = await buildBase("LETTER OF ACCEPTANCE", s.loaBody, p, s, intro);
-  pdf.save(`LOA-${p.code}.pdf`);
+  return buildBase("LETTER OF ACCEPTANCE", s.loaBody, p, s, intro);
 }
-
-export async function downloadPaymentGuide(p: PeserPDF, s: DocSettings) {
-  const pdf = await buildBase("PANDUAN PEMBAYARAN", s.paymentBody, p, s);
-  pdf.save(`Panduan-Pembayaran-${p.code}.pdf`);
+async function buildPaymentGuide(p: PeserPDF, s: DocSettings) {
+  return buildBase("PANDUAN PEMBAYARAN", s.paymentBody, p, s);
 }
-
-export async function downloadAttendance(p: PeserPDF, s: DocSettings) {
+async function buildAttendance(p: PeserPDF, s: DocSettings) {
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
   header(pdf, "FORM KONFIRMASI KEHADIRAN", s);
   pdf.setFontSize(10);
@@ -261,11 +257,42 @@ export async function downloadAttendance(p: PeserPDF, s: DocSettings) {
 
   await signatureBlock(pdf, y, s);
   footer(pdf);
-  pdf.save(`Konfirmasi-Kehadiran-${p.code}.pdf`);
+  return pdf;
+}
+async function buildProposal(p: PeserPDF, s: DocSettings) {
+  const intro = `Kepada Yth.\nBapak/Ibu Pimpinan / Donatur / Sponsor\nDi Tempat\n\nAssalamu'alaikum warahmatullahi wabarakatuh,`;
+  return buildBase("SURAT PENGANTAR PROPOSAL", s.proposalBody, p, s, intro);
 }
 
-export async function downloadProposalLetter(p: PeserPDF, s: DocSettings) {
-  const intro = `Kepada Yth.\nBapak/Ibu Pimpinan / Donatur / Sponsor\nDi Tempat\n\nAssalamu'alaikum warahmatullahi wabarakatuh,`;
-  const pdf = await buildBase("SURAT PENGANTAR PROPOSAL", s.proposalBody, p, s, intro);
-  pdf.save(`Surat-Pengantar-Proposal-${p.code}.pdf`);
+export type DocKind = "loa" | "payment" | "attendance" | "proposal";
+
+export const DOC_META: Record<DocKind, { label: string; filePrefix: string }> = {
+  loa: { label: "Letter of Acceptance", filePrefix: "LOA" },
+  payment: { label: "Panduan Pembayaran", filePrefix: "Panduan-Pembayaran" },
+  attendance: { label: "Form Konfirmasi Kehadiran", filePrefix: "Konfirmasi-Kehadiran" },
+  proposal: { label: "Surat Pengantar Proposal", filePrefix: "Surat-Pengantar-Proposal" },
+};
+
+export async function buildDoc(kind: DocKind, p: PeserPDF, s: DocSettings) {
+  switch (kind) {
+    case "loa": return buildLOA(p, s);
+    case "payment": return buildPaymentGuide(p, s);
+    case "attendance": return buildAttendance(p, s);
+    case "proposal": return buildProposal(p, s);
+  }
 }
+
+export async function downloadDoc(kind: DocKind, p: PeserPDF, s: DocSettings) {
+  const pdf = await buildDoc(kind, p, s);
+  pdf.save(`${DOC_META[kind].filePrefix}-${p.code}.pdf`);
+}
+
+export async function getDocBlobUrl(kind: DocKind, p: PeserPDF, s: DocSettings) {
+  const pdf = await buildDoc(kind, p, s);
+  return pdf.output("bloburl") as unknown as string;
+}
+
+export const downloadLOA = (p: PeserPDF, s: DocSettings) => downloadDoc("loa", p, s);
+export const downloadPaymentGuide = (p: PeserPDF, s: DocSettings) => downloadDoc("payment", p, s);
+export const downloadAttendance = (p: PeserPDF, s: DocSettings) => downloadDoc("attendance", p, s);
+export const downloadProposalLetter = (p: PeserPDF, s: DocSettings) => downloadDoc("proposal", p, s);
