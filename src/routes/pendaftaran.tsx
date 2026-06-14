@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Clock, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import {
