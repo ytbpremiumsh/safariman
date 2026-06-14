@@ -50,7 +50,7 @@ const schema = z.object({
 
 const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string; paid: boolean }> = {
   fully_funded: { title: "Pendaftaran Reguler", tagline: "Fully Funded", note: "Kategori program: Reguler (Fully Funded — gratis bagi yang lolos seleksi).", paid: false },
-  self_funded: { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri).", paid: false },
+  self_funded: { title: "Pendaftaran Self Funded", tagline: "Jalur Mandiri", note: "Kategori program: Self Funded (mandiri). Setelah submit, kamu akan diarahkan ke halaman pembayaran biaya pendaftaran.", paid: true },
   gelombang_1: { title: "Pendaftaran Gelombang 1", tagline: "Reguler Gelombang 1", note: "Jalur Gelombang 1 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
   gelombang_2: { title: "Pendaftaran Gelombang 2", tagline: "Reguler Gelombang 2", note: "Jalur Gelombang 2 berbayar — tanpa membagikan twibbon, tanpa follow sosial media, tanpa kirim berkas. Setelah submit, kamu akan diarahkan ke pembayaran.", paid: true },
 };
