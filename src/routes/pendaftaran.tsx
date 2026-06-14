@@ -101,6 +101,7 @@ function PendaftaranHub() {
                     {g1Ended && (
                       <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" forceActive />
                     )}
+                    <SelfFundedCard price={selfPrice} />
                   </>
                 );
               })()}
@@ -114,6 +115,7 @@ function PendaftaranHub() {
             </a>
             .
           </div>
+
         </main>
       </div>
     </div>
