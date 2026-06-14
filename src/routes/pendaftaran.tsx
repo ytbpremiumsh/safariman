@@ -223,3 +223,57 @@ function SlotCard({
     </div>
   );
 }
+
+function SelfFundedCard({ price }: { price: number }) {
+  return (
+    <div className="relative w-full sm:w-[340px] lg:w-[360px] rounded-3xl border border-emerald/30 bg-card p-6 sm:p-7 shadow-soft flex flex-col animate-fade-up transition hover:shadow-emerald">
+      <div className="absolute -top-3 left-6">
+        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold bg-emerald text-white px-3 py-1.5 rounded-full">
+          <Wallet className="size-3" /> Langsung Lolos
+        </span>
+      </div>
+
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
+            Jalur Mandiri
+          </div>
+          <h3 className="mt-1 font-display text-2xl font-semibold leading-tight">Self Funded</h3>
+        </div>
+      </div>
+
+      <div className="rounded-2xl p-4 mb-5 text-center bg-gradient-emerald text-white shadow-emerald">
+        <div className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-80">Biaya Pendaftaran</div>
+        <div className="font-display text-3xl sm:text-4xl font-bold mt-1">{formatRupiah(price)}</div>
+        <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 mt-1">Sekali bayar via Mayar</div>
+      </div>
+
+      <div className="bg-secondary/60 rounded-2xl p-4 mb-6 flex-1">
+        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-3">
+          Keuntungan
+        </div>
+        <ul className="space-y-2.5">
+          {[
+            "Status langsung LOLOS tanpa seleksi berkas",
+            "Tanpa essay, tanpa twibbon, tanpa follow medsos",
+            "Dokumen LOA, Panduan Pembayaran, Form Kehadiran & Surat Pengantar Proposal otomatis ter-generate",
+            "Cocok untuk peserta yang ingin keberangkatan dipastikan",
+          ].map((b, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-sm font-medium">
+              <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-emerald" />
+              <span className="leading-relaxed">{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Link
+        to="/daftar-mandiri"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-bold hover-lift bg-gradient-emerald text-white shadow-emerald"
+      >
+        Daftar Self Funded — {formatRupiah(price)}
+        <ArrowRight className="size-4" />
+      </Link>
+    </div>
+  );
+}
