@@ -47,7 +47,9 @@ function DokumenSelfFundedSettings() {
   const save = async () => {
     setSaving(true);
     try {
-      const rows = (Object.keys(DOC_KEYS) as Array<keyof typeof DOC_KEYS>).map((k) => ({
+      const rows: Array<{ key: string; value: string; updated_at: string }> = (
+        Object.keys(DOC_KEYS) as Array<keyof typeof DOC_KEYS>
+      ).map((k) => ({
         key: DOC_KEYS[k],
         value: (form as any)[k] ?? "",
         updated_at: new Date().toISOString(),
