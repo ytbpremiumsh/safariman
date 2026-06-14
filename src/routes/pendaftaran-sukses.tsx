@@ -3,9 +3,16 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
   ArrowLeft, ArrowRight, CheckCircle2, Copy, FileText, Image as ImageIcon,
-  Loader2, RefreshCcw, ShieldCheck,
+  Loader2, RefreshCcw, ShieldCheck, Download, FileSignature, Wallet, ClipboardCheck, FileBadge,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  loadDocSettings,
+  downloadLOA,
+  downloadPaymentGuide,
+  downloadAttendance,
+  downloadProposalLetter,
+} from "@/lib/selfFundedDocs";
 import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";

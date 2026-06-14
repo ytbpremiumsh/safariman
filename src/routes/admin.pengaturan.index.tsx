@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -43,6 +43,12 @@ const ITEMS = [
     icon: Megaphone,
     title: "Pengumuman Hasil Seleksi",
     desc: "Aktif/nonaktifkan halaman /cek-hasil, ubah teks lolos / tidak lolos / pending.",
+  },
+  {
+    to: "/admin/pengaturan/dokumen-self-funded",
+    icon: FileText,
+    title: "Dokumen Self Funded",
+    desc: "Custom TTD, stempel, nama & jabatan penandatangan, serta isi teks LOA, Panduan Pembayaran, Konfirmasi Kehadiran, dan Surat Pengantar Proposal.",
   },
 ] as const;
 
