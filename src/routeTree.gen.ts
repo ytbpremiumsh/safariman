@@ -37,6 +37,7 @@ import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.penga
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
+import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
 import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
 
 const TwibbonRoute = TwibbonRouteImport.update({
@@ -181,6 +182,12 @@ const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
   path: '/admin/pengaturan/donasi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanDokumenSelfFundedRoute =
+  AdminPengaturanDokumenSelfFundedRouteImport.update({
+    id: '/admin/pengaturan/dokumen-self-funded',
+    path: '/admin/pengaturan/dokumen-self-funded',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanCountdownRoute =
   AdminPengaturanCountdownRouteImport.update({
     id: '/admin/pengaturan/countdown',
@@ -207,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
@@ -238,6 +246,7 @@ export interface FileRoutesByTo {
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
@@ -270,6 +279,7 @@ export interface FileRoutesById {
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
+  '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/admin/wa-setup'
     | '/admin/'
     | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/wa-setup'
     | '/admin'
     | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
@@ -365,6 +377,7 @@ export interface FileRouteTypes {
     | '/admin/wa-setup'
     | '/admin/'
     | '/admin/pengaturan/countdown'
+    | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
@@ -397,6 +410,7 @@ export interface RootRouteChildren {
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
+  AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
@@ -608,6 +622,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanDonasiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/dokumen-self-funded': {
+      id: '/admin/pengaturan/dokumen-self-funded'
+      path: '/admin/pengaturan/dokumen-self-funded'
+      fullPath: '/admin/pengaturan/dokumen-self-funded'
+      preLoaderRoute: typeof AdminPengaturanDokumenSelfFundedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/countdown': {
       id: '/admin/pengaturan/countdown'
       path: '/admin/pengaturan/countdown'
@@ -637,6 +658,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
+  AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
