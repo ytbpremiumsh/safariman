@@ -205,6 +205,9 @@ function DokumenSelfFundedSettings() {
         />
       </div>
 
+      <PreviewPanel settings={form} />
+
+
       <div className="max-w-3xl flex justify-end">
         <button
           onClick={save}
