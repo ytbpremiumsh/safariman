@@ -305,3 +305,81 @@ function ImageUpload({
     </Field>
   );
 }
+
+const SAMPLE = { fullName: "Ahmad Contoh Peserta", code: "HXP-PREVIEW1", category: "self_funded" as const };
+
+function PreviewPanel({ settings }: { settings: DocSettings }) {
+  const kinds: DocKind[] = ["loa", "payment", "attendance", "proposal"];
+  const [active, setActive] = useState<DocKind>("loa");
+  const [url, setUrl] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    let prev = url;
+    setLoading(true);
+    getDocBlobUrl(active, SAMPLE, settings)
+      .then((u) => {
+        if (cancelled) return;
+        setUrl(u);
+        if (prev) URL.revokeObjectURL(prev);
+      })
+      .finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, settings]);
+
+  return (
+    <div className="bg-card border border-border rounded-2xl p-6 space-y-4 max-w-3xl">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="font-display text-lg font-semibold flex items-center gap-2">
+            <Eye className="size-5 text-accent" /> Preview Dokumen
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Contoh data peserta — gunakan untuk memeriksa tampilan sebelum disimpan.
+          </p>
+        </div>
+        <button
+          onClick={() => downloadDoc(active, SAMPLE, settings)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-secondary border border-border px-3 py-1.5 text-xs font-semibold hover:bg-accent/10"
+        >
+          <Download className="size-3.5" /> Unduh PDF
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {kinds.map((k) => (
+          <button
+            key={k}
+            onClick={() => setActive(k)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              active === k
+                ? "bg-emerald text-white border-emerald"
+                : "bg-background border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {DOC_META[k].label}
+          </button>
+        ))}
+      </div>
+
+      <div className="relative rounded-xl border border-border overflow-hidden bg-secondary/30" style={{ height: 600 }}>
+        {loading && (
+          <div className="absolute inset-0 grid place-items-center bg-background/60 z-10">
+            <Loader2 className="size-6 animate-spin text-accent" />
+          </div>
+        )}
+        {url ? (
+          <iframe src={url} title="Preview" className="w-full h-full" />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
+            Memuat preview...
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
