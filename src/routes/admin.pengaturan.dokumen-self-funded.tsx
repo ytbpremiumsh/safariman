@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, FileText, Loader2, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Download, Eye, FileText, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
-import { DOC_KEYS, DOC_DEFAULTS, type DocSettings } from "@/lib/selfFundedDocs";
+import { DOC_KEYS, DOC_DEFAULTS, DOC_META, downloadDoc, getDocBlobUrl, type DocKind, type DocSettings } from "@/lib/selfFundedDocs";
 
 export const Route = createFileRoute("/admin/pengaturan/dokumen-self-funded")({
   head: () => ({ meta: [{ title: "Dokumen Self Funded — Safar Iman Admin" }] }),
