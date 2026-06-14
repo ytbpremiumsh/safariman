@@ -226,7 +226,7 @@ function HasilSeleksiSettings() {
 
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
         <div className="font-display text-lg font-semibold">Pesan untuk Peserta</div>
-        <Field label="Pesan jika LOLOS (lanjut TPA / LDS)" hint="Tampil saat status peserta = Lanjut TPA/LDS atau Lolos.">
+        <Field label="Pesan jika LOLOS (lanjut TKA ( Tes Kesiapan Awal))" hint="Tampil saat status peserta = Lanjut TKA ( Tes Kesiapan Awal) atau Lolos.">
           <Textarea rows={5} value={form.lolos} onChange={(e) => setForm({ ...form, lolos: e.target.value })} />
         </Field>
         <Field label="Pesan jika TIDAK LOLOS" hint="Tampil saat status peserta = Belum Lolos.">

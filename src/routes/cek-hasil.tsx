@@ -8,7 +8,7 @@ export const Route = createFileRoute("/cek-hasil")({
   head: () => ({
     meta: [
       { title: "Cek Hasil Seleksi Essay — Safar Iman" },
-      { name: "description", content: "Cek hasil seleksi essay menuju tahap TPA / LDS dengan kode pendaftaran." },
+      { name: "description", content: "Cek hasil seleksi essay menuju tahap TKA ( Tes Kesiapan Awal) dengan kode pendaftaran." },
     ],
   }),
   component: CekHasilPage,
@@ -30,7 +30,7 @@ const DEFAULTS: Cfg = {
   enabled: false,
   title: "Cek Hasil Seleksi Essay",
   subtitle: "Masukkan kode pendaftaran kamu untuk melihat hasil seleksi essay.",
-  lolos: "🎉 Selamat! Kamu LOLOS ke tahap TPA / LDS.",
+  lolos: "🎉 Selamat! Kamu LOLOS ke tahap TKA ( Tes Kesiapan Awal).",
   tidakLolos: "Mohon maaf, kamu belum lolos ke tahap selanjutnya.",
   pending: "Hasil seleksi kamu sedang diproses oleh tim penilai.",
   disabled: "Halaman pengumuman hasil seleksi belum dibuka.",
