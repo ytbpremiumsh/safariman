@@ -34,11 +34,19 @@ const ROUTES: Record<SlotKey, string> = {
 function PendaftaranHub() {
   const [cfg, setCfg] = useState<GelombangConfig | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selfPrice, setSelfPrice] = useState<number>(50000);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.rpc("get_gelombang_config");
       setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
+      const { data: rows } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "self_funded_price")
+        .maybeSingle();
+      const v = Number((rows as any)?.value);
+      if (v && v > 0) setSelfPrice(v);
       setLoading(false);
     })();
   }, []);
