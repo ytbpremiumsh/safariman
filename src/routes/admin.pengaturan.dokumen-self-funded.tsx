@@ -148,6 +148,27 @@ function DokumenSelfFundedSettings() {
           </Field>
         </div>
 
+        <div className="border-t border-border pt-5">
+          <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            Biaya Pendaftaran Self Funded (Mayar)
+          </div>
+          <div className="flex items-center gap-2 max-w-sm">
+            <span className="text-sm text-muted-foreground">Rp</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={price}
+              onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono"
+              placeholder="50000"
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Nominal yang ditagihkan via Mayar saat peserta memilih jalur Self Funded di halaman <code>/pendaftaran</code>.
+          </p>
+        </div>
+
+
         <div className="grid sm:grid-cols-2 gap-4">
           <ImageUpload
             label="Tanda Tangan (PNG transparan)"
