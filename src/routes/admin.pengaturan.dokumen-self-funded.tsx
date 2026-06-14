@@ -19,6 +19,7 @@ function DokumenSelfFundedSettings() {
   const sigRef = useRef<HTMLInputElement>(null);
   const stampRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<"sig" | "stamp" | null>(null);
+  const [price, setPrice] = useState<string>("50000");
 
   useEffect(() => {
     if (!ready) return;
