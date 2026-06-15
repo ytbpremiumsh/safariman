@@ -38,6 +38,8 @@ function DokumenSelfFundedSettings() {
       setForm(next);
       const p = map.get("self_funded_price");
       if (p) setPrice(p);
+      const pe = map.get("self_funded_paid_enabled");
+      setPaidEnabled(pe !== "false");
       setLoading(false);
     })();
   }, [ready]);
