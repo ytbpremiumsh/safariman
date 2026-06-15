@@ -26,10 +26,14 @@ Deno.serve(async (req) => {
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
-      .in("key", ["mayar_api_key", "gelombang_config", "self_funded_price"]);
+      .in("key", ["mayar_api_key", "gelombang_config", "self_funded_price", "self_funded_paid_enabled"]);
     const cfg = Object.fromEntries((settings ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
     const apiKey = cfg.mayar_api_key;
     if (!apiKey) return json({ ok: false, error: "Pembayaran belum dikonfigurasi admin" }, { status: 503 });
+
+    if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
+      return json({ ok: false, error: "Pendaftaran Self Funded saat ini GRATIS — tidak perlu pembayaran" }, { status: 400 });
+    }
 
     let amount = 0;
     let slotName = "";
