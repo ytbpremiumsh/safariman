@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Copy, FileText, Image as ImageIcon } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +56,23 @@ const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string
 };
 
 export function RegisterPage({ kind }: { kind: Kind }) {
-  const KIND_META = KIND_META_MAP[kind];
+  const KIND_META_BASE = KIND_META_MAP[kind];
+  const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
+  useEffect(() => {
+    if (kind !== "self_funded") return;
+    (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "self_funded_paid_enabled")
+        .maybeSingle();
+      const v = (data as any)?.value;
+      if (v === "false") setSelfPaidEnabled(false);
+    })();
+  }, [kind]);
+  const KIND_META = kind === "self_funded" && !selfPaidEnabled
+    ? { ...KIND_META_BASE, paid: false, note: "Kategori program: Self Funded (mandiri) — GRATIS. Setelah submit, kamu langsung mendapat status Lolos." }
+    : KIND_META_BASE;
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
