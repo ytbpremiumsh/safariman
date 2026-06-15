@@ -226,7 +226,8 @@ function SlotCard({
   );
 }
 
-function SelfFundedCard({ price }: { price: number }) {
+function SelfFundedCard({ price, paidEnabled }: { price: number; paidEnabled: boolean }) {
+  const free = !paidEnabled;
   return (
     <div className="relative w-full sm:w-[340px] lg:w-[360px] rounded-3xl border border-emerald/30 bg-card p-6 sm:p-7 shadow-soft flex flex-col animate-fade-up transition hover:shadow-emerald">
       <div className="absolute -top-3 left-6">
@@ -246,8 +247,12 @@ function SelfFundedCard({ price }: { price: number }) {
 
       <div className="rounded-2xl p-4 mb-5 text-center bg-gradient-emerald text-white shadow-emerald">
         <div className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-80">Biaya Pendaftaran</div>
-        <div className="font-display text-3xl sm:text-4xl font-bold mt-1">{formatRupiah(price)}</div>
-        <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 mt-1">Sekali bayar via Mayar</div>
+        <div className="font-display text-3xl sm:text-4xl font-bold mt-1">
+          {free ? "GRATIS" : formatRupiah(price)}
+        </div>
+        <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 mt-1">
+          {free ? "Tanpa biaya pendaftaran" : "Sekali bayar via Mayar"}
+        </div>
       </div>
 
       <div className="bg-secondary/60 rounded-2xl p-4 mb-6 flex-1">
@@ -273,7 +278,7 @@ function SelfFundedCard({ price }: { price: number }) {
         to="/daftar-mandiri"
         className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-bold hover-lift bg-gradient-emerald text-white shadow-emerald"
       >
-        Daftar Self Funded — {formatRupiah(price)}
+        {free ? "Daftar Self Funded — GRATIS" : `Daftar Self Funded — ${formatRupiah(price)}`}
         <ArrowRight className="size-4" />
       </Link>
     </div>
