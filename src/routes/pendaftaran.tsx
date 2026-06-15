@@ -35,6 +35,7 @@ function PendaftaranHub() {
   const [cfg, setCfg] = useState<GelombangConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [selfPrice, setSelfPrice] = useState<number>(50000);
+  const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
@@ -42,11 +43,12 @@ function PendaftaranHub() {
       setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
       const { data: rows } = await supabase
         .from("app_settings")
-        .select("value")
-        .eq("key", "self_funded_price")
-        .maybeSingle();
-      const v = Number((rows as any)?.value);
+        .select("key,value")
+        .in("key", ["self_funded_price", "self_funded_paid_enabled"]);
+      const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
+      const v = Number(map.get("self_funded_price"));
       if (v && v > 0) setSelfPrice(v);
+      if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
       setLoading(false);
     })();
   }, []);
