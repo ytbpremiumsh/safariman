@@ -28,7 +28,7 @@ function DokumenSelfFundedSettings() {
       const { data } = await supabase
         .from("app_settings")
         .select("key,value")
-        .in("key", [...Object.values(DOC_KEYS), "self_funded_price"]);
+        .in("key", [...Object.values(DOC_KEYS), "self_funded_price", "self_funded_paid_enabled"]);
       const map = new Map((data ?? []).map((r) => [r.key as string, (r.value as string) ?? ""]));
       const next: DocSettings = { ...DOC_DEFAULTS };
       (Object.keys(DOC_KEYS) as Array<keyof typeof DOC_KEYS>).forEach((k) => {
