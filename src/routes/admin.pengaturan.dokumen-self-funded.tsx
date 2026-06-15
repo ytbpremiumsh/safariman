@@ -198,6 +198,8 @@ function DokumenSelfFundedSettings() {
             </p>
           </div>
         </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
           <ImageUpload
             label="Tanda Tangan (PNG transparan)"
             url={form.signatureUrl}
