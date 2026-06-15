@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Loader2, Copy, FileText, Image as ImageIcon } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
