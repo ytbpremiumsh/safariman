@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2, GitBranch,
+  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2,
+  GitBranch, Route as RouteIcon, ClipboardList, MessageSquare,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,15 +12,43 @@ import {
 } from "@/components/ui/sidebar";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
-const NAV = [
-  { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: GitBranch, exact: false },
-  { to: "/admin/peserta/reguler", label: "Peserta Reguler", icon: Users, exact: false },
-  { to: "/admin/peserta/self-funded", label: "Peserta Self Funded", icon: UserCheck, exact: false },
-  { to: "/admin/peserta/essay", label: "Berkas Essay", icon: FileText, exact: false },
-  { to: "/admin/pengaturan", label: "Pengaturan", icon: Settings, exact: false },
-  { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageCircle, exact: false },
-] as const;
+type NavItem = { to: string; label: string; icon: any; exact?: boolean };
+type NavGroup = { label: string; items: NavItem[] };
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Dashboard",
+    items: [
+      { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: "Alur Program",
+    items: [
+      { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon },
+    ],
+  },
+  {
+    label: "Manajemen Peserta",
+    items: [
+      { to: "/admin/peserta/reguler", label: "Peserta Reguler", icon: Users },
+      { to: "/admin/peserta/self-funded", label: "Peserta Self Funded", icon: UserCheck },
+      { to: "/admin/peserta/essay", label: "Berkas & Essay", icon: ClipboardList },
+    ],
+  },
+  {
+    label: "Konfigurasi",
+    items: [
+      { to: "/admin/pengaturan", label: "Pengaturan", icon: Settings },
+    ],
+  },
+  {
+    label: "Integrasi",
+    items: [
+      { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare },
+    ],
+  },
+];
 
 export function useAdminGuard() {
   const navigate = useNavigate();
@@ -55,37 +84,39 @@ function AdminSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV.map((n) => {
-                const Icon = n.icon;
-                const active = isActive(n.to, n.exact);
-                return (
-                  <SidebarMenuItem key={n.to}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={n.label}
-                      className={
-                        "h-10 rounded-lg border transition-all " +
-                        (active
-                          ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
-                          : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
-                      }
-                    >
-                      <Link to={n.to} className="flex items-center gap-2.5">
-                        <Icon className="size-4" />
-                        <span className="font-medium">{n.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {NAV_GROUPS.map((g) => (
+          <SidebarGroup key={g.label}>
+            <SidebarGroupLabel>{g.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {g.items.map((n) => {
+                  const Icon = n.icon;
+                  const active = isActive(n.to, !!n.exact);
+                  return (
+                    <SidebarMenuItem key={n.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={n.label}
+                        className={
+                          "h-10 rounded-lg border transition-all " +
+                          (active
+                            ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
+                            : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
+                        }
+                      >
+                        <Link to={n.to} className="flex items-center gap-2.5">
+                          <Icon className="size-4" />
+                          <span className="font-medium">{n.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border">
