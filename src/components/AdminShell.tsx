@@ -84,37 +84,39 @@ function AdminSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV.map((n) => {
-                const Icon = n.icon;
-                const active = isActive(n.to, n.exact);
-                return (
-                  <SidebarMenuItem key={n.to}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={n.label}
-                      className={
-                        "h-10 rounded-lg border transition-all " +
-                        (active
-                          ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
-                          : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
-                      }
-                    >
-                      <Link to={n.to} className="flex items-center gap-2.5">
-                        <Icon className="size-4" />
-                        <span className="font-medium">{n.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {NAV_GROUPS.map((g) => (
+          <SidebarGroup key={g.label}>
+            <SidebarGroupLabel>{g.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {g.items.map((n) => {
+                  const Icon = n.icon;
+                  const active = isActive(n.to, !!n.exact);
+                  return (
+                    <SidebarMenuItem key={n.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={n.label}
+                        className={
+                          "h-10 rounded-lg border transition-all " +
+                          (active
+                            ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
+                            : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
+                        }
+                      >
+                        <Link to={n.to} className="flex items-center gap-2.5">
+                          <Icon className="size-4" />
+                          <span className="font-medium">{n.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border">
