@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2,
+  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2, GitBranch,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -13,6 +13,7 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: GitBranch, exact: false },
   { to: "/admin/peserta/reguler", label: "Peserta Reguler", icon: Users, exact: false },
   { to: "/admin/peserta/self-funded", label: "Peserta Self Funded", icon: UserCheck, exact: false },
   { to: "/admin/peserta/essay", label: "Berkas Essay", icon: FileText, exact: false },
