@@ -13,7 +13,10 @@ import {
   Plane,
   ArrowRight,
   Clock,
+  Download,
+  BookOpen,
 } from "lucide-react";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/admin/alur/fully-funded")({
   head: () => ({ meta: [{ title: "Alur Fully Funded — Safar Iman Admin" }] }),
