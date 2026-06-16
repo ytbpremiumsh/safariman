@@ -152,7 +152,7 @@ const STEPS: Step[] = [
     duration: "± 30-45 menit",
   },
   {
-    no: 10,
+    no: 9,
     title: "Pengumuman Final & Penerimaan",
     icon: Trophy,
     actor: "Sistem",
@@ -167,7 +167,7 @@ const STEPS: Step[] = [
     duration: "1 hari",
   },
   {
-    no: 11,
+    no: 10,
     title: "Keberangkatan Umrah",
     icon: Plane,
     actor: "Peserta",
