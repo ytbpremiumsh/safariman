@@ -390,8 +390,144 @@ function AlurFullyFunded() {
           <StatusRow label="accepted" desc="Diterima — penerima manfaat resmi umrah gratis." />
         </div>
       </div>
+
+      {/* Panduan Lengkap Peserta */}
+      <div className="mt-10 rounded-2xl border-2 border-emerald/30 bg-gradient-to-br from-emerald/5 to-accent/5 p-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
+          <div className="flex items-start gap-3">
+            <div className="size-11 rounded-xl bg-emerald text-white grid place-items-center shrink-0">
+              <BookOpen className="size-5" />
+            </div>
+            <div>
+              <h3 className="font-display text-xl font-semibold">Panduan Lengkap untuk Peserta</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Step-by-step lengkap agar calon peserta tidak bingung. Bisa di-download sebagai PDF untuk dibagikan.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={downloadGuidePDF}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover:opacity-90 transition"
+          >
+            <Download className="size-4" /> Download Panduan PDF
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {PARTICIPANT_GUIDE.map((sec, i) => (
+            <div key={i} className="bg-card border border-border rounded-xl p-4">
+              <h4 className="font-display font-semibold text-base mb-2 text-emerald-deep">{sec.title}</h4>
+              {sec.intro && <p className="text-sm text-muted-foreground mb-3">{sec.intro}</p>}
+              <div className="space-y-2.5">
+                {sec.items.map((it, j) => (
+                  <div key={j} className="text-sm">
+                    <div className="font-semibold text-foreground">{it.q}</div>
+                    <div className="text-foreground/75 mt-0.5">{it.a}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </AdminShell>
   );
+}
+
+function downloadGuidePDF() {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 48;
+  const maxW = pageW - margin * 2;
+  let y = margin;
+
+  const ensureSpace = (need: number) => {
+    if (y + need > pageH - margin) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
+  const writeLines = (
+    text: string,
+    opts: { size: number; bold?: boolean; color?: [number, number, number]; gap?: number; indent?: number }
+  ) => {
+    const { size, bold, color = [30, 30, 30], gap = 4, indent = 0 } = opts;
+    doc.setFont("helvetica", bold ? "bold" : "normal");
+    doc.setFontSize(size);
+    doc.setTextColor(color[0], color[1], color[2]);
+    const lines = doc.splitTextToSize(text, maxW - indent);
+    for (const ln of lines) {
+      ensureSpace(size + gap);
+      doc.text(ln, margin + indent, y);
+      y += size + gap;
+    }
+  };
+
+  doc.setFillColor(15, 76, 58);
+  doc.rect(0, 0, pageW, 110, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("PANDUAN LENGKAP PESERTA", margin, 55);
+  doc.setFontSize(13);
+  doc.setFont("helvetica", "normal");
+  doc.text("Program Umrah Gratis Safar Iman — Jalur Reguler (Fully Funded)", margin, 80);
+  doc.setFontSize(10);
+  doc.text("Dokumen resmi untuk calon peserta", margin, 98);
+  y = 140;
+
+  writeLines(
+    "Selamat datang di Program Umrah Gratis Safar Iman. Panduan ini berisi langkah-demi-langkah seluruh proses pendaftaran hingga keberangkatan. Bacalah dengan teliti agar perjalananmu lancar tanpa kebingungan.",
+    { size: 11, color: [60, 60, 60], gap: 5 }
+  );
+  y += 10;
+
+  for (const sec of PARTICIPANT_GUIDE) {
+    ensureSpace(40);
+    writeLines(sec.title, { size: 14, bold: true, color: [15, 76, 58], gap: 6 });
+    if (sec.intro) {
+      writeLines(sec.intro, { size: 10, color: [80, 80, 80], gap: 4 });
+      y += 4;
+    }
+    for (const it of sec.items) {
+      writeLines("• " + it.q, { size: 11, bold: true, gap: 4 });
+      writeLines(it.a, { size: 10, color: [70, 70, 70], gap: 4, indent: 14 });
+      y += 4;
+    }
+    y += 8;
+  }
+
+  ensureSpace(70);
+  y += 10;
+  doc.setDrawColor(15, 76, 58);
+  doc.line(margin, y, pageW - margin, y);
+  y += 16;
+  writeLines("Kontak Resmi Safar Iman", { size: 11, bold: true, color: [15, 76, 58], gap: 4 });
+  writeLines("Website: safariman.lovable.app  |  WhatsApp: hubungi via tombol resmi di website", {
+    size: 10,
+    color: [70, 70, 70],
+    gap: 4,
+  });
+  writeLines("Hati-hati penipuan — Safar Iman TIDAK PERNAH meminta biaya untuk jalur Reguler.", {
+    size: 10,
+    bold: true,
+    color: [180, 60, 60],
+    gap: 4,
+  });
+
+  const total = doc.getNumberOfPages();
+  for (let i = 1; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text(`Halaman ${i} dari ${total}`, pageW - margin, pageH - 20, { align: "right" });
+    doc.text("Safar Iman — Panduan Peserta", margin, pageH - 20);
+  }
+
+  doc.save("Panduan-Peserta-Safar-Iman.pdf");
 }
 
 function LegendChip({ color, label }: { color: string; label: string }) {
