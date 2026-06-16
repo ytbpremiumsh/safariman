@@ -152,19 +152,6 @@ const STEPS: Step[] = [
     duration: "± 30-45 menit",
   },
   {
-    no: 9,
-    title: "Wawancara Final",
-    icon: Users,
-    actor: "Admin",
-    desc: "Wawancara 1-on-1 dengan tim seleksi sebagai tahap final penilaian.",
-    details: [
-      "Jadwal dikirim via WhatsApp ke peserta lolos LDS.",
-      "Wawancara: motivasi, komitmen, kesiapan finansial pendukung, niat ibadah.",
-      "Penilaian akhir berdasarkan akumulasi seluruh tahap.",
-    ],
-    duration: "± 30-45 menit",
-  },
-  {
     no: 10,
     title: "Pengumuman Final & Penerimaan",
     icon: Trophy,
