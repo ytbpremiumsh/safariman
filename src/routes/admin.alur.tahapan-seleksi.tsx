@@ -59,67 +59,80 @@ function TahapanSeleksiPage() {
 
           <div id="tahapan-seleksi-doc" className="space-y-6 text-[15px] leading-relaxed text-foreground/85 max-w-3xl mx-auto">
             <p>
-              Proses pendaftaran <strong>Safar Iman jalur Fully Funded (Gratis)</strong> peserta akan
-              melewati <strong>4 tahap seleksi</strong> berikut:
+              Berikut adalah <strong>alur lengkap & bertahap</strong> bagi calon peserta program
+              <strong> Safar Iman jalur Fully Funded (Gratis)</strong>. Mohon diikuti setiap tahap secara berurutan —
+              karena setiap tahap menjadi syarat untuk lanjut ke tahap berikutnya.
             </p>
 
-            <Section title="1. Seleksi Tahap 1 (Berkas & Administrasi)">
-              <p><strong>a.</strong> Peserta melakukan pendaftaran online dan mengisi data diri secara lengkap melalui formulir resmi;</p>
+            <Section title="Tahap 1 — Pendaftaran Online">
+              <p><strong>a.</strong> Calon peserta mengisi formulir pendaftaran resmi secara lengkap & jujur melalui:</p>
               <FormLink href={`https://${SITE}/daftar`} label={`${SITE}/daftar`} />
-              <p><strong>b.</strong> Setelah mendaftar, peserta akan menerima <strong>Kode Pendaftaran</strong> unik (format <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">HXP-XXXXXXXX</code>) yang digunakan untuk seluruh tahap berikutnya.</p>
-              <p><strong>c.</strong> Peserta wajib membagikan <strong>Twibbon resmi</strong> Safar Iman di media sosial sebagai bentuk sosialisasi program;</p>
+              <p><strong>b.</strong> Setelah berhasil mendaftar, sistem akan menerbitkan <strong>Kode Pendaftaran</strong> unik dengan format <code className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">HXP-XXXXXXXX</code>. Kode ini wajib disimpan baik-baik karena akan digunakan di seluruh tahap berikutnya.</p>
+            </Section>
+
+            <Section title="Tahap 2 — Sosialisasi Twibbon">
+              <p><strong>a.</strong> Sebagai bentuk dukungan & sosialisasi program, peserta diwajibkan memasang dan membagikan <strong>Twibbon resmi</strong> Safar Iman di media sosial pribadi.</p>
+              <p><strong>b.</strong> Frame twibbon dapat diunduh melalui:</p>
               <FormLink href={`https://${SITE}/twibbon`} label={`${SITE}/twibbon`} />
-              <p><strong>d.</strong> Peserta melengkapi berkas administrasi (CV format PDF maks. 2MB dan pas foto formal) melalui:</p>
+              <p><strong>c.</strong> Pastikan akun media sosial tidak dikunci agar tim verifikasi dapat memeriksa unggahan peserta.</p>
+            </Section>
+
+            <Section title="Tahap 3 — Kelengkapan Berkas Administrasi">
+              <p><strong>a.</strong> Peserta melengkapi berkas administrasi berupa <strong>CV terbaru</strong> (format PDF, maksimal 2MB) dan <strong>pas foto formal</strong>.</p>
+              <p><strong>b.</strong> Upload berkas melalui halaman:</p>
               <FormLink href={`https://${SITE}/berkas`} label={`${SITE}/berkas`} />
+              <p><strong>c.</strong> Berkas yang tidak lengkap atau tidak memenuhi ketentuan akan dianggap gugur secara administratif.</p>
             </Section>
 
-            <Section title="2. Seleksi Tahap 2 (Essay)">
-              <p><strong>a.</strong> Peserta yang dinyatakan lolos seleksi administrasi akan melanjutkan ke tahap pengerjaan <strong>Essay Seleksi</strong>.</p>
-              <p><strong>b.</strong> Essay terdiri dari <strong>3 pertanyaan wajib</strong> yang dikerjakan via formulir online:</p>
-              <ul className="list-disc pl-6 space-y-1">
-                <li>Alasan mengapa Anda layak menjadi penerima manfaat program.</li>
-                <li>Mimpi & target yang ingin dicapai setelah menunaikan umrah.</li>
-                <li>Kontribusi nyata yang akan Anda berikan setelah pulang.</li>
-              </ul>
-              <p><strong>c.</strong> Essay dikerjakan melalui:</p>
+            <Section title="Tahap 4 — Sedekah Keberkahan (Sukarela)">
+              <p>
+                Sebelum melanjutkan ke tahap seleksi essay, peserta dipersilakan untuk menyisihkan
+                <strong> sedekah keberkahan </strong>seikhlasnya sebagai bentuk ikhtiar batin & doa
+                agar perjalanan ibadah dimudahkan oleh Allah ﷻ.
+              </p>
+              <p>
+                <strong>Catatan penting:</strong> sedekah ini <strong>sepenuhnya bersifat sukarela</strong>,
+                tidak memengaruhi penilaian seleksi, dan <strong>tidak menjadi syarat kelulusan</strong>
+                pada tahap manapun. Seluruh dana dikelola secara amanah untuk keberlangsungan program
+                dakwah Safar Iman.
+              </p>
+              <FormLink href={`https://${SITE}/donasi`} label={`${SITE}/donasi`} />
+            </Section>
+
+            <Section title="Tahap 5 — Seleksi Essay">
+              <p><strong>a.</strong> Peserta yang telah melengkapi seluruh berkas administrasi berhak melanjutkan ke tahap <strong>Seleksi Essay</strong>.</p>
+              <p><strong>b.</strong> Essay dikerjakan secara online melalui:</p>
               <FormLink href={`https://${SITE}/essay`} label={`${SITE}/essay`} />
-              <p><strong>d.</strong> Tim seleksi akan memverifikasi essay dan berkas dalam waktu <strong>1–3 hari kerja</strong>. Hasil pengumuman lolos essay dapat dicek di:</p>
+              <p><strong>c.</strong> Mohon dikerjakan dengan jujur, reflektif, dan menggunakan bahasa sendiri. Hasil verifikasi essay akan diumumkan dalam <strong>1–3 hari kerja</strong>.</p>
+              <p><strong>d.</strong> Hasil seleksi dapat dicek mandiri di:</p>
               <FormLink href={`https://${SITE}/cek-hasil`} label={`${SITE}/cek-hasil`} />
-              <p>Notifikasi resmi akan dikirim otomatis melalui <strong>WhatsApp</strong> kepada peserta yang lolos.</p>
             </Section>
 
-            <Section title="3. Seleksi Tahap 3 (TKA — Tes Kesiapan Awal)">
-              <p><strong>a.</strong> Peserta lolos essay berhak mengikuti <strong>Tes Kesiapan Awal (TKA)</strong> berbasis CBT online.</p>
-              <p><strong>b.</strong> Link tes dan token akses akan dikirimkan melalui WhatsApp ke nomor peserta.</p>
-              <p><strong>c.</strong> Materi TKA meliputi:</p>
-              <ul className="list-disc pl-6 space-y-1">
-                <li>Pengetahuan keislaman dasar</li>
-                <li>Motivasi & komitmen ibadah</li>
-                <li>Wawasan seputar manasik & umrah</li>
-              </ul>
-              <p><strong>d.</strong> Tes berbasis waktu dengan durasi pengerjaan <strong>± 60–90 menit</strong>. Hasil tercatat otomatis di sistem.</p>
+            <Section title="Tahap 6 — TKA (Tes Kesiapan Awal)">
+              <p><strong>a.</strong> Peserta yang lolos seleksi essay akan diundang mengikuti <strong>Tes Kesiapan Awal (TKA)</strong> berbasis CBT online.</p>
+              <p><strong>b.</strong> Link tes & token akses dikirim melalui <strong>WhatsApp resmi</strong> Safar Iman sesuai jadwal.</p>
+              <p><strong>c.</strong> Materi tes mencakup: pengetahuan keislaman dasar, motivasi & komitmen ibadah, serta wawasan seputar manasik dan umrah.</p>
+              <p><strong>d.</strong> Durasi pengerjaan <strong>± 60–90 menit</strong>, hasil tercatat otomatis di sistem.</p>
             </Section>
 
-            <Section title="4. Seleksi Tahap 4 (Wawancara Final)">
-              <p>
-                Peserta yang dinyatakan lolos TKA akan melanjutkan ke sesi <strong>wawancara final secara online</strong>.
-                Wawancara dilakukan via <strong>panggilan WhatsApp / telepon seluler</strong> bersama tim seleksi Safar Iman.
-              </p>
-              <p>Aspek penilaian wawancara meliputi: motivasi, komitmen ibadah, kesiapan mental & pendukung, serta niat ibadah peserta.</p>
+            <Section title="Tahap 7 — Wawancara Final">
+              <p><strong>a.</strong> Peserta yang lolos TKA akan diundang ke sesi <strong>wawancara final secara online</strong> bersama tim seleksi Safar Iman.</p>
+              <p><strong>b.</strong> Wawancara dilakukan via <strong>panggilan WhatsApp / telepon seluler</strong> sesuai jadwal yang dikonfirmasi sebelumnya.</p>
+              <p><strong>c.</strong> Aspek yang dinilai: ketulusan niat ibadah, motivasi, komitmen, serta kesiapan mental & pendukung selama perjalanan umrah.</p>
             </Section>
 
-            <Section title="Pengumuman Final & Penerimaan">
+            <Section title="Tahap 8 — Pengumuman Final & Penerimaan">
               <p>
-                <strong>a.</strong> Hasil akhir penerimaan diumumkan resmi melalui WhatsApp, email,
-                dan dapat dicek mandiri di <FormLink inline href={`https://${SITE}/cek-hasil`} label={`${SITE}/cek-hasil`} />.
+                <strong>a.</strong> Hasil akhir penerimaan diumumkan resmi melalui WhatsApp & email,
+                serta dapat dicek mandiri di <FormLink inline href={`https://${SITE}/cek-hasil`} label={`${SITE}/cek-hasil`} />.
               </p>
               <p>
-                <strong>b.</strong> Peserta diterima akan menerima <strong>Letter of Acceptance (LOA)</strong> resmi
-                serta jadwal manasik dan briefing pra-keberangkatan.
+                <strong>b.</strong> Peserta yang diterima akan menerima <strong>Letter of Acceptance (LOA)</strong> resmi
+                beserta jadwal manasik dan briefing pra-keberangkatan.
               </p>
               <p>
-                <strong>c.</strong> Jalur Fully Funded Safar Iman <strong>100% GRATIS</strong> —
-                tidak dipungut biaya pendaftaran maupun donasi wajib pada tahap manapun.
+                <strong>c.</strong> Penegasan: jalur Fully Funded Safar Iman <strong>100% GRATIS</strong> —
+                tidak ada biaya pendaftaran maupun donasi yang diwajibkan pada tahap seleksi manapun.
               </p>
             </Section>
 
