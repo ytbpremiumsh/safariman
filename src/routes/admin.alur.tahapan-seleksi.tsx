@@ -140,8 +140,7 @@ function TahapanSeleksiPage() {
                 beserta jadwal manasik dan briefing pra-keberangkatan.
               </p>
               <p>
-                <strong>c.</strong> Penegasan: jalur Fully Funded Safar Iman <strong>100% GRATIS</strong> —
-                tidak ada biaya pendaftaran maupun donasi yang diwajibkan pada tahap seleksi manapun.
+                <strong>c.</strong> Jalur Fully Funded Safar Iman <strong>100% GRATIS</strong> — seluruh biaya perjalanan umrah ditanggung penuh oleh program. Kontribusi keberkahan pada Tahap 4 merupakan syarat administrasi untuk akses eksklusif dan kelanjutan seleksi, bukan biaya perjalanan.
               </p>
             </Section>
 
