@@ -514,13 +514,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <Td>
                       <div className="flex flex-col gap-0.5">
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
-                        {r.payment_status === "paid" ? (
+                      {isPaymentValid(r) ? (
                           <span className={`inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
                             gel ? "bg-accent/15 text-accent border-accent/40" : "bg-gradient-gold text-emerald-deep border-accent/40"
                           }`}>
                             {gel ? <Wallet className="size-3.5" /> : <HeartHandshake className="size-3.5" />} Valid
                           </span>
-                        ) : r.payment_status === "pending" ? (
+                        ) : paymentState(r) === "pending" ? (
                           <span className="text-[11px] text-amber-600 font-medium">Pending</span>
                         ) : (
                           <span className="text-[11px] text-muted-foreground">Belum</span>
@@ -638,7 +638,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   {!isGelombang(detail.category) && hasSubmittedDocs(detail) && (
                     <div className="mt-6 pt-4 border-t border-border">
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Keputusan Kelulusan</div>
-                      {detail.payment_status !== "paid" ? (
+                      {!isPaymentValid(detail) ? (
                         <p className="text-sm text-muted-foreground">
                           Status <strong>Lolos / Belum Lolos</strong> dapat dipilih setelah donasi peserta ditandai valid.
                         </p>
