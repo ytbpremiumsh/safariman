@@ -582,14 +582,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                         <ImageIcon className="size-4" /> Lihat Foto
                       </a>
                     )}
-                    {detail.payment_status === "paid" && (
+                        {isPaymentValid(detail) && (
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
                         isGelombang(detail.category)
                           ? "bg-accent/15 text-accent border-accent/40"
                           : "bg-gradient-gold text-emerald-deep border-accent/40"
                       }`}>
                         {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                        {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleDateString("id-ID") : ""}
                       </span>
                     )}
 
@@ -602,7 +602,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                       {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
                     </div>
-                    {detail.payment_status === "paid" ? (
+                    {isPaymentValid(detail) ? (
                       <div className="flex flex-wrap items-center gap-3">
                         <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
                           isGelombang(detail.category)
@@ -610,7 +610,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                             : "bg-gradient-gold text-emerald-deep border-accent/40"
                         }`}>
                           {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleString("id-ID") : ""}
                         </span>
                         <button onClick={() => unmarkPaidManual(detail.id)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10">
                           <XCircle className="size-3.5" /> Batalkan
