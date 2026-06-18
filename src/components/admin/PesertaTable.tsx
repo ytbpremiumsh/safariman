@@ -360,6 +360,36 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     }`}>{t.label}</button>
                 ))}
               </div>
+              {docFilter === "submitted" && (
+                <div className="mt-3 flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold">Auto Lolos Pengiriman Berkas</div>
+                    <p className="text-xs text-muted-foreground mt-0.5 max-w-xl">
+                      Jika <strong>Aktif</strong>: peserta yang mengirim berkas dokumen otomatis berstatus <strong>Lolos</strong> tanpa perlu admin koreksi manual. Jika <strong>Nonaktif</strong>: admin harus me-review berkas dan mengubah status secara manual.
+                    </p>
+                  </div>
+                  <button
+                    disabled={savingAutoBerkas}
+                    onClick={async () => {
+                      const next = !autoLolosBerkas;
+                      setAutoLolosBerkas(next);
+                      setSavingAutoBerkas(true);
+                      const { error } = await supabase
+                        .from("app_settings")
+                        .upsert({ key: "auto_lolos_berkas_enabled", value: next ? "true" : "false" }, { onConflict: "key" });
+                      setSavingAutoBerkas(false);
+                      if (error) { setAutoLolosBerkas(!next); toast.error(error.message); }
+                      else toast.success(next ? "Auto Lolos Berkas diaktifkan" : "Auto Lolos Berkas dinonaktifkan");
+                    }}
+                    className={
+                      "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition shrink-0 disabled:opacity-60 " +
+                      (autoLolosBerkas ? "bg-emerald text-white" : "bg-background text-foreground border border-border")
+                    }
+                  >
+                    {autoLolosBerkas ? "Aktif" : "Nonaktif"}
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}
