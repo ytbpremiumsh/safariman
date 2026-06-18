@@ -262,36 +262,13 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
         </p>
       </div>
 
-      {paid ? (
-        participant.has_essay ? (
-          <div className="rounded-2xl bg-emerald/10 border border-emerald/30 p-5 text-sm text-center">
-            <div className="font-semibold mb-1">Semua tahap sudah selesai</div>
-            <p className="text-muted-foreground">
-              Berkas, kontribusi, dan essay sudah lengkap. Tunggu pengumuman seleksi berikutnya, ya.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="rounded-2xl bg-gradient-emerald p-6 text-center">
-              <div className="text-accent text-xs uppercase tracking-[0.2em] font-bold mb-2">Kontribusi sudah tertunai</div>
-              <div className="font-display text-white text-xl leading-snug">Lanjut ke tahap pengisian Essay</div>
-            </div>
-            <Link
-              to="/essay"
-              search={{ code }}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
-            >
-              <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
-            </Link>
-          </>
-        )
-      ) : (
+      {!paid ? (
         <>
           <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
-            <div className="font-semibold mb-1">Belum bisa lanjut ke Essay</div>
+            <div className="font-semibold mb-1">Tahap selanjutnya: Kontribusi Keberkahan</div>
             <p className="text-muted-foreground">
-              Tahap Essay terbuka setelah kamu dinyatakan lolos seleksi administrasi
-              dan menunaikan <strong className="text-foreground">kontribusi / donasi</strong> terlebih dahulu.
+              Sebelum lanjut ke Essay, mohon menunaikan <strong className="text-foreground">kontribusi keberkahan</strong> terlebih dahulu
+              sebagai syarat administrasi seleksi.
             </p>
           </div>
           <Link
@@ -300,6 +277,38 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
           >
             <HeartHandshake className="size-5" /> Tunaikan Kontribusi <ArrowRight className="size-4" />
+          </Link>
+        </>
+      ) : !participant.has_essay ? (
+        <>
+          <div className="rounded-2xl bg-gradient-emerald p-6 text-center">
+            <div className="text-accent text-xs uppercase tracking-[0.2em] font-bold mb-2">Kontribusi sudah tertunai</div>
+            <div className="font-display text-white text-xl leading-snug">Lanjut ke tahap pengisian Essay</div>
+          </div>
+          <Link
+            to="/essay"
+            search={{ code }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
+          >
+            <FileText className="size-5" /> Isi Essay Sekarang <ArrowRight className="size-4" />
+          </Link>
+        </>
+      ) : (
+        <>
+          <div className="rounded-2xl bg-emerald/10 border border-emerald/30 p-5 text-sm text-center">
+            <div className="font-semibold mb-1">Semua tahap administrasi sudah selesai</div>
+            <p className="text-muted-foreground">
+              Berkas, kontribusi, dan essay sudah lengkap. Selanjutnya kamu akan mengikuti
+              <strong className="text-foreground"> Tes Kesiapan Awal (TKA)</strong> lalu
+              <strong className="text-foreground"> Wawancara Final</strong> sesuai jadwal yang diumumkan via WhatsApp.
+            </p>
+          </div>
+          <Link
+            to="/cek-hasil"
+            search={{ code }}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
+          >
+            <CheckCircle2 className="size-5" /> Cek Status Seleksi <ArrowRight className="size-4" />
           </Link>
         </>
       )}
