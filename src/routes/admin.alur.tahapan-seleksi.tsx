@@ -84,18 +84,27 @@ function TahapanSeleksiPage() {
               <p><strong>c.</strong> Berkas yang tidak lengkap atau tidak memenuhi ketentuan akan dianggap gugur secara administratif.</p>
             </Section>
 
-            <Section title="Tahap 4 — Sedekah Keberkahan (Sukarela)">
+            <Section title="Tahap 4 — Kontribusi Keberkahan">
               <p>
-                Sebelum melanjutkan ke tahap seleksi essay, peserta dipersilakan untuk menyisihkan
-                <strong> sedekah keberkahan </strong>seikhlasnya sebagai bentuk ikhtiar batin & doa
-                agar perjalanan ibadah dimudahkan oleh Allah ﷻ.
+                Setiap peserta Safar Iman berkomitmen menunaikan <strong>kontribusi keberkahan</strong> sebagai bentuk ikhtiar batin dan dukungan terhadap program dakwah di Tanah Suci. Dana ini dikelola secara amanah dan transparan untuk:
               </p>
-              <p>
-                <strong>Catatan penting:</strong> sedekah ini <strong>sepenuhnya bersifat sukarela</strong>,
-                tidak memengaruhi penilaian seleksi, dan <strong>tidak menjadi syarat kelulusan</strong>
-                pada tahap manapun. Seluruh dana dikelola secara amanah untuk keberlangsungan program
-                dakwah Safar Iman.
+              <ul className="list-disc pl-5 space-y-1 mt-2">
+                <li><strong>Wakaf Al-Qur'an</strong> — wakaf mushaf di Makkah dan Madinah sebagai amal jariyah.</li>
+                <li><strong>Berbagi Makanan</strong> — menjangkau saudara yang membutuhkan di Makkah dan Madinah.</li>
+                <li><strong>Kegiatan Safar Iman</strong> — mendukung keberlangsungan program dan dakwah bersama.</li>
+              </ul>
+
+              <p className="mt-3">
+                Seluruh peserta yang berkontribusi otomatis mendapatkan <strong>akses eksklusif</strong> ke:
               </p>
+              <ul className="list-disc pl-5 space-y-1 mt-2">
+                <li><strong>Kelas Online:</strong> Fiqh Umrah Praktis — panduan lengkap manasik umrah dari persiapan hingga pulang.</li>
+                <li><strong>Kajian Sirah:</strong> Jejak Cahaya: Makkah dan Madinah — menelusuri lintasan sejarah Nabi ﷻ di dua kota suci.</li>
+                <li><strong>E-Sertifikat Resmi</strong> setelah menyelesaikan kelas.</li>
+                <li><strong>Akses Rekaman</strong> materi untuk ditonton ulang kapan saja.</li>
+              </ul>
+
+              <p className="mt-3"><strong>Kelengkapan kontribusi</strong> menjadi syarat administrasi untuk melanjutkan ke tahap seleksi berikutnya.</p>
               <FormLink href={`https://${SITE}/donasi`} label={`${SITE}/donasi`} />
             </Section>
 
