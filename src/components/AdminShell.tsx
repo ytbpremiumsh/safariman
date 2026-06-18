@@ -26,6 +26,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Alur Program",
     items: [
       { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon },
+      { to: "/admin/alur/tahapan-seleksi", label: "Tahapan Seleksi (Poster)", icon: FileText },
     ],
   },
   {
