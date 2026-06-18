@@ -39,6 +39,8 @@ type Participant = {
   photo_url: string | null;
   payment_status: string;
   paid_at: string | null;
+  donation_status: string;
+  donation_paid_at: string | null;
 };
 
 const CAT_LABEL: Record<Category, string> = {
@@ -58,6 +60,15 @@ const CAT_COLOR: Record<Category, string> = {
 };
 
 const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
+
+const isPaymentValid = (p: Participant) =>
+  isGelombang(p.category) ? p.payment_status === "paid" : p.donation_status === "paid";
+
+const paymentState = (p: Participant) =>
+  isGelombang(p.category) ? p.payment_status : p.donation_status;
+
+const paymentDate = (p: Participant) =>
+  isGelombang(p.category) ? p.paid_at : p.donation_paid_at;
 
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -132,7 +143,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
-      if (status === "paid") { if (r.payment_status !== "paid") return false; }
+      if (status === "paid") { if (!isPaymentValid(r)) return false; }
       else if (status !== "all" && r.status !== status) return false;
       if (!isSelf) {
         if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
@@ -154,7 +165,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     g2Count: rows.filter((r) => r.category === "gelombang_2").length,
     g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
     g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
-    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.payment_status === "paid").length,
+    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
   }), [rows]);
 
 
@@ -168,8 +179,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[r.status],
       "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
-      "Status Pembayaran": r.payment_status === "paid" ? "Valid" : (r.payment_status === "pending" ? "Pending" : "Belum"),
-      "Tanggal Pembayaran": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
+      "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
+      "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
         "Essay Layak": r.essay_worthy,
         "Essay Impian": r.essay_dream,
@@ -503,13 +514,13 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <Td>
                       <div className="flex flex-col gap-0.5">
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
-                        {r.payment_status === "paid" ? (
+                      {isPaymentValid(r) ? (
                           <span className={`inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
                             gel ? "bg-accent/15 text-accent border-accent/40" : "bg-gradient-gold text-emerald-deep border-accent/40"
                           }`}>
                             {gel ? <Wallet className="size-3.5" /> : <HeartHandshake className="size-3.5" />} Valid
                           </span>
-                        ) : r.payment_status === "pending" ? (
+                        ) : paymentState(r) === "pending" ? (
                           <span className="text-[11px] text-amber-600 font-medium">Pending</span>
                         ) : (
                           <span className="text-[11px] text-muted-foreground">Belum</span>
@@ -571,14 +582,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                         <ImageIcon className="size-4" /> Lihat Foto
                       </a>
                     )}
-                    {detail.payment_status === "paid" && (
+                        {isPaymentValid(detail) && (
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
                         isGelombang(detail.category)
                           ? "bg-accent/15 text-accent border-accent/40"
                           : "bg-gradient-gold text-emerald-deep border-accent/40"
                       }`}>
                         {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                        {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleDateString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleDateString("id-ID") : ""}
                       </span>
                     )}
 
@@ -591,7 +602,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                       {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
                     </div>
-                    {detail.payment_status === "paid" ? (
+                    {isPaymentValid(detail) ? (
                       <div className="flex flex-wrap items-center gap-3">
                         <span className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border ${
                           isGelombang(detail.category)
@@ -599,7 +610,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                             : "bg-gradient-gold text-emerald-deep border-accent/40"
                         }`}>
                           {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {detail.paid_at ? new Date(detail.paid_at).toLocaleString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleString("id-ID") : ""}
                         </span>
                         <button onClick={() => unmarkPaidManual(detail.id)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10">
                           <XCircle className="size-3.5" /> Batalkan
@@ -627,7 +638,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   {!isGelombang(detail.category) && hasSubmittedDocs(detail) && (
                     <div className="mt-6 pt-4 border-t border-border">
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Keputusan Kelulusan</div>
-                      {detail.payment_status !== "paid" ? (
+                      {!isPaymentValid(detail) ? (
                         <p className="text-sm text-muted-foreground">
                           Status <strong>Lolos / Belum Lolos</strong> dapat dipilih setelah donasi peserta ditandai valid.
                         </p>
