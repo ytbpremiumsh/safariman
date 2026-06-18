@@ -102,6 +102,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const [waMsg, setWaMsg] = useState("");
   const [waSending, setWaSending] = useState(false);
   const [autoLolos, setAutoLolos] = useState(false);
+  const [autoLolosBerkas, setAutoLolosBerkas] = useState(false);
+  const [savingAutoBerkas, setSavingAutoBerkas] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
 
