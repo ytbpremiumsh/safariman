@@ -133,6 +133,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
         custom: map.wa_template_custom ?? "",
       });
       setAutoLolos((map.auto_lolos_enabled ?? "false") === "true");
+      setAutoLolosBerkas((map.auto_lolos_berkas_enabled ?? "false") === "true");
       setLoading(false);
 
     })();
