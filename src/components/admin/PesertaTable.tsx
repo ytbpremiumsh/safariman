@@ -39,6 +39,8 @@ type Participant = {
   photo_url: string | null;
   payment_status: string;
   paid_at: string | null;
+  donation_status: string;
+  donation_paid_at: string | null;
 };
 
 const CAT_LABEL: Record<Category, string> = {
@@ -58,6 +60,15 @@ const CAT_COLOR: Record<Category, string> = {
 };
 
 const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
+
+const isPaymentValid = (p: Participant) =>
+  isGelombang(p.category) ? p.payment_status === "paid" : p.donation_status === "paid";
+
+const paymentState = (p: Participant) =>
+  isGelombang(p.category) ? p.payment_status : p.donation_status;
+
+const paymentDate = (p: Participant) =>
+  isGelombang(p.category) ? p.paid_at : p.donation_paid_at;
 
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -132,7 +143,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
-      if (status === "paid") { if (r.payment_status !== "paid") return false; }
+      if (status === "paid") { if (!isPaymentValid(r)) return false; }
       else if (status !== "all" && r.status !== status) return false;
       if (!isSelf) {
         if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
@@ -154,7 +165,7 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
     g2Count: rows.filter((r) => r.category === "gelombang_2").length,
     g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
     g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
-    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.payment_status === "paid").length,
+    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
   }), [rows]);
 
 
@@ -168,8 +179,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[r.status],
       "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
-      "Status Pembayaran": r.payment_status === "paid" ? "Valid" : (r.payment_status === "pending" ? "Pending" : "Belum"),
-      "Tanggal Pembayaran": r.paid_at ? new Date(r.paid_at).toLocaleString("id-ID") : "-",
+      "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
+      "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
         "Essay Layak": r.essay_worthy,
         "Essay Impian": r.essay_dream,
