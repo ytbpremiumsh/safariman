@@ -99,7 +99,7 @@ const STATUS_COLOR: Record<Status, string> = {
   rejected: "bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30",
 };
 
-export function PesertaTable({ kind }: { kind: PesertaKind }) {
+export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockDocFilter?: "registered" | "submitted" }) {
   const ready = useAdminGuard();
   const isSelf = kind === "self_funded";
   const [loading, setLoading] = useState(true);
@@ -107,7 +107,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<Status | "all" | "paid">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
-  const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">("all");
+  const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">(lockDocFilter ?? "all");
+
   const [apiKey, setApiKey] = useState("");
   const [sender, setSender] = useState("");
   const [templates, setTemplates] = useState<Record<string, string>>({});
