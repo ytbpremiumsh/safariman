@@ -32,11 +32,14 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Manajemen Peserta",
     items: [
-      { to: "/admin/peserta/reguler", label: "Peserta Reguler", icon: Users },
-      { to: "/admin/peserta/self-funded", label: "Peserta Self Funded", icon: UserCheck },
-      { to: "/admin/peserta/essay", label: "Berkas & Essay", icon: ClipboardList },
+      { to: "/admin/peserta/reguler/pendaftaran", label: "Pendaftaran Reguler", icon: Users },
+      { to: "/admin/peserta/reguler/berkas", label: "Berkas Reguler", icon: ClipboardList },
+      { to: "/admin/peserta/self-funded/pendaftaran", label: "Pendaftaran Self Funded", icon: UserCheck },
+      { to: "/admin/peserta/self-funded/berkas", label: "Berkas Self Funded", icon: ClipboardList },
+      { to: "/admin/peserta/essay", label: "Berkas & Essay", icon: FileText },
     ],
   },
+
   {
     label: "Konfigurasi",
     items: [
