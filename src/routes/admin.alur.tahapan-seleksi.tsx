@@ -79,12 +79,24 @@ function TahapanSeleksiPage() {
             </Section>
 
             <Section title="2. Tahapan Kontribusi / Donasi">
-              <p><strong>a.</strong> Tahap ini <strong>hanya diikuti oleh peserta yang dinyatakan lolos seleksi berkas administrasi</strong>. Kontribusi bersifat sukarela sebagai bentuk partisipasi dalam program amal Safar Iman.</p>
-              <p><strong>b.</strong> Peserta melakukan donasi/kontribusi melalui halaman resmi:</p>
+              <p><strong>a.</strong> Tahap ini <strong>hanya diikuti oleh peserta yang dinyatakan lolos seleksi berkas administrasi</strong>. Peserta wajib menunaikan kontribusi/donasi sebesar <strong>Rp. 100.000</strong> melalui halaman resmi:</p>
               <FormLink href={`https://${SITE}/donasi`} label={`${SITE}/donasi`} />
-              <p><strong>c.</strong> Simpan bukti pembayaran dengan baik. Sistem akan mencatat kontribusi berdasarkan Kode Pendaftaran masing-masing peserta.</p>
-              <p><strong>d.</strong> Setelah kontribusi terverifikasi, peserta otomatis lanjut ke tahap <strong>Pengerjaan Essay</strong>.</p>
-              <p><strong>e.</strong> Apabila peserta tidak lolos pada tahap Berkas Administrasi, maka tidak perlu melanjutkan ke tahap Kontribusi/Donasi ini.</p>
+              <p>Pembayaran diproses secara otomatis oleh <strong>Mayar</strong> dengan jaminan keamanan SSL. Peserta cukup memasukkan <strong>Kode Pendaftaran</strong>, lalu mengikuti instruksi pembayaran yang tersedia.</p>
+              <p><strong>b.</strong> Donasi yang dibayarkan akan digunakan untuk mendukung beberapa kegiatan sosial:</p>
+              <ul className="list-disc pl-5 space-y-1 mt-1">
+                <li><strong>Wakaf Al-Qur'an:</strong> Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah.</li>
+                <li><strong>Berbagi Makanan:</strong> Menjangkau saudara yang membutuhkan di Makkah dan Madinah.</li>
+                <li><strong>Kegiatan Safar Iman:</strong> Mendukung keberlangsungan program dan operasional kebaikan bersama.</li>
+              </ul>
+              <p><strong>c.</strong> Selain berkontribusi untuk kebaikan, peserta juga mendapatkan <strong>bonus eksklusif</strong> berupa:</p>
+              <ul className="list-disc pl-5 space-y-1 mt-1">
+                <li><strong>Kelas Online:</strong> Fiqh Umrah Praktis — Dari Niat hingga Tahallul.</li>
+                <li><strong>Kajian Sirah:</strong> Jejak Cahaya: Makkah dan Madinah.</li>
+                <li><strong>E-Sertifikat Resmi</strong> setelah menyelesaikan kelas.</li>
+                <li><strong>Akses Rekaman</strong> selamanya untuk ditonton ulang kapan saja.</li>
+              </ul>
+              <p><strong>d.</strong> Simpan bukti pembayaran dengan baik. Sistem akan mencatat kontribusi berdasarkan <strong>Kode Pendaftaran</strong> masing-masing peserta.</p>
+              <p><strong>e.</strong> Setelah pembayaran terverifikasi, peserta otomatis lanjut ke tahap <strong>Penulisan Essay</strong>. Apabila peserta tidak lolos pada tahap Berkas Administrasi, maka tidak perlu melanjutkan ke tahap Kontribusi/Donasi ini.</p>
               <p className="text-xs text-muted-foreground">Estimasi waktu: sesuai kemudahan metode pembayaran yang dipilih.</p>
             </Section>
 
