@@ -1,7 +1,5 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/peserta/reguler")({
-  beforeLoad: () => {
-    throw redirect({ to: "/admin/peserta/reguler/pendaftaran" });
-  },
+  component: () => <Outlet />,
 });
