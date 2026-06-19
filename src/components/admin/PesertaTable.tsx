@@ -56,8 +56,8 @@ const CAT_COLOR: Record<Category, string> = {
   fully_funded: "bg-emerald/10 text-emerald border-emerald/30",
   partial_funded: "bg-emerald/10 text-emerald border-emerald/30",
   self_funded: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
-  gelombang_1: "bg-emerald/15 text-emerald border-emerald/40",
-  gelombang_2: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
+  gelombang_1: "bg-blue-600 text-white border-blue-700",
+  gelombang_2: "bg-orange-500 text-white border-orange-600",
 };
 
 const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
