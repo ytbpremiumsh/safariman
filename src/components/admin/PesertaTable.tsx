@@ -362,6 +362,23 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                 ))}
               </div>
             </div>
+            {!lockDocFilter && (
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Tahap Berkas</div>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "registered", label: `Hanya Daftar (${stats.registeredOnly})` },
+                  { key: "submitted", label: `Sudah Kirim Berkas (${stats.submitted})` },
+                ] as const).map((t) => (
+                  <button key={t.key} onClick={() => setDocFilter(t.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                      docFilter === t.key ? "bg-emerald text-white border-emerald shadow-emerald" : "border-border bg-background hover:bg-secondary"
+                    }`}>{t.label}</button>
+                ))}
+              </div>
+            </div>
+            )}
             {docFilter === "submitted" && (
               <div className="mt-3 flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-3">
                 <div className="min-w-0">
