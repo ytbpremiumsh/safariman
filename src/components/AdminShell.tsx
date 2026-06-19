@@ -111,6 +111,45 @@ function AdminSidebar() {
                 {g.items.map((n) => {
                   const Icon = n.icon;
                   const active = isActive(n.to, !!n.exact);
+                  if (n.children && n.children.length) {
+                    const parentActive = loc.pathname.startsWith(n.to);
+                    return (
+                      <Collapsible key={n.to} defaultOpen={parentActive} className="group/collapsible">
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              tooltip={n.label}
+                              isActive={parentActive}
+                              className={
+                                "h-10 rounded-lg border transition-all " +
+                                (parentActive
+                                  ? "bg-gradient-emerald text-white border-transparent shadow-emerald hover:bg-gradient-emerald hover:text-white"
+                                  : "bg-card border-border/70 hover:bg-accent/10 hover:border-accent/40 hover:shadow-sm")
+                              }
+                            >
+                              <Icon className="size-4" />
+                              <span className="font-medium flex-1 text-left">{n.label}</span>
+                              <ChevronDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {n.children.map((c) => {
+                                const cActive = loc.pathname === c.to || loc.pathname.startsWith(c.to + "/");
+                                return (
+                                  <SidebarMenuSubItem key={c.to}>
+                                    <SidebarMenuSubButton asChild isActive={cActive}>
+                                      <Link to={c.to}>{c.label}</Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    );
+                  }
                   return (
                     <SidebarMenuItem key={n.to}>
                       <SidebarMenuButton
