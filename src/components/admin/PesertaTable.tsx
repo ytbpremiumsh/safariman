@@ -154,7 +154,8 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
 
   const hasSubmittedDocs = (p: Participant) =>
-    !!(p.cv_url || p.photo_url || p.essay_worthy || p.essay_dream || p.essay_contribution);
+    !!(p.cv_url && p.photo_url);
+
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
