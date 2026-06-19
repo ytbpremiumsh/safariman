@@ -153,8 +153,10 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   }, [ready, isSelf]);
 
 
+  // Fast Track (Gel 1/2) yang sudah bayar pendaftaran dianggap auto-lolos berkas
+  // sehingga muncul di tab "Sudah Kirim Berkas" walaupun tanpa cv_url/photo_url.
   const hasSubmittedDocs = (p: Participant) =>
-    !!(p.cv_url && p.photo_url);
+    !!(p.cv_url && p.photo_url) || (isGelombang(p.category) && p.payment_status === "paid");
 
 
   const filtered = useMemo(() => {
