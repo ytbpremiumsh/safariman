@@ -48,16 +48,16 @@ const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
   self_funded: "Self Funded",
-  gelombang_1: "Fast Track • Gelombang 1",
-  gelombang_2: "Fast Track • Gelombang 2",
+  gelombang_1: "Fast Track G1",
+  gelombang_2: "Fast Track G2",
 };
 
 const CAT_COLOR: Record<Category, string> = {
   fully_funded: "bg-emerald/10 text-emerald border-emerald/30",
   partial_funded: "bg-emerald/10 text-emerald border-emerald/30",
   self_funded: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
-  gelombang_1: "bg-accent/15 text-accent border-accent/40",
-  gelombang_2: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
+  gelombang_1: "bg-emerald/15 text-emerald border-emerald/40",
+  gelombang_2: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
 };
 
 const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
