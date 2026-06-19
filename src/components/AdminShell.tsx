@@ -50,12 +50,12 @@ const NAV_GROUPS: NavGroup[] = [
         label: "Pengaturan",
         icon: Settings,
         children: [
-          { to: "/admin/pengaturan/gelombang", label: "Gelombang Pendaftaran" },
-          { to: "/admin/pengaturan/twibbon", label: "Frame Twibbon" },
-          { to: "/admin/pengaturan/countdown", label: "Countdown Landing" },
-          { to: "/admin/pengaturan/panduan", label: "Link Panduan" },
-          { to: "/admin/pengaturan/donasi", label: "Donasi & Pembayaran" },
-          { to: "/admin/pengaturan/hasil-seleksi", label: "Pengumuman Hasil" },
+          { to: "/admin/pengaturan/gelombang", label: "Gelombang" },
+          { to: "/admin/pengaturan/twibbon", label: "Twibbon" },
+          { to: "/admin/pengaturan/countdown", label: "Countdown" },
+          { to: "/admin/pengaturan/panduan", label: "Panduan" },
+          { to: "/admin/pengaturan/donasi", label: "Donasi" },
+          { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi" },
           { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
         ],
       },
@@ -133,13 +133,22 @@ function AdminSidebar() {
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
-                            <SidebarMenuSub>
+                            <SidebarMenuSub className="mt-1 ml-4 pl-3 border-l border-border/60 space-y-0.5">
                               {n.children.map((c) => {
                                 const cActive = loc.pathname === c.to || loc.pathname.startsWith(c.to + "/");
                                 return (
                                   <SidebarMenuSubItem key={c.to}>
-                                    <SidebarMenuSubButton asChild isActive={cActive}>
-                                      <Link to={c.to}>{c.label}</Link>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={cActive}
+                                      className={
+                                        "h-8 px-2.5 rounded-md text-sm truncate transition-colors " +
+                                        (cActive
+                                          ? "bg-accent/15 text-accent font-medium"
+                                          : "text-muted-foreground hover:bg-accent/10 hover:text-foreground")
+                                      }
+                                    >
+                                      <Link to={c.to} className="truncate">{c.label}</Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );
