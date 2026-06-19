@@ -30,6 +30,7 @@ type Participant = {
   city: string;
   education: string;
   occupation: string;
+  religion: string | null;
   category: Category | null;
   status: Status;
   essay_worthy: string;
@@ -60,6 +61,17 @@ const CAT_COLOR: Record<Category, string> = {
 };
 
 const isGelombang = (c: Category | null) => c === "gelombang_1" || c === "gelombang_2";
+
+const calcAge = (birth: string | null | undefined): number | null => {
+  if (!birth) return null;
+  const d = new Date(birth);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return age >= 0 && age < 150 ? age : null;
+};
 
 const isPaymentValid = (p: Participant) =>
   isGelombang(p.category) ? p.payment_status === "paid" : p.donation_status === "paid";
@@ -177,7 +189,10 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
       "Kode": r.registration_code,
       "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
       "Nama": r.full_name, "Email": r.email, "WhatsApp": r.whatsapp,
-      "Gender": r.gender, "Tanggal Lahir": r.birth_date, "Kota": r.city,
+      "Gender": r.gender, "Tanggal Lahir": r.birth_date,
+      "Umur": calcAge(r.birth_date) ?? "-",
+      "Agama": r.religion ?? "-",
+      "Kota": r.city,
       "Pendidikan": r.education, "Pekerjaan": r.occupation,
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[r.status],
@@ -506,7 +521,14 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   </Td>
 
                   <Td>
-                    <div className="font-medium">{r.full_name}</div>
+                    <div className="font-medium">
+                      {r.full_name}
+                      {calcAge(r.birth_date) !== null && (
+                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-md bg-secondary text-[10px] font-semibold text-muted-foreground align-middle">
+                          {calcAge(r.birth_date)} thn
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-muted-foreground">{r.education}</div>
                   </Td>
                   {!isSelf && (
@@ -594,7 +616,8 @@ export function PesertaTable({ kind }: { kind: PesertaKind }) {
                   <Row k="Email" v={detail.email} />
                   <Row k="WhatsApp" v={detail.whatsapp} />
                   <Row k="Gender" v={detail.gender} />
-                  <Row k="Tanggal Lahir" v={detail.birth_date} />
+                  <Row k="Tanggal Lahir" v={`${detail.birth_date}${calcAge(detail.birth_date) !== null ? ` · ${calcAge(detail.birth_date)} thn` : ""}`} />
+                  <Row k="Agama" v={detail.religion || "—"} />
                   <Row k="Kota" v={detail.city} />
                   <Row k="Pendidikan" v={detail.education} />
                   <Row k="Pekerjaan" v={detail.occupation} />
