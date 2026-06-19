@@ -28,6 +28,8 @@ import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
 import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
+import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
+import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
 import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
 import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
@@ -138,6 +140,16 @@ const AdminPengaturanIndexRoute = AdminPengaturanIndexRouteImport.update({
   path: '/admin/pengaturan/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPesertaSelfFundedRoute = AdminPesertaSelfFundedRouteImport.update({
+  id: '/admin/peserta/self-funded',
+  path: '/admin/peserta/self-funded',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaRegulerRoute = AdminPesertaRegulerRouteImport.update({
+  id: '/admin/peserta/reguler',
+  path: '/admin/peserta/reguler',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPesertaEssayApiRoute = AdminPesertaEssayApiRouteImport.update({
   id: '/admin/peserta/essay-api',
   path: '/admin/peserta/essay-api',
@@ -245,6 +257,8 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
+  '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/admin/peserta/': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -280,6 +294,8 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
+  '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
   '/admin/peserta': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -316,6 +332,8 @@ export interface FileRoutesById {
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
+  '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/admin/peserta/': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -353,6 +371,8 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/reguler'
+    | '/admin/peserta/self-funded'
     | '/admin/pengaturan/'
     | '/admin/peserta/'
     | '/admin/peserta/reguler/berkas'
@@ -388,6 +408,8 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/reguler'
+    | '/admin/peserta/self-funded'
     | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/peserta/reguler/berkas'
@@ -423,6 +445,8 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/twibbon'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/reguler'
+    | '/admin/peserta/self-funded'
     | '/admin/pengaturan/'
     | '/admin/peserta/'
     | '/admin/peserta/reguler/berkas'
@@ -459,6 +483,8 @@ export interface RootRouteChildren {
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
   AdminPesertaEssayRoute: typeof AdminPesertaEssayRoute
   AdminPesertaEssayApiRoute: typeof AdminPesertaEssayApiRoute
+  AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRouteWithChildren
+  AdminPesertaSelfFundedRoute: typeof AdminPesertaSelfFundedRouteWithChildren
   AdminPengaturanIndexRoute: typeof AdminPengaturanIndexRoute
   AdminPesertaIndexRoute: typeof AdminPesertaIndexRoute
 }
@@ -598,6 +624,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/peserta/self-funded': {
+      id: '/admin/peserta/self-funded'
+      path: '/admin/peserta/self-funded'
+      fullPath: '/admin/peserta/self-funded'
+      preLoaderRoute: typeof AdminPesertaSelfFundedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/reguler': {
+      id: '/admin/peserta/reguler'
+      path: '/admin/peserta/reguler'
+      fullPath: '/admin/peserta/reguler'
+      preLoaderRoute: typeof AdminPesertaRegulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/peserta/essay-api': {
       id: '/admin/peserta/essay-api'
       path: '/admin/peserta/essay-api'
@@ -699,6 +739,34 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminPesertaRegulerRouteChildren {
+  AdminPesertaRegulerBerkasRoute: typeof AdminPesertaRegulerBerkasRoute
+  AdminPesertaRegulerPendaftaranRoute: typeof AdminPesertaRegulerPendaftaranRoute
+}
+
+const AdminPesertaRegulerRouteChildren: AdminPesertaRegulerRouteChildren = {
+  AdminPesertaRegulerBerkasRoute: AdminPesertaRegulerBerkasRoute,
+  AdminPesertaRegulerPendaftaranRoute: AdminPesertaRegulerPendaftaranRoute,
+}
+
+const AdminPesertaRegulerRouteWithChildren =
+  AdminPesertaRegulerRoute._addFileChildren(AdminPesertaRegulerRouteChildren)
+
+interface AdminPesertaSelfFundedRouteChildren {
+  AdminPesertaSelfFundedPendaftaranRoute: typeof AdminPesertaSelfFundedPendaftaranRoute
+}
+
+const AdminPesertaSelfFundedRouteChildren: AdminPesertaSelfFundedRouteChildren =
+  {
+    AdminPesertaSelfFundedPendaftaranRoute:
+      AdminPesertaSelfFundedPendaftaranRoute,
+  }
+
+const AdminPesertaSelfFundedRouteWithChildren =
+  AdminPesertaSelfFundedRoute._addFileChildren(
+    AdminPesertaSelfFundedRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BerkasRoute: BerkasRoute,
@@ -728,6 +796,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
   AdminPesertaEssayRoute: AdminPesertaEssayRoute,
   AdminPesertaEssayApiRoute: AdminPesertaEssayApiRoute,
+  AdminPesertaRegulerRoute: AdminPesertaRegulerRouteWithChildren,
+  AdminPesertaSelfFundedRoute: AdminPesertaSelfFundedRouteWithChildren,
   AdminPengaturanIndexRoute: AdminPengaturanIndexRoute,
   AdminPesertaIndexRoute: AdminPesertaIndexRoute,
 }
