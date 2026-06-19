@@ -1,18 +1,21 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, MessageCircle, LogOut, Loader2,
-  GitBranch, Route as RouteIcon, ClipboardList, MessageSquare,
+  ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
+  Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
+  Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-  SidebarInset,
+  SidebarInset, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
-type NavItem = { to: string; label: string; icon: any; exact?: boolean };
+type NavChild = { to: string; label: string };
+type NavItem = { to: string; label: string; icon: any; exact?: boolean; children?: NavChild[] };
 type NavGroup = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroup[] = [
@@ -42,7 +45,20 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Konfigurasi",
     items: [
-      { to: "/admin/pengaturan", label: "Pengaturan", icon: Settings },
+      {
+        to: "/admin/pengaturan",
+        label: "Pengaturan",
+        icon: Settings,
+        children: [
+          { to: "/admin/pengaturan/gelombang", label: "Gelombang Pendaftaran" },
+          { to: "/admin/pengaturan/twibbon", label: "Frame Twibbon" },
+          { to: "/admin/pengaturan/countdown", label: "Countdown Landing" },
+          { to: "/admin/pengaturan/panduan", label: "Link Panduan" },
+          { to: "/admin/pengaturan/donasi", label: "Donasi & Pembayaran" },
+          { to: "/admin/pengaturan/hasil-seleksi", label: "Pengumuman Hasil" },
+          { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
+        ],
+      },
     ],
   },
   {
