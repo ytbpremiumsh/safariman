@@ -62,6 +62,7 @@ export type Database = {
           photo_url: string | null
           reason: string | null
           registration_code: string
+          religion: string | null
           social_media: string | null
           status: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at: string | null
@@ -97,6 +98,7 @@ export type Database = {
           photo_url?: string | null
           reason?: string | null
           registration_code?: string
+          religion?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at?: string | null
@@ -132,6 +134,7 @@ export type Database = {
           photo_url?: string | null
           reason?: string | null
           registration_code?: string
+          religion?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at?: string | null
@@ -324,6 +327,26 @@ export type Database = {
               p_gender: string
               p_instagram?: string
               p_occupation: string
+              p_whatsapp: string
+            }
+            Returns: {
+              full_name: string
+              id: string
+              registration_code: string
+            }[]
+          }
+        | {
+            Args: {
+              p_birth_date: string
+              p_category?: Database["public"]["Enums"]["program_category"]
+              p_city: string
+              p_education: string
+              p_email: string
+              p_full_name: string
+              p_gender: string
+              p_instagram?: string
+              p_occupation: string
+              p_religion?: string
               p_whatsapp: string
             }
             Returns: {
