@@ -566,10 +566,25 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                     </Td>
                   )}
                   <Td>
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
-                      {STATUS_LABEL[r.status]}
-                    </span>
+                    {lockDocFilter === "submitted" ? (
+                      <select
+                        value={r.status}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => { e.stopPropagation(); updateStatus(r.id, e.target.value as Status); }}
+                        className={`h-7 rounded-full text-[11px] font-medium border px-2 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 ${STATUS_COLOR[r.status]}`}
+                      >
+                        <option value="pending">Menunggu</option>
+                        <option value="interview">Interview</option>
+                        <option value="accepted">Lolos</option>
+                        <option value="rejected">Belum Lolos</option>
+                      </select>
+                    ) : (
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
+                        {STATUS_LABEL[r.status]}
+                      </span>
+                    )}
                   </Td>
+
                   {!isSelf && (
                     <Td>
                       <div className="flex flex-col gap-0.5">
