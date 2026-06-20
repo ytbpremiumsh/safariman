@@ -13,9 +13,6 @@ import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
 import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
-import donasiWakafAsset from "@/assets/donasi-wakaf.jpg.asset.json";
-import donasiMakananAsset from "@/assets/donasi-makanan.jpg.asset.json";
-import donasiKegiatanAsset from "@/assets/donasi-kegiatan.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
   validateSearch: z.object({ code: z.string().optional() }),
@@ -132,33 +129,24 @@ function DonasiPage() {
 
           <div className="grid sm:grid-cols-3 gap-5 mb-12">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah yang pahalanya mengalir tiada putus.", img: donasiWakafAsset.url, badge: "Amal Jariyah" },
-              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan bantuan pangan harian di wilayah Makkah dan Madinah.", img: donasiMakananAsset.url, badge: "Sosial" },
-              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan operasional dan program edukasi jamaah Safar Iman.", img: donasiKegiatanAsset.url, badge: "Dakwah" },
+              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah yang pahalanya mengalir tiada putus." },
+              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan bantuan pangan harian di wilayah Makkah dan Madinah." },
+              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan operasional dan program edukasi jamaah Safar Iman." },
             ].map((b) => (
-              <div key={b.t} className="group bg-card rounded-3xl overflow-hidden border border-border shadow-soft hover:shadow-xl transition-all duration-500 hover-lift flex flex-col">
-                <div className="relative aspect-[4/3] overflow-hidden bg-emerald/5">
-                  <img
-                    src={b.img}
-                    alt={b.t}
-                    loading="lazy"
-                    width={1024}
-                    height={768}
-                    className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <span className="absolute top-3 left-3 px-3 py-1 bg-gradient-emerald text-accent text-[10px] font-bold rounded-full tracking-wider uppercase shadow-emerald">
-                    {b.badge}
-                  </span>
+              <div
+                key={b.t}
+                className="group relative bg-card/80 backdrop-blur-sm rounded-3xl border border-border/80 shadow-soft hover:shadow-xl transition-all duration-500 hover-lift p-6 text-center overflow-hidden"
+              >
+                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-emerald" />
+                <div className="absolute -right-8 -top-8 size-28 rounded-full bg-emerald/5 transition-transform duration-700 group-hover:scale-125" />
+                <div className="absolute -left-10 -bottom-10 size-32 rounded-full bg-accent/5 transition-transform duration-700 group-hover:scale-125" />
+
+                <div className="relative mx-auto mb-5 size-20 rounded-2xl bg-gradient-emerald grid place-items-center shadow-emerald group-hover:scale-105 transition-transform duration-500">
+                  <b.i className="size-9 text-accent" strokeWidth={1.5} />
                 </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="size-9 rounded-xl bg-emerald/10 grid place-items-center shrink-0">
-                      <b.i className="size-4 text-emerald" />
-                    </div>
-                    <h3 className="font-semibold text-base text-foreground">{b.t}</h3>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{b.d}</p>
-                </div>
+
+                <h3 className="relative font-display font-semibold text-lg text-foreground mb-2">{b.t}</h3>
+                <p className="relative text-sm text-muted-foreground leading-relaxed">{b.d}</p>
               </div>
             ))}
           </div>
