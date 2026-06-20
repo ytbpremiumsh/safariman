@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
+import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
   validateSearch: z.object({ code: z.string().optional() }),
