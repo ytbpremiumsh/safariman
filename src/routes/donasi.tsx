@@ -12,6 +12,9 @@ import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
+import cardKaabaAsset from "@/assets/donasi-card-kaaba.jpg.asset.json";
+import cardNabawiAsset from "@/assets/donasi-card-nabawi.jpg.asset.json";
+import cardHaramAsset from "@/assets/donasi-card-haram.jpg.asset.json";
 import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
