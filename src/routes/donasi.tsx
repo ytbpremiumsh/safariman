@@ -127,26 +127,18 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-5 mb-12">
+          <div className="grid sm:grid-cols-3 gap-4 mb-12">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah yang pahalanya mengalir tiada putus." },
-              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan bantuan pangan harian di wilayah Makkah dan Madinah." },
-              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan operasional dan program edukasi jamaah Safar Iman." },
+              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
+              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
+              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman." },
             ].map((b) => (
-              <div
-                key={b.t}
-                className="group relative bg-card/80 backdrop-blur-sm rounded-3xl border border-border/80 shadow-soft hover:shadow-xl transition-all duration-500 hover-lift p-6 text-center overflow-hidden"
-              >
-                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-emerald" />
-                <div className="absolute -right-8 -top-8 size-28 rounded-full bg-emerald/5 transition-transform duration-700 group-hover:scale-125" />
-                <div className="absolute -left-10 -bottom-10 size-32 rounded-full bg-accent/5 transition-transform duration-700 group-hover:scale-125" />
-
-                <div className="relative mx-auto mb-5 size-20 rounded-2xl bg-gradient-emerald grid place-items-center shadow-emerald group-hover:scale-105 transition-transform duration-500">
-                  <b.i className="size-9 text-accent" strokeWidth={1.5} />
+              <div key={b.t} className="rounded-2xl bg-card border border-border p-5 hover-lift">
+                <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
+                  <b.i className="size-5 text-emerald" />
                 </div>
-
-                <h3 className="relative font-display font-semibold text-lg text-foreground mb-2">{b.t}</h3>
-                <p className="relative text-sm text-muted-foreground leading-relaxed">{b.d}</p>
+                <div className="font-semibold text-sm">{b.t}</div>
+                <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{b.d}</div>
               </div>
             ))}
           </div>
