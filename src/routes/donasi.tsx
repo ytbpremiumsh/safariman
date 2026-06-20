@@ -12,6 +12,9 @@ import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
+import cardKaabaAsset from "@/assets/donasi-card-kaaba.jpg.asset.json";
+import cardNabawiAsset from "@/assets/donasi-card-nabawi.jpg.asset.json";
+import cardHaramAsset from "@/assets/donasi-card-haram.jpg.asset.json";
 import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
@@ -127,18 +130,54 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-4 mb-12">
+          <div className="grid sm:grid-cols-3 gap-5 mb-12">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah." },
-              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah." },
-              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman." },
+              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
+              { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah.", bg: cardNabawiAsset.url, dark: true },
+              { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman.", bg: cardHaramAsset.url, dark: false },
             ].map((b) => (
-              <div key={b.t} className="rounded-2xl bg-card border border-border p-5 hover-lift">
-                <div className="size-10 rounded-xl bg-emerald/10 grid place-items-center mb-3">
-                  <b.i className="size-5 text-emerald" />
+              <div
+                key={b.t}
+                className={`relative rounded-[28px] overflow-hidden p-[2px] hover-lift shadow-soft ${
+                  b.dark
+                    ? "bg-gradient-to-br from-accent/70 via-accent/30 to-accent/70"
+                    : "bg-gradient-to-br from-accent/40 via-border to-accent/30"
+                }`}
+              >
+                <div
+                  className={`relative rounded-[26px] overflow-hidden h-full flex flex-col items-center text-center px-6 pt-8 pb-7 ${
+                    b.dark ? "bg-emerald-deep" : "bg-gradient-to-b from-[hsl(40_40%_97%)] to-[hsl(40_30%_94%)]"
+                  }`}
+                >
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-cover bg-center opacity-55"
+                    style={{
+                      backgroundImage: `url(${b.bg})`,
+                      maskImage: "linear-gradient(to bottom, transparent 0%, transparent 30%, black 75%, black 100%)",
+                      WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 30%, black 75%, black 100%)",
+                    }}
+                  />
+                  <div className="relative z-10 flex flex-col items-center w-full">
+                    <div className="relative mb-5">
+                      <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-accent via-accent/40 to-accent blur-[1px]" />
+                      <div className="relative size-14 rounded-full bg-emerald-deep grid place-items-center ring-2 ring-accent shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
+                        <b.i className="size-6 text-accent" strokeWidth={1.75} />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="h-px w-8 bg-accent/50" />
+                      <span className="text-accent text-xs">✦</span>
+                      <span className="h-px w-8 bg-accent/50" />
+                    </div>
+                    <h3 className={`font-display text-xl sm:text-2xl font-semibold tracking-tight mb-3 ${b.dark ? "text-white" : "text-emerald-deep"}`}>
+                      {b.t}
+                    </h3>
+                    <p className={`text-sm leading-relaxed max-w-[22ch] ${b.dark ? "text-white/75" : "text-foreground/65"}`}>
+                      {b.d}
+                    </p>
+                  </div>
                 </div>
-                <div className="font-semibold text-sm">{b.t}</div>
-                <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{b.d}</div>
               </div>
             ))}
           </div>
