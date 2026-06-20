@@ -88,14 +88,60 @@ function TahapanSeleksiPage() {
                 <li><strong>Berbagi Makanan:</strong> Menjangkau saudara yang membutuhkan di Makkah dan Madinah.</li>
                 <li><strong>Kegiatan Safar Iman:</strong> Mendukung keberlangsungan program dan operasional kebaikan bersama.</li>
               </ul>
-              <p><strong>c.</strong> Sebagai bentuk <strong>apresiasi peserta</strong>, peserta akan mendapatkan kesempatan mengikuti:</p>
-              <ul className="list-disc pl-5 space-y-1 mt-1">
-                <li><strong>Kelas Online:</strong> Fiqh Umrah Praktis — Dari Niat hingga Tahallul.</li>
-                <li><strong>Kajian Sirah:</strong> Jejak Cahaya: Makkah dan Madinah.</li>
-                <li><strong>E-Sertifikat Resmi</strong> setelah menyelesaikan kelas.</li>
-                <li><strong>Akses Rekaman</strong> selamanya untuk ditonton ulang kapan saja.</li>
-              </ul>
-              <p><strong>d.</strong> Simpan bukti pembayaran dengan baik. Sistem akan mencatat kontribusi berdasarkan <strong>Kode Pendaftaran</strong> masing-masing peserta.</p>
+
+              <div className="mt-5 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/8 via-emerald/5 to-background p-5 sm:p-6">
+                <div className="flex flex-col items-start gap-3">
+                  <span className="inline-flex items-center rounded-full bg-gradient-gold px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-deep shadow-soft">
+                    Apresiasi Peserta — Sudah Termasuk
+                  </span>
+                  <h3 className="font-display text-lg sm:text-xl font-bold text-emerald-deep leading-tight">
+                    Sebagai bentuk apresiasi, peserta akan mendapatkan kesempatan mengikuti Kelas Online & Kajian Sirah
+                  </h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed">
+                    Seluruh peserta yang berkontribusi mendapatkan akses Eksklusif ke pembelajaran berkualitas bersama pembimbing terpilih.
+                  </p>
+                </div>
+                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald/15 text-emerald-deep">
+                      <Check className="size-3.5" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">Kelas Online</p>
+                      <p className="text-sm text-foreground/75">Fiqh Umrah Praktis — Dari Niat hingga Tahallul</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald/15 text-emerald-deep">
+                      <Check className="size-3.5" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">Kajian Sirah</p>
+                      <p className="text-sm text-foreground/75">Jejak Cahaya: Makkah dan Madinah</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald/15 text-emerald-deep">
+                      <Check className="size-3.5" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">E-Sertifikat Resmi</p>
+                      <p className="text-sm text-foreground/75">Diterbitkan setelah menyelesaikan kelas</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald/15 text-emerald-deep">
+                      <Check className="size-3.5" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">Akses Rekaman</p>
+                      <p className="text-sm text-foreground/75">Selamanya untuk ditonton ulang kapan saja</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <p className="mt-4"><strong>d.</strong> Simpan bukti pembayaran dengan baik. Sistem akan mencatat kontribusi berdasarkan <strong>Kode Pendaftaran</strong> masing-masing peserta.</p>
               <p><strong>e.</strong> Setelah pembayaran terverifikasi, peserta otomatis lanjut ke tahap <strong>Penulisan Essay</strong>. Apabila peserta tidak lolos pada tahap Berkas Administrasi, maka tidak perlu melanjutkan ke tahap Kontribusi/Donasi ini.</p>
               <p className="text-xs text-muted-foreground">Estimasi waktu: sesuai kemudahan metode pembayaran yang dipilih.</p>
             </Section>
