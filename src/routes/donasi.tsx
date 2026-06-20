@@ -132,7 +132,7 @@ function DonasiPage() {
               { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah yang pahalanya mengalir tiada putus." },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan bantuan pangan harian di wilayah Makkah dan Madinah." },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan operasional dan program edukasi jamaah Safar Iman." },
-            ].map((b, idx) => (
+            ].map((b) => (
               <div
                 key={b.t}
                 className="group relative bg-card/80 backdrop-blur-sm rounded-3xl border border-border/80 shadow-soft hover:shadow-xl transition-all duration-500 hover-lift p-6 text-center overflow-hidden"
