@@ -13,9 +13,6 @@ import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
 import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
-import donasiWakafAsset from "@/assets/donasi-wakaf.jpg.asset.json";
-import donasiMakananAsset from "@/assets/donasi-makanan.jpg.asset.json";
-import donasiKegiatanAsset from "@/assets/donasi-kegiatan.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
   validateSearch: z.object({ code: z.string().optional() }),
