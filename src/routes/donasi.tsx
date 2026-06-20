@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
+import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
 
 export const Route = createFileRoute("/donasi")({
   validateSearch: z.object({ code: z.string().optional() }),
@@ -141,54 +143,80 @@ function DonasiPage() {
             ))}
           </div>
 
-          {/* Benefit included with donation */}
+          {/* Apresiasi Peserta */}
           <div className="mb-12">
             <div className="text-center mb-8">
               <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-bold bg-gradient-emerald px-4 py-2 rounded-full shadow-emerald">
-                <Sparkles className="size-3.5" /> Bonus Eksklusif — Sudah Termasuk
+                <Sparkles className="size-3.5" /> Apresiasi Peserta — Sudah Termasuk
               </span>
               <h3 className="mt-5 font-display text-2xl sm:text-3xl font-bold leading-tight max-w-2xl mx-auto">
-                Seluruh peserta yang berkontribusi <span className="text-emerald">mendapatkan akses Eksklusif</span> ke <span className="text-accent">Kelas Online</span> &amp; <span className="text-accent">Kajian Sirah</span>
+                Sebagai bentuk apresiasi, peserta akan mendapatkan kesempatan mengikuti{" "}
+                <span className="text-accent">Kelas Online</span> &amp;{" "}
+                <span className="text-accent">Kajian Sirah</span>
               </h3>
+              <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
+                Seluruh peserta yang berkontribusi mendapatkan akses Eksklusif ke pembelajaran berkualitas bersama pembimbing terpilih.
+              </p>
             </div>
-
 
             <div className="grid sm:grid-cols-2 gap-5">
 
-              <div className="bg-card border-2 border-emerald/30 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
-                <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white pl-1.5 pr-2.5 py-1 rounded-full animate-badge-glow">
-                  <Sparkles className="size-2.5 animate-twinkle" />
-                  <Sparkles className="size-1.5 -ml-0.5 animate-twinkle-delay text-accent" />
-                  Eksklusif
-                </span>
-                <div className="size-12 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald mb-4">
-                  <GraduationCap className="size-6 text-accent" />
+              <div className="bg-card border-2 border-emerald/30 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
+                <div className="relative aspect-[4/3] overflow-hidden bg-emerald/5">
+                  <img
+                    src={apresiasiKelasAsset.url}
+                    alt="Kelas Online Fiqh Umrah Praktis"
+                    loading="lazy"
+                    width={1024}
+                    height={768}
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white pl-1.5 pr-2.5 py-1 rounded-full shadow-emerald">
+                    <Sparkles className="size-2.5" />
+                    Eksklusif
+                  </span>
+                  <div className="absolute bottom-3 left-3 size-10 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald">
+                    <GraduationCap className="size-5 text-accent" />
+                  </div>
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
-                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
-                  Fiqh Umrah Praktis: Dari Niat hingga Tahallul
-                </h4>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Panduan lengkap manasik umrah bersama ustadz pembimbing — dari persiapan hingga pulang.
-                </p>
+                <div className="p-5 flex flex-col">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
+                  <h4 className="text-lg font-semibold mt-1.5 leading-snug">
+                    Fiqh Umrah Praktis: Dari Niat hingga Tahallul
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    Panduan lengkap manasik umrah bersama ustadz pembimbing — dari persiapan hingga pulang.
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-card border-2 border-accent/40 rounded-2xl p-6 hover-lift flex flex-col relative overflow-hidden">
-                <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep pl-1.5 pr-2.5 py-1 rounded-full animate-badge-glow">
-                  <Sparkles className="size-2.5 animate-twinkle" />
-                  <Sparkles className="size-1.5 -ml-0.5 animate-twinkle-slow" />
-                  Eksklusif
-                </span>
-                <div className="size-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold mb-4">
-                  <MapPin className="size-6 text-emerald-deep" />
+              <div className="bg-card border-2 border-accent/40 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
+                <div className="relative aspect-[4/3] overflow-hidden bg-accent/5">
+                  <img
+                    src={apresiasiSirahAsset.url}
+                    alt="Kajian Sirah Jejak Cahaya Makkah dan Madinah"
+                    loading="lazy"
+                    width={1024}
+                    height={768}
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep pl-1.5 pr-2.5 py-1 rounded-full shadow-gold">
+                    <Sparkles className="size-2.5" />
+                    Eksklusif
+                  </span>
+                  <div className="absolute bottom-3 left-3 size-10 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
+                    <MapPin className="size-5 text-emerald-deep" />
+                  </div>
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
-                <h4 className="text-lg font-semibold mt-1.5 leading-snug">
-                  Jejak Cahaya: Makkah dan Madinah
-                </h4>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi.
-                </p>
+                <div className="p-5 flex flex-col">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
+                  <h4 className="text-lg font-semibold mt-1.5 leading-snug">
+                    Jejak Cahaya: Makkah dan Madinah
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi.
+                  </p>
+                </div>
               </div>
 
             </div>
@@ -211,6 +239,7 @@ function DonasiPage() {
             </div>
 
           </div>
+
 
           {!info ? (
             <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up">

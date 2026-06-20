@@ -88,7 +88,7 @@ function TahapanSeleksiPage() {
                 <li><strong>Berbagi Makanan:</strong> Menjangkau saudara yang membutuhkan di Makkah dan Madinah.</li>
                 <li><strong>Kegiatan Safar Iman:</strong> Mendukung keberlangsungan program dan operasional kebaikan bersama.</li>
               </ul>
-              <p><strong>c.</strong> Selain berkontribusi untuk kebaikan, peserta juga mendapatkan <strong>bonus eksklusif</strong> berupa:</p>
+              <p><strong>c.</strong> Sebagai bentuk <strong>apresiasi peserta</strong>, peserta akan mendapatkan kesempatan mengikuti:</p>
               <ul className="list-disc pl-5 space-y-1 mt-1">
                 <li><strong>Kelas Online:</strong> Fiqh Umrah Praktis — Dari Niat hingga Tahallul.</li>
                 <li><strong>Kajian Sirah:</strong> Jejak Cahaya: Makkah dan Madinah.</li>
