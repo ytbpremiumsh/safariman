@@ -32,6 +32,7 @@ const Email = ({ subject, bodyHtml, preview }: Props) => (
         </Section>
         <Hr style={hr} />
         <Text style={footer}>
+          {/* senderName falls back to brand */}
           Safar Iman · Program Umrah Pemuda Pemudi Indonesia
         </Text>
       </Container>
