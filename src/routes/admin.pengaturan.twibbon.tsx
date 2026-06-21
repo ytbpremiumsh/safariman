@@ -334,3 +334,73 @@ function formatDay(day: string) {
   const d = new Date(day + "T00:00:00");
   return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
 }
+
+function SocialEditor({
+  title, icon, accounts, onChange, urlPlaceholder,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  accounts: SocialAccount[];
+  onChange: (next: SocialAccount[]) => void;
+  urlPlaceholder: string;
+}) {
+  const update = (i: number, patch: Partial<SocialAccount>) =>
+    onChange(accounts.map((a, idx) => (idx === i ? { ...a, ...patch } : a)));
+  const remove = (i: number) => onChange(accounts.filter((_, idx) => idx !== i));
+  const add = () => onChange([...accounts, { handle: "", url: "", label: "" }]);
+
+  return (
+    <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="size-7 rounded-lg bg-card border border-border grid place-items-center text-accent">
+          {icon}
+        </div>
+        <h3 className="font-display text-base font-semibold">{title}</h3>
+        <span className="text-xs text-muted-foreground">({accounts.length} akun)</span>
+      </div>
+
+      {accounts.length === 0 && (
+        <p className="text-xs text-muted-foreground italic">Belum ada akun — tambahkan di bawah.</p>
+      )}
+
+      <div className="space-y-2">
+        {accounts.map((acc, i) => (
+          <div key={i} className="grid sm:grid-cols-[1fr_1fr_1.5fr_auto] gap-2 items-center">
+            <input
+              value={acc.label}
+              onChange={(e) => update(i, { label: e.target.value })}
+              placeholder="Label (mis. Safar Iman)"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <input
+              value={acc.handle}
+              onChange={(e) => update(i, { handle: e.target.value })}
+              placeholder="handle (tanpa @)"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <input
+              value={acc.url}
+              onChange={(e) => update(i, { url: e.target.value })}
+              placeholder={urlPlaceholder}
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <button
+              onClick={() => remove(i)}
+              className="inline-flex items-center justify-center size-9 rounded-lg border border-border bg-background hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
+              title="Hapus akun"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={add}
+        className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
+      >
+        <Plus className="size-3.5" /> Tambah Akun {title}
+      </button>
+    </div>
+  );
+}
