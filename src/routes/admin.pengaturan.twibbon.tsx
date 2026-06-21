@@ -16,10 +16,13 @@ function TwibbonSetting() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [twibbonFrameUrl, setTwibbonFrameUrl] = useState("");
+  const [posterUrl, setPosterUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
   const inputRef = useRef<HTMLInputElement>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
 
   const loadStats = async (days: number) => {
     const { data } = await supabase.rpc("get_twibbon_download_stats", { p_days: days });
@@ -31,11 +34,13 @@ function TwibbonSetting() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const [{ data }] = await Promise.all([
-        supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle(),
+      const [{ data: rows }] = await Promise.all([
+        supabase.from("app_settings").select("key,value").in("key", ["twibbon_frame_url", "poster_url"]),
         loadStats(rangeDays),
       ]);
-      setTwibbonFrameUrl(data?.value ?? "");
+      const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
+      setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
+      setPosterUrl((map.get("poster_url") as string) ?? "");
       setLoading(false);
     })();
      
@@ -52,31 +57,48 @@ function TwibbonSetting() {
   const maxCount = useMemo(() => Math.max(1, ...stats.map((s) => s.count)), [stats]);
 
 
-  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (!f.type.startsWith("image/")) { toast.error("File harus gambar (PNG transparan disarankan)"); return; }
+  const uploadAsset = async (
+    f: File,
+    key: "twibbon_frame_url" | "poster_url",
+    prefix: string,
+    setUrl: (u: string) => void,
+    setBusy: (b: boolean) => void,
+    ref: React.RefObject<HTMLInputElement>
+  ) => {
+    if (!f.type.startsWith("image/")) { toast.error("File harus gambar"); return; }
     if (f.size > 8 * 1024 * 1024) { toast.error("Maks 8MB"); return; }
-    setUploading(true);
+    setBusy(true);
     try {
       const ext = (f.name.split(".").pop() || "png").toLowerCase();
-      const path = `frame-${Date.now()}.${ext}`;
+      const path = `${prefix}-${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("twibbon-assets").upload(path, f, { upsert: true, contentType: f.type });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("twibbon-assets").getPublicUrl(path);
       const url = `${data.publicUrl}?v=${Date.now()}`;
       const { error: sErr } = await supabase.from("app_settings").upsert({
-        key: "twibbon_frame_url", value: url, updated_at: new Date().toISOString(),
+        key, value: url, updated_at: new Date().toISOString(),
       });
       if (sErr) throw sErr;
-      setTwibbonFrameUrl(url);
-      toast.success("Frame Twibbon berhasil diperbarui");
+      setUrl(url);
+      toast.success("Berhasil diperbarui");
     } catch (err: any) {
-      toast.error(err?.message ?? "Gagal upload frame");
+      toast.error(err?.message ?? "Gagal upload");
     } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
     }
+  };
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    await uploadAsset(f, "twibbon_frame_url", "frame", setTwibbonFrameUrl, setUploading, inputRef);
+  };
+
+  const onPickPoster = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    await uploadAsset(f, "poster_url", "poster", setPosterUrl, setUploadingPoster, posterInputRef);
   };
 
   if (!ready || loading) return <AdminLoading />;
