@@ -336,53 +336,26 @@ function Benefits() {
             return (
               <div
                 key={b.t}
-                className={`group relative rounded-[28px] p-[2px] hover-lift shadow-soft animate-fade-up ${
-                  isEmerald
-                    ? "bg-gradient-to-br from-emerald via-emerald/60 to-accent/50"
-                    : "bg-gradient-to-br from-accent via-accent/60 to-emerald/50"
-                }`}
+                className="group relative rounded-3xl bg-card border border-border p-6 shadow-soft hover-lift animate-fade-up"
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
                 <div
-                  className={`relative h-full rounded-[26px] overflow-hidden p-6 flex flex-col ${
-                    isEmerald
-                      ? "bg-emerald-deep"
-                      : "bg-gradient-to-br from-accent/10 via-background to-emerald/5"
+                  className={`size-14 rounded-2xl grid place-items-center mb-5 transition-transform group-hover:scale-110 ${
+                    isEmerald ? "bg-emerald/10" : "bg-accent/10"
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-5">
-                    <div className="relative">
-                      <div className={`absolute -inset-1 rounded-2xl blur-[2px] opacity-70 ${isEmerald ? "bg-accent/40" : "bg-emerald/40"}`} />
-                      <div
-                        className={`relative size-14 rounded-2xl grid place-items-center shadow-soft transition-transform group-hover:scale-110 ${
-                          isEmerald ? "bg-gradient-gold" : "bg-gradient-emerald"
-                        }`}
-                      >
-                        <b.i className={`size-6 ${isEmerald ? "text-emerald-deep" : "text-accent"}`} strokeWidth={1.75} />
-                      </div>
-                    </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${
-                      isEmerald
-                        ? "bg-accent/15 text-accent"
-                        : "bg-emerald/15 text-emerald-deep"
-                    }`}>
-                      Benefit
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`h-px w-6 ${isEmerald ? "bg-accent/50" : "bg-emerald/50"}`} />
-                    <span className={isEmerald ? "text-accent text-xs" : "text-emerald text-xs"}>✦</span>
-                    <span className={`h-px w-6 ${isEmerald ? "bg-accent/50" : "bg-emerald/50"}`} />
-                  </div>
-
-                  <h3 className={`font-display text-xl font-semibold leading-tight ${isEmerald ? "text-background" : "text-emerald-deep"}`}>
-                    {b.t}
-                  </h3>
-                  <p className={`mt-2.5 text-sm leading-relaxed ${isEmerald ? "text-background/80" : "text-muted-foreground"}`}>
-                    {b.d}
-                  </p>
+                  <b.i
+                    className={`size-6 ${isEmerald ? "text-emerald" : "text-accent"}`}
+                    strokeWidth={1.75}
+                  />
                 </div>
+
+                <h3 className="font-display text-xl font-semibold leading-tight text-card-foreground">
+                  {b.t}
+                </h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                  {b.d}
+                </p>
               </div>
             );
           })}
