@@ -11,14 +11,16 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 const CP_WHATSAPP = "6281234567890";
 const CP_NAME = "CP Safar Iman";
 
-const IG_ACCOUNTS = [
+type SocialAccount = { handle: string; url: string; label: string };
+
+const DEFAULT_IG_ACCOUNTS: SocialAccount[] = [
   { handle: "safariman.id", url: "https://instagram.com/safariman.id", label: "Safar Iman" },
   { handle: "hasanah.tours.travel", url: "https://instagram.com/hasanah.tours.travel", label: "Hasanah Tours" },
   { handle: "hasanah.hajiumrohsemarang", url: "https://instagram.com/hasanah.hajiumrohsemarang", label: "Hasanah Semarang" },
   { handle: "prestasikita", url: "https://instagram.com/prestasikita", label: "Prestasi Kita" },
 ];
 
-const TIKTOK_ACCOUNTS = [
+const DEFAULT_TIKTOK_ACCOUNTS: SocialAccount[] = [
   { handle: "safariman.id", url: "https://tiktok.com/@safariman.id", label: "Safar Iman" },
 ];
 
@@ -39,6 +41,8 @@ function TwibbonPage() {
   const [frameImg, setFrameImg] = useState<HTMLImageElement | null>(null);
   const [photoImg, setPhotoImg] = useState<HTMLImageElement | null>(null);
   const [posterUrl, setPosterUrl] = useState<string>(defaultPoster);
+  const [igAccounts, setIgAccounts] = useState<SocialAccount[]>(DEFAULT_IG_ACCOUNTS);
+  const [tiktokAccounts, setTiktokAccounts] = useState<SocialAccount[]>(DEFAULT_TIKTOK_ACCOUNTS);
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
@@ -49,14 +53,18 @@ function TwibbonPage() {
   // Load configurable frame URL — falls back to bundled default if none configured
   useEffect(() => {
     (async () => {
-      const [{ data: frame }, { data: poster }] = await Promise.all([
+      const [{ data: frame }, { data: poster }, { data: social }] = await Promise.all([
         supabase.rpc("get_twibbon_frame_url"),
         supabase.rpc("get_poster_url"),
+        supabase.rpc("get_social_accounts"),
       ]);
       const fUrl = (typeof frame === "string" && frame.trim()) ? frame.trim() : defaultFrame;
       setFrameUrl(fUrl);
       const pUrl = (typeof poster === "string" && poster.trim()) ? poster.trim() : defaultPoster;
       setPosterUrl(pUrl);
+      const s = social as { instagram?: SocialAccount[]; tiktok?: SocialAccount[] } | null;
+      if (Array.isArray(s?.instagram) && s!.instagram.length) setIgAccounts(s!.instagram);
+      if (Array.isArray(s?.tiktok) && s!.tiktok.length) setTiktokAccounts(s!.tiktok);
     })();
   }, []);
 
@@ -322,46 +330,78 @@ WhatsApp : ${CP_WHATSAPP}`;
 
           {/* STEP 1 — Follow Instagram & TikTok */}
           <StepSection n={1} title="Follow Instagram & TikTok" icon={<Instagram className="size-5" />}>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground mb-5">
               Sebelum lanjut, pastikan kamu sudah <strong className="text-foreground">follow</strong> seluruh akun resmi di bawah ini.
             </p>
-            <div className="grid sm:grid-cols-2 gap-2.5">
-              {IG_ACCOUNTS.map((acc) => (
-                <a
-                  key={acc.handle}
-                  href={acc.url}
-                  target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
-                >
-                  <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
-                    <Instagram className="size-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] text-muted-foreground leading-tight">Instagram · {acc.label}</div>
-                    <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
-                </a>
-              ))}
-              {TIKTOK_ACCOUNTS.map((acc) => (
-                <a
-                  key={acc.handle}
-                  href={acc.url}
-                  target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
-                >
-                  <div className="size-8 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
-                    <Music2 className="size-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] text-muted-foreground leading-tight">TikTok · {acc.label}</div>
-                    <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
-                </a>
-              ))}
+
+            {/* Instagram */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="size-7 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                  <Instagram className="size-3.5" />
+                </div>
+                <h3 className="font-display text-base font-semibold">Instagram</h3>
+                <div className="flex-1 h-px bg-border ml-2" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {igAccounts.map((acc) => (
+                  <a
+                    key={`ig-${acc.handle}`}
+                    href={acc.url}
+                    target="_blank" rel="noopener noreferrer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                  >
+                    <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                      <Instagram className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] text-muted-foreground leading-tight">{acc.label}</div>
+                      <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                    </div>
+                    <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                  </a>
+                ))}
+              </div>
             </div>
-            <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+
+            {/* Divider "dan" */}
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">dan</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+
+            {/* TikTok */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="size-7 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
+                  <Music2 className="size-3.5" />
+                </div>
+                <h3 className="font-display text-base font-semibold">TikTok</h3>
+                <div className="flex-1 h-px bg-border ml-2" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {tiktokAccounts.map((acc) => (
+                  <a
+                    key={`tt-${acc.handle}`}
+                    href={acc.url}
+                    target="_blank" rel="noopener noreferrer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                  >
+                    <div className="size-8 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
+                      <Music2 className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] text-muted-foreground leading-tight">{acc.label}</div>
+                      <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                    </div>
+                    <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-start gap-2 text-xs text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald shrink-0 mt-0.5" />
               <span>Bukti follow akan diminta CP saat verifikasi.</span>
             </div>
@@ -447,29 +487,31 @@ WhatsApp : ${CP_WHATSAPP}`;
               Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong> beserta caption.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-5 items-start">
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft">
-                <div className="rounded-xl overflow-hidden border border-border bg-secondary">
+            <div className="grid md:grid-cols-2 gap-5 items-stretch">
+              {/* Poster card */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+                <div className="rounded-xl overflow-hidden border border-border bg-secondary flex-1">
                   <img src={posterUrl} alt="Poster Safar Iman" className="w-full h-auto block" />
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
                     onClick={downloadPoster}
-                    className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
                   >
                     <Download className="size-4" /> Download Poster
                   </button>
                   <a
                     href={shareWaPoster}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2.5 text-sm font-bold shadow-gold hover-lift"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2.5 text-sm font-bold shadow-gold hover-lift"
                   >
                     <MessageCircle className="size-4" /> Bagikan WhatsApp
                   </a>
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft">
+              {/* Caption card — full-height; CP buttons live at the bottom */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <FileText className="size-4 text-accent" />
@@ -482,26 +524,25 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
-                <pre className="whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 max-h-72 overflow-y-auto font-sans leading-relaxed">
+                <pre className="flex-1 min-h-[220px] whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {caption}
                 </pre>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <a
+                    href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
+                  >
+                    <MessageCircle className="size-4" /> Chat {CP_NAME}
+                  </a>
+                  <button
+                    onClick={copyMessage}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background hover:bg-secondary px-4 py-2.5 text-sm font-medium"
+                  >
+                    <Copy className="size-4" /> Salin Pesan ke CP
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <a
-                href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
-                target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-4 py-2 text-xs font-bold hover-lift"
-              >
-                <MessageCircle className="size-3.5" /> Chat {CP_NAME}
-              </a>
-              <button
-                onClick={copyMessage}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium hover:bg-secondary"
-              >
-                <Copy className="size-3.5" /> Salin Pesan ke CP
-              </button>
             </div>
           </StepSection>
 

@@ -313,6 +313,7 @@ export type Database = {
       get_gelombang_config: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
       get_poster_url: { Args: never; Returns: string }
+      get_social_accounts: { Args: never; Returns: Json }
       get_twibbon_download_stats: {
         Args: { p_days?: number }
         Returns: {

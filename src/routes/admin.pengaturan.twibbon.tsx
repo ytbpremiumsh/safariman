@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar, Instagram, Music2, Plus, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
@@ -11,6 +11,8 @@ export const Route = createFileRoute("/admin/pengaturan/twibbon")({
 });
 
 type DayStat = { day: string; count: number };
+type SocialAccount = { handle: string; url: string; label: string };
+
 
 function TwibbonSetting() {
   const ready = useAdminGuard();
@@ -21,6 +23,9 @@ function TwibbonSetting() {
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
+  const [igAccounts, setIgAccounts] = useState<SocialAccount[]>([]);
+  const [tiktokAccounts, setTiktokAccounts] = useState<SocialAccount[]>([]);
+  const [savingSocial, setSavingSocial] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const posterInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,16 +40,49 @@ function TwibbonSetting() {
     if (!ready) return;
     (async () => {
       const [{ data: rows }] = await Promise.all([
-        supabase.from("app_settings").select("key,value").in("key", ["twibbon_frame_url", "poster_url"]),
+        supabase.from("app_settings").select("key,value").in("key", [
+          "twibbon_frame_url", "poster_url", "social_ig_accounts", "social_tiktok_accounts",
+        ]),
         loadStats(rangeDays),
       ]);
       const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
       setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
       setPosterUrl((map.get("poster_url") as string) ?? "");
+      const parse = (raw: unknown): SocialAccount[] => {
+        try {
+          const v = typeof raw === "string" ? JSON.parse(raw) : raw;
+          return Array.isArray(v) ? v.map((x: any) => ({
+            handle: String(x.handle ?? ""), url: String(x.url ?? ""), label: String(x.label ?? ""),
+          })) : [];
+        } catch { return []; }
+      };
+      setIgAccounts(parse(map.get("social_ig_accounts")));
+      setTiktokAccounts(parse(map.get("social_tiktok_accounts")));
       setLoading(false);
     })();
      
   }, [ready]);
+
+  const saveSocial = async () => {
+    setSavingSocial(true);
+    try {
+      const clean = (list: SocialAccount[]) =>
+        list.map((a) => ({ handle: a.handle.trim(), url: a.url.trim(), label: a.label.trim() }))
+          .filter((a) => a.handle && a.url);
+      const now = new Date().toISOString();
+      const { error } = await supabase.from("app_settings").upsert([
+        { key: "social_ig_accounts", value: JSON.stringify(clean(igAccounts)), updated_at: now },
+        { key: "social_tiktok_accounts", value: JSON.stringify(clean(tiktokAccounts)), updated_at: now },
+      ]);
+      if (error) throw error;
+      toast.success("Akun sosial media tersimpan");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Gagal menyimpan");
+    } finally {
+      setSavingSocial(false);
+    }
+  };
+
 
   useEffect(() => {
     if (ready && !loading) loadStats(rangeDays);
@@ -187,6 +225,43 @@ function TwibbonSetting() {
         </div>
       </div>
 
+      {/* Social Accounts Editor */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <Instagram className="size-5 text-accent" />
+            <div className="font-display text-lg font-semibold">Akun Sosial Media (Tahap 1 Twibbon)</div>
+          </div>
+          <button
+            onClick={saveSocial}
+            disabled={savingSocial}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingSocial ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            {savingSocial ? "Menyimpan..." : "Simpan"}
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Atur daftar akun Instagram & TikTok yang wajib di-follow peserta pada halaman Twibbon.
+        </p>
+
+        <SocialEditor
+          title="Instagram"
+          icon={<Instagram className="size-4" />}
+          accounts={igAccounts}
+          onChange={setIgAccounts}
+          urlPlaceholder="https://instagram.com/akun"
+        />
+
+        <SocialEditor
+          title="TikTok"
+          icon={<Music2 className="size-4" />}
+          accounts={tiktokAccounts}
+          onChange={setTiktokAccounts}
+          urlPlaceholder="https://tiktok.com/@akun"
+        />
+      </div>
+
       {/* Download Statistics */}
 
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
@@ -258,4 +333,74 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
 function formatDay(day: string) {
   const d = new Date(day + "T00:00:00");
   return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+}
+
+function SocialEditor({
+  title, icon, accounts, onChange, urlPlaceholder,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  accounts: SocialAccount[];
+  onChange: (next: SocialAccount[]) => void;
+  urlPlaceholder: string;
+}) {
+  const update = (i: number, patch: Partial<SocialAccount>) =>
+    onChange(accounts.map((a, idx) => (idx === i ? { ...a, ...patch } : a)));
+  const remove = (i: number) => onChange(accounts.filter((_, idx) => idx !== i));
+  const add = () => onChange([...accounts, { handle: "", url: "", label: "" }]);
+
+  return (
+    <div className="rounded-xl border border-border bg-secondary/30 p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="size-7 rounded-lg bg-card border border-border grid place-items-center text-accent">
+          {icon}
+        </div>
+        <h3 className="font-display text-base font-semibold">{title}</h3>
+        <span className="text-xs text-muted-foreground">({accounts.length} akun)</span>
+      </div>
+
+      {accounts.length === 0 && (
+        <p className="text-xs text-muted-foreground italic">Belum ada akun — tambahkan di bawah.</p>
+      )}
+
+      <div className="space-y-2">
+        {accounts.map((acc, i) => (
+          <div key={i} className="grid sm:grid-cols-[1fr_1fr_1.5fr_auto] gap-2 items-center">
+            <input
+              value={acc.label}
+              onChange={(e) => update(i, { label: e.target.value })}
+              placeholder="Label (mis. Safar Iman)"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <input
+              value={acc.handle}
+              onChange={(e) => update(i, { handle: e.target.value })}
+              placeholder="handle (tanpa @)"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <input
+              value={acc.url}
+              onChange={(e) => update(i, { url: e.target.value })}
+              placeholder={urlPlaceholder}
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            />
+            <button
+              onClick={() => remove(i)}
+              className="inline-flex items-center justify-center size-9 rounded-lg border border-border bg-background hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
+              title="Hapus akun"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={add}
+        className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
+      >
+        <Plus className="size-3.5" /> Tambah Akun {title}
+      </button>
+    </div>
+  );
 }
