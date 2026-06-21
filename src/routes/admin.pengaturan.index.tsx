@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -49,6 +49,12 @@ const ITEMS = [
     icon: FileText,
     title: "Dokumen Self Funded",
     desc: "Custom TTD, stempel, nama & jabatan penandatangan, serta isi teks LOA, Panduan Pembayaran, Konfirmasi Kehadiran, dan Surat Pengantar Proposal.",
+  },
+  {
+    to: "/admin/pengaturan/email",
+    icon: Mail,
+    title: "Template Email",
+    desc: "Custom subjek & isi email otomatis untuk Pendaftaran, Kirim Berkas, Kirim Essay, dan Kontribusi.",
   },
 ] as const;
 
