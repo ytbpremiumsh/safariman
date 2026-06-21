@@ -50,7 +50,7 @@ const STEPS: Step[] = [
   },
   {
     no: 2,
-    title: "Bagikan Twibbon",
+    title: "Bagikan Twibbon & Poster",
     icon: ImageIcon,
     actor: "Peserta",
     desc: "Peserta wajib mendownload frame twibbon dan membagikannya di media sosial.",

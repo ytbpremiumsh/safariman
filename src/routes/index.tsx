@@ -509,7 +509,7 @@ function Quota() {
 function Timeline() {
   const steps: { i: typeof ClipboardList; t: string; d: string; date: string; cta?: { label: string; to: "/pendaftaran" | "/twibbon" | "/berkas" | "/essay" } }[] = [
     { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", date: "1 Juni – 31 Juli 2026", cta: { label: "Daftar Sekarang", to: "/pendaftaran" } },
-    { i: Megaphone, t: "Bagikan Twibbon", d: "Download frame & share di sosial media", date: "1 Juni – 5 Agustus 2026", cta: { label: "Buat Twibbon", to: "/twibbon" } },
+    { i: Megaphone, t: "Bagikan Twibbon & Poster", d: "Download frame & share di sosial media", date: "1 Juni – 5 Agustus 2026", cta: { label: "Buat Twibbon", to: "/twibbon" } },
     { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "1 Juni – 10 Agustus 2026", cta: { label: "Kirim Berkas", to: "/berkas" } },
     { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami", date: "1 Juni – 10 Agustus 2026" },
     { i: ClipboardList, t: "Pengisian Essay", d: "Setelah tunaikan kontribusi, lanjut isi essay", date: "1 Juni – 10 Agustus 2026", cta: { label: "Kirim Essay", to: "/essay" } },

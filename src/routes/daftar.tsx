@@ -301,7 +301,7 @@ function SuccessCard({ code, name, kind }: { code: string; name: string; kind: K
               <ImageIcon className="size-5 text-accent" />
             </div>
             <div>
-              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon & Poster</div>
               <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
             </div>
           </Link>
@@ -322,7 +322,7 @@ function SuccessCard({ code, name, kind }: { code: string; name: string; kind: K
               <ImageIcon className="size-5 text-accent" />
             </div>
             <div>
-              <div className="font-display text-lg font-semibold">Bagikan Twibbon</div>
+              <div className="font-display text-lg font-semibold">Bagikan Twibbon & Poster</div>
               <div className="text-sm text-muted-foreground mt-0.5">Download frame & share di sosmed</div>
             </div>
           </Link>
