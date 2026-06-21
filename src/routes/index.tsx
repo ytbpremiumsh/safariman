@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Sparkles, Globe2, Award, BookOpen, Users, Building2, GraduationCap, Heart,
+  Sparkles, Globe2, Award, BookOpen, Users, Building2, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
@@ -310,15 +310,16 @@ function CountdownSection() {
 
 function Benefits() {
   const items = [
-    { i: Plane, t: "Umrah Full Experience", d: "Perjalanan ibadah lengkap dengan bimbingan ustadz." },
-    { i: Globe2, t: "City Tour Tanah Suci", d: "Eksplorasi Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dan situs bersejarah Makkah-Madinah." },
-    { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional." },
-    { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu." },
-    { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang." },
-    { i: Users, t: "Networking Nasional", d: "Bertemu pemuda Indonesia dari berbagai daerah." },
-    { i: GraduationCap, t: "Campus Visit Timur Tengah", d: "Kunjungan ke universitas terkemuka di Timur Tengah." },
-    { i: Heart, t: "Mentor & Pembinaan", d: "Pendampingan langsung dari mentor berpengalaman." },
+    { i: Plane, t: "Umrah Full Experience", d: "Perjalanan ibadah lengkap dengan bimbingan ustadz.", variant: "emerald" as const },
+    { i: Globe2, t: "City Tour Tanah Suci", d: "Eksplorasi Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dan situs bersejarah Makkah-Madinah.", variant: "gold" as const },
+    { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional.", variant: "emerald" as const },
+    { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu.", variant: "gold" as const },
+    { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang.", variant: "emerald" as const },
+    { i: Users, t: "Networking Nasional", d: "Bertemu pemuda Indonesia dari berbagai daerah.", variant: "gold" as const },
+    { i: UtensilsCrossed, t: "Berbagi Makanan di Makkah dan Madinah", d: "Menjangkau saudara yang membutuhkan di Tanah Suci.", variant: "emerald" as const },
+    { i: Heart, t: "Mentor & Pembinaan", d: "Pendampingan langsung dari mentor berpengalaman.", variant: "gold" as const },
   ];
+
   return (
     <section id="program" className="relative py-24 sm:py-32">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/30 to-background" />
@@ -330,24 +331,67 @@ function Benefits() {
           subtitle="Sebuah pengalaman transformatif yang menggabungkan ibadah, ilmu, dan kontribusi."
         />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-16">
-          {items.map((b, idx) => (
-            <div
-              key={b.t}
-              className="group relative bg-card rounded-3xl p-7 shadow-soft hover-lift border border-border/50 animate-fade-up"
-              style={{ animationDelay: `${idx * 0.05}s` }}
-            >
-              <div className="size-14 rounded-2xl bg-gradient-emerald grid place-items-center mb-5 shadow-emerald group-hover:scale-110 transition-transform">
-                <b.i className="size-6 text-accent" />
+          {items.map((b, idx) => {
+            const isEmerald = b.variant === "emerald";
+            return (
+              <div
+                key={b.t}
+                className={`group relative rounded-[28px] p-[2px] hover-lift shadow-soft animate-fade-up ${
+                  isEmerald
+                    ? "bg-gradient-to-br from-emerald via-emerald/60 to-accent/50"
+                    : "bg-gradient-to-br from-accent via-accent/60 to-emerald/50"
+                }`}
+                style={{ animationDelay: `${idx * 0.05}s` }}
+              >
+                <div
+                  className={`relative h-full rounded-[26px] overflow-hidden p-6 flex flex-col ${
+                    isEmerald
+                      ? "bg-emerald-deep"
+                      : "bg-gradient-to-br from-accent/10 via-background to-emerald/5"
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="relative">
+                      <div className={`absolute -inset-1 rounded-2xl blur-[2px] opacity-70 ${isEmerald ? "bg-accent/40" : "bg-emerald/40"}`} />
+                      <div
+                        className={`relative size-14 rounded-2xl grid place-items-center shadow-soft transition-transform group-hover:scale-110 ${
+                          isEmerald ? "bg-gradient-gold" : "bg-gradient-emerald"
+                        }`}
+                      >
+                        <b.i className={`size-6 ${isEmerald ? "text-emerald-deep" : "text-accent"}`} strokeWidth={1.75} />
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${
+                      isEmerald
+                        ? "bg-accent/15 text-accent"
+                        : "bg-emerald/15 text-emerald-deep"
+                    }`}>
+                      Benefit
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className={`h-px w-6 ${isEmerald ? "bg-accent/50" : "bg-emerald/50"}`} />
+                    <span className={isEmerald ? "text-accent text-xs" : "text-emerald text-xs"}>✦</span>
+                    <span className={`h-px w-6 ${isEmerald ? "bg-accent/50" : "bg-emerald/50"}`} />
+                  </div>
+
+                  <h3 className={`font-display text-xl font-semibold leading-tight ${isEmerald ? "text-background" : "text-emerald-deep"}`}>
+                    {b.t}
+                  </h3>
+                  <p className={`mt-2.5 text-sm leading-relaxed ${isEmerald ? "text-background/80" : "text-muted-foreground"}`}>
+                    {b.d}
+                  </p>
+                </div>
               </div>
-              <h3 className="font-display text-xl font-semibold text-foreground">{b.t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{b.d}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
+
 
 
 function Persyaratan() {
