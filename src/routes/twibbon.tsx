@@ -489,7 +489,7 @@ WhatsApp : ${CP_WHATSAPP}`;
 
             <div className="grid md:grid-cols-2 gap-5 items-stretch">
               {/* Poster card */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col h-full">
                 <div className="rounded-xl overflow-hidden border border-border bg-secondary flex-1">
                   <img src={posterUrl} alt="Poster Safar Iman" className="w-full h-auto block" />
                 </div>
