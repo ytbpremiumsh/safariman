@@ -487,29 +487,31 @@ WhatsApp : ${CP_WHATSAPP}`;
               Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong> beserta caption.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-5 items-start">
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft">
-                <div className="rounded-xl overflow-hidden border border-border bg-secondary">
+            <div className="grid md:grid-cols-2 gap-5 items-stretch">
+              {/* Poster card */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+                <div className="rounded-xl overflow-hidden border border-border bg-secondary flex-1">
                   <img src={posterUrl} alt="Poster Safar Iman" className="w-full h-auto block" />
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
                     onClick={downloadPoster}
-                    className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
                   >
                     <Download className="size-4" /> Download Poster
                   </button>
                   <a
                     href={shareWaPoster}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2.5 text-sm font-bold shadow-gold hover-lift"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-4 py-2.5 text-sm font-bold shadow-gold hover-lift"
                   >
                     <MessageCircle className="size-4" /> Bagikan WhatsApp
                   </a>
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft">
+              {/* Caption card — full-height; CP buttons live at the bottom */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <FileText className="size-4 text-accent" />
@@ -522,26 +524,25 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
-                <pre className="whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 max-h-72 overflow-y-auto font-sans leading-relaxed">
+                <pre className="flex-1 min-h-[220px] whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {caption}
                 </pre>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <a
+                    href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
+                  >
+                    <MessageCircle className="size-4" /> Chat {CP_NAME}
+                  </a>
+                  <button
+                    onClick={copyMessage}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background hover:bg-secondary px-4 py-2.5 text-sm font-medium"
+                  >
+                    <Copy className="size-4" /> Salin Pesan ke CP
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <a
-                href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
-                target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-4 py-2 text-xs font-bold hover-lift"
-              >
-                <MessageCircle className="size-3.5" /> Chat {CP_NAME}
-              </a>
-              <button
-                onClick={copyMessage}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium hover:bg-secondary"
-              >
-                <Copy className="size-3.5" /> Salin Pesan ke CP
-              </button>
             </div>
           </StepSection>
 
