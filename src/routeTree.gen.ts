@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
@@ -36,6 +37,7 @@ import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.penga
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
+import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengaturan.email'
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
 import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
 import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
@@ -47,6 +49,11 @@ import { Route as AdminPesertaSelfFundedPendaftaranRouteImport } from './routes/
 import { Route as AdminPesertaRegulerPendaftaranRouteImport } from './routes/admin.peserta.reguler.pendaftaran'
 import { Route as AdminPesertaRegulerBerkasRouteImport } from './routes/admin.peserta.reguler.berkas'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TwibbonRoute = TwibbonRouteImport.update({
   id: '/twibbon',
   path: '/twibbon',
@@ -184,6 +191,11 @@ const AdminPengaturanGelombangRoute =
     path: '/admin/pengaturan/gelombang',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanEmailRoute = AdminPengaturanEmailRouteImport.update({
+  id: '/admin/pengaturan/email',
+  path: '/admin/pengaturan/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
   id: '/admin/pengaturan/donasi',
   path: '/admin/pengaturan/donasi',
@@ -257,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
@@ -265,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -296,6 +310,7 @@ export interface FileRoutesByTo {
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin': typeof AdminIndexRoute
@@ -304,6 +319,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -334,6 +350,7 @@ export interface FileRoutesById {
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/admin/': typeof AdminIndexRoute
@@ -342,6 +359,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
+  '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -375,6 +393,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/tentang'
     | '/twibbon'
+    | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
@@ -383,6 +402,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/email'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -414,6 +434,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/tentang'
     | '/twibbon'
+    | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin'
@@ -422,6 +443,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/email'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -451,6 +473,7 @@ export interface FileRouteTypes {
     | '/sukses'
     | '/tentang'
     | '/twibbon'
+    | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
     | '/admin/'
@@ -459,6 +482,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
+    | '/admin/pengaturan/email'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -491,6 +515,7 @@ export interface RootRouteChildren {
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -499,6 +524,7 @@ export interface RootRouteChildren {
   AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
   AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
+  AdminPengaturanEmailRoute: typeof AdminPengaturanEmailRoute
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
@@ -513,6 +539,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/twibbon': {
       id: '/twibbon'
       path: '/twibbon'
@@ -702,6 +735,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/email': {
+      id: '/admin/pengaturan/email'
+      path: '/admin/pengaturan/email'
+      fullPath: '/admin/pengaturan/email'
+      preLoaderRoute: typeof AdminPengaturanEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/donasi': {
       id: '/admin/pengaturan/donasi'
       path: '/admin/pengaturan/donasi'
@@ -822,6 +862,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -830,6 +871,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
   AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
+  AdminPengaturanEmailRoute: AdminPengaturanEmailRoute,
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
