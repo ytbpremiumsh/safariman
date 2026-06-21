@@ -330,46 +330,78 @@ WhatsApp : ${CP_WHATSAPP}`;
 
           {/* STEP 1 — Follow Instagram & TikTok */}
           <StepSection n={1} title="Follow Instagram & TikTok" icon={<Instagram className="size-5" />}>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground mb-5">
               Sebelum lanjut, pastikan kamu sudah <strong className="text-foreground">follow</strong> seluruh akun resmi di bawah ini.
             </p>
-            <div className="grid sm:grid-cols-2 gap-2.5">
-              {IG_ACCOUNTS.map((acc) => (
-                <a
-                  key={acc.handle}
-                  href={acc.url}
-                  target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
-                >
-                  <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
-                    <Instagram className="size-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] text-muted-foreground leading-tight">Instagram · {acc.label}</div>
-                    <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
-                </a>
-              ))}
-              {TIKTOK_ACCOUNTS.map((acc) => (
-                <a
-                  key={acc.handle}
-                  href={acc.url}
-                  target="_blank" rel="noopener noreferrer"
-                  className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
-                >
-                  <div className="size-8 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
-                    <Music2 className="size-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] text-muted-foreground leading-tight">TikTok · {acc.label}</div>
-                    <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
-                </a>
-              ))}
+
+            {/* Instagram */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="size-7 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                  <Instagram className="size-3.5" />
+                </div>
+                <h3 className="font-display text-base font-semibold">Instagram</h3>
+                <div className="flex-1 h-px bg-border ml-2" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {igAccounts.map((acc) => (
+                  <a
+                    key={`ig-${acc.handle}`}
+                    href={acc.url}
+                    target="_blank" rel="noopener noreferrer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                  >
+                    <div className="size-8 shrink-0 rounded-lg bg-gradient-to-br from-[#feda75] via-[#d62976] to-[#4f5bd5] grid place-items-center text-white">
+                      <Instagram className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] text-muted-foreground leading-tight">{acc.label}</div>
+                      <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                    </div>
+                    <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                  </a>
+                ))}
+              </div>
             </div>
-            <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+
+            {/* Divider "dan" */}
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">dan</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+
+            {/* TikTok */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="size-7 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
+                  <Music2 className="size-3.5" />
+                </div>
+                <h3 className="font-display text-base font-semibold">TikTok</h3>
+                <div className="flex-1 h-px bg-border ml-2" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {tiktokAccounts.map((acc) => (
+                  <a
+                    key={`tt-${acc.handle}`}
+                    href={acc.url}
+                    target="_blank" rel="noopener noreferrer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-border bg-background/60 hover:bg-secondary px-3 py-2.5 transition-colors"
+                  >
+                    <div className="size-8 shrink-0 rounded-lg bg-foreground grid place-items-center text-background">
+                      <Music2 className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] text-muted-foreground leading-tight">{acc.label}</div>
+                      <div className="text-sm font-semibold text-foreground truncate">@{acc.handle}</div>
+                    </div>
+                    <ArrowRight className="size-3.5 text-muted-foreground group-hover:text-foreground shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-start gap-2 text-xs text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald shrink-0 mt-0.5" />
               <span>Bukti follow akan diminta CP saat verifikasi.</span>
             </div>
