@@ -106,7 +106,11 @@ function EssayPage() {
       if (!ok) throw new Error("Kontribusi belum tercatat atau kode tidak valid");
 
       import("@/lib/api")
-        .then(({ notifyWa }) => notifyWa("essay", code.trim().toUpperCase()))
+        .then(({ notifyWa, notifyEmail }) => {
+          const c = code.trim().toUpperCase();
+          notifyWa("essay", c).catch(() => {});
+          notifyEmail("essay", c).catch(() => {});
+        })
         .catch(() => {});
 
       toast.success("Essay terkirim. Barakallah!");

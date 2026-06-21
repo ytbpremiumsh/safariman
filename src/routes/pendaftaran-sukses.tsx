@@ -76,7 +76,10 @@ function PendaftaranSukses() {
     if (info?.payment_status === "paid" && !notifiedRef.current) {
       notifiedRef.current = true;
       import("@/lib/api")
-        .then(({ notifyWa }) => notifyWa("pendaftaran", code))
+        .then(({ notifyWa, notifyEmail }) => {
+          notifyWa("pendaftaran", code).catch(() => {});
+          notifyEmail("pendaftaran", code).catch(() => {});
+        })
         .catch(() => {});
     }
   }, [info?.payment_status, code]);

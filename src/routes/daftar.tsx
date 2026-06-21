@@ -138,7 +138,10 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       setCode(row.registration_code);
       // Auto-kirim notifikasi WhatsApp (fire & forget) via edge function
       import("@/lib/api")
-        .then(({ notifyWa }) => notifyWa("pendaftaran", row.registration_code))
+        .then(({ notifyWa, notifyEmail }) => {
+          notifyWa("pendaftaran", row.registration_code).catch(() => {});
+          notifyEmail("pendaftaran", row.registration_code).catch(() => {});
+        })
         .catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
       toast.success("Pendaftaran berhasil! Notifikasi WA sedang dikirim ✨");
