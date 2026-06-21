@@ -292,7 +292,6 @@ WhatsApp : ${CP_WHATSAPP}`;
     toast.success("Caption disalin! Siap di-paste 🎉");
   };
 
-  const shareWaPoster = `https://wa.me/?text=${encodeURIComponent(caption)}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/40 via-background to-secondary/30 relative">
