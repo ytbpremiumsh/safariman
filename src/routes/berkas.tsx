@@ -107,7 +107,11 @@ function BerkasPage() {
       if (!ok) throw new Error("Kode tidak valid");
 
       import("@/lib/api")
-        .then(({ notifyWa }) => notifyWa("berkas", code.trim().toUpperCase()))
+        .then(({ notifyWa, notifyEmail }) => {
+          const c = code.trim().toUpperCase();
+          notifyWa("berkas", c).catch(() => {});
+          notifyEmail("berkas", c).catch(() => {});
+        })
         .catch(() => {});
 
       toast.success("Berkas terkirim. Barakallah!");

@@ -4,6 +4,7 @@ import { Buffer } from "node:buffer";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { sendWaForEvent } from "../_shared/wa.ts";
+import { sendEmailForEvent } from "../_shared/email.ts";
 
 function verify(rawBody: string, signature: string | null, secret: string): boolean {
   if (!signature) return false;
@@ -73,11 +74,29 @@ Deno.serve(async (req) => {
           .select("registration_code, category")
           .eq("payment_invoice_id", invoiceId)
           .maybeSingle();
-        if (p?.registration_code && (p.category === "gelombang_1" || p.category === "gelombang_2")) {
-          await sendWaForEvent("pendaftaran", p.registration_code);
+        if (p?.registration_code) {
+          if (p.category === "gelombang_1" || p.category === "gelombang_2") {
+            await sendWaForEvent("pendaftaran", p.registration_code);
+          }
+          await sendEmailForEvent("pendaftaran", p.registration_code);
         }
       } catch (e) {
-        console.error("Gagal kirim WA notif gelombang", e);
+        console.error("Gagal kirim notif registrasi", e);
+      }
+    }
+
+    if (updatedDonation) {
+      try {
+        const { data: p } = await supabaseAdmin
+          .from("participants")
+          .select("registration_code")
+          .eq("donation_invoice_id", invoiceId)
+          .maybeSingle();
+        if (p?.registration_code) {
+          await sendEmailForEvent("kontribusi", p.registration_code);
+        }
+      } catch (e) {
+        console.error("Gagal kirim email kontribusi", e);
       }
     }
 
