@@ -312,6 +312,7 @@ export type Database = {
       get_countdown_target: { Args: never; Returns: string }
       get_gelombang_config: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
+      get_poster_url: { Args: never; Returns: string }
       get_twibbon_download_stats: {
         Args: { p_days?: number }
         Returns: {

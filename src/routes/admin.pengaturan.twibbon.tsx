@@ -16,10 +16,13 @@ function TwibbonSetting() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [twibbonFrameUrl, setTwibbonFrameUrl] = useState("");
+  const [posterUrl, setPosterUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
   const inputRef = useRef<HTMLInputElement>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
 
   const loadStats = async (days: number) => {
     const { data } = await supabase.rpc("get_twibbon_download_stats", { p_days: days });
@@ -31,11 +34,13 @@ function TwibbonSetting() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const [{ data }] = await Promise.all([
-        supabase.from("app_settings").select("value").eq("key", "twibbon_frame_url").maybeSingle(),
+      const [{ data: rows }] = await Promise.all([
+        supabase.from("app_settings").select("key,value").in("key", ["twibbon_frame_url", "poster_url"]),
         loadStats(rangeDays),
       ]);
-      setTwibbonFrameUrl(data?.value ?? "");
+      const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
+      setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
+      setPosterUrl((map.get("poster_url") as string) ?? "");
       setLoading(false);
     })();
      
@@ -52,31 +57,48 @@ function TwibbonSetting() {
   const maxCount = useMemo(() => Math.max(1, ...stats.map((s) => s.count)), [stats]);
 
 
-  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (!f.type.startsWith("image/")) { toast.error("File harus gambar (PNG transparan disarankan)"); return; }
+  const uploadAsset = async (
+    f: File,
+    key: "twibbon_frame_url" | "poster_url",
+    prefix: string,
+    setUrl: (u: string) => void,
+    setBusy: (b: boolean) => void,
+    ref: React.RefObject<HTMLInputElement | null>
+  ) => {
+    if (!f.type.startsWith("image/")) { toast.error("File harus gambar"); return; }
     if (f.size > 8 * 1024 * 1024) { toast.error("Maks 8MB"); return; }
-    setUploading(true);
+    setBusy(true);
     try {
       const ext = (f.name.split(".").pop() || "png").toLowerCase();
-      const path = `frame-${Date.now()}.${ext}`;
+      const path = `${prefix}-${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("twibbon-assets").upload(path, f, { upsert: true, contentType: f.type });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("twibbon-assets").getPublicUrl(path);
       const url = `${data.publicUrl}?v=${Date.now()}`;
       const { error: sErr } = await supabase.from("app_settings").upsert({
-        key: "twibbon_frame_url", value: url, updated_at: new Date().toISOString(),
+        key, value: url, updated_at: new Date().toISOString(),
       });
       if (sErr) throw sErr;
-      setTwibbonFrameUrl(url);
-      toast.success("Frame Twibbon berhasil diperbarui");
+      setUrl(url);
+      toast.success("Berhasil diperbarui");
     } catch (err: any) {
-      toast.error(err?.message ?? "Gagal upload frame");
+      toast.error(err?.message ?? "Gagal upload");
     } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
     }
+  };
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    await uploadAsset(f, "twibbon_frame_url", "frame", setTwibbonFrameUrl, setUploading, inputRef);
+  };
+
+  const onPickPoster = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    await uploadAsset(f, "poster_url", "poster", setPosterUrl, setUploadingPoster, posterInputRef);
   };
 
   if (!ready || loading) return <AdminLoading />;
@@ -126,7 +148,47 @@ function TwibbonSetting() {
         </div>
       </div>
 
+      {/* Poster Setting */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-4 max-w-3xl">
+        <div className="flex items-center gap-2">
+          <ImageIcon className="size-5 text-accent" />
+          <div className="font-display text-lg font-semibold">Poster Aktif</div>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Poster ini ditampilkan di halaman Twibbon (Tahap 3) untuk diunduh peserta dan dibagikan ke 5 grup WhatsApp.
+          Disarankan rasio <strong>1:1 atau 4:5</strong> (JPG/PNG, maks 8MB).
+        </p>
+        <div className="flex items-start gap-5 flex-wrap pt-2">
+          <div className="w-40 rounded-2xl overflow-hidden border border-border bg-secondary shrink-0">
+            {posterUrl ? (
+              <img src={posterUrl} alt="Poster aktif" className="w-full h-auto block" />
+            ) : (
+              <div className="aspect-square grid place-items-center">
+                <span className="text-xs text-muted-foreground text-center px-2">Pakai poster default</span>
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-[220px] space-y-3">
+            <input ref={posterInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onPickPoster} className="hidden" />
+            <button
+              onClick={() => posterInputRef.current?.click()}
+              disabled={uploadingPoster}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+            >
+              {uploadingPoster ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+              {uploadingPoster ? "Mengupload..." : "Upload Poster Baru"}
+            </button>
+            {posterUrl && (
+              <div className="text-xs text-muted-foreground break-all">
+                URL: <a href={posterUrl} target="_blank" rel="noreferrer" className="text-accent underline">{posterUrl}</a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Download Statistics */}
+
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">

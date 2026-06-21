@@ -144,7 +144,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         })
         .catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
-      toast.success("Pendaftaran berhasil! Notifikasi WA sedang dikirim ✨");
+      toast.success("Pendaftaran berhasil ✨");
     } catch (e) {
       console.error(e);
       toast.error("Terjadi kesalahan. Coba lagi.");
