@@ -23,7 +23,7 @@ import makkahEscalatorImg from "@/assets/makkah-escalator.jpg";
 import seminarImg from "@/assets/seminar.jpg";
 import sharingImg from "@/assets/sharing.jpg";
 import persyaratanPoster from "@/assets/persyaratan-poster.jpg";
-import jamaahIhram from "@/assets/jamaah-ihram.png";
+import hasanahFaq from "@/assets/hasanah-faq.png.asset.json";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoSafarImanBadge from "@/assets/logo-safar-iman-badge.png";
