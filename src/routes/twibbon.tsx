@@ -511,7 +511,7 @@ WhatsApp : ${CP_WHATSAPP}`;
               </div>
 
               {/* Caption card — full-height; CP buttons live at the bottom */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col h-full">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <FileText className="size-4 text-accent" />
@@ -524,7 +524,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
-                <pre className="flex-1 min-h-[220px] whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
+                <pre className="flex-1 min-h-0 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {caption}
                 </pre>
                 <div className="mt-3 grid grid-cols-2 gap-2">
