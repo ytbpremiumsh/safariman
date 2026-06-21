@@ -516,7 +516,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
-                <pre className="flex-1 min-h-[220px] whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
+                <pre className="h-[280px] whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {caption}
                 </pre>
                 <div className="mt-3 grid grid-cols-2 gap-2">
