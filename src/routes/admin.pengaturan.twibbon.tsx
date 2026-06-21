@@ -63,7 +63,7 @@ function TwibbonSetting() {
     prefix: string,
     setUrl: (u: string) => void,
     setBusy: (b: boolean) => void,
-    ref: React.RefObject<HTMLInputElement>
+    ref: React.RefObject<HTMLInputElement | null>
   ) => {
     if (!f.type.startsWith("image/")) { toast.error("File harus gambar"); return; }
     if (f.size > 8 * 1024 * 1024) { toast.error("Maks 8MB"); return; }
