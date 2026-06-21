@@ -11,14 +11,16 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 const CP_WHATSAPP = "6281234567890";
 const CP_NAME = "CP Safar Iman";
 
-const IG_ACCOUNTS = [
+type SocialAccount = { handle: string; url: string; label: string };
+
+const DEFAULT_IG_ACCOUNTS: SocialAccount[] = [
   { handle: "safariman.id", url: "https://instagram.com/safariman.id", label: "Safar Iman" },
   { handle: "hasanah.tours.travel", url: "https://instagram.com/hasanah.tours.travel", label: "Hasanah Tours" },
   { handle: "hasanah.hajiumrohsemarang", url: "https://instagram.com/hasanah.hajiumrohsemarang", label: "Hasanah Semarang" },
   { handle: "prestasikita", url: "https://instagram.com/prestasikita", label: "Prestasi Kita" },
 ];
 
-const TIKTOK_ACCOUNTS = [
+const DEFAULT_TIKTOK_ACCOUNTS: SocialAccount[] = [
   { handle: "safariman.id", url: "https://tiktok.com/@safariman.id", label: "Safar Iman" },
 ];
 
@@ -39,6 +41,8 @@ function TwibbonPage() {
   const [frameImg, setFrameImg] = useState<HTMLImageElement | null>(null);
   const [photoImg, setPhotoImg] = useState<HTMLImageElement | null>(null);
   const [posterUrl, setPosterUrl] = useState<string>(defaultPoster);
+  const [igAccounts, setIgAccounts] = useState<SocialAccount[]>(DEFAULT_IG_ACCOUNTS);
+  const [tiktokAccounts, setTiktokAccounts] = useState<SocialAccount[]>(DEFAULT_TIKTOK_ACCOUNTS);
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
@@ -49,14 +53,18 @@ function TwibbonPage() {
   // Load configurable frame URL — falls back to bundled default if none configured
   useEffect(() => {
     (async () => {
-      const [{ data: frame }, { data: poster }] = await Promise.all([
+      const [{ data: frame }, { data: poster }, { data: social }] = await Promise.all([
         supabase.rpc("get_twibbon_frame_url"),
         supabase.rpc("get_poster_url"),
+        supabase.rpc("get_social_accounts"),
       ]);
       const fUrl = (typeof frame === "string" && frame.trim()) ? frame.trim() : defaultFrame;
       setFrameUrl(fUrl);
       const pUrl = (typeof poster === "string" && poster.trim()) ? poster.trim() : defaultPoster;
       setPosterUrl(pUrl);
+      const s = social as { instagram?: SocialAccount[]; tiktok?: SocialAccount[] } | null;
+      if (Array.isArray(s?.instagram) && s!.instagram.length) setIgAccounts(s!.instagram);
+      if (Array.isArray(s?.tiktok) && s!.tiktok.length) setTiktokAccounts(s!.tiktok);
     })();
   }, []);
 
