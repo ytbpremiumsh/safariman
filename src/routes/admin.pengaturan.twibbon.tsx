@@ -148,7 +148,47 @@ function TwibbonSetting() {
         </div>
       </div>
 
+      {/* Poster Setting */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-4 max-w-3xl">
+        <div className="flex items-center gap-2">
+          <ImageIcon className="size-5 text-accent" />
+          <div className="font-display text-lg font-semibold">Poster Aktif</div>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Poster ini ditampilkan di halaman Twibbon (Tahap 3) untuk diunduh peserta dan dibagikan ke 5 grup WhatsApp.
+          Disarankan rasio <strong>1:1 atau 4:5</strong> (JPG/PNG, maks 8MB).
+        </p>
+        <div className="flex items-start gap-5 flex-wrap pt-2">
+          <div className="w-40 rounded-2xl overflow-hidden border border-border bg-secondary shrink-0">
+            {posterUrl ? (
+              <img src={posterUrl} alt="Poster aktif" className="w-full h-auto block" />
+            ) : (
+              <div className="aspect-square grid place-items-center">
+                <span className="text-xs text-muted-foreground text-center px-2">Pakai poster default</span>
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-[220px] space-y-3">
+            <input ref={posterInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onPickPoster} className="hidden" />
+            <button
+              onClick={() => posterInputRef.current?.click()}
+              disabled={uploadingPoster}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+            >
+              {uploadingPoster ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+              {uploadingPoster ? "Mengupload..." : "Upload Poster Baru"}
+            </button>
+            {posterUrl && (
+              <div className="text-xs text-muted-foreground break-all">
+                URL: <a href={posterUrl} target="_blank" rel="noreferrer" className="text-accent underline">{posterUrl}</a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Download Statistics */}
+
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
