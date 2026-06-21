@@ -57,6 +57,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/donasi", label: "Donasi" },
           { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi" },
           { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
+          { to: "/admin/pengaturan/email", label: "Template Email" },
         ],
       },
     ],
