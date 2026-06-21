@@ -23,6 +23,9 @@ function TwibbonSetting() {
   const [uploadingPoster, setUploadingPoster] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
+  const [igAccounts, setIgAccounts] = useState<SocialAccount[]>([]);
+  const [tiktokAccounts, setTiktokAccounts] = useState<SocialAccount[]>([]);
+  const [savingSocial, setSavingSocial] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const posterInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,16 +40,49 @@ function TwibbonSetting() {
     if (!ready) return;
     (async () => {
       const [{ data: rows }] = await Promise.all([
-        supabase.from("app_settings").select("key,value").in("key", ["twibbon_frame_url", "poster_url"]),
+        supabase.from("app_settings").select("key,value").in("key", [
+          "twibbon_frame_url", "poster_url", "social_ig_accounts", "social_tiktok_accounts",
+        ]),
         loadStats(rangeDays),
       ]);
       const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
       setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
       setPosterUrl((map.get("poster_url") as string) ?? "");
+      const parse = (raw: unknown): SocialAccount[] => {
+        try {
+          const v = typeof raw === "string" ? JSON.parse(raw) : raw;
+          return Array.isArray(v) ? v.map((x: any) => ({
+            handle: String(x.handle ?? ""), url: String(x.url ?? ""), label: String(x.label ?? ""),
+          })) : [];
+        } catch { return []; }
+      };
+      setIgAccounts(parse(map.get("social_ig_accounts")));
+      setTiktokAccounts(parse(map.get("social_tiktok_accounts")));
       setLoading(false);
     })();
      
   }, [ready]);
+
+  const saveSocial = async () => {
+    setSavingSocial(true);
+    try {
+      const clean = (list: SocialAccount[]) =>
+        list.map((a) => ({ handle: a.handle.trim(), url: a.url.trim(), label: a.label.trim() }))
+          .filter((a) => a.handle && a.url);
+      const now = new Date().toISOString();
+      const { error } = await supabase.from("app_settings").upsert([
+        { key: "social_ig_accounts", value: JSON.stringify(clean(igAccounts)), updated_at: now },
+        { key: "social_tiktok_accounts", value: JSON.stringify(clean(tiktokAccounts)), updated_at: now },
+      ]);
+      if (error) throw error;
+      toast.success("Akun sosial media tersimpan");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Gagal menyimpan");
+    } finally {
+      setSavingSocial(false);
+    }
+  };
+
 
   useEffect(() => {
     if (ready && !loading) loadStats(rangeDays);
