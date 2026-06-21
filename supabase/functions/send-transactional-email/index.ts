@@ -77,14 +77,7 @@ Deno.serve(async (req) => {
       }
     )
   }
-    return new Response(
-      JSON.stringify({ error: 'Invalid JSON in request body' }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
-  }
+
 
   if (!templateName) {
     return new Response(
