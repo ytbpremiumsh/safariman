@@ -30,7 +30,7 @@ Pelajar, mahasiswa, dan profesional muda usia 17–30 tahun. Wajib Muslim, sehat
 
 # Tahapan seleksi
 1) Pendaftaran online & dapat Kode Pendaftaran (HXP-xxxx)
-2) Bagikan Twibbon
+2) Bagikan Twibbon & Poster
 3) Kirim Berkas & Essay (CV, foto, 3 essay)
 4) Seleksi Administrasi
 5) Interview online
