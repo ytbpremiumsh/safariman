@@ -315,22 +315,26 @@ Deno.serve(async (req) => {
     status: 'pending',
   })
 
+  const fromHeader = fromOverride || `${SITE_NAME} <noreply@${FROM_DOMAIN}>`
+  const enqueuePayload: Record<string, any> = {
+    message_id: messageId,
+    to: effectiveRecipient,
+    from: fromHeader,
+    sender_domain: SENDER_DOMAIN,
+    subject: resolvedSubject,
+    html,
+    text: plainText,
+    purpose: 'transactional',
+    label: templateName,
+    idempotency_key: idempotencyKey,
+    unsubscribe_token: unsubscribeToken,
+    queued_at: new Date().toISOString(),
+  }
+  if (replyToOverride) enqueuePayload.reply_to = replyToOverride
+
   const { error: enqueueError } = await supabase.rpc('enqueue_email', {
     queue_name: 'transactional_emails',
-    payload: {
-      message_id: messageId,
-      to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-      sender_domain: SENDER_DOMAIN,
-      subject: resolvedSubject,
-      html,
-      text: plainText,
-      purpose: 'transactional',
-      label: templateName,
-      idempotency_key: idempotencyKey,
-      unsubscribe_token: unsubscribeToken,
-      queued_at: new Date().toISOString(),
-    },
+    payload: enqueuePayload,
   })
 
   if (enqueueError) {
