@@ -55,6 +55,8 @@ Deno.serve(async (req) => {
   let idempotencyKey: string
   let messageId: string
   let templateData: Record<string, any> = {}
+  let fromOverride: string | undefined
+  let replyToOverride: string | undefined
   try {
     const body = await req.json()
     templateName = body.templateName || body.template_name
@@ -64,6 +66,8 @@ Deno.serve(async (req) => {
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
     }
+    if (typeof body.from === 'string') fromOverride = body.from
+    if (typeof body.replyTo === 'string') replyToOverride = body.replyTo
   } catch {
     return new Response(
       JSON.stringify({ error: 'Invalid JSON in request body' }),
@@ -73,6 +77,7 @@ Deno.serve(async (req) => {
       }
     )
   }
+
 
   if (!templateName) {
     return new Response(
@@ -303,22 +308,26 @@ Deno.serve(async (req) => {
     status: 'pending',
   })
 
+  const fromHeader = fromOverride || `${SITE_NAME} <noreply@${FROM_DOMAIN}>`
+  const enqueuePayload: Record<string, any> = {
+    message_id: messageId,
+    to: effectiveRecipient,
+    from: fromHeader,
+    sender_domain: SENDER_DOMAIN,
+    subject: resolvedSubject,
+    html,
+    text: plainText,
+    purpose: 'transactional',
+    label: templateName,
+    idempotency_key: idempotencyKey,
+    unsubscribe_token: unsubscribeToken,
+    queued_at: new Date().toISOString(),
+  }
+  if (replyToOverride) enqueuePayload.reply_to = replyToOverride
+
   const { error: enqueueError } = await supabase.rpc('enqueue_email', {
     queue_name: 'transactional_emails',
-    payload: {
-      message_id: messageId,
-      to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-      sender_domain: SENDER_DOMAIN,
-      subject: resolvedSubject,
-      html,
-      text: plainText,
-      purpose: 'transactional',
-      label: templateName,
-      idempotency_key: idempotencyKey,
-      unsubscribe_token: unsubscribeToken,
-      queued_at: new Date().toISOString(),
-    },
+    payload: enqueuePayload,
   })
 
   if (enqueueError) {

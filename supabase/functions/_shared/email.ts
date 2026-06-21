@@ -15,6 +15,18 @@ const BODY_KEY: Record<EmailEvent, string> = {
   essay: "email_template_essay_body",
   kontribusi: "email_template_kontribusi_body",
 };
+const HTML_KEY: Record<EmailEvent, string> = {
+  pendaftaran: "email_template_pendaftaran_is_html",
+  berkas: "email_template_berkas_is_html",
+  essay: "email_template_essay_is_html",
+  kontribusi: "email_template_kontribusi_is_html",
+};
+
+export const SENDER_SETTING_KEYS = [
+  "email_sender_name",
+  "email_sender_local",
+  "email_reply_to",
+] as const;
 
 export const DEFAULT_EMAIL_TEMPLATES: Record<EmailEvent, { subject: string; body: string }> = {
   pendaftaran: {
@@ -29,27 +41,17 @@ export const DEFAULT_EMAIL_TEMPLATES: Record<EmailEvent, { subject: string; body
   berkas: {
     subject: "Berkas Pendaftaran Diterima — {kode}",
     body:
-      "Assalamualaikum {nama},\n\n" +
-      "Berkas pendaftaranmu (CV & foto) sudah kami terima dengan kode {kode}.\n" +
-      "Selanjutnya silakan lanjutkan ke tahap Kontribusi dan pengisian Essay.\n\n" +
-      "Barakallah,\nTim Safar Iman",
+      "Assalamualaikum {nama},\n\nBerkas pendaftaranmu (CV & foto) sudah kami terima dengan kode {kode}.\nSelanjutnya silakan lanjutkan ke tahap Kontribusi dan pengisian Essay.\n\nBarakallah,\nTim Safar Iman",
   },
   essay: {
     subject: "Essay Pendaftaran Diterima — {kode}",
     body:
-      "Assalamualaikum {nama},\n\n" +
-      "Essay-mu sudah kami terima dengan kode {kode}.\n" +
-      "Tim seleksi akan meninjau dan pengumuman akan diumumkan melalui halaman resmi.\n\n" +
-      "Barakallah,\nTim Safar Iman",
+      "Assalamualaikum {nama},\n\nEssay-mu sudah kami terima dengan kode {kode}.\nTim seleksi akan meninjau dan pengumuman akan diumumkan melalui halaman resmi.\n\nBarakallah,\nTim Safar Iman",
   },
   kontribusi: {
     subject: "Kontribusi Diterima — Barakallah {nama}",
     body:
-      "Assalamualaikum {nama},\n\n" +
-      "Alhamdulillah, kontribusi kebaikanmu untuk program Safar Iman sudah tercatat dengan kode {kode}.\n" +
-      "Semoga Allah membalas dengan kebaikan berlipat.\n\n" +
-      "Selanjutnya, silakan lengkapi Essay seleksi.\n\n" +
-      "Barakallah,\nTim Safar Iman",
+      "Assalamualaikum {nama},\n\nAlhamdulillah, kontribusi kebaikanmu untuk program Safar Iman sudah tercatat dengan kode {kode}.\nSemoga Allah membalas dengan kebaikan berlipat.\n\nSelanjutnya, silakan lengkapi Essay seleksi.\n\nBarakallah,\nTim Safar Iman",
   },
 };
 
@@ -60,6 +62,10 @@ const KATEGORI_LABEL: Record<string, string> = {
   gelombang_1: "Fast Track Gelombang 1",
   gelombang_2: "Fast Track Gelombang 2",
 };
+
+const FROM_DOMAIN = "safariman.id";
+const DEFAULT_SENDER_NAME = "Safar Iman";
+const DEFAULT_SENDER_LOCAL = "noreply";
 
 function fill(tpl: string, vars: Record<string, string>) {
   return tpl.replace(/\\n/g, "\n").replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
@@ -74,6 +80,22 @@ function escapeHtml(s: string) {
     .replace(/'/g, "&#39;");
 }
 
+// Sanitize a local-part for the From email address. Only allow [a-z0-9._-].
+function sanitizeLocal(s: string) {
+  const clean = (s || "").toLowerCase().trim().replace(/[^a-z0-9._-]/g, "");
+  return clean || DEFAULT_SENDER_LOCAL;
+}
+
+// Sanitize a display name for use in a header. Strip any chars that would
+// break the From header (CR/LF, quotes, angle brackets, commas).
+function sanitizeName(s: string) {
+  return (s || "").replace(/[\r\n"<>,]/g, "").trim() || DEFAULT_SENDER_NAME;
+}
+
+function isValidEmail(s: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
 export async function sendEmailForEvent(event: EmailEvent, code: string) {
   const admin = getAdmin();
   const { data: p } = await admin
@@ -86,15 +108,17 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
 
   const sKey = SUBJECT_KEY[event];
   const bKey = BODY_KEY[event];
+  const hKey = HTML_KEY[event];
   const { data: settings } = await admin
     .from("app_settings")
     .select("key,value")
-    .in("key", [sKey, bKey]);
+    .in("key", [sKey, bKey, hKey, ...SENDER_SETTING_KEYS]);
   const cfg = Object.fromEntries((settings ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
 
   const def = DEFAULT_EMAIL_TEMPLATES[event];
   const subjectTpl = cfg[sKey] || def.subject;
   const bodyTpl = cfg[bKey] || def.body;
+  const isHtml = cfg[hKey] === "true";
 
   const vars = {
     nama: p.full_name ?? "",
@@ -102,14 +126,24 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
     kategori: KATEGORI_LABEL[p.category ?? ""] ?? (p.category ?? "-"),
   };
   const subject = fill(subjectTpl, vars);
-  const bodyText = fill(bodyTpl, vars);
-  const bodyHtml = escapeHtml(bodyText).replace(/\n/g, "<br/>");
+  const filledBody = fill(bodyTpl, vars);
+  // When isHtml=true the admin wrote raw HTML — pass through as-is.
+  // When false, escape and convert newlines to <br/> so plain text still renders.
+  const bodyHtml = isHtml ? filledBody : escapeHtml(filledBody).replace(/\n/g, "<br/>");
+
+  const senderName = sanitizeName(cfg.email_sender_name);
+  const senderLocal = sanitizeLocal(cfg.email_sender_local);
+  const fromHeader = `${senderName} <${senderLocal}@${FROM_DOMAIN}>`;
+  const replyToRaw = (cfg.email_reply_to || "").trim();
+  const replyTo = replyToRaw && isValidEmail(replyToRaw) ? replyToRaw : undefined;
 
   const { error } = await admin.functions.invoke("send-transactional-email", {
     body: {
       templateName: "custom-event",
       recipientEmail: p.email,
-      idempotencyKey: `${event}-${p.registration_code}`,
+      idempotencyKey: `${event}-${p.registration_code}-${Date.now()}`,
+      from: fromHeader,
+      replyTo,
       templateData: {
         subject,
         nama: vars.nama,
@@ -117,6 +151,7 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
         kategori: vars.kategori,
         bodyHtml,
         preview: subject,
+        senderName,
       },
     },
   });
