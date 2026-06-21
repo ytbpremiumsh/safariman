@@ -11,11 +11,16 @@ import { Input } from "@/components/ui/input";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
-import apresiasiKelasAsset from "@/assets/apresiasi-kelas-online.jpg.asset.json";
-import cardKaabaAsset from "@/assets/donasi-card-kaaba.jpg.asset.json";
-import cardNabawiAsset from "@/assets/donasi-card-nabawi.jpg.asset.json";
-import cardHaramAsset from "@/assets/donasi-card-haram.jpg.asset.json";
-import apresiasiSirahAsset from "@/assets/apresiasi-kajian-sirah.jpg.asset.json";
+import apresiasiKelasUrl from "@/assets/apresiasi-kelas-online.jpg";
+import cardKaabaUrl from "@/assets/donasi-card-kaaba.jpg";
+import cardNabawiUrl from "@/assets/donasi-card-nabawi.jpg";
+import cardHaramUrl from "@/assets/donasi-card-haram.jpg";
+import apresiasiSirahUrl from "@/assets/apresiasi-kajian-sirah.jpg";
+const apresiasiKelasAsset = { url: apresiasiKelasUrl };
+const cardKaabaAsset = { url: cardKaabaUrl };
+const cardNabawiAsset = { url: cardNabawiUrl };
+const cardHaramAsset = { url: cardHaramUrl };
+const apresiasiSirahAsset = { url: apresiasiSirahUrl };
 
 export const Route = createFileRoute("/donasi")({
   validateSearch: z.object({ code: z.string().optional() }),
