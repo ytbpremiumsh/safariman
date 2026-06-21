@@ -225,6 +225,43 @@ function TwibbonSetting() {
         </div>
       </div>
 
+      {/* Social Accounts Editor */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <Instagram className="size-5 text-accent" />
+            <div className="font-display text-lg font-semibold">Akun Sosial Media (Tahap 1 Twibbon)</div>
+          </div>
+          <button
+            onClick={saveSocial}
+            disabled={savingSocial}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingSocial ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            {savingSocial ? "Menyimpan..." : "Simpan"}
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Atur daftar akun Instagram & TikTok yang wajib di-follow peserta pada halaman Twibbon.
+        </p>
+
+        <SocialEditor
+          title="Instagram"
+          icon={<Instagram className="size-4" />}
+          accounts={igAccounts}
+          onChange={setIgAccounts}
+          urlPlaceholder="https://instagram.com/akun"
+        />
+
+        <SocialEditor
+          title="TikTok"
+          icon={<Music2 className="size-4" />}
+          accounts={tiktokAccounts}
+          onChange={setTiktokAccounts}
+          urlPlaceholder="https://tiktok.com/@akun"
+        />
+      </div>
+
       {/* Download Statistics */}
 
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
