@@ -419,8 +419,8 @@ function Persyaratan() {
             <div aria-hidden className="absolute inset-x-4 bottom-6 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
             <div aria-hidden className="absolute inset-x-12 bottom-3 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
             <img
-              src={jamaahIhram}
-              alt="Jamaah muda berikhram"
+              src={hasanahFaq.url}
+              alt="Jamaah Hasanah berihram"
               loading="lazy"
               width={1024}
               height={1024}
