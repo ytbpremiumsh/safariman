@@ -347,7 +347,7 @@ function Benefits() {
                   className={`relative h-full rounded-[26px] overflow-hidden p-6 flex flex-col ${
                     isEmerald
                       ? "bg-emerald-deep"
-                      : "bg-card"
+                      : "bg-gradient-to-br from-accent/10 via-background to-emerald/5"
                   }`}
                 >
                   <div className="flex items-start justify-between mb-5">
