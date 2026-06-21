@@ -3,9 +3,18 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export type WaEvent = "pendaftaran" | "berkas" | "essay";
+export type EmailEvent = "pendaftaran" | "berkas" | "essay" | "kontribusi";
 
 export async function notifyWa(event: WaEvent, code: string) {
   const { data, error } = await supabase.functions.invoke("wa-notify", {
+    body: { event, code },
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function notifyEmail(event: EmailEvent, code: string) {
+  const { data, error } = await supabase.functions.invoke("email-notify", {
     body: { event, code },
   });
   if (error) throw error;
