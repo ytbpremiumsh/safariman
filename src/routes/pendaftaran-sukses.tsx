@@ -305,7 +305,7 @@ function PendingView({
         <Loader2 className="size-12 animate-spin text-accent mx-auto mb-4" />
         <h1 className="font-display text-3xl font-semibold">Menunggu Pembayaran</h1>
         <p className="text-muted-foreground mt-3 max-w-md mx-auto">
-          Halo <strong>{info.full_name}</strong>, kami sedang menunggu konfirmasi pembayaran dari Mayar.
+          Halo <strong>{info.full_name}</strong>, kami sedang menunggu konfirmasi pembayaranmu.
           Halaman ini akan otomatis ter-update setiap 5 detik.
         </p>
       </div>
