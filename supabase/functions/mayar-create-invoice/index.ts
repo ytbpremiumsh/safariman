@@ -41,18 +41,32 @@ Deno.serve(async (req) => {
     if (!force && p.donation_url && p.donation_status === "pending")
       return json({ ok: true, url: p.donation_url, reused: true });
 
+    const baseDescription =
+      cfg.mayar_donation_description ||
+      "Kontribusi peserta untuk mendukung operasional program, kegiatan sosial, berbagi makanan, wakaf Al-Qur'an, dan keberlangsungan kegiatan Safar Iman.";
+    const description = `Kontribusi Donasi Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code} — ${baseDescription}`;
+    const itemDescription = `Donasi Kontribusi a/n ${p.full_name} — Kode ${p.registration_code}`;
+    const origin = req.headers.get("origin") || req.headers.get("referer") || "";
+    const redirectUrl =
+      cfg.mayar_redirect_url || `${origin.replace(/\/$/, "")}/donasi?code=${encodeURIComponent(code)}`;
+
     const body = {
       name: p.full_name,
+      customerName: p.full_name,
       email: p.email,
+      customerEmail: p.email,
       mobile: p.whatsapp,
+      customerMobile: p.whatsapp,
       redirectUrl,
       description,
-      items: [{ description, quantity: 1, rate: amount }],
+      items: [{ description: itemDescription, quantity: 1, rate: amount }],
       extraData: {
         code: p.registration_code,
         registration_code: p.registration_code,
         payment_type: "donation",
         category: p.category,
+        participant_name: p.full_name,
+        participant_email: p.email,
       },
     };
 
