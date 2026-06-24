@@ -480,15 +480,14 @@ WhatsApp : ${CP_WHATSAPP}`;
             </div>
           </StepSection>
 
-          {/* STEP 3 — Poster & Caption */}
-          <StepSection n={3} title="Poster & Caption — Bagikan ke 5 Grup WhatsApp" icon={<Sparkles className="size-5" />}>
+          {/* STEP 3 — Poster */}
+          <StepSection n={3} title="Poster — Bagikan ke 5 Grup WhatsApp" icon={<Sparkles className="size-5" />}>
             <p className="text-sm text-muted-foreground mb-4">
-              Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong> beserta caption.
+              Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong>.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-5 items-stretch">
-              {/* Poster card */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col h-full">
+            <div className="flex justify-center">
+              <div className="w-full max-w-xl bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
                 <div className="rounded-xl overflow-hidden border border-border bg-secondary">
                   <img src={posterUrl} alt="Poster Safar Iman" className="w-full h-auto object-contain block mx-auto" />
                 </div>
@@ -501,9 +500,17 @@ WhatsApp : ${CP_WHATSAPP}`;
                   </button>
                 </div>
               </div>
+            </div>
+          </StepSection>
 
-              {/* Caption card */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col h-full">
+          {/* STEP 4 — Caption */}
+          <StepSection n={4} title="Caption — Twibbon Instagram & Poster WhatsApp" icon={<FileText className="size-5" />}>
+            <p className="text-sm text-muted-foreground mb-4">
+              Caption digunakan untuk <strong className="text-foreground">Twibbon Instagram</strong> dan <strong className="text-foreground">Kirim Poster ke Social Media WhatsApp</strong>.
+            </p>
+
+            <div className="flex justify-center">
+              <div className="w-full max-w-xl bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     <FileText className="size-4 text-accent" />
@@ -516,7 +523,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
-                <pre className="flex-1 min-h-0 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
+                <pre className="max-h-80 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {caption}
                 </pre>
                 <div className="mt-3 grid grid-cols-2 gap-2">
@@ -537,6 +544,7 @@ WhatsApp : ${CP_WHATSAPP}`;
               </div>
             </div>
           </StepSection>
+
 
           <Link
             to="/berkas"
