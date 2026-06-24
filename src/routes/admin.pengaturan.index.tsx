@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -55,6 +55,12 @@ const ITEMS = [
     icon: Mail,
     title: "Template Email",
     desc: "Custom subjek & isi email otomatis untuk Pendaftaran, Kirim Berkas, Kirim Essay, dan Kontribusi.",
+  },
+  {
+    to: "/admin/pengaturan/wa-channel",
+    icon: MessageCircle,
+    title: "Link Saluran WhatsApp",
+    desc: "URL Saluran WhatsApp yang ditampilkan sebagai ajakan gabung di seluruh halaman sukses pendaftaran.",
   },
 ] as const;
 

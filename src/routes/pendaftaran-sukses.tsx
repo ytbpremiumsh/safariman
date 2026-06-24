@@ -15,6 +15,7 @@ import {
 } from "@/lib/selfFundedDocs";
 import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern } from "@/components/IslamicPattern";
+import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/pendaftaran-sukses")({
@@ -212,6 +213,11 @@ function PaidView({ code, info }: { code: string; info: Status }) {
           </div>
         </Link>
       </div>
+
+      <div className="mt-6">
+        <WhatsAppChannelCTA />
+      </div>
+
 
       {info.category === "self_funded" && (
         <SelfFundedDocs code={code} fullName={info.full_name} />

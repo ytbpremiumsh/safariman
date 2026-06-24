@@ -328,6 +328,7 @@ export type Database = {
         }[]
       }
       get_twibbon_frame_url: { Args: never; Returns: string }
+      get_wa_channel_url: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

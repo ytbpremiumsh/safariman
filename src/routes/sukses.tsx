@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, MessageCircle, Sparkles } from "lucide-react";
+import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
+import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import heroImg from "@/assets/hero-kaaba.jpg";
 
 export const Route = createFileRoute("/sukses")({
@@ -44,13 +45,7 @@ function SuccessPage() {
           >
             Lanjut ke Kontribusi <ArrowRight className="size-5" />
           </Link>
-          <a
-            href="https://wa.me/6281234567890"
-            target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 font-medium hover:bg-white/20"
-          >
-            <MessageCircle className="size-5" /> Gabung Grup WhatsApp
-          </a>
+          <WhatsAppChannelCTA variant="glass" />
           <Link
             to="/"
             className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 font-medium hover:bg-white/20"

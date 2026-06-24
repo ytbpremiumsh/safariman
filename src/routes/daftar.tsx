@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { IslamicPattern } from "@/components/IslamicPattern";
+import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/daftar")({
@@ -356,6 +357,11 @@ function SuccessCard({ code, name, kind }: { code: string; name: string; kind: K
           </Link>
         </div>
       )}
+
+      <div className="mt-6">
+        <WhatsAppChannelCTA />
+      </div>
+
 
       <div className="mt-8 text-center">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Kembali ke Beranda</Link>
