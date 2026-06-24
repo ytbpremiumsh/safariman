@@ -229,7 +229,7 @@ function Hero() {
                 {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors border border-white/20"
               >
-                Panduan
+                Panduan Link
               </a>
             </div>
           </div>

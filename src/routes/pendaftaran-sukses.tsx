@@ -198,7 +198,7 @@ function PaidView({ code, info }: { code: string; info: Status }) {
             <ImageIcon className="size-5 text-accent" />
           </div>
           <div>
-            <div className="font-display text-lg font-semibold">Twibbon (Opsional)</div>
+            <div className="font-display text-lg font-semibold">Twibbon & Poster (Opsional)</div>
             <div className="text-sm text-muted-foreground mt-0.5">Bagikan kalau mau dukung jamaah lain</div>
           </div>
         </Link>
