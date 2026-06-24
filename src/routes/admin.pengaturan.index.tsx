@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, ListOrdered } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -25,6 +25,12 @@ const ITEMS = [
     icon: Clock,
     title: "Countdown Landing",
     desc: "Atur tanggal & waktu penutupan pendaftaran yang tampil di halaman utama.",
+  },
+  {
+    to: "/admin/pengaturan/timeline",
+    icon: ListOrdered,
+    title: "Timeline Program",
+    desc: "Edit judul, deskripsi, tanggal/durasi, dan urutan tahap timeline pendaftaran hingga keberangkatan.",
   },
   {
     to: "/admin/pengaturan/panduan",
