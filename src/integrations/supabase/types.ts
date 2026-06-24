@@ -123,6 +123,8 @@ export type Database = {
         Row: {
           achievements: string | null
           birth_date: string
+          case_study_1: string | null
+          case_study_2: string | null
           category: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at: string
@@ -159,6 +161,8 @@ export type Database = {
         Insert: {
           achievements?: string | null
           birth_date: string
+          case_study_1?: string | null
+          case_study_2?: string | null
           category?: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at?: string
@@ -195,6 +199,8 @@ export type Database = {
         Update: {
           achievements?: string | null
           birth_date?: string
+          case_study_1?: string | null
+          case_study_2?: string | null
           category?: Database["public"]["Enums"]["program_category"] | null
           city?: string
           created_at?: string
@@ -529,15 +535,27 @@ export type Database = {
             }
             Returns: boolean
           }
-      submit_essay_by_code: {
-        Args: {
-          p_code: string
-          p_essay_contribution: string
-          p_essay_dream: string
-          p_essay_worthy: string
-        }
-        Returns: boolean
-      }
+      submit_essay_by_code:
+        | {
+            Args: {
+              p_code: string
+              p_essay_contribution: string
+              p_essay_dream: string
+              p_essay_worthy: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              p_case_study_1?: string
+              p_case_study_2?: string
+              p_code: string
+              p_essay_contribution: string
+              p_essay_dream: string
+              p_essay_worthy: string
+            }
+            Returns: boolean
+          }
       update_participant_with_token: {
         Args: {
           p_category?: Database["public"]["Enums"]["program_category"]

@@ -11,16 +11,20 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const MIN_ESSAY_WORDS = 50;
+const MIN_CASE_WORDS = 30;
 const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
-const essayField = (label: string) =>
-  z.string().trim().max(3000).refine((v) => countWords(v) >= MIN_ESSAY_WORDS, {
-    message: `${label} minimal ${MIN_ESSAY_WORDS} kata`,
+const essayField = (label: string, min = MIN_ESSAY_WORDS) =>
+  z.string().trim().max(3000).refine((v) => countWords(v) >= min, {
+    message: `${label} minimal ${min} kata`,
   });
 const essaySchema = z.object({
   essay_worthy: essayField("Essay 'Kenapa kamu layak dipilih'"),
   essay_dream: essayField("Essay 'Apa impianmu setelah ke Tanah Suci'"),
   essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
+  case_study_1: essayField("Studi Kasus 1", MIN_CASE_WORDS),
+  case_study_2: essayField("Studi Kasus 2", MIN_CASE_WORDS),
 });
+
 
 const searchSchema = z.object({ code: z.string().optional() });
 
@@ -28,10 +32,11 @@ export const Route = createFileRoute("/essay")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Kirim Essay — Safar Iman" },
-      { name: "description", content: "Kirim essay program Safar Iman setelah menunaikan kontribusi." },
+      { title: "Kirim Essay dan Study Kasus — Safar Iman" },
+      { name: "description", content: "Kirim essay dan study kasus program Safar Iman setelah menunaikan kontribusi." },
     ],
   }),
+
   component: EssayPage,
 });
 
@@ -58,9 +63,10 @@ function EssayPage() {
   const [checking, setChecking] = useState(false);
   const [participant, setParticipant] = useState<Participant | null>(null);
 
-  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "" });
+  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "", case_study_1: "", case_study_2: "" });
   const [submitting, setSubmitting] = useState(false);
   const set = <K extends keyof typeof d,>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
+
 
   const verify = async (autoCode?: string) => {
     const c = (autoCode ?? code).trim().toUpperCase();
@@ -101,7 +107,10 @@ function EssayPage() {
         p_essay_worthy: parsed.data.essay_worthy,
         p_essay_dream: parsed.data.essay_dream,
         p_essay_contribution: parsed.data.essay_contribution,
+        p_case_study_1: parsed.data.case_study_1,
+        p_case_study_2: parsed.data.case_study_2,
       });
+
       if (error) throw error;
       if (!ok) throw new Error("Kontribusi belum tercatat atau kode tidak valid");
 
@@ -150,11 +159,12 @@ function EssayPage() {
             </div>
             <GeometricOrnament className="w-32 h-8 text-accent mx-auto mb-3 opacity-70" />
             <h1 className="font-display text-3xl sm:text-5xl font-semibold leading-tight">
-              Kirim <span className="text-gradient-gold">Essay</span>
+              Kirim <span className="text-gradient-gold">Essay dan Study Kasus</span>
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-              Tahap Essay terbuka setelah kamu menunaikan kontribusi. Masukkan kode pendaftaranmu untuk melanjutkan.
+              Tahap Essay & Study Kasus terbuka setelah kamu menunaikan kontribusi. Masukkan kode pendaftaranmu untuk melanjutkan.
             </p>
+
           </div>
 
           {!participant ? (
@@ -181,8 +191,9 @@ function BodyByStatus({
 }: {
   participant: Participant;
   code: string;
-  d: { essay_worthy: string; essay_dream: string; essay_contribution: string };
+  d: { essay_worthy: string; essay_dream: string; essay_contribution: string; case_study_1: string; case_study_2: string };
   set: <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => void;
+
   submit: () => void;
   submitting: boolean;
   onReset: () => void;
@@ -275,8 +286,8 @@ function BodyByStatus({
       {header}
       {fastTrackBanner}
       <div className="rounded-2xl bg-emerald/5 border border-emerald/20 p-4 text-sm">
-        Tulis essaymu dengan jujur dan reflektif. Semua essay <strong>wajib diisi</strong>, minimal{" "}
-        <strong>{MIN_ESSAY_WORDS} kata</strong> per essay.
+        Tulis essay & jawaban studi kasusmu dengan jujur dan reflektif. Semua bagian <strong>wajib diisi</strong> — essay minimal{" "}
+        <strong>{MIN_ESSAY_WORDS} kata</strong>, studi kasus minimal <strong>{MIN_CASE_WORDS} kata</strong>.
       </div>
 
       <div>
@@ -290,13 +301,37 @@ function BodyByStatus({
         </div>
       </div>
 
+      <div className="pt-2 border-t border-border/60">
+        <h2 className="font-display text-xl font-semibold mb-2 flex items-center gap-2">
+          <ClipboardList className="size-5 text-accent" /> Studi Kasus
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Bagian terpisah dari essay. Jawab kedua studi kasus berikut dengan jelas dan reflektif.
+        </p>
+        <div className="grid gap-5">
+          <EssayField
+            label="Studi Kasus 1: Saat di Tanah Suci, kamu kehilangan rombongan dan tidak membawa ponsel. Apa langkah pertama yang akan kamu lakukan?"
+            value={d.case_study_1}
+            onChange={(v) => set("case_study_1", v)}
+            min={MIN_CASE_WORDS}
+          />
+          <EssayField
+            label="Studi Kasus 2: Seorang jamaah lansia dalam rombongan terlihat kelelahan dan enggan melanjutkan ibadah. Bagaimana sikap dan tindakanmu?"
+            value={d.case_study_2}
+            onChange={(v) => set("case_study_2", v)}
+            min={MIN_CASE_WORDS}
+          />
+        </div>
+      </div>
+
       <button
         onClick={submit}
         disabled={submitting}
         className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
       >
-        {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Essay <ArrowRight className="size-4" /></>}
+        {submitting ? <><Loader2 className="size-4 animate-spin" /> Mengirim...</> : <>Kirim Essay & Studi Kasus <ArrowRight className="size-4" /></>}
       </button>
+
     </div>
   );
 }
@@ -330,16 +365,17 @@ function CodeForm({ code, setCode, checking, verify }: { code: string; setCode: 
   );
 }
 
-function EssayField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function EssayField({ label, value, onChange, min = MIN_ESSAY_WORDS }: { label: string; value: string; onChange: (v: string) => void; min?: number }) {
   const words = countWords(value);
-  const ok = words >= MIN_ESSAY_WORDS;
+  const ok = words >= min;
   return (
     <div className="space-y-1.5">
       <Label className="text-sm font-medium">{label} <span className="text-destructive">*</span></Label>
       <Textarea rows={5} value={value} onChange={(e) => onChange(e.target.value)} required />
       <div className={`text-xs mt-1 ${ok ? "text-emerald" : "text-muted-foreground"}`}>
-        {words} / {MIN_ESSAY_WORDS} kata {ok && "✓"}
+        {words} / {min} kata {ok && "✓"}
       </div>
     </div>
   );
 }
+
