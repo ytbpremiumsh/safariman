@@ -29,7 +29,7 @@ function DokumenSelfFundedSettings() {
       const { data } = await supabase
         .from("app_settings")
         .select("key,value")
-        .in("key", [...Object.values(DOC_KEYS), "self_funded_price", "self_funded_paid_enabled"]);
+        .in("key", [...Object.values(DOC_KEYS), "self_funded_price", "self_funded_paid_enabled", "self_funded_enabled"]);
       const map = new Map((data ?? []).map((r) => [r.key as string, (r.value as string) ?? ""]));
       const next: DocSettings = { ...DOC_DEFAULTS };
       (Object.keys(DOC_KEYS) as Array<keyof typeof DOC_KEYS>).forEach((k) => {
@@ -41,6 +41,8 @@ function DokumenSelfFundedSettings() {
       if (p) setPrice(p);
       const pe = map.get("self_funded_paid_enabled");
       setPaidEnabled(pe !== "false");
+      const se = map.get("self_funded_enabled");
+      setSelfEnabled(se !== "false");
       setLoading(false);
     })();
   }, [ready]);
