@@ -39,6 +39,11 @@ function collectInvoiceCandidates(payload: any, data: any): string[] {
   addCandidate(values, data?.invoice?.invoice_id);
   addCandidate(values, data?.transaction?.invoiceId);
   addCandidate(values, data?.transaction?.invoice_id);
+  addCandidate(values, data?.paymentLinkId);
+  addCandidate(values, data?.payment_link_id);
+  addCandidate(values, data?.paymentLink?.id);
+  addCandidate(values, data?.productId);
+  addCandidate(values, data?.product_id);
   addCandidate(values, payload?.invoiceId);
   addCandidate(values, payload?.invoice_id);
   addCandidate(values, payload?.invoice?.id);
@@ -46,16 +51,54 @@ function collectInvoiceCandidates(payload: any, data: any): string[] {
   addCandidate(values, payload?.invoice?.invoice_id);
   addCandidate(values, payload?.transaction?.invoiceId);
   addCandidate(values, payload?.transaction?.invoice_id);
+  addCandidate(values, payload?.paymentLinkId);
+  addCandidate(values, payload?.payment_link_id);
+  addCandidate(values, payload?.paymentLink?.id);
+  addCandidate(values, payload?.productId);
+  addCandidate(values, payload?.product_id);
+  addCandidate(values, data?.extraData?.invoiceId);
+  addCandidate(values, data?.extraData?.payment_invoice_id);
+  addCandidate(values, data?.extraData?.donation_invoice_id);
+  addCandidate(values, payload?.extraData?.invoiceId);
+  addCandidate(values, payload?.extraData?.payment_invoice_id);
+  addCandidate(values, payload?.extraData?.donation_invoice_id);
   addCandidate(values, data?.transactionId);
   addCandidate(values, data?.transaction_id);
   addCandidate(values, data?.transaction?.id);
   addCandidate(values, payload?.transactionId);
   addCandidate(values, payload?.transaction_id);
   addCandidate(values, payload?.transaction?.id);
+  addCandidate(values, payload?.paymentLinkTransactionId);
+  addCandidate(values, payload?.payment_link_transaction_id);
   addCandidate(values, data?.id);
   addCandidate(values, payload?.id);
 
   return values;
+}
+
+function collectCodeCandidates(payload: any, data: any): string[] {
+  const values: string[] = [];
+  addCandidate(values, data?.extraData?.registration_code);
+  addCandidate(values, data?.extraData?.registrationCode);
+  addCandidate(values, data?.extraData?.code);
+  addCandidate(values, data?.extraData?.noCustomer);
+  addCandidate(values, data?.metadata?.registration_code);
+  addCandidate(values, data?.metadata?.registrationCode);
+  addCandidate(values, data?.metadata?.code);
+  addCandidate(values, payload?.extraData?.registration_code);
+  addCandidate(values, payload?.extraData?.registrationCode);
+  addCandidate(values, payload?.extraData?.code);
+  addCandidate(values, payload?.extraData?.noCustomer);
+  addCandidate(values, payload?.metadata?.registration_code);
+  addCandidate(values, payload?.metadata?.registrationCode);
+  addCandidate(values, payload?.metadata?.code);
+  addCandidate(values, data?.registration_code);
+  addCandidate(values, data?.registrationCode);
+  addCandidate(values, data?.code);
+  addCandidate(values, payload?.registration_code);
+  addCandidate(values, payload?.registrationCode);
+  addCandidate(values, payload?.code);
+  return values.filter((value) => /^HXP-/i.test(value));
 }
 
 Deno.serve(async (req) => {
@@ -81,7 +124,8 @@ Deno.serve(async (req) => {
     // Verifikasi signature kalau secret dikonfigurasi & header dikirim.
     // Kalau salah satu tidak ada, tetap proses (biar pembayaran tidak macet
     // gara-gara konfigurasi). Status & invoice id tetap divalidasi di bawah.
-    if (secret && signature && !verify(rawBody, signature, secret)) {
+    const signatureValid = Boolean(secret && signature && verify(rawBody, signature, secret));
+    if (secret && signature && !signatureValid) {
       console.error("Mayar webhook: invalid signature");
       return json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
@@ -89,12 +133,29 @@ Deno.serve(async (req) => {
     if (secret && !signature) console.warn("Mayar webhook: signature header tidak ada, dilewati");
 
     const payload: any = JSON.parse(rawBody || "{}");
-    const event: string | undefined = payload?.event || payload?.type || payload?.eventType;
-    const data = payload?.data ?? payload?.payload ?? payload;
-    const invoiceCandidates = collectInvoiceCandidates(payload, data);
+    let embeddedPayload: any = null;
+    if (typeof payload?.payload === "string") {
+      try {
+        embeddedPayload = JSON.parse(payload.payload);
+      } catch {
+        embeddedPayload = null;
+      }
+    }
+    const sourcePayload = embeddedPayload ?? payload;
+    const event: string | undefined = sourcePayload?.event || payload?.event || payload?.type || payload?.eventType;
+    const data = sourcePayload?.data ?? payload?.data ?? (typeof payload?.payload === "object" ? payload.payload : undefined) ?? payload;
+    const invoiceCandidates = collectInvoiceCandidates(sourcePayload, data);
+    const codeCandidates = collectCodeCandidates(sourcePayload, data);
     const status: string | undefined =
-      data?.status || data?.transaction?.status || data?.invoice?.status || payload?.status;
-    if (invoiceCandidates.length === 0) {
+      data?.transactionStatus ||
+      data?.transaction_status ||
+      data?.status ||
+      data?.transaction?.status ||
+      data?.invoice?.status ||
+      payload?.transactionStatus ||
+      payload?.transaction_status ||
+      payload?.status;
+    if (invoiceCandidates.length === 0 && codeCandidates.length === 0) {
       console.error("Mayar webhook: invoice id tidak ditemukan", { event, status });
       return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
     }
@@ -103,13 +164,14 @@ Deno.serve(async (req) => {
       (status && /paid|success|settled|completed|capture|SUCCESS/i.test(status)) ||
       (event && /payment\.(received|success|paid)|invoice\.paid|transaction\.(paid|success)/i.test(event));
     if (!paidLike) {
-      console.log("Mayar webhook: event diabaikan", { event, status, invoiceCandidates });
+      console.log("Mayar webhook: event diabaikan", { event, status, invoiceCandidates, codeCandidates });
       return json({ ok: true, ignored: true });
     }
 
     let updatedReg = false;
     let updatedDonation = false;
     let matchedInvoiceId = invoiceCandidates[0];
+    let matchedCode: string | null = null;
 
     for (const candidate of invoiceCandidates) {
       const { data: ur } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: candidate });
@@ -131,11 +193,63 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (!updatedReg && !updatedDonation && signatureValid) {
+      const paymentType = String(
+        data?.extraData?.payment_type ||
+          data?.extraData?.paymentType ||
+          payload?.extraData?.payment_type ||
+          payload?.extraData?.paymentType ||
+          "",
+      ).toLowerCase();
+
+      for (const code of codeCandidates) {
+        const { data: participant } = await supabaseAdmin
+          .from("participants")
+          .select("registration_code, category")
+          .ilike("registration_code", code)
+          .maybeSingle();
+        if (!participant?.registration_code) continue;
+
+        if (paymentType === "donation") {
+          const { data: rows } = await supabaseAdmin
+            .from("participants")
+            .update({ donation_status: "paid", donation_paid_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+            .ilike("registration_code", code)
+            .select("registration_code");
+          if (rows?.length) {
+            updatedDonation = true;
+            matchedCode = participant.registration_code;
+            break;
+          }
+        } else {
+          const { data: rows } = await supabaseAdmin
+            .from("participants")
+            .update({
+              payment_status: "paid",
+              paid_at: new Date().toISOString(),
+              status: "accepted",
+              updated_at: new Date().toISOString(),
+            })
+            .ilike("registration_code", code)
+            .in("category", ["gelombang_1", "gelombang_2", "self_funded"])
+            .select("registration_code");
+          if (rows?.length) {
+            updatedReg = true;
+            matchedCode = participant.registration_code;
+            break;
+          }
+        }
+      }
+    } else if (!updatedReg && !updatedDonation && codeCandidates.length > 0) {
+      console.warn("Mayar webhook: fallback kode dilewati karena signature belum terverifikasi", { codeCandidates });
+    }
+
     if (!updatedReg && !updatedDonation) {
-      console.warn("Mayar webhook: invoice tidak cocok dengan peserta manapun", { invoiceCandidates });
+      console.warn("Mayar webhook: invoice/kode tidak cocok dengan peserta manapun", { invoiceCandidates, codeCandidates });
     } else {
       console.log("Mayar webhook: pembayaran dikonfirmasi", {
         invoiceId: matchedInvoiceId,
+        code: matchedCode,
         type: updatedReg ? "registration" : "donation",
       });
     }
@@ -145,7 +259,7 @@ Deno.serve(async (req) => {
         const { data: p } = await supabaseAdmin
           .from("participants")
           .select("registration_code, category")
-          .eq("payment_invoice_id", matchedInvoiceId)
+          .or(matchedCode ? `payment_invoice_id.eq.${matchedInvoiceId},registration_code.eq.${matchedCode}` : `payment_invoice_id.eq.${matchedInvoiceId}`)
           .maybeSingle();
         if (p?.registration_code) {
           if (p.category === "gelombang_1" || p.category === "gelombang_2") {
@@ -163,7 +277,7 @@ Deno.serve(async (req) => {
         const { data: p } = await supabaseAdmin
           .from("participants")
           .select("registration_code")
-          .eq("donation_invoice_id", matchedInvoiceId)
+          .or(matchedCode ? `donation_invoice_id.eq.${matchedInvoiceId},registration_code.eq.${matchedCode}` : `donation_invoice_id.eq.${matchedInvoiceId}`)
           .maybeSingle();
         if (p?.registration_code) {
           await sendEmailForEvent("kontribusi", p.registration_code);

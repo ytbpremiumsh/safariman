@@ -48,6 +48,12 @@ Deno.serve(async (req) => {
       redirectUrl,
       description,
       items: [{ description, quantity: 1, rate: amount }],
+      extraData: {
+        code: p.registration_code,
+        registration_code: p.registration_code,
+        payment_type: "donation",
+        category: p.category,
+      },
     };
 
     const res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
