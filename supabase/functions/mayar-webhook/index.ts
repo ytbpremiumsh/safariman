@@ -84,6 +84,14 @@ Deno.serve(async (req) => {
       const { data: ud } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
       updatedDonation = !!ud;
     }
+    if (!updatedReg && !updatedDonation) {
+      console.warn("Mayar webhook: invoice tidak cocok dengan peserta manapun", { invoiceId });
+    } else {
+      console.log("Mayar webhook: pembayaran dikonfirmasi", {
+        invoiceId,
+        type: updatedReg ? "registration" : "donation",
+      });
+    }
 
     if (updatedReg) {
       try {
