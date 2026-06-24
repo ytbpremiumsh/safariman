@@ -172,7 +172,23 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          {code ? (
+          {kind === "self_funded" && selfLoaded && !selfEnabled ? (
+            <div className="rounded-3xl bg-card border border-border p-10 text-center animate-fade-up">
+              <div className="size-14 rounded-full bg-amber-500/15 grid place-items-center mx-auto mb-4">
+                <Sparkles className="size-7 text-amber-500" />
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-semibold mb-2">Pendaftaran Self Funded Ditutup</h1>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                Untuk sementara, jalur Self Funded tidak menerima pendaftaran baru. Silakan pilih jalur Reguler atau Gelombang yang masih dibuka.
+              </p>
+              <Link
+                to="/pendaftaran"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift"
+              >
+                <ArrowLeft className="size-4" /> Lihat Jalur Lain
+              </Link>
+            </div>
+          ) : code ? (
             <SuccessCard code={code} name={data.full_name} kind={kind} />
 
           ) : (
