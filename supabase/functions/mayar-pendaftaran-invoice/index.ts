@@ -4,6 +4,44 @@ import { getAdmin } from "../_shared/wa.ts";
 
 type GelombangCfg = { name: string; start: string; end: string; price: number; enabled: boolean; description: string };
 
+function isPaidLike(value: unknown): boolean {
+  return typeof value === "string" && /paid|success|settled|completed|capture/i.test(value);
+}
+
+function invoiceLooksPaid(payload: any): boolean {
+  const data = payload?.data ?? payload;
+  if (
+    isPaidLike(data?.status) ||
+    isPaidLike(data?.transactionStatus) ||
+    isPaidLike(data?.transaction_status) ||
+    isPaidLike(data?.invoice?.status) ||
+    isPaidLike(data?.payment?.status)
+  ) {
+    return true;
+  }
+  const transactions = Array.isArray(data?.transactions) ? data.transactions : [];
+  return transactions.some((tx: any) =>
+    isPaidLike(tx?.status) || isPaidLike(tx?.transactionStatus) || isPaidLike(tx?.transaction_status)
+  );
+}
+
+async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
+  if (!invoiceId) return false;
+  try {
+    const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
+      method: "GET",
+      headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || !invoiceLooksPaid(payload)) return false;
+    const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
+    return Boolean(updated);
+  } catch (e) {
+    console.warn("Gagal sinkron status invoice pendaftaran", e);
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
@@ -14,7 +52,7 @@ Deno.serve(async (req) => {
 
     const { data: p } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, payment_status, payment_url, registration_code, category")
+      .select("full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, registration_code, category")
       .ilike("registration_code", code)
       .maybeSingle();
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
@@ -30,6 +68,11 @@ Deno.serve(async (req) => {
     const cfg = Object.fromEntries((settings ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
     const apiKey = cfg.mayar_api_key;
     if (!apiKey) return json({ ok: false, error: "Pembayaran belum dikonfigurasi admin" }, { status: 503 });
+
+    if (p.payment_status === "pending" && p.payment_invoice_id) {
+      const synced = await syncInvoiceStatus(supabaseAdmin, apiKey, p.payment_invoice_id);
+      if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
+    }
 
     if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
       return json({ ok: false, error: "Pendaftaran Self Funded saat ini GRATIS — tidak perlu pembayaran" }, { status: 400 });
@@ -68,6 +111,12 @@ Deno.serve(async (req) => {
       redirectUrl,
       description,
       items: [{ description, quantity: 1, rate: amount }],
+      extraData: {
+        code: p.registration_code,
+        registration_code: p.registration_code,
+        payment_type: "registration",
+        category: p.category,
+      },
     };
     const res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
       method: "POST",

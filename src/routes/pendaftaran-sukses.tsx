@@ -42,6 +42,24 @@ function PendaftaranSukses() {
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
   const notifiedRef = useRef(false);
+  const syncingRef = useRef(false);
+  const lastSyncRef = useRef(0);
+
+  const syncPendingPayment = async (row: Status) => {
+    const now = Date.now();
+    if (syncingRef.current || row.payment_status === "paid" || !row.payment_url || now - lastSyncRef.current < 15000) return;
+    syncingRef.current = true;
+    lastSyncRef.current = now;
+    try {
+      const { mayarPendaftaranInvoice } = await import("@/lib/api");
+      const result = await mayarPendaftaranInvoice(code);
+      if (result?.alreadyPaid || result?.synced) await fetchStatus();
+    } catch {
+      // Sinkronisasi cadangan tidak boleh mengganggu tampilan status utama.
+    } finally {
+      syncingRef.current = false;
+    }
+  };
 
   const fetchStatus = async () => {
     if (!code || code.length < 4) {
@@ -56,8 +74,10 @@ function PendaftaranSukses() {
         setError("Peserta tidak ditemukan");
         return;
       }
-      setInfo(row as Status);
+      const nextInfo = row as Status;
+      setInfo(nextInfo);
       setError(null);
+      syncPendingPayment(nextInfo).catch(() => {});
     } catch (e) {
       console.error(e);
       setError("Gagal memeriksa status");

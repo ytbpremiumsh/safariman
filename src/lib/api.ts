@@ -26,7 +26,7 @@ export async function mayarPendaftaranInvoice(code: string) {
     body: { code },
   });
   if (error) throw error;
-  return data as { ok: boolean; url?: string; alreadyPaid?: boolean; reused?: boolean; error?: string };
+  return data as { ok: boolean; url?: string; alreadyPaid?: boolean; synced?: boolean; reused?: boolean; error?: string };
 }
 
 export async function mayarCreateInvoice(code: string, force = false) {
