@@ -56,6 +56,12 @@ const ITEMS = [
     title: "Template Email",
     desc: "Custom subjek & isi email otomatis untuk Pendaftaran, Kirim Berkas, Kirim Essay, dan Kontribusi.",
   },
+  {
+    to: "/admin/pengaturan/wa-channel",
+    icon: MessageCircle,
+    title: "Link Saluran WhatsApp",
+    desc: "URL Saluran WhatsApp yang ditampilkan sebagai ajakan gabung di seluruh halaman sukses pendaftaran.",
+  },
 ] as const;
 
 function PengaturanHub() {
