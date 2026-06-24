@@ -695,7 +695,7 @@ function Gallery() {
     { src: galMadinahPayung.url, alt: "Masjid Nabawi - Payung Madinah", c: "" },
     { src: galKabahGrup.url, alt: "Grup jamaah di Masjidil Haram", c: "" },
     { src: galJabalRahmah.url, alt: "Jabal Rahmah", c: "" },
-    { src: galUmrohNovember.url, alt: "Umroh Spesial November", c: "col-span-2" },
+    { src: galUmrohNovember.url, alt: "Umroh Spesial November", c: "col-span-2", pos: "object-bottom" },
     { src: galTurkiyeHagia.url, alt: "Umroh Plus Turkiye - Hagia Sophia", c: "" },
     { src: galMasjidQuba.url, alt: "Masjid Quba", c: "" },
   ];
@@ -721,7 +721,7 @@ function Gallery() {
                 loading="lazy"
                 width={800}
                 height={600}
-                className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className={`size-full object-cover transition-transform duration-700 group-hover:scale-110 ${(img as any).pos ?? ""}`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="absolute bottom-4 left-4 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
