@@ -15,6 +15,7 @@ import {
 } from "@/lib/selfFundedDocs";
 import { supabase } from "@/integrations/supabase/client";
 import { IslamicPattern } from "@/components/IslamicPattern";
+import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/pendaftaran-sukses")({
