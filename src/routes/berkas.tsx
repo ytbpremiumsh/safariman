@@ -388,7 +388,7 @@ function FastTrackCard({ participant, code, onReset }: { participant: Participan
           search={{ code }}
           className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift"
         >
-          <FileText className="size-5" /> Kirim Essay <ArrowRight className="size-4" />
+          <FileText className="size-5" /> Kirim Essay\u00a0 & Studi Kasus <ArrowRight className="size-4" />
         </Link>
 
         {!paid && (
