@@ -27,6 +27,12 @@ const ITEMS = [
     desc: "Atur tanggal & waktu penutupan pendaftaran yang tampil di halaman utama.",
   },
   {
+    to: "/admin/pengaturan/timeline",
+    icon: ListOrdered,
+    title: "Timeline Program",
+    desc: "Edit judul, deskripsi, tanggal/durasi, dan urutan tahap timeline pendaftaran hingga keberangkatan.",
+  },
+  {
     to: "/admin/pengaturan/panduan",
     icon: BookOpen,
     title: "Link Panduan",
