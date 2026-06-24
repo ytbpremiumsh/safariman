@@ -40,6 +40,7 @@ import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.peng
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
+import { Route as AdminPengaturanFaqRouteImport } from './routes/admin.pengaturan.faq'
 import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengaturan.email'
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
 import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
@@ -210,6 +211,11 @@ const AdminPengaturanGelombangRoute =
     path: '/admin/pengaturan/gelombang',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanFaqRoute = AdminPengaturanFaqRouteImport.update({
+  id: '/admin/pengaturan/faq',
+  path: '/admin/pengaturan/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanEmailRoute = AdminPengaturanEmailRouteImport.update({
   id: '/admin/pengaturan/email',
   path: '/admin/pengaturan/email',
@@ -299,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -343,6 +350,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -386,6 +394,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -476,6 +486,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -518,6 +529,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -563,6 +575,7 @@ export interface RootRouteChildren {
   AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
   AdminPengaturanEmailRoute: typeof AdminPengaturanEmailRoute
+  AdminPengaturanFaqRoute: typeof AdminPengaturanFaqRoute
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
@@ -796,6 +809,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/faq': {
+      id: '/admin/pengaturan/faq'
+      path: '/admin/pengaturan/faq'
+      fullPath: '/admin/pengaturan/faq'
+      preLoaderRoute: typeof AdminPengaturanFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/email': {
       id: '/admin/pengaturan/email'
       path: '/admin/pengaturan/email'
@@ -934,6 +954,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
   AdminPengaturanEmailRoute: AdminPengaturanEmailRoute,
+  AdminPengaturanFaqRoute: AdminPengaturanFaqRoute,
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
