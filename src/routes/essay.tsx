@@ -151,7 +151,7 @@ function EssayPage() {
           <div className="text-center mb-10 animate-fade-up">
             <div className="flex justify-center mb-8">
               <Link
-                to="/donasi"
+                to="/kontribusi"
                 className="group inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 backdrop-blur px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-accent/50 hover:bg-card transition-all shadow-sm hover:shadow-md"
               >
                 <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" /> Kembali
@@ -259,7 +259,7 @@ function BodyByStatus({
             Silakan selesaikan donasi terlebih dahulu, kemudian kembali ke halaman ini.
           </p>
         </div>
-        <Link to="/donasi" className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift">
+        <Link to="/kontribusi" className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift">
           <HeartHandshake className="size-5" /> Tunaikan Kontribusi <ArrowRight className="size-4" />
         </Link>
         <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">Cek kode lain</button>

@@ -79,8 +79,8 @@ function TahapanSeleksiPage() {
             </Section>
 
             <Section title="2. Tahapan Kontribusi / Donasi">
-              <p><strong>a.</strong> Tahap ini <strong>hanya diikuti oleh peserta yang dinyatakan lolos seleksi berkas administrasi</strong>. Peserta wajib menunaikan kontribusi/donasi sebesar <strong>Rp. 100.000</strong> melalui halaman resmi:</p>
-              <FormLink href={`https://${SITE}/donasi`} label={`${SITE}/donasi`} />
+              <p><strong>a.</strong> Tahap ini <strong>hanya diikuti oleh peserta yang dinyatakan lolos seleksi berkas administrasi</strong>. Peserta wajib menunaikan kontribusi/kontribusi sebesar <strong>Rp. 100.000</strong> melalui halaman resmi:</p>
+              <FormLink href={`https://${SITE}/kontribusi`} label={`${SITE}/kontribusi`} />
               <p>Pembayaran diproses secara otomatis oleh <strong>Mayar</strong> dengan jaminan keamanan SSL. Peserta cukup memasukkan <strong>Kode Pendaftaran</strong>, lalu mengikuti instruksi pembayaran yang tersedia.</p>
               <p><strong>b.</strong> Donasi yang dibayarkan akan digunakan untuk mendukung beberapa kegiatan sosial:</p>
               <ul className="list-disc pl-5 space-y-1 mt-1">
@@ -181,7 +181,7 @@ function TahapanSeleksiPage() {
                 <li>Keempat tahap di atas harus dikerjakan secara berurutan dan tidak dapat dilewati.</li>
                 <li>Setiap tahap akan diumumkan hasilnya melalui WhatsApp & halaman cek hasil resmi Safar Iman.</li>
                 <li>Pastikan nomor WhatsApp peserta aktif agar tidak ketinggalan informasi penting.</li>
-                <li>Jalur Fully Funded tetap <strong>100% GRATIS</strong>; kontribusi/donasi bersifat sukarela dan hanya dilakukan setelah lolos berkas administrasi.</li>
+                <li>Jalur Fully Funded tetap <strong>100% GRATIS</strong>; kontribusi/kontribusi bersifat sukarela dan hanya dilakukan setelah lolos berkas administrasi.</li>
               </ul>
             </div>
 

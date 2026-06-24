@@ -48,7 +48,7 @@ Setiap peserta yang menyelesaikan tahap berkas akan tetap mendapat:
 - Akses komunitas alumni Safar Iman
 
 # Cara cek status & donasi
-Buka halaman /donasi di website, masukkan Kode Pendaftaran. Jika sudah lolos berkas, link pembayaran donasi (via Mayar) akan muncul.
+Buka halaman /kontribusi di website, masukkan Kode Pendaftaran. Jika sudah lolos berkas, link pembayaran donasi (via Mayar) akan muncul.
 
 # Kontak admin manusia
 WhatsApp: +62 812-3456-7890 · Email: hello@safariman.id · Instagram: @safariman.id`;

@@ -40,7 +40,7 @@ function SuccessPage() {
 
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
           <Link
-            to="/donasi"
+            to="/kontribusi"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 font-bold shadow-gold hover-lift"
           >
             Lanjut ke Kontribusi <ArrowRight className="size-5" />

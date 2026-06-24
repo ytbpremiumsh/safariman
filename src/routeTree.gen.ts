@@ -15,8 +15,8 @@ import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
 import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
+import { Route as KontribusiRouteImport } from './routes/kontribusi'
 import { Route as EssayRouteImport } from './routes/essay'
-import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
 import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
@@ -81,14 +81,14 @@ const PendaftaranRoute = PendaftaranRouteImport.update({
   path: '/pendaftaran',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KontribusiRoute = KontribusiRouteImport.update({
+  id: '/kontribusi',
+  path: '/kontribusi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EssayRoute = EssayRouteImport.update({
   id: '/essay',
   path: '/essay',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DonasiRoute = DonasiRouteImport.update({
-  id: '/donasi',
-  path: '/donasi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
@@ -275,8 +275,8 @@ export interface FileRoutesByFullPath {
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
-  '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
@@ -318,8 +318,8 @@ export interface FileRoutesByTo {
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
-  '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
@@ -360,8 +360,8 @@ export interface FileRoutesById {
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
-  '/donasi': typeof DonasiRoute
   '/essay': typeof EssayRoute
+  '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
   '/sukses': typeof SuksesRoute
@@ -405,8 +405,8 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
-    | '/donasi'
     | '/essay'
+    | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
     | '/sukses'
@@ -448,8 +448,8 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
-    | '/donasi'
     | '/essay'
+    | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
     | '/sukses'
@@ -489,8 +489,8 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
-    | '/donasi'
     | '/essay'
+    | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
     | '/sukses'
@@ -533,8 +533,8 @@ export interface RootRouteChildren {
   DaftarGelombang1Route: typeof DaftarGelombang1Route
   DaftarGelombang2Route: typeof DaftarGelombang2Route
   DaftarMandiriRoute: typeof DaftarMandiriRoute
-  DonasiRoute: typeof DonasiRoute
   EssayRoute: typeof EssayRoute
+  KontribusiRoute: typeof KontribusiRoute
   PendaftaranRoute: typeof PendaftaranRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
   SuksesRoute: typeof SuksesRoute
@@ -608,18 +608,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PendaftaranRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kontribusi': {
+      id: '/kontribusi'
+      path: '/kontribusi'
+      fullPath: '/kontribusi'
+      preLoaderRoute: typeof KontribusiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/essay': {
       id: '/essay'
       path: '/essay'
       fullPath: '/essay'
       preLoaderRoute: typeof EssayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/donasi': {
-      id: '/donasi'
-      path: '/donasi'
-      fullPath: '/donasi'
-      preLoaderRoute: typeof DonasiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/daftar-mandiri': {
@@ -896,8 +896,8 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarGelombang1Route: DaftarGelombang1Route,
   DaftarGelombang2Route: DaftarGelombang2Route,
   DaftarMandiriRoute: DaftarMandiriRoute,
-  DonasiRoute: DonasiRoute,
   EssayRoute: EssayRoute,
+  KontribusiRoute: KontribusiRoute,
   PendaftaranRoute: PendaftaranRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
   SuksesRoute: SuksesRoute,
