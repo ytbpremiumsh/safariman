@@ -3,7 +3,7 @@ import {
   Sparkles, Globe2, Award, BookOpen, Users, Building2, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
   CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
-  Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag,
+  Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag, ShieldCheck,
   Instagram, Mail, Phone, MapPinned,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -448,6 +448,7 @@ function Quota() {
     { icon: Luggage, label: "Handling" },
     { icon: ShoppingBag, label: "Perlengkapan Lengkap" },
     { icon: MapPin, label: "City Tour Makkah & Madinah" },
+    { icon: ShieldCheck, label: "Asuransi Perjalanan" },
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
