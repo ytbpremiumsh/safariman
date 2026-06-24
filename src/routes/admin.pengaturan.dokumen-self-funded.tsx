@@ -159,6 +159,32 @@ function DokumenSelfFundedSettings() {
         <div className="border-t border-border pt-5 space-y-4">
           <div className="flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4">
             <div>
+              <div className="text-sm font-semibold">Aktifkan Jalur Self Funded</div>
+              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                Jika dimatikan, kartu Self Funded disembunyikan di halaman <code>/pendaftaran</code>
+                dan halaman pendaftaran <code>/daftar-mandiri</code> akan menampilkan pesan
+                <strong> "Pendaftaran Self Funded ditutup"</strong>.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={selfEnabled}
+              onClick={() => setSelfEnabled((v) => !v)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                selfEnabled ? "bg-emerald" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform ${
+                  selfEnabled ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4">
+            <div>
               <div className="text-sm font-semibold">Aktifkan Biaya Pendaftaran Self Funded</div>
               <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
                 Jika dimatikan, pendaftaran jalur Self Funded menjadi <strong>GRATIS</strong> tanpa
