@@ -253,7 +253,7 @@ function SelfFundedCard({ price, paidEnabled }: { price: number; paidEnabled: bo
           {free ? "GRATIS" : formatRupiah(price)}
         </div>
         <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 mt-1">
-          {free ? "Tanpa biaya pendaftaran" : "Sekali bayar via Mayar"}
+          {free ? "Tanpa biaya pendaftaran" : "SELF FUNDED"}
         </div>
       </div>
 
@@ -280,7 +280,7 @@ function SelfFundedCard({ price, paidEnabled }: { price: number; paidEnabled: bo
         to="/daftar-mandiri"
         className="w-full inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-bold hover-lift bg-gradient-emerald text-white shadow-emerald"
       >
-        {free ? "Daftar Self Funded — GRATIS" : `Daftar Self Funded — ${formatRupiah(price)}`}
+        {free ? "Daftar Self Funded — GRATIS" : "Daftar Self Funded\u00a0"}
         <ArrowRight className="size-4" />
       </Link>
     </div>
