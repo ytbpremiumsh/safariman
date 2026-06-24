@@ -124,7 +124,8 @@ Deno.serve(async (req) => {
     // Verifikasi signature kalau secret dikonfigurasi & header dikirim.
     // Kalau salah satu tidak ada, tetap proses (biar pembayaran tidak macet
     // gara-gara konfigurasi). Status & invoice id tetap divalidasi di bawah.
-    if (secret && signature && !verify(rawBody, signature, secret)) {
+    const signatureValid = Boolean(secret && signature && verify(rawBody, signature, secret));
+    if (secret && signature && !signatureValid) {
       console.error("Mayar webhook: invalid signature");
       return json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
@@ -132,10 +133,19 @@ Deno.serve(async (req) => {
     if (secret && !signature) console.warn("Mayar webhook: signature header tidak ada, dilewati");
 
     const payload: any = JSON.parse(rawBody || "{}");
-    const event: string | undefined = payload?.event || payload?.type || payload?.eventType;
-    const data = payload?.data ?? payload?.payload ?? payload;
-    const invoiceCandidates = collectInvoiceCandidates(payload, data);
-    const codeCandidates = collectCodeCandidates(payload, data);
+    let embeddedPayload: any = null;
+    if (typeof payload?.payload === "string") {
+      try {
+        embeddedPayload = JSON.parse(payload.payload);
+      } catch {
+        embeddedPayload = null;
+      }
+    }
+    const sourcePayload = embeddedPayload ?? payload;
+    const event: string | undefined = sourcePayload?.event || payload?.event || payload?.type || payload?.eventType;
+    const data = sourcePayload?.data ?? payload?.data ?? (typeof payload?.payload === "object" ? payload.payload : undefined) ?? payload;
+    const invoiceCandidates = collectInvoiceCandidates(sourcePayload, data);
+    const codeCandidates = collectCodeCandidates(sourcePayload, data);
     const status: string | undefined =
       data?.transactionStatus ||
       data?.transaction_status ||
@@ -183,7 +193,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (!updatedReg && !updatedDonation) {
+    if (!updatedReg && !updatedDonation && signatureValid) {
       const paymentType = String(
         data?.extraData?.payment_type ||
           data?.extraData?.paymentType ||
@@ -230,6 +240,8 @@ Deno.serve(async (req) => {
           }
         }
       }
+    } else if (!updatedReg && !updatedDonation && codeCandidates.length > 0) {
+      console.warn("Mayar webhook: fallback kode dilewati karena signature belum terverifikasi", { codeCandidates });
     }
 
     if (!updatedReg && !updatedDonation) {
