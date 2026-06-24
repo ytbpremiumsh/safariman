@@ -20,6 +20,44 @@ function verify(rawBody: string, signature: string | null, secret: string): bool
   }
 }
 
+function addCandidate(values: string[], value: unknown) {
+  if (typeof value !== "string" && typeof value !== "number") return;
+  const normalized = String(value).trim();
+  if (normalized && !values.includes(normalized)) values.push(normalized);
+}
+
+function collectInvoiceCandidates(payload: any, data: any): string[] {
+  const values: string[] = [];
+
+  // Mayar webhook payloads can include a payment/transaction id in `data.id`
+  // while the invoice id created by our invoice endpoint is sent in another field.
+  // Try invoice-specific fields first, then broader transaction ids as fallback.
+  addCandidate(values, data?.invoiceId);
+  addCandidate(values, data?.invoice_id);
+  addCandidate(values, data?.invoice?.id);
+  addCandidate(values, data?.invoice?.invoiceId);
+  addCandidate(values, data?.invoice?.invoice_id);
+  addCandidate(values, data?.transaction?.invoiceId);
+  addCandidate(values, data?.transaction?.invoice_id);
+  addCandidate(values, payload?.invoiceId);
+  addCandidate(values, payload?.invoice_id);
+  addCandidate(values, payload?.invoice?.id);
+  addCandidate(values, payload?.invoice?.invoiceId);
+  addCandidate(values, payload?.invoice?.invoice_id);
+  addCandidate(values, payload?.transaction?.invoiceId);
+  addCandidate(values, payload?.transaction?.invoice_id);
+  addCandidate(values, data?.transactionId);
+  addCandidate(values, data?.transaction_id);
+  addCandidate(values, data?.transaction?.id);
+  addCandidate(values, payload?.transactionId);
+  addCandidate(values, payload?.transaction_id);
+  addCandidate(values, payload?.transaction?.id);
+  addCandidate(values, data?.id);
+  addCandidate(values, payload?.id);
+
+  return values;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method === "GET") return json({ ok: true, info: "Mayar webhook endpoint" });
@@ -53,18 +91,10 @@ Deno.serve(async (req) => {
     const payload: any = JSON.parse(rawBody || "{}");
     const event: string | undefined = payload?.event || payload?.type || payload?.eventType;
     const data = payload?.data ?? payload?.payload ?? payload;
-    const invoiceId: string | undefined =
-      data?.id ||
-      data?.transactionId ||
-      data?.invoiceId ||
-      data?.invoice_id ||
-      data?.transaction?.id ||
-      data?.invoice?.id ||
-      payload?.transactionId ||
-      payload?.invoiceId;
+    const invoiceCandidates = collectInvoiceCandidates(payload, data);
     const status: string | undefined =
       data?.status || data?.transaction?.status || data?.invoice?.status || payload?.status;
-    if (!invoiceId) {
+    if (invoiceCandidates.length === 0) {
       console.error("Mayar webhook: invoice id tidak ditemukan", { event, status });
       return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
     }
@@ -73,22 +103,39 @@ Deno.serve(async (req) => {
       (status && /paid|success|settled|completed|capture|SUCCESS/i.test(status)) ||
       (event && /payment\.(received|success|paid)|invoice\.paid|transaction\.(paid|success)/i.test(event));
     if (!paidLike) {
-      console.log("Mayar webhook: event diabaikan", { event, status, invoiceId });
+      console.log("Mayar webhook: event diabaikan", { event, status, invoiceCandidates });
       return json({ ok: true, ignored: true });
     }
 
-
-    const { data: updatedReg } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
+    let updatedReg = false;
     let updatedDonation = false;
-    if (!updatedReg) {
-      const { data: ud } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
-      updatedDonation = !!ud;
+    let matchedInvoiceId = invoiceCandidates[0];
+
+    for (const candidate of invoiceCandidates) {
+      const { data: ur } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: candidate });
+      if (ur) {
+        updatedReg = true;
+        matchedInvoiceId = candidate;
+        break;
+      }
     }
+
+    if (!updatedReg) {
+      for (const candidate of invoiceCandidates) {
+        const { data: ud } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: candidate });
+        if (ud) {
+          updatedDonation = true;
+          matchedInvoiceId = candidate;
+          break;
+        }
+      }
+    }
+
     if (!updatedReg && !updatedDonation) {
-      console.warn("Mayar webhook: invoice tidak cocok dengan peserta manapun", { invoiceId });
+      console.warn("Mayar webhook: invoice tidak cocok dengan peserta manapun", { invoiceCandidates });
     } else {
       console.log("Mayar webhook: pembayaran dikonfirmasi", {
-        invoiceId,
+        invoiceId: matchedInvoiceId,
         type: updatedReg ? "registration" : "donation",
       });
     }
@@ -98,7 +145,7 @@ Deno.serve(async (req) => {
         const { data: p } = await supabaseAdmin
           .from("participants")
           .select("registration_code, category")
-          .eq("payment_invoice_id", invoiceId)
+          .eq("payment_invoice_id", matchedInvoiceId)
           .maybeSingle();
         if (p?.registration_code) {
           if (p.category === "gelombang_1" || p.category === "gelombang_2") {
@@ -116,7 +163,7 @@ Deno.serve(async (req) => {
         const { data: p } = await supabaseAdmin
           .from("participants")
           .select("registration_code")
-          .eq("donation_invoice_id", invoiceId)
+          .eq("donation_invoice_id", matchedInvoiceId)
           .maybeSingle();
         if (p?.registration_code) {
           await sendEmailForEvent("kontribusi", p.registration_code);
