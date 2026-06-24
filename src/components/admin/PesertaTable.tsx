@@ -587,7 +587,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                         value={effectiveStatus(r)}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => { e.stopPropagation(); updateStatus(r.id, e.target.value as Status); }}
-                        className={`h-7 rounded-full text-[11px] font-medium border px-2 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 ${STATUS_COLOR[r.status]}`}
+                        className={`h-7 rounded-full text-[11px] font-medium border px-2 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 ${STATUS_COLOR[effectiveStatus(r)]}`}
                       >
                         <option value="pending">Menunggu</option>
                         <option value="interview">Interview</option>
@@ -595,7 +595,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                         <option value="rejected">Belum Lolos</option>
                       </select>
                     ) : (
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[effectiveStatus(r)]}`}>
                         {STATUS_LABEL[effectiveStatus(r)]}
                       </span>
                     )}
@@ -738,8 +738,8 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">
                             Status saat ini:{" "}
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[detail.status]}`}>
-                              {STATUS_LABEL[detail.status]}
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[effectiveStatus(detail)]}`}>
+                              {STATUS_LABEL[effectiveStatus(detail)]}
                             </span>
                           </p>
                           <div className="flex flex-wrap gap-2">
