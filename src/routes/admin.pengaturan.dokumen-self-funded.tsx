@@ -21,6 +21,7 @@ function DokumenSelfFundedSettings() {
   const [uploading, setUploading] = useState<"sig" | "stamp" | null>(null);
   const [price, setPrice] = useState<string>("50000");
   const [paidEnabled, setPaidEnabled] = useState<boolean>(true);
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (!ready) return;
