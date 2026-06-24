@@ -304,6 +304,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_setting: {
+        Args: { p_key: string; p_value: string }
+        Returns: boolean
+      }
       claim_admin_if_first: { Args: never; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
