@@ -21,6 +21,7 @@ function DokumenSelfFundedSettings() {
   const [uploading, setUploading] = useState<"sig" | "stamp" | null>(null);
   const [price, setPrice] = useState<string>("50000");
   const [paidEnabled, setPaidEnabled] = useState<boolean>(true);
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (!ready) return;
@@ -28,7 +29,7 @@ function DokumenSelfFundedSettings() {
       const { data } = await supabase
         .from("app_settings")
         .select("key,value")
-        .in("key", [...Object.values(DOC_KEYS), "self_funded_price", "self_funded_paid_enabled"]);
+        .in("key", [...Object.values(DOC_KEYS), "self_funded_price", "self_funded_paid_enabled", "self_funded_enabled"]);
       const map = new Map((data ?? []).map((r) => [r.key as string, (r.value as string) ?? ""]));
       const next: DocSettings = { ...DOC_DEFAULTS };
       (Object.keys(DOC_KEYS) as Array<keyof typeof DOC_KEYS>).forEach((k) => {
@@ -40,6 +41,8 @@ function DokumenSelfFundedSettings() {
       if (p) setPrice(p);
       const pe = map.get("self_funded_paid_enabled");
       setPaidEnabled(pe !== "false");
+      const se = map.get("self_funded_enabled");
+      setSelfEnabled(se !== "false");
       setLoading(false);
     })();
   }, [ready]);
@@ -60,6 +63,7 @@ function DokumenSelfFundedSettings() {
       const cleanPrice = String(Math.max(0, Number(String(price).replace(/[^0-9]/g, "")) || 0));
       rows.push({ key: "self_funded_price", value: cleanPrice, updated_at: new Date().toISOString() });
       rows.push({ key: "self_funded_paid_enabled", value: paidEnabled ? "true" : "false", updated_at: new Date().toISOString() });
+      rows.push({ key: "self_funded_enabled", value: selfEnabled ? "true" : "false", updated_at: new Date().toISOString() });
       const { error } = await supabase.from("app_settings").upsert(rows);
       if (error) throw error;
       toast.success("Pengaturan dokumen disimpan");
@@ -153,6 +157,32 @@ function DokumenSelfFundedSettings() {
         </div>
 
         <div className="border-t border-border pt-5 space-y-4">
+          <div className="flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4">
+            <div>
+              <div className="text-sm font-semibold">Aktifkan Jalur Self Funded</div>
+              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                Jika dimatikan, kartu Self Funded disembunyikan di halaman <code>/pendaftaran</code>
+                dan halaman pendaftaran <code>/daftar-mandiri</code> akan menampilkan pesan
+                <strong> "Pendaftaran Self Funded ditutup"</strong>.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={selfEnabled}
+              onClick={() => setSelfEnabled((v) => !v)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                selfEnabled ? "bg-emerald" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform ${
+                  selfEnabled ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
           <div className="flex items-start justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4">
             <div>
               <div className="text-sm font-semibold">Aktifkan Biaya Pendaftaran Self Funded</div>

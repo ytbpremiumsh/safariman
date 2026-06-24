@@ -59,16 +59,19 @@ const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string
 export function RegisterPage({ kind }: { kind: Kind }) {
   const KIND_META_BASE = KIND_META_MAP[kind];
   const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
+  const [selfLoaded, setSelfLoaded] = useState<boolean>(kind !== "self_funded");
   useEffect(() => {
     if (kind !== "self_funded") return;
     (async () => {
       const { data } = await supabase
         .from("app_settings")
-        .select("value")
-        .eq("key", "self_funded_paid_enabled")
-        .maybeSingle();
-      const v = (data as any)?.value;
-      if (v === "false") setSelfPaidEnabled(false);
+        .select("key,value")
+        .in("key", ["self_funded_paid_enabled", "self_funded_enabled"]);
+      const map = new Map((data ?? []).map((r: any) => [r.key, r.value]));
+      if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
+      if (map.get("self_funded_enabled") === "false") setSelfEnabled(false);
+      setSelfLoaded(true);
     })();
   }, [kind]);
   const KIND_META = kind === "self_funded" && !selfPaidEnabled
@@ -169,7 +172,23 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          {code ? (
+          {kind === "self_funded" && selfLoaded && !selfEnabled ? (
+            <div className="rounded-3xl bg-card border border-border p-10 text-center animate-fade-up">
+              <div className="size-14 rounded-full bg-amber-500/15 grid place-items-center mx-auto mb-4">
+                <Sparkles className="size-7 text-amber-500" />
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-semibold mb-2">Pendaftaran Self Funded Ditutup</h1>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                Untuk sementara, jalur Self Funded tidak menerima pendaftaran baru. Silakan pilih jalur Reguler atau Gelombang yang masih dibuka.
+              </p>
+              <Link
+                to="/pendaftaran"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-6 py-3 text-sm font-semibold shadow-emerald hover-lift"
+              >
+                <ArrowLeft className="size-4" /> Lihat Jalur Lain
+              </Link>
+            </div>
+          ) : code ? (
             <SuccessCard code={code} name={data.full_name} kind={kind} />
 
           ) : (

@@ -36,6 +36,7 @@ function PendaftaranHub() {
   const [loading, setLoading] = useState(true);
   const [selfPrice, setSelfPrice] = useState<number>(50000);
   const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
@@ -44,11 +45,12 @@ function PendaftaranHub() {
       const { data: rows } = await supabase
         .from("app_settings")
         .select("key,value")
-        .in("key", ["self_funded_price", "self_funded_paid_enabled"]);
+        .in("key", ["self_funded_price", "self_funded_paid_enabled", "self_funded_enabled"]);
       const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
       const v = Number(map.get("self_funded_price"));
       if (v && v > 0) setSelfPrice(v);
       if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
+      if (map.get("self_funded_enabled") === "false") setSelfEnabled(false);
       setLoading(false);
     })();
   }, []);
@@ -103,7 +105,7 @@ function PendaftaranHub() {
                     {g1Ended && (
                       <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" forceActive />
                     )}
-                    <SelfFundedCard price={selfPrice} paidEnabled={selfPaidEnabled} />
+                    {selfEnabled && <SelfFundedCard price={selfPrice} paidEnabled={selfPaidEnabled} />}
                   </>
                 );
               })()}
