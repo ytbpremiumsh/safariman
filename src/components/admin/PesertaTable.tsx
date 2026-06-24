@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
   FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet,
@@ -39,6 +39,7 @@ type Participant = {
   cv_url: string | null;
   photo_url: string | null;
   payment_status: string;
+  payment_url: string | null;
   paid_at: string | null;
   donation_status: string;
   donation_paid_at: string | null;
@@ -82,6 +83,9 @@ const paymentState = (p: Participant) =>
 const paymentDate = (p: Participant) =>
   isGelombang(p.category) ? p.paid_at : p.donation_paid_at;
 
+const effectiveStatus = (p: Participant): Status =>
+  isGelombang(p.category) && p.payment_status === "paid" ? "accepted" : p.status;
+
 
 const STATUS_LABEL: Record<Status, string> = {
   pending: "Menunggu",
@@ -119,13 +123,49 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   const [savingAutoBerkas, setSavingAutoBerkas] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const paymentSyncRef = useRef<Record<string, number>>({});
 
   const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
 
 
   useEffect(() => {
     if (!ready) return;
-    (async () => {
+    let cancelled = false;
+
+    const syncPendingRegistrationPayments = async (loadedRows: Participant[]) => {
+      if (isSelf) return;
+      const now = Date.now();
+      const pending = loadedRows
+        .filter((p) =>
+          isGelombang(p.category) &&
+          p.payment_status === "pending" &&
+          !!p.payment_url &&
+          now - (paymentSyncRef.current[p.registration_code] ?? 0) > 60000
+        )
+        .slice(0, 5);
+      if (pending.length === 0) return;
+
+      let changed = false;
+      try {
+        const { mayarPendaftaranInvoice } = await import("@/lib/api");
+        for (const p of pending) {
+          paymentSyncRef.current[p.registration_code] = now;
+          try {
+            const result = await mayarPendaftaranInvoice(p.registration_code);
+            if (result?.alreadyPaid || result?.synced) changed = true;
+          } catch {
+            // Sinkronisasi cadangan tidak boleh mengganggu dashboard admin.
+          }
+        }
+      } catch {
+        return;
+      }
+
+      if (changed && !cancelled) window.setTimeout(() => loadData(true), 800);
+    };
+
+    const loadData = async (silent = false) => {
+      if (!silent) setLoading(true);
       const query = supabase.from("participants").select("*").order("created_at", { ascending: false });
       const [{ data: list, error }, { data: cfg }] = await Promise.all([
         isSelf
@@ -133,8 +173,13 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
           : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2"),
         supabase.from("app_settings").select("key,value"),
       ]);
+      if (cancelled) return;
+      const loadedRows = (list ?? []) as Participant[];
       if (error) toast.error(error.message);
-      else setRows((list ?? []) as Participant[]);
+      else {
+        setRows(loadedRows);
+        syncPendingRegistrationPayments(loadedRows).catch(() => {});
+      }
       const map = Object.fromEntries((cfg ?? []).map((r: any) => [r.key, r.value ?? ""]));
       setApiKey(map.mpwa_api_key ?? "");
       setSender(map.mpwa_sender ?? "");
@@ -148,8 +193,15 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       setAutoLolos((map.auto_lolos_enabled ?? "false") === "true");
       setAutoLolosBerkas((map.auto_lolos_berkas_enabled ?? "false") === "true");
       setLoading(false);
+    };
 
-    })();
+    loadData();
+    const id = window.setInterval(() => loadData(true), 8000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
   }, [ready, isSelf]);
 
 
@@ -163,12 +215,12 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
       if (status === "paid") { if (!isPaymentValid(r)) return false; }
-      else if (status !== "all" && r.status !== status) return false;
+      else if (status !== "all" && effectiveStatus(r) !== status) return false;
       if (!isSelf) {
         if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
         if (catFilter === "gelombang_1" && r.category !== "gelombang_1") return false;
         if (catFilter === "gelombang_2" && r.category !== "gelombang_2") return false;
-        if (docFilter === "registered" && hasSubmittedDocs(r)) return false;
+        if (docFilter === "registered" && hasSubmittedDocs(r) && !(lockDocFilter === "registered" && isGelombang(r.category))) return false;
         if (docFilter === "submitted" && !hasSubmittedDocs(r)) return false;
       }
       if (!term) return true;
@@ -199,7 +251,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       "Kota": r.city,
       "Pendidikan": r.education, "Pekerjaan": r.occupation,
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
-      "Status": STATUS_LABEL[r.status],
+      "Status": STATUS_LABEL[effectiveStatus(r)],
       "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
       "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
       "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
@@ -234,14 +286,14 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     const now = new Date().toISOString();
     const shouldAutoLolos = !gel && autoLolos;
     const patch: any = gel
-      ? { payment_status: "paid", paid_at: now }
+      ? { payment_status: "paid", paid_at: now, status: "accepted" }
       : { donation_status: "paid", donation_paid_at: now };
     if (shouldAutoLolos) patch.status = "accepted";
     const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     if (detail?.id === id) setDetail({ ...detail, ...patch });
-    toast.success(gel ? "Pendaftaran ditandai lunas" : (shouldAutoLolos ? "Donasi valid · Status otomatis Lolos" : "Donasi ditandai valid"));
+    toast.success(gel ? "Pendaftaran valid · Status otomatis Lolos" : (shouldAutoLolos ? "Donasi valid · Status otomatis Lolos" : "Donasi ditandai valid"));
 
     // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
     if (gel && row?.registration_code) {
@@ -296,7 +348,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     const row = rows.find((r) => r.id === id);
     const gel = row ? isGelombang(row.category) : false;
     const patch: any = gel
-      ? { payment_status: "unpaid", paid_at: null }
+      ? { payment_status: "unpaid", paid_at: null, status: "pending" }
       : { donation_status: "pending", donation_paid_at: null };
     const { error } = await supabase.from("participants").update(patch).eq("id", id);
     if (error) { toast.error(error.message); return; }
@@ -570,10 +622,10 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                   <Td>
                     {lockDocFilter === "submitted" ? (
                       <select
-                        value={r.status}
+                        value={effectiveStatus(r)}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => { e.stopPropagation(); updateStatus(r.id, e.target.value as Status); }}
-                        className={`h-7 rounded-full text-[11px] font-medium border px-2 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 ${STATUS_COLOR[r.status]}`}
+                        className={`h-7 rounded-full text-[11px] font-medium border px-2 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 ${STATUS_COLOR[effectiveStatus(r)]}`}
                       >
                         <option value="pending">Menunggu</option>
                         <option value="interview">Interview</option>
@@ -581,8 +633,8 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                         <option value="rejected">Belum Lolos</option>
                       </select>
                     ) : (
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[r.status]}`}>
-                        {STATUS_LABEL[r.status]}
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium border ${STATUS_COLOR[effectiveStatus(r)]}`}>
+                        {STATUS_LABEL[effectiveStatus(r)]}
                       </span>
                     )}
                   </Td>
@@ -724,8 +776,8 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">
                             Status saat ini:{" "}
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[detail.status]}`}>
-                              {STATUS_LABEL[detail.status]}
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${STATUS_COLOR[effectiveStatus(detail)]}`}>
+                              {STATUS_LABEL[effectiveStatus(detail)]}
                             </span>
                           </p>
                           <div className="flex flex-wrap gap-2">
