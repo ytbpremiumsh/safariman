@@ -695,7 +695,7 @@ function Gallery() {
     { src: galMadinahPayung.url, alt: "Masjid Nabawi - Payung Madinah", c: "" },
     { src: galKabahGrup.url, alt: "Grup jamaah di Masjidil Haram", c: "" },
     { src: galJabalRahmah.url, alt: "Jabal Rahmah", c: "" },
-    { src: galUmrohNovember.url, alt: "Umroh Spesial November", c: "col-span-2" },
+    { src: galUmrohNovember.url, alt: "Umroh Spesial November", c: "col-span-2", pos: "object-bottom" },
     { src: galTurkiyeHagia.url, alt: "Umroh Plus Turkiye - Hagia Sophia", c: "" },
     { src: galMasjidQuba.url, alt: "Masjid Quba", c: "" },
   ];
