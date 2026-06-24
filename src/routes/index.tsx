@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Sparkles, Globe2, Award, BookOpen, Users, Building2, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
-  CalendarCheck,
+  CalendarCheck, ClipboardList, MessageSquare, Megaphone, Users2, Rocket,
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag, ShieldCheck,
   Instagram, Mail, Phone, MapPinned,
 } from "lucide-react";
