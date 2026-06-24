@@ -97,7 +97,8 @@ Deno.serve(async (req) => {
     }
     if (!amount || amount < 1000) return json({ ok: false, error: "Nominal pendaftaran tidak valid" }, { status: 500 });
 
-    const description = `Biaya pendaftaran ${slotName} — Safar Iman`;
+    const description = `Biaya Pendaftaran ${slotName} — Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code}`;
+    const itemDescription = `Pendaftaran ${slotName} a/n ${p.full_name} — Kode ${p.registration_code}`;
     const origin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
     const redirectUrl = `${origin}/pendaftaran-sukses?code=${encodeURIComponent(p.registration_code)}`;
 
@@ -106,16 +107,21 @@ Deno.serve(async (req) => {
 
     const body = {
       name: p.full_name,
+      customerName: p.full_name,
       email: p.email,
+      customerEmail: p.email,
       mobile: p.whatsapp,
+      customerMobile: p.whatsapp,
       redirectUrl,
       description,
-      items: [{ description, quantity: 1, rate: amount }],
+      items: [{ description: itemDescription, quantity: 1, rate: amount }],
       extraData: {
         code: p.registration_code,
         registration_code: p.registration_code,
         payment_type: "registration",
         category: p.category,
+        participant_name: p.full_name,
+        participant_email: p.email,
       },
     };
     const res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
