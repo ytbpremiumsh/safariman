@@ -28,12 +28,13 @@ type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
   birth_date: string; religion: string; city: string; education: string; occupation: string;
   instagram: string;
+  has_passport: string;
   agree: boolean;
 };
 
 const initial: FormData = {
   full_name: "", email: "", whatsapp: "", gender: "", birth_date: "",
-  religion: "", city: "", education: "", occupation: "", instagram: "", agree: false,
+  religion: "", city: "", education: "", occupation: "", instagram: "", has_passport: "", agree: false,
 };
 
 const schema = z.object({
