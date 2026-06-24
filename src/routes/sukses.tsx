@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, MessageCircle, Sparkles } from "lucide-react";
+import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
+import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import heroImg from "@/assets/hero-kaaba.jpg";
 
 export const Route = createFileRoute("/sukses")({
