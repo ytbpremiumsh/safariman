@@ -220,6 +220,46 @@ function PaidView({ code, info }: { code: string; info: Status }) {
   );
 }
 
+function GelombangFastTrackInfo() {
+  const items = [
+    {
+      title: "Lolos Tahapan Bagikan Twibbon & Poster",
+      desc: "Sebagai peserta jalur Fast Track, kamu otomatis dibebaskan dari kewajiban membagikan twibbon dan poster.",
+    },
+    {
+      title: "Lolos Pengiriman Essay & Studi Kasus",
+      desc: "Kamu juga otomatis dianggap lolos tahap essay dan studi kasus tanpa perlu mengirimkan apapun.",
+    },
+  ];
+  return (
+    <div className="mb-8 rounded-3xl border border-emerald/30 bg-gradient-to-br from-emerald/5 to-accent/5 p-5 sm:p-6 animate-fade-up">
+      <div className="flex items-center gap-2 mb-4">
+        <ShieldCheck className="size-5 text-emerald" />
+        <div className="font-display text-lg font-semibold">Keuntungan Jalur Fast Track</div>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Pembayaranmu sudah valid. Berikut tahapan yang otomatis terlewati:
+      </p>
+      <div className="space-y-3">
+        {items.map((it) => (
+          <div key={it.title} className="flex items-start gap-3 rounded-2xl bg-card border border-border p-3.5">
+            <div className="size-9 rounded-xl bg-emerald/15 text-emerald grid place-items-center shrink-0">
+              <CheckCircle2 className="size-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-semibold">{it.title}</div>
+              <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{it.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-muted-foreground mt-4 leading-relaxed">
+        Status pendaftaranmu kini <strong>Lolos</strong>. Tunggu informasi lanjutan dari panitia melalui email & WhatsApp.
+      </p>
+    </div>
+  );
+}
+
 function SelfFundedDocs({ code, fullName }: { code: string; fullName: string }) {
   const [busy, setBusy] = useState<string | null>(null);
 
