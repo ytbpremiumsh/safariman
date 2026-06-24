@@ -20,7 +20,7 @@ export const Route = createFileRoute("/admin/pengaturan/timeline")({
 });
 
 const ICON_OPTIONS = Object.keys(TIMELINE_ICONS) as TimelineIconName[];
-const CTA_OPTIONS = ["", "/pendaftaran", "/twibbon", "/berkas", "/essay", "/donasi", "/sukses"];
+const CTA_OPTIONS = ["", "/pendaftaran", "/twibbon", "/berkas", "/essay", "/kontribusi", "/sukses"];
 
 function TimelineSetting() {
   const ready = useAdminGuard();

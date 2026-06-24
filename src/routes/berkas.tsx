@@ -276,7 +276,7 @@ function AlreadySubmittedCard({ participant, code, onReset }: { participant: Par
             </p>
           </div>
           <Link
-            to="/donasi"
+            to="/kontribusi"
             search={{ code }}
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
           >
