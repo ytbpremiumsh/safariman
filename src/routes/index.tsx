@@ -48,7 +48,7 @@ function Nav() {
     { href: "#kuota", label: "Kuota" },
     { href: "#timeline", label: "Timeline" },
     { href: "#galeri", label: "Galeri" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/faq", label: "FAQ" },
     { href: "/tentang", label: "Tentang" },
   ];
   return (
@@ -864,7 +864,7 @@ function Footer() {
               <li><a href="#program" className="hover:text-emerald transition-colors">Program</a></li>
               <li><a href="#kuota" className="hover:text-emerald transition-colors">Kuota</a></li>
               <li><a href="#timeline" className="hover:text-emerald transition-colors">Timeline</a></li>
-              <li><a href="#faq" className="hover:text-emerald transition-colors">FAQ</a></li>
+              <li><Link to="/faq" className="hover:text-emerald transition-colors">FAQ</Link></li>
               <li><Link to="/tentang" className="hover:text-emerald transition-colors">Tentang</Link></li>
             </ul>
           </div>

@@ -320,6 +320,7 @@ export type Database = {
       gen_registration_code: { Args: never; Returns: string }
       get_countdown_enabled: { Args: never; Returns: boolean }
       get_countdown_target: { Args: never; Returns: string }
+      get_faq_config: { Args: never; Returns: Json }
       get_gelombang_config: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
       get_poster_url: { Args: never; Returns: string }

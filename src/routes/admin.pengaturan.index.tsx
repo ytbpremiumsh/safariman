@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, ListOrdered } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, ListOrdered } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -68,7 +68,14 @@ const ITEMS = [
     title: "Link Saluran WhatsApp",
     desc: "URL Saluran WhatsApp yang ditampilkan sebagai ajakan gabung di seluruh halaman sukses pendaftaran.",
   },
+  {
+    to: "/admin/pengaturan/faq",
+    icon: HelpCircle,
+    title: "Halaman FAQ",
+    desc: "Aktif/nonaktifkan halaman /faq, tambah/edit pertanyaan & jawaban (pendaftaran, berkas, essay, timeline, benefit, kontribusi).",
+  },
 ] as const;
+
 
 function PengaturanHub() {
   const ready = useAdminGuard();

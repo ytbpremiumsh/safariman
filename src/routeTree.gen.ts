@@ -16,6 +16,7 @@ import { Route as SuksesRouteImport } from './routes/sukses'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
 import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
 import { Route as KontribusiRouteImport } from './routes/kontribusi'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EssayRouteImport } from './routes/essay'
 import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
@@ -39,6 +40,7 @@ import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.peng
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
+import { Route as AdminPengaturanFaqRouteImport } from './routes/admin.pengaturan.faq'
 import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengaturan.email'
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
 import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
@@ -84,6 +86,11 @@ const PendaftaranRoute = PendaftaranRouteImport.update({
 const KontribusiRoute = KontribusiRouteImport.update({
   id: '/kontribusi',
   path: '/kontribusi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EssayRoute = EssayRouteImport.update({
@@ -204,6 +211,11 @@ const AdminPengaturanGelombangRoute =
     path: '/admin/pengaturan/gelombang',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanFaqRoute = AdminPengaturanFaqRouteImport.update({
+  id: '/admin/pengaturan/faq',
+  path: '/admin/pengaturan/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanEmailRoute = AdminPengaturanEmailRouteImport.update({
   id: '/admin/pengaturan/email',
   path: '/admin/pengaturan/email',
@@ -276,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/essay': typeof EssayRoute
+  '/faq': typeof FaqRoute
   '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
@@ -292,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -319,6 +333,7 @@ export interface FileRoutesByTo {
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/essay': typeof EssayRoute
+  '/faq': typeof FaqRoute
   '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
@@ -335,6 +350,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -361,6 +377,7 @@ export interface FileRoutesById {
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
   '/daftar-mandiri': typeof DaftarMandiriRoute
   '/essay': typeof EssayRoute
+  '/faq': typeof FaqRoute
   '/kontribusi': typeof KontribusiRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
@@ -377,6 +394,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
   '/admin/pengaturan/email': typeof AdminPengaturanEmailRoute
+  '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
@@ -406,6 +424,7 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/essay'
+    | '/faq'
     | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
@@ -422,6 +441,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -449,6 +469,7 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/essay'
+    | '/faq'
     | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
@@ -465,6 +486,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -490,6 +512,7 @@ export interface FileRouteTypes {
     | '/daftar-gelombang-2'
     | '/daftar-mandiri'
     | '/essay'
+    | '/faq'
     | '/kontribusi'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
@@ -506,6 +529,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
     | '/admin/pengaturan/email'
+    | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
@@ -534,6 +558,7 @@ export interface RootRouteChildren {
   DaftarGelombang2Route: typeof DaftarGelombang2Route
   DaftarMandiriRoute: typeof DaftarMandiriRoute
   EssayRoute: typeof EssayRoute
+  FaqRoute: typeof FaqRoute
   KontribusiRoute: typeof KontribusiRoute
   PendaftaranRoute: typeof PendaftaranRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
@@ -550,6 +575,7 @@ export interface RootRouteChildren {
   AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
   AdminPengaturanEmailRoute: typeof AdminPengaturanEmailRoute
+  AdminPengaturanFaqRoute: typeof AdminPengaturanFaqRoute
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
@@ -613,6 +639,13 @@ declare module '@tanstack/react-router' {
       path: '/kontribusi'
       fullPath: '/kontribusi'
       preLoaderRoute: typeof KontribusiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/essay': {
@@ -776,6 +809,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/faq': {
+      id: '/admin/pengaturan/faq'
+      path: '/admin/pengaturan/faq'
+      fullPath: '/admin/pengaturan/faq'
+      preLoaderRoute: typeof AdminPengaturanFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/email': {
       id: '/admin/pengaturan/email'
       path: '/admin/pengaturan/email'
@@ -897,6 +937,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarGelombang2Route: DaftarGelombang2Route,
   DaftarMandiriRoute: DaftarMandiriRoute,
   EssayRoute: EssayRoute,
+  FaqRoute: FaqRoute,
   KontribusiRoute: KontribusiRoute,
   PendaftaranRoute: PendaftaranRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
@@ -913,6 +954,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
   AdminPengaturanEmailRoute: AdminPengaturanEmailRoute,
+  AdminPengaturanFaqRoute: AdminPengaturanFaqRoute,
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,

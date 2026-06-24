@@ -53,6 +53,8 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
           { to: "/admin/pengaturan/email", label: "Template Email" },
           { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp" },
+          { to: "/admin/pengaturan/faq", label: "Halaman FAQ" },
+
         ],
       },
     ],
