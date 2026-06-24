@@ -63,6 +63,7 @@ function DokumenSelfFundedSettings() {
       const cleanPrice = String(Math.max(0, Number(String(price).replace(/[^0-9]/g, "")) || 0));
       rows.push({ key: "self_funded_price", value: cleanPrice, updated_at: new Date().toISOString() });
       rows.push({ key: "self_funded_paid_enabled", value: paidEnabled ? "true" : "false", updated_at: new Date().toISOString() });
+      rows.push({ key: "self_funded_enabled", value: selfEnabled ? "true" : "false", updated_at: new Date().toISOString() });
       const { error } = await supabase.from("app_settings").upsert(rows);
       if (error) throw error;
       toast.success("Pengaturan dokumen disimpan");
