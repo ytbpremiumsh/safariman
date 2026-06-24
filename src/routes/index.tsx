@@ -448,6 +448,7 @@ function Quota() {
     { icon: Luggage, label: "Handling" },
     { icon: ShoppingBag, label: "Perlengkapan Lengkap" },
     { icon: MapPin, label: "City Tour Makkah & Madinah" },
+    { icon: ShieldCheck, label: "Asuransi Perjalanan" },
   ];
   return (
     <section id="kuota" className="relative py-24 sm:py-32">
