@@ -708,7 +708,7 @@ function Gallery() {
           title={<>Hasanah <span className="text-gradient-emerald">Tour & Travel</span></>}
           subtitle="Momen ibadah, ilmu, dan kebaikan dari perjalanan sebelumnya."
         />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-14 auto-rows-[180px] sm:auto-rows-[220px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-dense gap-3 sm:gap-4 mt-14 auto-rows-[180px] sm:auto-rows-[220px]">
           {imgs.map((img, i) => (
             <div
               key={i}
