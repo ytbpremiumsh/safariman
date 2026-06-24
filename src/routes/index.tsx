@@ -30,6 +30,13 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoSafarImanBadge from "@/assets/logo-safar-iman-badge.png";
 import legalitasBadges from "@/assets/legalitas-badges-hd.png";
+import galKabahMalam from "@/assets/galeri-kabah-malam.png.asset.json";
+import galMadinahPayung from "@/assets/galeri-madinah-payung.png.asset.json";
+import galKabahGrup from "@/assets/galeri-kabah-grup.png.asset.json";
+import galJabalRahmah from "@/assets/galeri-jabal-rahmah.png.asset.json";
+import galUmrohNovember from "@/assets/galeri-umroh-november.png.asset.json";
+import galTurkiyeHagia from "@/assets/galeri-turkiye-hagia.png.asset.json";
+import galMasjidQuba from "@/assets/galeri-masjid-quba.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
