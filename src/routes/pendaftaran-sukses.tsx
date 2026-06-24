@@ -214,6 +214,11 @@ function PaidView({ code, info }: { code: string; info: Status }) {
         </Link>
       </div>
 
+      <div className="mt-6">
+        <WhatsAppChannelCTA />
+      </div>
+
+
       {info.category === "self_funded" && (
         <SelfFundedDocs code={code} fullName={info.full_name} />
       )}
