@@ -563,9 +563,10 @@ function Timeline() {
             ];
 
             const c = btnColors[idx % btnColors.length];
+            const Icon = getIcon(s.icon);
             return (
               <div
-                key={s.t}
+                key={`${idx}-${s.title}`}
                 className={`relative grid sm:grid-cols-2 gap-6 mb-10 animate-fade-up ${
                   idx % 2 === 0 ? "" : "sm:[&>*:first-child]:order-2"
                 }`}
@@ -573,7 +574,6 @@ function Timeline() {
               >
                 <div className={`pl-16 sm:pl-0 ${idx % 2 === 0 ? "sm:text-right sm:pr-12" : "sm:pl-12"}`}>
                   <div className="relative bg-card rounded-2xl p-6 shadow-soft border border-border/50 hover-lift group">
-                    {/* Connector dash from card to center rail (desktop) */}
                     <div
                       className={`hidden sm:block absolute top-8 h-px w-10 pointer-events-none ${
                         idx % 2 === 0 ? "right-[-2.5rem]" : "left-[-2.5rem]"
@@ -583,7 +583,6 @@ function Timeline() {
                           "repeating-linear-gradient(to right, oklch(0.36 0.09 160 / 0.6) 0 6px, transparent 6px 10px)",
                       }}
                     />
-                    {/* Connector dash from card to left rail (mobile) */}
                     <div
                       className="sm:hidden absolute top-8 left-[-2.5rem] h-px w-10 pointer-events-none"
                       style={{
@@ -598,30 +597,29 @@ function Timeline() {
                       <span className="text-muted-foreground/60">•</span>
                       <span className="text-foreground/70 normal-case tracking-normal font-medium">{s.date}</span>
                     </div>
-                    <h3 className="font-display text-2xl font-semibold mt-2">{s.t}</h3>
-                    <p className="text-muted-foreground mt-1 text-sm">{s.d}</p>
-                    {s.cta && (
+                    <h3 className="font-display text-2xl font-semibold mt-2">{s.title}</h3>
+                    <p className="text-muted-foreground mt-1 text-sm">{s.desc}</p>
+                    {s.ctaLabel && s.ctaTo && (
                       <Link
-                        to={s.cta.to}
+                        to={s.ctaTo as never}
                         className={`mt-4 inline-flex items-center gap-1.5 rounded-full ${c.bg} ${c.text} px-4 py-2 text-xs font-semibold ${c.shadow} hover-lift ${
                           idx % 2 === 0 ? "sm:ml-auto" : ""
                         }`}
                       >
-                        {s.cta.label}<ArrowRight className="size-3.5" />
+                        {s.ctaLabel}<ArrowRight className="size-3.5" />
                       </Link>
                     )}
                   </div>
                 </div>
                 <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-4 z-10">
                   <div className="relative">
-                    {/* Pulsing ring */}
                     <div
                       className="absolute inset-0 rounded-full bg-primary/40"
                       style={{ animation: `node-ping 2.4s cubic-bezier(0,0,0.2,1) infinite`, animationDelay: `${idx * 0.2}s` }}
                     />
                     <div className="absolute inset-0 bg-primary/30 rounded-full blur-lg" />
                     <div className="relative size-12 rounded-full bg-gradient-emerald grid place-items-center shadow-emerald ring-4 ring-background">
-                      <s.i className="size-5 text-white" />
+                      <Icon className="size-5 text-white" />
                     </div>
                   </div>
                 </div>
