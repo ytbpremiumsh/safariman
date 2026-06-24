@@ -213,7 +213,7 @@ function SlotCard({
               : "bg-gradient-gold text-emerald-deep shadow-gold")
           }
         >
-          {free ? "Daftar Gratis" : `Daftar — ${formatRupiah(slot.price)}`}
+          {free ? "Daftar Gratis" : "Daftar \u00a0Fast Track"}
           <ArrowRight className="size-4" />
         </Link>
       ) : (
