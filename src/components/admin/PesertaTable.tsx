@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
   FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet,
@@ -39,6 +39,7 @@ type Participant = {
   cv_url: string | null;
   photo_url: string | null;
   payment_status: string;
+  payment_url: string | null;
   paid_at: string | null;
   donation_status: string;
   donation_paid_at: string | null;
@@ -122,6 +123,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   const [savingAutoBerkas, setSavingAutoBerkas] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const paymentSyncRef = useRef<Record<string, number>>({});
 
   const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
 
@@ -129,6 +131,38 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   useEffect(() => {
     if (!ready) return;
     let cancelled = false;
+
+    const syncPendingRegistrationPayments = async (loadedRows: Participant[]) => {
+      if (isSelf) return;
+      const now = Date.now();
+      const pending = loadedRows
+        .filter((p) =>
+          isGelombang(p.category) &&
+          p.payment_status === "pending" &&
+          !!p.payment_url &&
+          now - (paymentSyncRef.current[p.registration_code] ?? 0) > 60000
+        )
+        .slice(0, 5);
+      if (pending.length === 0) return;
+
+      let changed = false;
+      try {
+        const { mayarPendaftaranInvoice } = await import("@/lib/api");
+        for (const p of pending) {
+          paymentSyncRef.current[p.registration_code] = now;
+          try {
+            const result = await mayarPendaftaranInvoice(p.registration_code);
+            if (result?.alreadyPaid || result?.synced) changed = true;
+          } catch {
+            // Sinkronisasi cadangan tidak boleh mengganggu dashboard admin.
+          }
+        }
+      } catch {
+        return;
+      }
+
+      if (changed && !cancelled) window.setTimeout(() => loadData(true), 800);
+    };
 
     const loadData = async (silent = false) => {
       if (!silent) setLoading(true);
@@ -140,8 +174,12 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
         supabase.from("app_settings").select("key,value"),
       ]);
       if (cancelled) return;
+      const loadedRows = (list ?? []) as Participant[];
       if (error) toast.error(error.message);
-      else setRows((list ?? []) as Participant[]);
+      else {
+        setRows(loadedRows);
+        syncPendingRegistrationPayments(loadedRows).catch(() => {});
+      }
       const map = Object.fromEntries((cfg ?? []).map((r: any) => [r.key, r.value ?? ""]));
       setApiKey(map.mpwa_api_key ?? "");
       setSender(map.mpwa_sender ?? "");
