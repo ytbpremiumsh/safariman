@@ -33,6 +33,7 @@ import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peser
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
 import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
 import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
+import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
@@ -169,6 +170,12 @@ const AdminPesertaEssayRoute = AdminPesertaEssayRouteImport.update({
   path: '/admin/peserta/essay',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanWaChannelRoute =
+  AdminPengaturanWaChannelRouteImport.update({
+    id: '/admin/pengaturan/wa-channel',
+    path: '/admin/pengaturan/wa-channel',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanTwibbonRoute = AdminPengaturanTwibbonRouteImport.update({
   id: '/admin/pengaturan/twibbon',
   path: '/admin/pengaturan/twibbon',
@@ -283,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
@@ -324,6 +332,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
@@ -364,6 +373,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
+  '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
@@ -407,6 +417,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/peserta/reguler'
@@ -448,6 +459,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/pengaturan'
@@ -487,6 +499,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/hasil-seleksi'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/twibbon'
+    | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/peserta/reguler'
@@ -529,6 +542,7 @@ export interface RootRouteChildren {
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
+  AdminPengaturanWaChannelRoute: typeof AdminPengaturanWaChannelRoute
   AdminPesertaEssayRoute: typeof AdminPesertaEssayRoute
   AdminPesertaEssayApiRoute: typeof AdminPesertaEssayApiRoute
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRouteWithChildren
@@ -707,6 +721,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaEssayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/wa-channel': {
+      id: '/admin/pengaturan/wa-channel'
+      path: '/admin/pengaturan/wa-channel'
+      fullPath: '/admin/pengaturan/wa-channel'
+      preLoaderRoute: typeof AdminPengaturanWaChannelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/twibbon': {
       id: '/admin/pengaturan/twibbon'
       path: '/admin/pengaturan/twibbon'
@@ -876,6 +897,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
+  AdminPengaturanWaChannelRoute: AdminPengaturanWaChannelRoute,
   AdminPesertaEssayRoute: AdminPesertaEssayRoute,
   AdminPesertaEssayApiRoute: AdminPesertaEssayApiRoute,
   AdminPesertaRegulerRoute: AdminPesertaRegulerRouteWithChildren,
