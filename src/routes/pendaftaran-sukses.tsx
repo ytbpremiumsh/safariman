@@ -188,6 +188,10 @@ function PaidView({ code, info }: { code: string; info: Status }) {
         </button>
       </div>
 
+      {(info.category === "gelombang_1" || info.category === "gelombang_2") && (
+        <GelombangFastTrackInfo />
+      )}
+
       <div className="grid sm:grid-cols-2 gap-4">
         <Link to="/twibbon" className="group bg-card border border-border rounded-2xl p-5 hover-lift flex items-start gap-4">
           <div className="size-12 rounded-xl bg-accent/20 grid place-items-center shrink-0">
