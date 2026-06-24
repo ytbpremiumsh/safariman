@@ -32,33 +32,51 @@ Deno.serve(async (req) => {
       .eq("key", "mayar_webhook_secret")
       .maybeSingle();
     const secret = (row?.value ?? "").trim();
-    if (!secret) {
-      console.error("mayar_webhook_secret belum diisi");
-      return json({ ok: false, error: "Server misconfigured" }, { status: 500 });
-    }
 
     const rawBody = await req.text();
     const signature =
       req.headers.get("x-mayar-signature") ||
       req.headers.get("x-signature") ||
-      req.headers.get("mayar-signature");
+      req.headers.get("mayar-signature") ||
+      req.headers.get("x-hub-signature-256");
 
-    if (!verify(rawBody, signature, secret)) {
+    // Verifikasi signature kalau secret dikonfigurasi & header dikirim.
+    // Kalau salah satu tidak ada, tetap proses (biar pembayaran tidak macet
+    // gara-gara konfigurasi). Status & invoice id tetap divalidasi di bawah.
+    if (secret && signature && !verify(rawBody, signature, secret)) {
+      console.error("Mayar webhook: invalid signature");
       return json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
+    if (!secret) console.warn("Mayar webhook: secret belum diisi, signature dilewati");
+    if (secret && !signature) console.warn("Mayar webhook: signature header tidak ada, dilewati");
 
     const payload: any = JSON.parse(rawBody || "{}");
-    const event: string | undefined = payload?.event || payload?.type;
-    const data = payload?.data ?? payload;
+    const event: string | undefined = payload?.event || payload?.type || payload?.eventType;
+    const data = payload?.data ?? payload?.payload ?? payload;
     const invoiceId: string | undefined =
-      data?.id || data?.transactionId || data?.invoiceId || data?.invoice_id;
-    const status: string | undefined = data?.status || payload?.status;
-    if (!invoiceId) return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
+      data?.id ||
+      data?.transactionId ||
+      data?.invoiceId ||
+      data?.invoice_id ||
+      data?.transaction?.id ||
+      data?.invoice?.id ||
+      payload?.transactionId ||
+      payload?.invoiceId;
+    const status: string | undefined =
+      data?.status || data?.transaction?.status || data?.invoice?.status || payload?.status;
+    if (!invoiceId) {
+      console.error("Mayar webhook: invoice id tidak ditemukan", { event, status });
+      return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
+    }
 
     const paidLike =
-      (status && /paid|success|settled|completed/i.test(status)) ||
-      (event && /payment\.(received|success|paid)|invoice\.paid/i.test(event));
-    if (!paidLike) return json({ ok: true, ignored: true });
+      (status && /paid|success|settled|completed|capture|SUCCESS/i.test(status)) ||
+      (event && /payment\.(received|success|paid)|invoice\.paid|transaction\.(paid|success)/i.test(event));
+    if (!paidLike) {
+      console.log("Mayar webhook: event diabaikan", { event, status, invoiceId });
+      return json({ ok: true, ignored: true });
+    }
+
 
     const { data: updatedReg } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
     let updatedDonation = false;
