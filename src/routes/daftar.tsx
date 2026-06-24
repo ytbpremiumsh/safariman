@@ -28,12 +28,13 @@ type FormData = {
   full_name: string; email: string; whatsapp: string; gender: string;
   birth_date: string; religion: string; city: string; education: string; occupation: string;
   instagram: string;
+  has_passport: string;
   agree: boolean;
 };
 
 const initial: FormData = {
   full_name: "", email: "", whatsapp: "", gender: "", birth_date: "",
-  religion: "", city: "", education: "", occupation: "", instagram: "", agree: false,
+  religion: "", city: "", education: "", occupation: "", instagram: "", has_passport: "", agree: false,
 };
 
 const schema = z.object({
@@ -48,6 +49,7 @@ const schema = z.object({
   occupation: z.string().trim().min(2).max(100),
   instagram: z.string().trim().min(2, "Username Instagram wajib diisi").max(50, "Maksimal 50 karakter")
     .regex(/^@?[A-Za-z0-9._]+$/, "Format username Instagram tidak valid"),
+  has_passport: z.enum(["Sudah", "Belum"], { errorMap: () => ({ message: "Status passport wajib dipilih" }) }),
 });
 
 const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string; paid: boolean }> = {
@@ -114,6 +116,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         p_category: kind,
         p_instagram: parsed.data.instagram.replace(/^@/, ""),
         p_religion: parsed.data.religion,
+        p_has_passport: parsed.data.has_passport,
       });
       if (error) throw error;
       const row = rows?.[0];
@@ -445,6 +448,16 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
         <Field label="Instagram">
           <Input value={data.instagram} onChange={(e) => set("instagram", e.target.value)} placeholder="@username" />
         </Field>
+        <Field label="Sudah memiliki Passport?">
+          <RadioGroup value={data.has_passport} onValueChange={(v) => set("has_passport", v)} className="flex gap-4 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <RadioGroupItem value="Sudah" /> Sudah
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <RadioGroupItem value="Belum" /> Belum
+            </label>
+          </RadioGroup>
+        </Field>
       </div>
     </div>
   );
@@ -466,6 +479,7 @@ function Step2Review({ data, kind }: { data: FormData; kind: Kind }) {
         <ReviewRow label="Pendidikan" v={data.education} />
         <ReviewRow label="Pekerjaan" v={data.occupation} />
         <ReviewRow label="Instagram" v={data.instagram ? `@${data.instagram.replace(/^@/, "")}` : ""} />
+        <ReviewRow label="Punya Passport" v={data.has_passport} />
       </div>
       <div className="mt-6 rounded-2xl bg-accent/10 border border-accent/30 p-4 text-sm text-muted-foreground">
         Setelah daftar, kamu akan mendapatkan <strong className="text-foreground">Kode Pendaftaran</strong>.
