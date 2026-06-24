@@ -48,7 +48,7 @@ function Nav() {
     { href: "#kuota", label: "Kuota" },
     { href: "#timeline", label: "Timeline" },
     { href: "#galeri", label: "Galeri" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/faq", label: "FAQ" },
     { href: "/tentang", label: "Tentang" },
   ];
   return (
