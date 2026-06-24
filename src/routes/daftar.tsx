@@ -59,16 +59,19 @@ const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string
 export function RegisterPage({ kind }: { kind: Kind }) {
   const KIND_META_BASE = KIND_META_MAP[kind];
   const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
+  const [selfLoaded, setSelfLoaded] = useState<boolean>(kind !== "self_funded");
   useEffect(() => {
     if (kind !== "self_funded") return;
     (async () => {
       const { data } = await supabase
         .from("app_settings")
-        .select("value")
-        .eq("key", "self_funded_paid_enabled")
-        .maybeSingle();
-      const v = (data as any)?.value;
-      if (v === "false") setSelfPaidEnabled(false);
+        .select("key,value")
+        .in("key", ["self_funded_paid_enabled", "self_funded_enabled"]);
+      const map = new Map((data ?? []).map((r: any) => [r.key, r.value]));
+      if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
+      if (map.get("self_funded_enabled") === "false") setSelfEnabled(false);
+      setSelfLoaded(true);
     })();
   }, [kind]);
   const KIND_META = kind === "self_funded" && !selfPaidEnabled
