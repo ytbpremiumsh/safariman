@@ -510,16 +510,16 @@ function Quota() {
 
 function Timeline() {
   const steps: { i: typeof ClipboardList; t: string; d: string; date: string; cta?: { label: string; to: "/pendaftaran" | "/twibbon" | "/berkas" | "/essay" } }[] = [
-    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", date: "25 Juni – 31 Juli 2026", cta: { label: "Daftar Sekarang", to: "/pendaftaran" } },
-    { i: Megaphone, t: "Bagikan Twibbon & Poster", d: "Download frame & share di sosial media", date: "25 Juni – 31 Juli 2026", cta: { label: "Buat Twibbon & Poster", to: "/twibbon" } },
-    { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "25 Juni – 31 Juli 2026", cta: { label: "Kirim Berkas", to: "/berkas" } },
-    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami", date: "25 Juni – 31 Juli 2026" },
-    { i: ClipboardList, t: "Pengisian Essay & Studi Kasus", d: "Tahapan Seleksi Essay dan Studi Kasus", date: "25 Juni – 31 Juli 2026", cta: { label: "Kirim Essay & Studi Kasus ", to: "/essay" } },
-    { i: Megaphone, t: "Pengumuman Lolos Essay", d: "Pengumuman peserta yang lolos tahap essay & berhak lanjut ke Leadership Discussion Session", date: "5 Agustus 2026" },
-    { i: Users2, t: "Tes Kesiapan Awal", d: "Tes berbasis CBT (Computer-Based Test) untuk menyaring peserta yang akan lolos ke tahapan selanjutnya", date: "10 – 23 Agustus 2026" },
-    { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online", date: "Ahad, 30 Agustus & 6 September 2026" },
-    { i: Megaphone, t: "Pengumuman Final", d: "Diumumkan via email & web", date: "13 September 2026" },
-    { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan", date: "Akhir September 2026" },
+    { i: ClipboardList, t: "Pendaftaran Dibuka", d: "Lengkapi formulir & dapatkan Kode Pendaftaran", date: "25 Juni – 31 Agustus 2026", cta: { label: "Daftar Sekarang", to: "/pendaftaran" } },
+    { i: Megaphone, t: "Bagikan Twibbon & Poster", d: "Download frame & share di sosial media", date: "25 Juni – 31 Agustus 2026", cta: { label: "Buat Twibbon & Poster", to: "/twibbon" } },
+    { i: ClipboardList, t: "Pengiriman Berkas", d: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "25 Juni – 31 Agustus 2026", cta: { label: "Kirim Berkas", to: "/berkas" } },
+    { i: CheckCircle2, t: "Seleksi Administrasi", d: "Verifikasi berkas oleh tim kami", date: "25 Juni – 31 Agustus 2026" },
+    { i: ClipboardList, t: "Pengisian Essay & Studi Kasus", d: "Tahapan Seleksi Essay dan Studi Kasus", date: "25 Juni – 31 Agustus 2026", cta: { label: "Kirim Essay & Studi Kasus ", to: "/essay" } },
+    { i: Megaphone, t: "Pengumuman Lolos Essay", d: "Pengumuman peserta yang lolos tahap essay & berhak lanjut ke Leadership Discussion Session", date: "5 September 2026" },
+    { i: Users2, t: "Tes Kesiapan Awal", d: "Tes berbasis CBT (Computer-Based Test) untuk menyaring peserta yang akan lolos ke tahapan selanjutnya", date: "10 – 20 September 2026" },
+    { i: MessageSquare, t: "Interview Peserta", d: "Sesi wawancara online", date: "Ahad, 27 September & 4 Oktober 2026" },
+    { i: Megaphone, t: "Pengumuman Final", d: "Diumumkan via email & web", date: "11 Oktober 2026" },
+    { i: Users2, t: "Technical Meeting", d: "Briefing keberangkatan", date: "Akhir Oktober 2026" },
     { i: Rocket, t: "Keberangkatan", d: "Perjalanan ke Tanah Suci", date: "November 2026" },
   ];
   return (
