@@ -253,7 +253,7 @@ function SelfFundedCard({ price, paidEnabled }: { price: number; paidEnabled: bo
           {free ? "GRATIS" : formatRupiah(price)}
         </div>
         <div className="text-[10px] uppercase tracking-[0.2em] opacity-80 mt-1">
-          {free ? "Tanpa biaya pendaftaran" : "Sekali bayar via Mayar"}
+          {free ? "Tanpa biaya pendaftaran" : "SELF FUNDED"}
         </div>
       </div>
 
