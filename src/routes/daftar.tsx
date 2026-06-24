@@ -358,6 +358,11 @@ function SuccessCard({ code, name, kind }: { code: string; name: string; kind: K
         </div>
       )}
 
+      <div className="mt-6">
+        <WhatsAppChannelCTA />
+      </div>
+
+
       <div className="mt-8 text-center">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Kembali ke Beranda</Link>
       </div>
