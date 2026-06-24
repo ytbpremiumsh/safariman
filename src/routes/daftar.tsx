@@ -49,6 +49,7 @@ const schema = z.object({
   occupation: z.string().trim().min(2).max(100),
   instagram: z.string().trim().min(2, "Username Instagram wajib diisi").max(50, "Maksimal 50 karakter")
     .regex(/^@?[A-Za-z0-9._]+$/, "Format username Instagram tidak valid"),
+  has_passport: z.enum(["Sudah", "Belum"], { errorMap: () => ({ message: "Status passport wajib dipilih" }) }),
 });
 
 const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string; paid: boolean }> = {
