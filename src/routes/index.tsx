@@ -467,7 +467,7 @@ function Quota() {
         <div className="relative mt-16 max-w-6xl mx-auto">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
             <span className="text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full bg-gradient-gold text-emerald-deep shadow-gold">
-              Most Competitive
+              EKSLUSIF
             </span>
           </div>
           <div className="rounded-3xl bg-gradient-emerald text-white p-8 sm:p-10 shadow-emerald ring-2 ring-accent/40">
