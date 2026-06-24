@@ -340,7 +340,7 @@ function PendingView({
         </button>
 
         <div className="text-center text-xs text-muted-foreground">
-          Kode sementara: <span className="font-mono">{code}</span> · Diproses oleh Mayar
+          Kode sementara: <span className="font-mono">{code}</span>
         </div>
       </div>
     </div>
