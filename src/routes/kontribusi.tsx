@@ -22,7 +22,7 @@ const cardNabawiAsset = { url: cardNabawiUrl };
 const cardHaramAsset = { url: cardHaramUrl };
 const apresiasiSirahAsset = { url: apresiasiSirahUrl };
 
-export const Route = createFileRoute("/donasi")({
+export const Route = createFileRoute("/kontribusi")({
   validateSearch: z.object({ code: z.string().optional() }),
   head: () => ({
     meta: [
