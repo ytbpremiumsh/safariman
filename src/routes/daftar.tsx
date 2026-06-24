@@ -116,6 +116,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         p_category: kind,
         p_instagram: parsed.data.instagram.replace(/^@/, ""),
         p_religion: parsed.data.religion,
+        p_has_passport: parsed.data.has_passport,
       });
       if (error) throw error;
       const row = rows?.[0];
