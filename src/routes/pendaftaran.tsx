@@ -105,7 +105,7 @@ function PendaftaranHub() {
                     {g1Ended && (
                       <SlotCard slotKey="gelombang_2" slot={cfg.gelombang_2} accent="emerald" forceActive />
                     )}
-                    <SelfFundedCard price={selfPrice} paidEnabled={selfPaidEnabled} />
+                    {selfEnabled && <SelfFundedCard price={selfPrice} paidEnabled={selfPaidEnabled} />}
                   </>
                 );
               })()}
