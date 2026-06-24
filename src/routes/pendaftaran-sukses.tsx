@@ -235,10 +235,10 @@ function GelombangFastTrackInfo() {
     <div className="mb-8 rounded-3xl border border-emerald/30 bg-gradient-to-br from-emerald/5 to-accent/5 p-5 sm:p-6 animate-fade-up">
       <div className="flex items-center gap-2 mb-4">
         <ShieldCheck className="size-5 text-emerald" />
-        <div className="font-display text-lg font-semibold">Keuntungan Jalur Fast Track</div>
+        <div className="font-display text-lg font-semibold">Informasi Jalur Fast Track</div>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Pembayaranmu sudah valid. Berikut tahapan yang otomatis terlewati:
+        Pembayaranmu sudah valid. Kamu tidak perlu mengikuti tahapan berikut karena sudah dinyatakan lolos:
       </p>
       <div className="space-y-3">
         {items.map((it) => (
