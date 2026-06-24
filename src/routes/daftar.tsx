@@ -448,6 +448,16 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
         <Field label="Instagram">
           <Input value={data.instagram} onChange={(e) => set("instagram", e.target.value)} placeholder="@username" />
         </Field>
+        <Field label="Sudah memiliki Passport?">
+          <RadioGroup value={data.has_passport} onValueChange={(v) => set("has_passport", v)} className="flex gap-4 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <RadioGroupItem value="Sudah" /> Sudah
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <RadioGroupItem value="Belum" /> Belum
+            </label>
+          </RadioGroup>
+        </Field>
       </div>
     </div>
   );
