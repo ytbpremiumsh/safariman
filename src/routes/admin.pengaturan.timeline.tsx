@@ -89,10 +89,9 @@ function TimelineSetting() {
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("app_settings").upsert({
-      key: "timeline_config",
-      value: JSON.stringify(clean),
-      updated_at: new Date().toISOString(),
+    const { error } = await supabase.rpc("admin_set_setting", {
+      p_key: "timeline_config",
+      p_value: JSON.stringify(clean),
     });
     setSaving(false);
     if (error) {
