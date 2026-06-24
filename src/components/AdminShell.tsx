@@ -26,13 +26,6 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: "Alur Program",
-    items: [
-      { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon },
-      { to: "/admin/alur/tahapan-seleksi", label: "Tahapan Seleksi (Poster)", icon: FileText },
-    ],
-  },
-  {
     label: "Manajemen Peserta",
     items: [
       { to: "/admin/peserta/reguler/pendaftaran", label: "Pendaftaran Reguler", icon: Users },
@@ -53,11 +46,13 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/gelombang", label: "Daftar Gelombang" },
           { to: "/admin/pengaturan/twibbon", label: "Twibbon & Poster" },
           { to: "/admin/pengaturan/countdown", label: "Countdown" },
+          { to: "/admin/pengaturan/timeline", label: "Timeline Program" },
           { to: "/admin/pengaturan/panduan", label: "Panduan Link" },
-          { to: "/admin/pengaturan/donasi", label: "Pembayaran & DOnasi" },
+          { to: "/admin/pengaturan/donasi", label: "Pembayaran & Donasi" },
           { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi" },
           { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
           { to: "/admin/pengaturan/email", label: "Template Email" },
+          { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp" },
         ],
       },
     ],
@@ -68,7 +63,15 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare },
     ],
   },
+  {
+    label: "Alur Program",
+    items: [
+      { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon },
+      { to: "/admin/alur/tahapan-seleksi", label: "Tahapan Seleksi (Poster)", icon: FileText },
+    ],
+  },
 ];
+
 
 export function useAdminGuard() {
   const navigate = useNavigate();
