@@ -691,12 +691,13 @@ function Testimonials() {
 
 function Gallery() {
   const imgs = [
-    { src: heroImg, alt: "Ka'bah", c: "row-span-2" },
-    { src: madinahImg, alt: "Madinah", c: "" },
-    { src: seminarImg, alt: "Seminar", c: "" },
-    { src: dubaiImg, alt: "Dubai", c: "" },
-    { src: makkahEscalatorImg, alt: "Eskalator Masjidil Haram", c: "col-span-2" },
-    { src: sharingImg, alt: "Berbagi", c: "" },
+    { src: galKabahMalam.url, alt: "Jamaah Hasanah di depan Ka'bah", c: "row-span-2" },
+    { src: galMadinahPayung.url, alt: "Masjid Nabawi - Payung Madinah", c: "" },
+    { src: galKabahGrup.url, alt: "Grup jamaah di Masjidil Haram", c: "" },
+    { src: galJabalRahmah.url, alt: "Jabal Rahmah", c: "" },
+    { src: galUmrohNovember.url, alt: "Umroh Spesial November", c: "col-span-2" },
+    { src: galTurkiyeHagia.url, alt: "Umroh Plus Turkiye - Hagia Sophia", c: "" },
+    { src: galMasjidQuba.url, alt: "Masjid Quba", c: "" },
   ];
   return (
     <section id="galeri" className="relative py-24 sm:py-32 bg-secondary/30">
