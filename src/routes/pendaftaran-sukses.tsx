@@ -227,8 +227,8 @@ function GelombangFastTrackInfo() {
       desc: "Sebagai peserta jalur Fast Track, kamu otomatis dibebaskan dari kewajiban membagikan twibbon dan poster.",
     },
     {
-      title: "Lolos Pengiriman Essay & Studi Kasus",
-      desc: "Kamu juga otomatis dianggap lolos tahap essay dan studi kasus tanpa perlu mengirimkan apapun.",
+      title: "Lolos Pengiriman Administrasi Berkas",
+      desc: "Kamu juga otomatis dianggap lolos tahap pengiriman administrasi berkas tanpa perlu mengirimkan apapun.",
     },
   ];
   return (
