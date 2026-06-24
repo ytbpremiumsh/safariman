@@ -141,6 +141,7 @@ export type Database = {
           essay_worthy: string | null
           full_name: string
           gender: string
+          has_passport: string | null
           id: string
           occupation: string
           organization_experience: string | null
@@ -179,6 +180,7 @@ export type Database = {
           essay_worthy?: string | null
           full_name: string
           gender: string
+          has_passport?: string | null
           id?: string
           occupation: string
           organization_experience?: string | null
@@ -217,6 +219,7 @@ export type Database = {
           essay_worthy?: string | null
           full_name?: string
           gender?: string
+          has_passport?: string | null
           id?: string
           occupation?: string
           organization_experience?: string | null
@@ -495,6 +498,27 @@ export type Database = {
               p_email: string
               p_full_name: string
               p_gender: string
+              p_instagram?: string
+              p_occupation: string
+              p_religion?: string
+              p_whatsapp: string
+            }
+            Returns: {
+              full_name: string
+              id: string
+              registration_code: string
+            }[]
+          }
+        | {
+            Args: {
+              p_birth_date: string
+              p_category?: Database["public"]["Enums"]["program_category"]
+              p_city: string
+              p_education: string
+              p_email: string
+              p_full_name: string
+              p_gender: string
+              p_has_passport?: string
               p_instagram?: string
               p_occupation: string
               p_religion?: string
