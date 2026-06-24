@@ -613,7 +613,7 @@ function Timeline() {
                           idx % 2 === 0 ? "sm:ml-auto" : ""
                         }`}
                       >
-                        {s.cta.label} <ArrowRight className="size-3.5" />
+                        {s.cta.label}<ArrowRight className="size-3.5" />
                       </Link>
                     )}
                   </div>
