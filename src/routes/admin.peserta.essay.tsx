@@ -83,12 +83,19 @@ function PesertaEssayPage() {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [published, setPublished] = useState(false);
+  const [pubBusy, setPubBusy] = useState(false);
 
   const reload = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("list_essay_complete_participants");
+    const [{ data, error }, settingRes] = await Promise.all([
+      supabase.rpc("list_essay_complete_participants"),
+      supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
+    ]);
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
+    setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
 
@@ -114,6 +121,8 @@ function PesertaEssayPage() {
     tidak: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
+  const allDecided = rows.length > 0 && rows.every((r) => r.status === "interview" || r.status === "rejected");
+
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
     if (error) { toast.error(error.message); return; }
@@ -121,6 +130,38 @@ function PesertaEssayPage() {
     if (detail?.id === id) setDetail({ ...detail, status: s });
     toast.success(`Status: ${STATUS_LABEL[s]}`);
   };
+
+  const togglePublish = async (next: boolean) => {
+    setPubBusy(true);
+    const { error } = await supabase.rpc("admin_set_setting", { p_key: "essay_results_published", p_value: next ? "true" : "false" });
+    setPubBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setPublished(next);
+    toast.success(next ? "Hasil Essay dipublikasikan ke peserta" : "Publikasi hasil Essay ditahan");
+  };
+
+  const runAiGrade = async (row: Row) => {
+    setAiBusy(true);
+    const { data, error } = await supabase.functions.invoke("essay-ai-grade", {
+      body: { participant_id: row.id },
+    });
+    setAiBusy(false);
+    if (error) { toast.error(error.message ?? "Gagal menjalankan koreksi AI"); return; }
+    const res = (data as any)?.result;
+    if (!res) { toast.error("Respons AI tidak valid"); return; }
+    const patched: Row = {
+      ...row,
+      essay_ai_score: res.score,
+      essay_ai_percent: res.ai_used_percent,
+      essay_ai_verdict: res.verdict,
+      essay_ai_summary: res.summary,
+      essay_ai_graded_at: new Date().toISOString(),
+    };
+    setRows((p) => p.map((r) => r.id === row.id ? patched : r));
+    if (detail?.id === row.id) setDetail(patched);
+    toast.success("Koreksi AI selesai");
+  };
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
