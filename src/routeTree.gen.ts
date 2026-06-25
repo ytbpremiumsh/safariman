@@ -34,6 +34,7 @@ import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengatu
 import { Route as AdminPesertaTahapanRouteImport } from './routes/admin.peserta.tahapan'
 import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
+import { Route as AdminPesertaKontribusiRouteImport } from './routes/admin.peserta.kontribusi'
 import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
 import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
 import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
@@ -179,6 +180,11 @@ const AdminPesertaSelfFundedRoute = AdminPesertaSelfFundedRouteImport.update({
 const AdminPesertaRegulerRoute = AdminPesertaRegulerRouteImport.update({
   id: '/admin/peserta/reguler',
   path: '/admin/peserta/reguler',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaKontribusiRoute = AdminPesertaKontribusiRouteImport.update({
+  id: '/admin/peserta/kontribusi',
+  path: '/admin/peserta/kontribusi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPesertaEssayApiRoute = AdminPesertaEssayApiRouteImport.update({
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
   '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
   '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
   '/admin/peserta': typeof AdminPesertaIndexRoute
@@ -430,6 +438,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
   '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
@@ -480,6 +489,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/kontribusi'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/admin/peserta/tahapan'
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/kontribusi'
     | '/admin/peserta/tahapan'
     | '/admin/pengaturan'
     | '/admin/peserta'
@@ -574,6 +585,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/kontribusi'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
     | '/admin/peserta/tahapan'
@@ -623,6 +635,7 @@ export interface RootRouteChildren {
   AdminPengaturanWaChannelRoute: typeof AdminPengaturanWaChannelRoute
   AdminPesertaEssayRoute: typeof AdminPesertaEssayRoute
   AdminPesertaEssayApiRoute: typeof AdminPesertaEssayApiRoute
+  AdminPesertaKontribusiRoute: typeof AdminPesertaKontribusiRoute
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRouteWithChildren
   AdminPesertaSelfFundedRoute: typeof AdminPesertaSelfFundedRouteWithChildren
   AdminPesertaTahapanRoute: typeof AdminPesertaTahapanRoute
@@ -805,6 +818,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/peserta/reguler'
       fullPath: '/admin/peserta/reguler'
       preLoaderRoute: typeof AdminPesertaRegulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/kontribusi': {
+      id: '/admin/peserta/kontribusi'
+      path: '/admin/peserta/kontribusi'
+      fullPath: '/admin/peserta/kontribusi'
+      preLoaderRoute: typeof AdminPesertaKontribusiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/peserta/essay-api': {
@@ -1026,6 +1046,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanWaChannelRoute: AdminPengaturanWaChannelRoute,
   AdminPesertaEssayRoute: AdminPesertaEssayRoute,
   AdminPesertaEssayApiRoute: AdminPesertaEssayApiRoute,
+  AdminPesertaKontribusiRoute: AdminPesertaKontribusiRoute,
   AdminPesertaRegulerRoute: AdminPesertaRegulerRouteWithChildren,
   AdminPesertaSelfFundedRoute: AdminPesertaSelfFundedRouteWithChildren,
   AdminPesertaTahapanRoute: AdminPesertaTahapanRoute,
