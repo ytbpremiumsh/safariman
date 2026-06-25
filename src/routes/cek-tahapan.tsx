@@ -390,7 +390,7 @@ const STATE_STYLES: Record<StageState, {
     mark: <Clock className="size-4" />,
   },
   skipped: {
-    label: "Belum Selesai / Belum Dilakukan",
+    label: "Belum Dilakukan",
     chip: "bg-secondary text-muted-foreground",
     border: "border-border",
     iconBg: "bg-secondary",
