@@ -169,7 +169,7 @@ function TentangPage() {
                 },
                 {
                   icon: HeartHandshake,
-                  title: "Amanah & Akuntabel",
+                  title: "Amanah",
                   desc: "Setiap kontribusi peserta dialokasikan dengan baik untuk operasional program dan kegiatan sosial.",
                 },
                 {
