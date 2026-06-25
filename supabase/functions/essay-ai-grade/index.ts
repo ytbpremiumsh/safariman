@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { aiChat } from "../_shared/ai-provider.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
 const SYSTEM = `Kamu adalah penilai (reviewer) profesional untuk seleksi program beasiswa umroh "Safar Iman".
 Tugasmu menilai jawaban Essay dan Studi Kasus peserta secara JUJUR, OBYEKTIF, dan TEGAS.
