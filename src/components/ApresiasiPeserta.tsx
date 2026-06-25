@@ -48,7 +48,7 @@ function formatDate(iso: string) {
   return d.toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" });
 }
 
-export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
+export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: { compact?: boolean; hidePlaceholder?: boolean }) {
   const s = useApresiasiSettings();
 
   return (
