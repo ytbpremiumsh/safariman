@@ -108,7 +108,7 @@ function TahapanSeleksiPage() {
                     </span>
                     <div>
                       <p className="font-semibold text-foreground text-sm">Kelas Online</p>
-                      <p className="text-sm text-foreground/75">Fiqh Umrah Praktis — Dari Niat hingga Tahallul</p>
+                      <p className="text-sm text-foreground/75">Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur — bersama Ustadz Ahmad Fauzan, Lc.</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
@@ -116,8 +116,9 @@ function TahapanSeleksiPage() {
                       <Check className="size-3.5" />
                     </span>
                     <div>
-                      <p className="font-semibold text-foreground text-sm">Kajian Sirah</p>
-                      <p className="text-sm text-foreground/75">Jejak Cahaya: Makkah dan Madinah</p>
+                      <p className="font-semibold text-foreground text-sm">Kajian</p>
+                      <p className="text-sm text-foreground/75">Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah — bersama Ustadz Hilman Al Hazmi, Lc. (Alumni Syariah Islamiyyah Al Azhar University)</p>
+
                     </div>
                   </li>
                   <li className="flex items-start gap-3 rounded-xl bg-background/70 p-3.5">
