@@ -281,7 +281,7 @@ function WaSetupPage() {
               </h2>
               <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
                 Asisten AI akan menjawab pesan WhatsApp masuk secara otomatis berdasarkan Knowledge & Behavior di bawah.
-                Powered by Lovable AI Gateway.
+                Provider AI (Lovable AI Gateway atau OpenRouter) diatur di <a className="text-accent underline" href="/admin/pengaturan/ai-provider">Pengaturan → AI Provider</a>.
               </p>
             </div>
             <div className="flex items-center gap-3 bg-secondary/60 rounded-full px-4 py-2">
