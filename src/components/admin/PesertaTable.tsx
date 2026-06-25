@@ -870,6 +870,19 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                   </button>
                 </div>
               </div>
+
+              <div className="mt-6 pt-4 border-t border-red-500/30">
+                <div className="text-xs uppercase tracking-wider text-red-600 mb-2">Zona Berbahaya</div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Menghapus peserta akan menghilangkan seluruh data pendaftaran, berkas, essay, dan riwayat pembayaran terkait secara permanen.
+                </p>
+                <button
+                  onClick={() => deleteParticipant(detail.id)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-red-600 text-white px-4 py-2 text-sm font-semibold hover:bg-red-700"
+                >
+                  <Trash2 className="size-4" /> Hapus Peserta
+                </button>
+              </div>
             </>
           )}
         </DialogContent>
