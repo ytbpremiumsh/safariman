@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, email, whatsapp, gender, birth_date, city, education, occupation, social_media, reason, achievements, organization_experience, category, status, cv_url, photo_url, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, payment_status, paid_at, donation_status, donation_paid_at, created_at, updated_at",
+          "id, registration_code, full_name, category, status, essay_worthy, essay_dream, essay_contribution",
         )
         .ilike("registration_code", token)
         .maybeSingle();
@@ -127,8 +127,23 @@ Deno.serve(async (req) => {
           { status: 403 },
         );
       }
-      return json({ ok: true, eligible: true, participant: shape(p) });
+      // Public endpoint — return ONLY the minimum needed for CBT login.
+      // No PII (email/whatsapp/birth_date/essays/payment) is exposed here.
+      return json({
+        ok: true,
+        eligible: true,
+        participant: {
+          id: p.id,
+          token: p.registration_code,
+          registration_code: p.registration_code,
+          full_name: p.full_name,
+          category: p.category,
+          category_label: p.category ? (CAT_LABEL[p.category as string] ?? null) : null,
+          status: p.status,
+        },
+      });
     }
+
 
     // -------- Protected: list / detail ----------
     if (req.method === "GET" && route === "participants") {
