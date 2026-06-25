@@ -22,6 +22,7 @@ import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
 import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
 import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as CekTahapanRouteImport } from './routes/cek-tahapan'
 import { Route as CekHasilRouteImport } from './routes/cek-hasil'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,7 @@ import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
 import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
+import { Route as AdminPesertaTahapanRouteImport } from './routes/admin.peserta.tahapan'
 import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
 import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
 import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
@@ -118,6 +120,11 @@ const DaftarRoute = DaftarRouteImport.update({
   path: '/daftar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CekTahapanRoute = CekTahapanRouteImport.update({
+  id: '/cek-tahapan',
+  path: '/cek-tahapan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CekHasilRoute = CekHasilRouteImport.update({
   id: '/cek-hasil',
   path: '/cek-hasil',
@@ -156,6 +163,11 @@ const AdminPesertaIndexRoute = AdminPesertaIndexRouteImport.update({
 const AdminPengaturanIndexRoute = AdminPengaturanIndexRouteImport.update({
   id: '/admin/pengaturan/',
   path: '/admin/pengaturan/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaTahapanRoute = AdminPesertaTahapanRouteImport.update({
+  id: '/admin/peserta/tahapan',
+  path: '/admin/peserta/tahapan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPesertaSelfFundedRoute = AdminPesertaSelfFundedRouteImport.update({
@@ -283,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
@@ -316,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
+  '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/admin/peserta/': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -328,6 +342,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
@@ -359,6 +374,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
+  '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
   '/admin/pengaturan': typeof AdminPengaturanIndexRoute
   '/admin/peserta': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -372,6 +388,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
   '/daftar-gelombang-2': typeof DaftarGelombang2Route
@@ -405,6 +422,7 @@ export interface FileRoutesById {
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/reguler': typeof AdminPesertaRegulerRouteWithChildren
   '/admin/peserta/self-funded': typeof AdminPesertaSelfFundedRouteWithChildren
+  '/admin/peserta/tahapan': typeof AdminPesertaTahapanRoute
   '/admin/pengaturan/': typeof AdminPengaturanIndexRoute
   '/admin/peserta/': typeof AdminPesertaIndexRoute
   '/admin/peserta/reguler/berkas': typeof AdminPesertaRegulerBerkasRoute
@@ -419,6 +437,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
@@ -452,6 +471,7 @@ export interface FileRouteTypes {
     | '/admin/peserta/essay-api'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
+    | '/admin/peserta/tahapan'
     | '/admin/pengaturan/'
     | '/admin/peserta/'
     | '/admin/peserta/reguler/berkas'
@@ -464,6 +484,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
@@ -495,6 +516,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/wa-channel'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
+    | '/admin/peserta/tahapan'
     | '/admin/pengaturan'
     | '/admin/peserta'
     | '/admin/peserta/reguler/berkas'
@@ -507,6 +529,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
     | '/daftar-gelombang-2'
@@ -540,6 +563,7 @@ export interface FileRouteTypes {
     | '/admin/peserta/essay-api'
     | '/admin/peserta/reguler'
     | '/admin/peserta/self-funded'
+    | '/admin/peserta/tahapan'
     | '/admin/pengaturan/'
     | '/admin/peserta/'
     | '/admin/peserta/reguler/berkas'
@@ -553,6 +577,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BerkasRoute: typeof BerkasRoute
   CekHasilRoute: typeof CekHasilRoute
+  CekTahapanRoute: typeof CekTahapanRoute
   DaftarRoute: typeof DaftarRoute
   DaftarGelombang1Route: typeof DaftarGelombang1Route
   DaftarGelombang2Route: typeof DaftarGelombang2Route
@@ -586,6 +611,7 @@ export interface RootRouteChildren {
   AdminPesertaEssayApiRoute: typeof AdminPesertaEssayApiRoute
   AdminPesertaRegulerRoute: typeof AdminPesertaRegulerRouteWithChildren
   AdminPesertaSelfFundedRoute: typeof AdminPesertaSelfFundedRouteWithChildren
+  AdminPesertaTahapanRoute: typeof AdminPesertaTahapanRoute
   AdminPengaturanIndexRoute: typeof AdminPengaturanIndexRoute
   AdminPesertaIndexRoute: typeof AdminPesertaIndexRoute
 }
@@ -683,6 +709,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DaftarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cek-tahapan': {
+      id: '/cek-tahapan'
+      path: '/cek-tahapan'
+      fullPath: '/cek-tahapan'
+      preLoaderRoute: typeof CekTahapanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cek-hasil': {
       id: '/cek-hasil'
       path: '/cek-hasil'
@@ -737,6 +770,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/pengaturan'
       fullPath: '/admin/pengaturan/'
       preLoaderRoute: typeof AdminPengaturanIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/tahapan': {
+      id: '/admin/peserta/tahapan'
+      path: '/admin/peserta/tahapan'
+      fullPath: '/admin/peserta/tahapan'
+      preLoaderRoute: typeof AdminPesertaTahapanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/peserta/self-funded': {
@@ -932,6 +972,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BerkasRoute: BerkasRoute,
   CekHasilRoute: CekHasilRoute,
+  CekTahapanRoute: CekTahapanRoute,
   DaftarRoute: DaftarRoute,
   DaftarGelombang1Route: DaftarGelombang1Route,
   DaftarGelombang2Route: DaftarGelombang2Route,
@@ -965,6 +1006,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPesertaEssayApiRoute: AdminPesertaEssayApiRoute,
   AdminPesertaRegulerRoute: AdminPesertaRegulerRouteWithChildren,
   AdminPesertaSelfFundedRoute: AdminPesertaSelfFundedRouteWithChildren,
+  AdminPesertaTahapanRoute: AdminPesertaTahapanRoute,
   AdminPengaturanIndexRoute: AdminPengaturanIndexRoute,
   AdminPesertaIndexRoute: AdminPesertaIndexRoute,
 }
