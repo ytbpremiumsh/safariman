@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search, Loader2, ArrowLeft, CheckCircle2, XCircle, Clock, Sparkles,
-  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart,
+  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
