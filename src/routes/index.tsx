@@ -207,11 +207,11 @@ function Hero() {
             </h1>
 
             <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
-              <span className="inline-flex items-center gap-2 rounded-full bg-accent/15 border border-accent/40 text-accent px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+              <span className="inline-flex items-center gap-2 rounded-full bg-accent border border-accent text-emerald-deep px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
                 ✦ 100% Fully Funded
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-emerald/20 border border-emerald/40 text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
-                ✦ Tanpa Dipungut Biaya
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald border border-emerald text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
+                ✦ Gratis Biaya Pendaftaran
               </span>
             </div>
 
