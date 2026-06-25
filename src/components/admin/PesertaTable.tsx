@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
-  FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet,
+  FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet, Trash2,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
@@ -342,6 +342,32 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     toast.success(`${ids.length} peserta → ${STATUS_LABEL[s]}`);
   };
 
+  const deleteParticipant = async (id: string) => {
+    const row = rows.find((r) => r.id === id);
+    if (!row) return;
+    if (!confirm(`Hapus peserta "${row.full_name}" (${row.registration_code})? Tindakan ini tidak dapat dibatalkan.`)) return;
+    const { error } = await supabase.from("participants").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.filter((r) => r.id !== id));
+    setSelected((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    if (detail?.id === id) setDetail(null);
+    toast.success("Peserta dihapus");
+  };
+
+  const bulkDelete = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} peserta terpilih? Tindakan ini tidak dapat dibatalkan.`)) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase.from("participants").delete().in("id", ids);
+    setBulkBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.filter((r) => !selected.has(r.id)));
+    setSelected(new Set());
+    toast.success(`${ids.length} peserta dihapus`);
+  };
+
+
 
   const unmarkPaidManual = async (id: string) => {
     if (!confirm("Batalkan status donasi valid peserta ini?")) return;
@@ -518,6 +544,13 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border border-border bg-background hover:bg-secondary disabled:opacity-60"
             >
               Reset Menunggu
+            </button>
+            <button
+              disabled={bulkBusy}
+              onClick={bulkDelete}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+            >
+              <Trash2 className="size-4" /> Hapus
             </button>
             <button
               onClick={() => setSelected(new Set())}
@@ -836,6 +869,19 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                     {waSending ? <Loader2 className="size-4 animate-spin" /> : <MessageCircle className="size-4" />} Kirim WA
                   </button>
                 </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-red-500/30">
+                <div className="text-xs uppercase tracking-wider text-red-600 mb-2">Zona Berbahaya</div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Menghapus peserta akan menghilangkan seluruh data pendaftaran, berkas, essay, dan riwayat pembayaran terkait secara permanen.
+                </p>
+                <button
+                  onClick={() => deleteParticipant(detail.id)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-red-600 text-white px-4 py-2 text-sm font-semibold hover:bg-red-700"
+                >
+                  <Trash2 className="size-4" /> Hapus Peserta
+                </button>
               </div>
             </>
           )}

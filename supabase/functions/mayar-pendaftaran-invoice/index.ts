@@ -102,8 +102,8 @@ Deno.serve(async (req) => {
     const origin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
     const redirectUrl = `${origin}/pendaftaran-sukses?code=${encodeURIComponent(p.registration_code)}`;
 
-    if (p.payment_url && p.payment_status === "pending")
-      return json({ ok: true, url: p.payment_url, reused: true });
+    // Tidak melakukan reuse payment_url lama — selalu generate invoice baru
+    // agar nama peserta pada invoice Mayar sesuai data terbaru.
 
     const body = {
       name: p.full_name,

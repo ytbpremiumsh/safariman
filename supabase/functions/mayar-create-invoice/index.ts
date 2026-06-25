@@ -34,8 +34,8 @@ Deno.serve(async (req) => {
     if (!isFastTrack && p.status !== "accepted")
       return json({ ok: false, error: "Peserta belum dinyatakan lolos berkas administrasi" }, { status: 403 });
     if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
-    if (!force && p.donation_url && p.donation_status === "pending")
-      return json({ ok: true, url: p.donation_url, reused: true });
+    // Selalu generate invoice baru agar nama peserta pada invoice Mayar
+    // selalu sesuai dengan data terbaru (bukan cache invoice peserta lain).
 
     const baseDescription =
       cfg.mayar_donation_description ||
