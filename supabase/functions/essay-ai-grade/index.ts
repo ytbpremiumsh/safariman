@@ -12,7 +12,7 @@ Tugasmu menilai jawaban Essay dan Studi Kasus peserta secara JUJUR, OBYEKTIF, da
 
 Berikan keluaran JSON dengan field:
 {
-  "ai_used_percent": number (0-100, perkiraan persentase kemungkinan jawaban ditulis/dibantu AI generatif. Indikator: gaya generik, struktur seragam, frasa khas LLM, kurang detail personal, repetisi pola),
+  "ai_used_percent": number (0-100, perkiraan persentase kemungkinan jawaban ditulis/dibantu AI generatif. Indikator: gaya generik, struktur seragam, frasa khas LLM, kurang detail personal/lokal, repetisi pola),
   "score": number (0-100, kualitas keseluruhan jawaban: kedalaman, otentisitas, relevansi, koherensi, niat tulus),
   "verdict": "layak" | "tidak_layak" | "ragu",
   "summary": string (3-6 kalimat ringkas Bahasa Indonesia: kekuatan, kelemahan, indikasi AI bila ada, dan rekomendasi keputusan)
@@ -23,7 +23,7 @@ Pedoman verdict:
 - "ragu": kualitas cukup namun ada indikasi AI moderat (40-70) atau jawaban dangkal.
 - "tidak_layak": jawaban sangat generik, sangat pendek/asal, atau ai_used_percent tinggi (>70).
 
-Balas HANYA JSON valid, tanpa markdown, tanpa penjelasan tambahan.`;
+Balas HANYA JSON valid, tanpa markdown.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -31,7 +31,6 @@ Deno.serve(async (req) => {
     const auth = req.headers.get("Authorization") ?? "";
     if (!auth.startsWith("Bearer ")) return json({ error: "unauthorized" }, { status: 401 });
 
-    // Verify caller is admin
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: auth } },
     });
@@ -67,10 +66,10 @@ ${p.essay_dream ?? "(kosong)"}
 ${p.essay_contribution ?? "(kosong)"}
 
 [STUDI KASUS 1]
-${p.case_study_1 ?? "(kosong)"}
+${(p as any).case_study_1 ?? "(kosong)"}
 
 [STUDI KASUS 2]
-${p.case_study_2 ?? "(kosong)"}
+${(p as any).case_study_2 ?? "(kosong)"}
 
 Berikan penilaianmu sebagai JSON sesuai instruksi.`;
 
@@ -101,10 +100,10 @@ Berikan penilaianmu sebagai JSON sesuai instruksi.`;
     let parsed: any = {};
     try { parsed = typeof content === "string" ? JSON.parse(content) : content; } catch { parsed = {}; }
 
-    const clampInt = (n: any, min = 0, max = 100) => {
+    const clampInt = (n: any) => {
       const v = Math.round(Number(n));
       if (!Number.isFinite(v)) return null;
-      return Math.max(min, Math.min(max, v));
+      return Math.max(0, Math.min(100, v));
     };
     const score = clampInt(parsed.score);
     const percent = clampInt(parsed.ai_used_percent);
@@ -112,7 +111,6 @@ Berikan penilaianmu sebagai JSON sesuai instruksi.`;
     const verdict = allowed.includes(parsed.verdict) ? parsed.verdict : "ragu";
     const summary = String(parsed.summary ?? "").slice(0, 4000);
 
-    // Persist via SECURITY DEFINER RPC using user JWT (admin verified)
     const { error: rpcErr } = await userClient.rpc("admin_set_essay_ai", {
       p_id: participantId,
       p_score: score,
@@ -122,10 +120,7 @@ Berikan penilaianmu sebagai JSON sesuai instruksi.`;
     });
     if (rpcErr) return json({ error: rpcErr.message }, { status: 500 });
 
-    return json({
-      ok: true,
-      result: { score, ai_used_percent: percent, verdict, summary },
-    });
+    return json({ ok: true, result: { score, ai_used_percent: percent, verdict, summary } });
   } catch (e) {
     return json({ error: (e as Error).message }, { status: 500 });
   }
