@@ -37,10 +37,17 @@ type Row = {
   essay_worthy: string;
   essay_dream: string;
   essay_contribution: string;
+  case_study_1: string | null;
+  case_study_2: string | null;
   cv_url: string | null;
   photo_url: string | null;
   donation_status: string;
   donation_paid_at: string | null;
+  essay_ai_score: number | null;
+  essay_ai_percent: number | null;
+  essay_ai_verdict: "layak" | "tidak_layak" | "ragu" | null;
+  essay_ai_summary: string | null;
+  essay_ai_graded_at: string | null;
   created_at: string;
 };
 
