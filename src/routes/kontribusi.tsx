@@ -271,14 +271,14 @@ function DonasiPage() {
                     Kontribusi kebaikanmu sudah tercatat pada {info.donation_paid_at ? new Date(info.donation_paid_at).toLocaleString("id-ID") : "-"}.
                   </p>
                   <p className="text-sm text-foreground/80 mb-6 max-w-md mx-auto">
-                    Kamu tidak perlu melakukan pembayaran lagi. Silakan lanjutkan ke tahap berikutnya: <strong>Penulisan Essay</strong>.
+                    Kamu tidak perlu melakukan pembayaran lagi. Silakan lanjutkan ke tahap berikutnya: <strong>Penulisan Essay & Studi Kasus</strong>.
                   </p>
                   <Link
                     to="/essay"
                     search={{ code: code.trim().toUpperCase() }}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-7 py-4 text-base font-bold shadow-emerald hover-lift"
                   >
-                    <FileText className="size-5" /> Lanjut ke Tahap Essay <ArrowRight className="size-4" />
+                    <FileText className="size-5" /> Lanjut ke Tahap Essay & Studi Kasus <ArrowRight className="size-4" />
                   </Link>
                 </div>
               ) : info.category !== "gelombang_1" && info.category !== "gelombang_2" && info.status !== "accepted" ? (
