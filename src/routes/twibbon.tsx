@@ -8,7 +8,7 @@ import defaultFrame from "@/assets/twibbon.png";
 import defaultPoster from "@/assets/persyaratan-poster.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
-const CP_WHATSAPP = "6281234567890";
+const CP_WHATSAPP = "6285927443433";
 const CP_NAME = "CP Safar Iman";
 
 type SocialAccount = { handle: string; url: string; label: string };
