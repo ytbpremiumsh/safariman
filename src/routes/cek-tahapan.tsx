@@ -33,6 +33,8 @@ type LookupRow = {
   payment_status: string;
   tka_status: StageStatus;
   interview_status: StageStatus;
+  berkas_published?: boolean;
+  essay_published?: boolean;
 };
 
 type StageState = "passed" | "failed" | "pending" | "locked" | "skipped";
