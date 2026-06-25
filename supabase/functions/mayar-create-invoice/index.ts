@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const itemDescription = `Donasi Kontribusi a/n ${p.full_name} — Kode ${p.registration_code}`;
     const origin = req.headers.get("origin") || req.headers.get("referer") || "";
     const redirectUrl =
-      cfg.mayar_redirect_url || `${origin.replace(/\/$/, "")}/donasi?code=${encodeURIComponent(code)}`;
+      cfg.mayar_redirect_url || `${origin.replace(/\/$/, "")}/kontribusi?code=${encodeURIComponent(code)}`;
 
     const body = {
       name: p.full_name,
