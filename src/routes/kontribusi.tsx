@@ -256,14 +256,17 @@ function DonasiPage() {
                   </div>
                 </div>
                 <div className="p-5 flex flex-col">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian Sirah</div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian</div>
                   <h4 className="text-lg font-semibold mt-1.5 leading-snug">
-                    Jejak Cahaya: Makkah dan Madinah
+                    Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah
                   </h4>
                   <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    Menelusuri lintasan sejarah Nabi ﷺ di dua kota suci — dari Ka'bah hingga Masjid Nabawi.
+                    Bersama <span className="font-semibold text-foreground">Ustadz Hilman Al Hazmi, Lc.</span>
+                    <br />
+                    <span className="text-xs">Alumni Syariah Islamiyyah Al Azhar University</span>
                   </p>
                 </div>
+
               </div>
 
             </div>
