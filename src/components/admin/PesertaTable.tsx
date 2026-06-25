@@ -546,6 +546,13 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
               Reset Menunggu
             </button>
             <button
+              disabled={bulkBusy}
+              onClick={bulkDelete}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+            >
+              <Trash2 className="size-4" /> Hapus
+            </button>
+            <button
               onClick={() => setSelected(new Set())}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-border hover:bg-secondary"
             >
