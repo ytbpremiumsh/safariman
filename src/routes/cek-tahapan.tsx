@@ -292,6 +292,31 @@ function TahapanResult({ row }: { row: LookupRow }) {
   );
 }
 
+function ApresiasiCollapsible() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-3 rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald/5 to-accent/5 overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-emerald/5 transition"
+      >
+        <span className="inline-flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-emerald font-bold bg-emerald/10 px-2.5 py-1 rounded-full">
+            <Sparkles className="size-3" /> Apresiasi untukmu
+          </span>
+          <span className="text-xs text-muted-foreground">{open ? "Sembunyikan" : "Lihat detail"}</span>
+        </span>
+        <ChevronDown className={`size-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5 border-t border-emerald/10 pt-4">
+          <ApresiasiPeserta compact />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StageItem({ stage, index }: { stage: Stage; index: number }) {
   const Icon = stage.icon;
   const cfg = STATE_STYLES[stage.state];
