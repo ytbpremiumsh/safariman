@@ -16,7 +16,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.email-notify]
-verify_jwt = false
+verify_jwt = true
+
+[functions.wa-notify]
+verify_jwt = true
+
+[functions.mpwa-proxy]
+verify_jwt = true
 
 [functions.essay-ai-grade]
 verify_jwt = true
