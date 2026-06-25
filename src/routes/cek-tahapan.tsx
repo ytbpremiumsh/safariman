@@ -131,6 +131,8 @@ function buildStages(row: LookupRow): Stage[] {
   const cat = row.category;
   const isFastTrack = cat === "gelombang_1" || cat === "gelombang_2";
   const isSelfFunded = cat === "self_funded";
+  const berkasPublished = row.berkas_published !== false; // default true if undefined (back-compat)
+  const essayPublished = row.essay_published !== false;
 
   const rejected = row.status === "rejected";
 
@@ -143,6 +145,11 @@ function buildStages(row: LookupRow): Stage[] {
   } else if (isSelfFunded) {
     berkas = "passed";
     berkasNote = "Self Funded — tidak melalui seleksi berkas";
+  } else if (!berkasPublished) {
+    berkas = row.has_berkas ? "pending" : "pending";
+    berkasNote = row.has_berkas
+      ? "Berkas sudah terkirim. Hasil seleksi akan diumumkan setelah seluruh berkas selesai dinilai."
+      : "Lengkapi pengiriman berkas (CV & foto)";
   } else if (row.has_berkas) {
     berkas = rejected && !row.has_essay ? "failed" : "passed";
   } else {
@@ -179,6 +186,9 @@ function buildStages(row: LookupRow): Stage[] {
   } else if (!row.has_essay) {
     essay = rejected ? "failed" : "pending";
     essayNote = "Kirim essay & studi kasus untuk lanjut";
+  } else if (!essayPublished) {
+    essay = "pending";
+    essayNote = "Essay & Studi Kasus sudah terkirim. Hasil seleksi akan diumumkan setelah semua jawaban selesai dinilai tim juri.";
   } else if (row.status === "rejected") {
     essay = "failed";
   } else if (row.status === "interview" || row.status === "accepted" || row.tka_status !== "pending") {
