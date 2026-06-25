@@ -136,6 +136,11 @@ export type Database = {
           edit_token: string
           education: string
           email: string
+          essay_ai_graded_at: string | null
+          essay_ai_percent: number | null
+          essay_ai_score: number | null
+          essay_ai_summary: string | null
+          essay_ai_verdict: string | null
           essay_contribution: string | null
           essay_dream: string | null
           essay_worthy: string | null
@@ -179,6 +184,11 @@ export type Database = {
           edit_token?: string
           education: string
           email: string
+          essay_ai_graded_at?: string | null
+          essay_ai_percent?: number | null
+          essay_ai_score?: number | null
+          essay_ai_summary?: string | null
+          essay_ai_verdict?: string | null
           essay_contribution?: string | null
           essay_dream?: string | null
           essay_worthy?: string | null
@@ -222,6 +232,11 @@ export type Database = {
           edit_token?: string
           education?: string
           email?: string
+          essay_ai_graded_at?: string | null
+          essay_ai_percent?: number | null
+          essay_ai_score?: number | null
+          essay_ai_summary?: string | null
+          essay_ai_verdict?: string | null
           essay_contribution?: string | null
           essay_dream?: string | null
           essay_worthy?: string | null
@@ -319,6 +334,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_essay_ai: {
+        Args: {
+          p_id: string
+          p_percent: number
+          p_score: number
+          p_summary: string
+          p_verdict: string
+        }
+        Returns: boolean
+      }
       admin_set_setting: {
         Args: { p_key: string; p_value: string }
         Returns: boolean
@@ -366,6 +391,8 @@ export type Database = {
         Returns: {
           achievements: string
           birth_date: string
+          case_study_1: string
+          case_study_2: string
           category: Database["public"]["Enums"]["program_category"]
           city: string
           created_at: string
@@ -374,6 +401,11 @@ export type Database = {
           donation_status: string
           education: string
           email: string
+          essay_ai_graded_at: string
+          essay_ai_percent: number
+          essay_ai_score: number
+          essay_ai_summary: string
+          essay_ai_verdict: string
           essay_contribution: string
           essay_dream: string
           essay_worthy: string
@@ -452,8 +484,10 @@ export type Database = {
       lookup_tahapan_by_code: {
         Args: { p_code: string }
         Returns: {
+          berkas_published: boolean
           category: Database["public"]["Enums"]["program_category"]
           donation_status: string
+          essay_published: boolean
           found: boolean
           full_name: string
           has_berkas: boolean
