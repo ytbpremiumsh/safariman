@@ -196,14 +196,11 @@ function DonasiPage() {
                 <span className="text-accent">Kajian Sirah</span>
               </h3>
               <div className="mt-5 flex justify-center">
-                <span className="group relative inline-flex items-center gap-2.5 rounded-full p-[1.5px] bg-gradient-to-r from-accent via-emerald to-accent shadow-gold animate-glow-pulse">
-                  <span className="relative inline-flex items-center gap-2 rounded-full bg-emerald-deep px-5 py-2 overflow-hidden">
-                    <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
-                    <Sparkles className="size-3.5 text-accent" />
-                    <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-white font-semibold whitespace-nowrap">Senilai</span>
-                    <span className="font-display text-base sm:text-lg font-extrabold text-accent tabular-nums whitespace-nowrap drop-shadow-[0_1px_0_rgba(0,0,0,0.4)]">Rp 75.000,-</span>
-
-                  </span>
+                <span className="group relative inline-flex items-center gap-2.5 rounded-full bg-emerald/5 border border-emerald/30 px-5 py-2 hover:bg-emerald/10 transition overflow-hidden">
+                  <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-emerald/10 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
+                  <Sparkles className="size-3.5 text-emerald" />
+                  <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-emerald font-bold whitespace-nowrap">Senilai</span>
+                  <span className="font-display text-lg sm:text-xl font-black text-emerald-deep dark:text-emerald tabular-nums whitespace-nowrap tracking-tight">Rp 75.000,-</span>
                 </span>
               </div>
 
