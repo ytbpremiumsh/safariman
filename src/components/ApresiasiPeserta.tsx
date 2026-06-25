@@ -48,7 +48,7 @@ function formatDate(iso: string) {
   return d.toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" });
 }
 
-export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
+export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: { compact?: boolean; hidePlaceholder?: boolean }) {
   const s = useApresiasiSettings();
 
   return (
@@ -88,7 +88,7 @@ export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
               <br />
               <span className="text-xs">Pembimbing Manasik &amp; Praktisi Umrah</span>
             </p>
-            <ScheduleRow date={s?.kelas_tanggal ?? ""} link={s?.kelas_link ?? ""} loading={!s} />
+            <ScheduleRow date={s?.kelas_tanggal ?? ""} link={s?.kelas_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
           </div>
         </div>
 
@@ -112,7 +112,7 @@ export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
               <br />
               <span className="text-xs">Alumni Syariah Islamiyyah Al Azhar University</span>
             </p>
-            <ScheduleRow date={s?.kajian_tanggal ?? ""} link={s?.kajian_link ?? ""} loading={!s} />
+            <ScheduleRow date={s?.kajian_tanggal ?? ""} link={s?.kajian_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
           </div>
         </div>
       </div>
@@ -124,6 +124,7 @@ export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
           desc="Sertifikat digital setelah menyelesaikan kelas"
           link={s?.sertifikat_link ?? ""}
           loading={!s}
+          hidePlaceholder={hidePlaceholder}
         />
         <BenefitButton
           icon={PlayCircle}
@@ -131,20 +132,22 @@ export function ApresiasiPeserta({ compact = false }: { compact?: boolean }) {
           desc="Tonton ulang kapan saja."
           link={s?.rekaman_link ?? ""}
           loading={!s}
+          hidePlaceholder={hidePlaceholder}
         />
       </div>
     </div>
   );
 }
 
-function ScheduleRow({ date, link, loading }: { date: string; link: string; loading: boolean }) {
+function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
+  const placeholder = hidePlaceholder ? <span className="text-muted-foreground">—</span> : <span className="text-amber-600">Coming Soon</span>;
   return (
     <div className="mt-4 pt-4 border-t border-border/60 space-y-2">
       <div className="flex items-center gap-2 text-xs">
         <Calendar className="size-3.5 text-emerald shrink-0" />
         <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
         <span className="font-semibold text-foreground">
-          {loading ? "…" : date ? formatDate(date) : <span className="text-amber-600">Coming Soon</span>}
+          {loading ? "…" : date ? formatDate(date) : placeholder}
         </span>
       </div>
       {link ? (
@@ -156,7 +159,7 @@ function ScheduleRow({ date, link, loading }: { date: string; link: string; load
         >
           <ExternalLink className="size-3.5" /> Buka Link Acara
         </a>
-      ) : (
+      ) : hidePlaceholder ? null : (
         <button
           disabled
           className="inline-flex items-center justify-center gap-1.5 w-full rounded-full bg-secondary text-muted-foreground px-4 py-2 text-xs font-semibold cursor-not-allowed"
@@ -169,8 +172,8 @@ function ScheduleRow({ date, link, loading }: { date: string; link: string; load
 }
 
 function BenefitButton({
-  icon: Icon, title, desc, link, loading,
-}: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean }) {
+  icon: Icon, title, desc, link, loading, hidePlaceholder = false,
+}: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
   const disabled = !link;
   const inner = (
     <>
@@ -181,7 +184,7 @@ function BenefitButton({
         <div className="font-semibold text-sm flex items-center gap-1.5">
           {title}
           {!loading && (disabled
-            ? <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">Coming Soon</span>
+            ? <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${hidePlaceholder ? "bg-secondary text-muted-foreground" : "bg-amber-100 text-amber-700 dark:bg-amber-950/40"}`}>{hidePlaceholder ? "—" : "Coming Soon"}</span>
             : <ExternalLink className="size-3 text-emerald" />
           )}
         </div>

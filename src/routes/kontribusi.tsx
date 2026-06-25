@@ -200,7 +200,7 @@ function DonasiPage() {
               </p>
             </div>
 
-            <ApresiasiPeserta compact />
+            <ApresiasiPeserta compact hidePlaceholder />
 
 
           </div>
