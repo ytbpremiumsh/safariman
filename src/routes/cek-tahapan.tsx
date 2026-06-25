@@ -220,11 +220,11 @@ function buildStages(row: LookupRow): Stage[] {
   }
 
   return [
-    { key: "berkas", title: "Lolos Berkas", icon: FileCheck2, state: berkas, note: berkasNote },
+    { key: "berkas", title: "Seleksi Berkas", icon: FileCheck2, state: berkas, note: berkasNote },
     { key: "kontribusi", title: "Kontribusi", icon: HandCoins, state: kontribusi, note: kontribusiNote },
-    { key: "essay", title: "Lolos Essay & Studi Kasus", icon: BookOpenCheck, state: essay, note: essayNote },
-    { key: "tka", title: "Lolos TKA (Tes Kemampuan Akademik)", icon: Brain, state: tka, note: tkaNote },
-    { key: "interview", title: "Lolos Interview", icon: MessagesSquare, state: interview, note: interviewNote },
+    { key: "essay", title: "Seleksi Essay & Studi Kasus", icon: BookOpenCheck, state: essay, note: essayNote },
+    { key: "tka", title: "Seleksi TKA (Tes Kemampuan Akademik)", icon: Brain, state: tka, note: tkaNote },
+    { key: "interview", title: "Seleksi Interview", icon: MessagesSquare, state: interview, note: interviewNote },
   ];
 }
 
