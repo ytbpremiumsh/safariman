@@ -575,5 +575,3 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
     </div>
   );
 }
-
-}
