@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search, Loader2, ArrowLeft, CheckCircle2, XCircle, Clock, Sparkles,
-  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart,
+  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -147,13 +147,31 @@ function buildStages(row: LookupRow): Stage[] {
     berkasNote = "Lengkapi pengiriman berkas (CV & foto)";
   }
 
-  // Stage 2: Essay & Studi Kasus
+  // Stage 2: Kontribusi
+  let kontribusi: StageState;
+  let kontribusiNote: string | undefined;
+  if (isFastTrack || isSelfFunded) {
+    kontribusi = "skipped";
+    kontribusiNote = "Tidak ada tahap kontribusi untuk kategori ini";
+  } else if (berkas !== "passed") {
+    kontribusi = "locked";
+  } else if (row.donation_status === "paid") {
+    kontribusi = "passed";
+    kontribusiNote = "Kontribusi sudah diterima — Jazakallahu khairan 🌙";
+  } else if (rejected) {
+    kontribusi = "failed";
+  } else {
+    kontribusi = "pending";
+    kontribusiNote = "Selesaikan pembayaran kontribusi untuk lanjut ke tahap essay";
+  }
+
+  // Stage 3: Essay & Studi Kasus
   let essay: StageState;
   let essayNote: string | undefined;
   if (isFastTrack || isSelfFunded) {
     essay = "skipped";
     essayNote = "Tidak ada tahap essay untuk kategori ini";
-  } else if (berkas !== "passed") {
+  } else if (kontribusi !== "passed") {
     essay = "locked";
   } else if (!row.has_essay) {
     essay = rejected ? "failed" : "pending";
@@ -203,6 +221,7 @@ function buildStages(row: LookupRow): Stage[] {
 
   return [
     { key: "berkas", title: "Lolos Berkas", icon: FileCheck2, state: berkas, note: berkasNote },
+    { key: "kontribusi", title: "Kontribusi", icon: HandCoins, state: kontribusi, note: kontribusiNote },
     { key: "essay", title: "Lolos Essay & Studi Kasus", icon: BookOpenCheck, state: essay, note: essayNote },
     { key: "tka", title: "Lolos TKA (Tes Kemampuan Akademik)", icon: Brain, state: tka, note: tkaNote },
     { key: "interview", title: "Lolos Interview", icon: MessagesSquare, state: interview, note: interviewNote },
