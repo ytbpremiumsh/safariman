@@ -9,18 +9,15 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { IslamicPattern } from "@/components/IslamicPattern";
+import { ApresiasiPeserta } from "@/components/ApresiasiPeserta";
 import donasiHeader from "@/assets/donasi-header.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
-import apresiasiKelasUrl from "@/assets/apresiasi-kelas-online.jpg";
 import cardKaabaUrl from "@/assets/donasi-card-kaaba.jpg";
 import cardNabawiUrl from "@/assets/donasi-card-nabawi.jpg";
 import cardHaramUrl from "@/assets/donasi-card-haram.jpg";
-import apresiasiSirahUrl from "@/assets/apresiasi-kajian-sirah.jpg";
-const apresiasiKelasAsset = { url: apresiasiKelasUrl };
 const cardKaabaAsset = { url: cardKaabaUrl };
 const cardNabawiAsset = { url: cardNabawiUrl };
 const cardHaramAsset = { url: cardHaramUrl };
-const apresiasiSirahAsset = { url: apresiasiSirahUrl };
 
 export const Route = createFileRoute("/kontribusi")({
   validateSearch: z.object({ code: z.string().optional() }),
@@ -203,90 +200,8 @@ function DonasiPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-5">
+            <ApresiasiPeserta compact />
 
-              <div className="bg-card border-2 border-emerald/30 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
-                <div className="relative aspect-[4/3] overflow-hidden bg-emerald/5">
-                  <img
-                    src={apresiasiKelasAsset.url}
-                    alt="Kelas Online Fiqh Umrah Praktis"
-                    loading="lazy"
-                    width={1024}
-                    height={768}
-                    className="absolute inset-0 size-full object-cover"
-                  />
-                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white pl-1.5 pr-2.5 py-1 rounded-full shadow-emerald">
-                    <Sparkles className="size-2.5" />
-                    Eksklusif
-                  </span>
-                  <div className="absolute bottom-3 left-3 size-10 rounded-xl bg-gradient-emerald grid place-items-center shadow-emerald">
-                    <GraduationCap className="size-5 text-accent" />
-                  </div>
-                </div>
-                <div className="p-5 flex flex-col">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
-                  <h4 className="text-lg font-semibold mt-1.5 leading-snug">
-                    Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur
-                  </h4>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    Bersama <span className="font-semibold text-foreground">Ustadz Ahmad Fauzan, Lc.</span>
-                    <br />
-                    <span className="text-xs">Pembimbing Manasik & Praktisi Umrah</span>
-                  </p>
-                </div>
-
-              </div>
-
-              <div className="bg-card border-2 border-accent/40 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
-                <div className="relative aspect-[4/3] overflow-hidden bg-accent/5">
-                  <img
-                    src={apresiasiSirahAsset.url}
-                    alt="Kajian Sirah Jejak Cahaya Makkah dan Madinah"
-                    loading="lazy"
-                    width={1024}
-                    height={768}
-                    className="absolute inset-0 size-full object-cover"
-                  />
-                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep pl-1.5 pr-2.5 py-1 rounded-full shadow-gold">
-                    <Sparkles className="size-2.5" />
-                    Eksklusif
-                  </span>
-                  <div className="absolute bottom-3 left-3 size-10 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
-                    <MapPin className="size-5 text-emerald-deep" />
-                  </div>
-                </div>
-                <div className="p-5 flex flex-col">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian</div>
-                  <h4 className="text-lg font-semibold mt-1.5 leading-snug">
-                    Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah
-                  </h4>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    Bersama <span className="font-semibold text-foreground">Ustadz Hilman Al Hazmi, Lc.</span>
-                    <br />
-                    <span className="text-xs">Alumni Syariah Islamiyyah Al Azhar University</span>
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="mt-6 grid sm:grid-cols-2 gap-3">
-              {[
-                { t: "E-Sertifikat Resmi", d: "Sertifikat digital setelah menyelesaikan kelas" },
-                { t: "Akses Rekaman", d: "Tonton ulang kapan saja." },
-              ].map((f) => (
-                <div key={f.t} className="flex items-start gap-3 rounded-xl bg-emerald/5 border border-emerald/20 px-4 py-3">
-                  <div className="size-8 rounded-lg bg-gradient-emerald grid place-items-center shrink-0 shadow-emerald">
-                    <CheckCircle2 className="size-4 text-accent" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm">{f.t}</div>
-                    <div className="text-xs text-muted-foreground leading-relaxed">{f.d}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
 
           </div>
 
