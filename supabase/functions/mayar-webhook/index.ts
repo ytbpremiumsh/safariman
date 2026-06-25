@@ -122,15 +122,26 @@ Deno.serve(async (req) => {
       req.headers.get("x-hub-signature-256");
 
     // Verifikasi signature kalau secret dikonfigurasi & header dikirim.
-    // Kalau salah satu tidak ada, tetap proses (biar pembayaran tidak macet
-    // gara-gara konfigurasi). Status & invoice id tetap divalidasi di bawah.
-    const signatureValid = Boolean(secret && signature && verify(rawBody, signature, secret));
-    if (secret && signature && !signatureValid) {
+    // Webhook secret WAJIB dikonfigurasi. Tanpa secret, siapa pun bisa
+    // memalsukan payload "paid" dan menandai peserta lunas. Tolak request
+    // kalau secret atau signature belum ada.
+    if (!secret) {
+      console.error("Mayar webhook: mayar_webhook_secret belum diisi");
+      return json(
+        { ok: false, error: "Webhook secret not configured" },
+        { status: 503 },
+      );
+    }
+    if (!signature) {
+      console.error("Mayar webhook: signature header tidak ada");
+      return json({ ok: false, error: "Missing signature" }, { status: 401 });
+    }
+    const signatureValid = verify(rawBody, signature, secret);
+    if (!signatureValid) {
       console.error("Mayar webhook: invalid signature");
       return json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
-    if (!secret) console.warn("Mayar webhook: secret belum diisi, signature dilewati");
-    if (secret && !signature) console.warn("Mayar webhook: signature header tidak ada, dilewati");
+
 
     const payload: any = JSON.parse(rawBody || "{}");
     let embeddedPayload: any = null;
