@@ -30,20 +30,20 @@ function SuccessPage() {
 
         <h1 className="font-display text-4xl sm:text-6xl font-semibold text-white leading-tight">
           Barakallahu fiik!<br />
-          <span className="text-gradient-gold">Pendaftaran terkirim</span>
+          <span className="text-gradient-gold">Pengiriman berkas terkirim</span>
         </h1>
 
         <p className="mt-6 text-lg text-white/85 leading-relaxed">
-          Terima kasih telah mendaftar program <strong>Safar Iman</strong>.
-          Tim kami akan menghubungi kamu melalui email atau WhatsApp dalam 3–5 hari kerja.
+          Terima kasih telah mengirim berkas program <strong>Safar Iman</strong>.
+          Pantau progres seleksi kamu kapan saja melalui halaman Cek Tahapan.
         </p>
 
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
           <Link
-            to="/kontribusi"
+            to="/cek-tahapan"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 font-bold shadow-gold hover-lift"
           >
-            Lanjut ke Kontribusi <ArrowRight className="size-5" />
+            Cek Tahapan <ArrowRight className="size-5" />
           </Link>
           <WhatsAppChannelCTA variant="glass" />
           <Link
