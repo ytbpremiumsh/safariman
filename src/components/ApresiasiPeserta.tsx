@@ -112,7 +112,7 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
               <br />
               <span className="text-xs">Alumni Syariah Islamiyyah Al Azhar University</span>
             </p>
-            <ScheduleRow date={s?.kajian_tanggal ?? ""} link={s?.kajian_link ?? ""} loading={!s} />
+            <ScheduleRow date={s?.kajian_tanggal ?? ""} link={s?.kajian_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
           </div>
         </div>
       </div>
@@ -124,6 +124,7 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
           desc="Sertifikat digital setelah menyelesaikan kelas"
           link={s?.sertifikat_link ?? ""}
           loading={!s}
+          hidePlaceholder={hidePlaceholder}
         />
         <BenefitButton
           icon={PlayCircle}
@@ -131,6 +132,7 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
           desc="Tonton ulang kapan saja."
           link={s?.rekaman_link ?? ""}
           loading={!s}
+          hidePlaceholder={hidePlaceholder}
         />
       </div>
     </div>
