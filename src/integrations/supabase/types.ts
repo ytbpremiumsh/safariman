@@ -143,6 +143,8 @@ export type Database = {
           gender: string
           has_passport: string | null
           id: string
+          interview_status: string
+          interview_updated_at: string | null
           occupation: string
           organization_experience: string | null
           paid_at: string | null
@@ -155,6 +157,8 @@ export type Database = {
           religion: string | null
           social_media: string | null
           status: Database["public"]["Enums"]["participant_status"]
+          tka_status: string
+          tka_updated_at: string | null
           twibbon_confirmed_at: string | null
           updated_at: string
           whatsapp: string
@@ -182,6 +186,8 @@ export type Database = {
           gender: string
           has_passport?: string | null
           id?: string
+          interview_status?: string
+          interview_updated_at?: string | null
           occupation: string
           organization_experience?: string | null
           paid_at?: string | null
@@ -194,6 +200,8 @@ export type Database = {
           religion?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
+          tka_status?: string
+          tka_updated_at?: string | null
           twibbon_confirmed_at?: string | null
           updated_at?: string
           whatsapp: string
@@ -221,6 +229,8 @@ export type Database = {
           gender?: string
           has_passport?: string | null
           id?: string
+          interview_status?: string
+          interview_updated_at?: string | null
           occupation?: string
           organization_experience?: string | null
           paid_at?: string | null
@@ -233,6 +243,8 @@ export type Database = {
           religion?: string | null
           social_media?: string | null
           status?: Database["public"]["Enums"]["participant_status"]
+          tka_status?: string
+          tka_updated_at?: string | null
           twibbon_confirmed_at?: string | null
           updated_at?: string
           whatsapp?: string
@@ -311,6 +323,10 @@ export type Database = {
         Args: { p_key: string; p_value: string }
         Returns: boolean
       }
+      admin_set_tahapan: {
+        Args: { p_id: string; p_stage: string; p_value: string }
+        Returns: boolean
+      }
       claim_admin_if_first: { Args: never; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -378,6 +394,24 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      list_tahapan_participants: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["program_category"]
+          city: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          interview_status: string
+          interview_updated_at: string
+          registration_code: string
+          status: Database["public"]["Enums"]["participant_status"]
+          tka_status: string
+          tka_updated_at: string
+          whatsapp: string
+        }[]
+      }
       log_twibbon_download: { Args: never; Returns: undefined }
       lookup_hasil_seleksi_by_code: {
         Args: { p_code: string }
@@ -413,6 +447,21 @@ export type Database = {
           payment_status: string
           payment_url: string
           status: Database["public"]["Enums"]["participant_status"]
+        }[]
+      }
+      lookup_tahapan_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          category: Database["public"]["Enums"]["program_category"]
+          donation_status: string
+          found: boolean
+          full_name: string
+          has_berkas: boolean
+          has_essay: boolean
+          interview_status: string
+          payment_status: string
+          status: Database["public"]["Enums"]["participant_status"]
+          tka_status: string
         }[]
       }
       mark_donation_paid: { Args: { p_invoice_id: string }; Returns: boolean }
