@@ -420,12 +420,18 @@ function PesertaEssayPage() {
                 )}
               </div>
 
+              {/* Aksi Cepat — Pengoreksi AI */}
+              <AiGraderCard row={detail} busy={aiBusy} onRun={() => runAiGrade(detail)} />
+
               {/* Essays */}
               <div className="mt-6 space-y-4">
                 <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
                 <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
                 <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
+                <Essay title="Studi Kasus 1" body={detail.case_study_1 ?? ""} />
+                <Essay title="Studi Kasus 2" body={detail.case_study_2 ?? ""} />
               </div>
+
 
               {/* Keputusan */}
               <div className="mt-6 pt-4 border-t border-border space-y-2">
