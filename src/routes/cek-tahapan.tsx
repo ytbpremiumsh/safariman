@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { ApresiasiPeserta } from "@/components/ApresiasiPeserta";
 
 export const Route = createFileRoute("/cek-tahapan")({
   head: () => ({
@@ -266,7 +267,19 @@ function TahapanResult({ row }: { row: LookupRow }) {
       {/* Stages timeline */}
       <ol className="relative space-y-3">
         {stages.map((s, i) => (
-          <StageItem key={s.key} stage={s} index={i + 1} />
+          <li key={s.key}>
+            <StageItem stage={s} index={i + 1} />
+            {s.key === "kontribusi" && s.state === "passed" && (
+              <div className="mt-4 mb-1 rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald/5 to-accent/5 p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-emerald font-bold bg-emerald/10 px-2.5 py-1 rounded-full">
+                    <Sparkles className="size-3" /> Apresiasi untukmu
+                  </span>
+                </div>
+                <ApresiasiPeserta compact />
+              </div>
+            )}
+          </li>
         ))}
       </ol>
 
