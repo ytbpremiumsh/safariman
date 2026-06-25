@@ -270,8 +270,8 @@ function DonasiPage() {
                   <p className="text-muted-foreground text-sm mt-3 mb-2">
                     Kontribusi kebaikanmu sudah tercatat pada {info.donation_paid_at ? new Date(info.donation_paid_at).toLocaleString("id-ID") : "-"}.
                   </p>
-                  <p className="text-sm text-foreground/80 mb-6 max-w-md mx-auto">
-                    Kamu tidak perlu melakukan pembayaran lagi. Silakan lanjutkan ke tahap berikutnya: <strong>Penulisan Essay & Studi Kasus</strong>.
+                  <p className="text-sm text-foreground/80 mb-6 max-w-md mx-auto whitespace-pre-line">
+                    {"Silakan lanjutkan ke tahap berikutnya:\u00a0\nPenulisan Essay & Studi Kasus.\n\n"}
                   </p>
                   <Link
                     to="/essay"
