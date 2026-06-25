@@ -169,8 +169,8 @@ function TentangPage() {
                 },
                 {
                   icon: HeartHandshake,
-                  title: "Transparan & Amanah",
-                  desc: "Setiap kontribusi peserta dialokasikan secara transparan untuk operasional program dan kegiatan sosial.",
+                  title: "Amanah & Akuntabel",
+                  desc: "Setiap kontribusi peserta dialokasikan dengan baik untuk operasional program dan kegiatan sosial.",
                 },
                 {
                   icon: Building2,
