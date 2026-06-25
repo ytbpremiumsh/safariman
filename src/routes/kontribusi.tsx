@@ -196,10 +196,11 @@ function DonasiPage() {
                 <span className="text-accent">Kajian Sirah</span>
               </h3>
               <div className="mt-4 flex justify-center">
-                <span className="inline-flex items-center gap-2 bg-accent text-emerald-deep font-bold text-sm sm:text-base px-5 py-2 rounded-full shadow-gold">
+                <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-emerald font-bold bg-emerald/10 border border-emerald/20 px-4 py-1.5 rounded-full">
                   Senilai Rp 75.000,-
                 </span>
               </div>
+
               <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
                 Seluruh peserta yang berkontribusi mendapatkan akses Eksklusif ke pembelajaran berkualitas bersama pembimbing terpilih.
               </p>
