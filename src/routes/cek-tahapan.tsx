@@ -366,22 +366,10 @@ function EncourageCard({ failedTitle }: { failedTitle: string }) {
         <div className="text-xs uppercase tracking-[0.25em] text-white/80">Pesan untukmu</div>
         <h3 className="font-display text-xl sm:text-2xl font-bold mt-1">Belum di tahap {failedTitle}</h3>
       </div>
-      <div className="p-5 space-y-4">
-        <p className="text-sm leading-relaxed text-foreground/90">{ENCOURAGE}</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Link
-            to="/pendaftaran"
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-3 text-sm font-semibold shadow-emerald hover-lift"
-          >
-            Lihat Program Selanjutnya
-          </Link>
-          <Link
-            to="/faq"
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold hover:bg-secondary"
-          >
-            Baca FAQ
-          </Link>
-        </div>
+      <div className="p-6 sm:p-7">
+        <p className="text-[15px] leading-relaxed text-foreground/90 text-justify">
+          {ENCOURAGE}
+        </p>
       </div>
     </div>
   );
