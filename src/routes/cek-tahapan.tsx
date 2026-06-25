@@ -147,13 +147,31 @@ function buildStages(row: LookupRow): Stage[] {
     berkasNote = "Lengkapi pengiriman berkas (CV & foto)";
   }
 
-  // Stage 2: Essay & Studi Kasus
+  // Stage 2: Kontribusi
+  let kontribusi: StageState;
+  let kontribusiNote: string | undefined;
+  if (isFastTrack || isSelfFunded) {
+    kontribusi = "skipped";
+    kontribusiNote = "Tidak ada tahap kontribusi untuk kategori ini";
+  } else if (berkas !== "passed") {
+    kontribusi = "locked";
+  } else if (row.donation_status === "paid") {
+    kontribusi = "passed";
+    kontribusiNote = "Kontribusi sudah diterima — Jazakallahu khairan 🌙";
+  } else if (rejected) {
+    kontribusi = "failed";
+  } else {
+    kontribusi = "pending";
+    kontribusiNote = "Selesaikan pembayaran kontribusi untuk lanjut ke tahap essay";
+  }
+
+  // Stage 3: Essay & Studi Kasus
   let essay: StageState;
   let essayNote: string | undefined;
   if (isFastTrack || isSelfFunded) {
     essay = "skipped";
     essayNote = "Tidak ada tahap essay untuk kategori ini";
-  } else if (berkas !== "passed") {
+  } else if (kontribusi !== "passed") {
     essay = "locked";
   } else if (!row.has_essay) {
     essay = rejected ? "failed" : "pending";
