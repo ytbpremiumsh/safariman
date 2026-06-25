@@ -48,7 +48,7 @@ type Stage = {
 };
 
 const ENCOURAGE =
-  "Tetap semangat, jangan menyerah! Setiap langkah yang kamu ambil sudah luar biasa. Pintu kebaikan masih terbuka — pantau program kami selanjutnya dan ikuti gelombang berikutnya. Doa kami menyertaimu. 🌙";
+  "Terima kasih atas ikhtiar dan kesungguhanmu mengikuti setiap tahapan program Safar Iman. Pada kesempatan kali ini, perjalananmu belum dapat dilanjutkan ke tahap berikutnya. Tetaplah bersemangat — setiap langkah yang telah kamu tempuh adalah kebaikan yang tidak akan sia-sia. Kami mendoakan keberkahan untukmu, dan pintu untuk mengikuti gelombang maupun program kami selanjutnya senantiasa terbuka.";
 
 function CekTahapanPage() {
   const [code, setCode] = useState("");
