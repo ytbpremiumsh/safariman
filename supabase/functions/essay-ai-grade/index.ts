@@ -73,30 +73,13 @@ ${(p as any).case_study_2 ?? "(kosong)"}
 
 Berikan penilaianmu sebagai JSON sesuai instruksi.`;
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: userMsg },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
-
+    const aiRes = await aiChat({ system: SYSTEM, user: userMsg, jsonObject: true });
     if (aiRes.status === 429) return json({ error: "rate_limited" }, { status: 429 });
     if (aiRes.status === 402) return json({ error: "ai_credits_required" }, { status: 402 });
     if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      return json({ error: "ai_failed", detail: txt }, { status: 502 });
+      return json({ error: "ai_failed", provider: aiRes.provider, detail: aiRes.error }, { status: 502 });
     }
-    const aiJson = await aiRes.json();
-    const content = aiJson?.choices?.[0]?.message?.content ?? "{}";
+    const content = aiRes.content || "{}";
     let parsed: any = {};
     try { parsed = typeof content === "string" ? JSON.parse(content) : content; } catch { parsed = {}; }
 
