@@ -220,7 +220,36 @@ function PesertaEssayPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Publish hasil */}
+      <div className={`rounded-2xl border p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
+        published ? "bg-emerald/10 border-emerald/30" : "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/40"
+      }`}>
+        <div className="flex items-start gap-3">
+          {published ? <Megaphone className="size-5 text-emerald shrink-0 mt-0.5" /> : <EyeOff className="size-5 text-amber-600 shrink-0 mt-0.5" />}
+          <div>
+            <div className="font-semibold text-sm">
+              {published ? "Hasil Essay & Studi Kasus sudah DIPUBLIKASIKAN" : "Hasil Essay & Studi Kasus DITAHAN (belum dipublikasikan)"}
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 max-w-2xl">
+              {published
+                ? "Peserta sudah dapat melihat keputusan di halaman Cek Tahapan."
+                : `Tandai semua keputusan terlebih dahulu, kemudian klik "Publish" agar peserta dapat melihat hasilnya. Saat ini ${stats.pending} peserta belum diputuskan.`}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => togglePublish(!published)}
+          disabled={pubBusy || (!published && !allDecided)}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50 shrink-0 ${
+            published ? "bg-secondary text-foreground border border-border" : "bg-emerald text-white shadow-emerald hover-lift"
+          }`}
+          title={!published && !allDecided ? "Selesaikan semua keputusan dulu" : undefined}
+        >
+          {pubBusy ? <Loader2 className="size-4 animate-spin" /> : <Megaphone className="size-4" />}
+          {published ? "Tarik Publikasi" : "Publish Hasil"}
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "Total Kirim Essay", value: stats.total, color: "text-foreground" },
