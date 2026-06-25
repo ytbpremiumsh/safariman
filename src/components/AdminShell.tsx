@@ -56,6 +56,8 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/email", label: "Template Email" },
           { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp" },
           { to: "/admin/pengaturan/faq", label: "Halaman FAQ" },
+          { to: "/admin/pengaturan/ai-provider", label: "AI Provider (WA & Essay)" },
+
 
         ],
       },

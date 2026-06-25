@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { aiChat } from "../_shared/ai-provider.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
 const SYSTEM = `Kamu adalah penilai (reviewer) profesional untuk seleksi program beasiswa umroh "Safar Iman".
 Tugasmu menilai jawaban Essay dan Studi Kasus peserta secara JUJUR, OBYEKTIF, dan TEGAS.
@@ -73,30 +73,13 @@ ${(p as any).case_study_2 ?? "(kosong)"}
 
 Berikan penilaianmu sebagai JSON sesuai instruksi.`;
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: userMsg },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
-
+    const aiRes = await aiChat({ system: SYSTEM, user: userMsg, jsonObject: true });
     if (aiRes.status === 429) return json({ error: "rate_limited" }, { status: 429 });
     if (aiRes.status === 402) return json({ error: "ai_credits_required" }, { status: 402 });
     if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      return json({ error: "ai_failed", detail: txt }, { status: 502 });
+      return json({ error: "ai_failed", provider: aiRes.provider, detail: aiRes.error }, { status: 502 });
     }
-    const aiJson = await aiRes.json();
-    const content = aiJson?.choices?.[0]?.message?.content ?? "{}";
+    const content = aiRes.content || "{}";
     let parsed: any = {};
     try { parsed = typeof content === "string" ? JSON.parse(content) : content; } catch { parsed = {}; }
 

@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
+import { aiChat } from "../_shared/ai-provider.ts";
 
 const DEFAULT_BEHAVIOR = `Kamu adalah asisten WhatsApp resmi Safar Iman — program Umrah Gratis untuk anak muda berprestasi.
 - Selalu sapa dengan "Assalamu'alaikum" pada pesan pertama.
@@ -20,24 +21,15 @@ function extractIncoming(body: any) {
 }
 
 async function callAi(systemPrompt: string, userMessage: string): Promise<string | null> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) return null;
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage },
-        ],
-      }),
-    });
-    if (!res.ok) return null;
-    const j: any = await res.json();
-    return j?.choices?.[0]?.message?.content?.trim() || null;
-  } catch {
+    const r = await aiChat({ system: systemPrompt, user: userMessage });
+    if (!r.ok) {
+      console.error("AI call failed", r.provider, r.status, r.error);
+      return null;
+    }
+    return r.content.trim() || null;
+  } catch (e) {
+    console.error("AI call exception", e);
     return null;
   }
 }
