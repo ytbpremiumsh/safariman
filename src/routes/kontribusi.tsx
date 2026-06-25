@@ -200,8 +200,9 @@ function DonasiPage() {
                   <span className="relative inline-flex items-center gap-2 rounded-full bg-emerald-deep px-5 py-2 overflow-hidden">
                     <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
                     <Sparkles className="size-3.5 text-accent" />
-                    <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-white/70 font-medium">Senilai</span>
-                    <span className="font-display text-sm sm:text-base font-bold text-gradient-gold tabular-nums">Rp 75.000,-</span>
+                    <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-white font-semibold whitespace-nowrap">Senilai</span>
+                    <span className="font-display text-base sm:text-lg font-extrabold text-accent tabular-nums whitespace-nowrap drop-shadow-[0_1px_0_rgba(0,0,0,0.4)]">Rp 75.000,-</span>
+
                   </span>
                 </span>
               </div>
