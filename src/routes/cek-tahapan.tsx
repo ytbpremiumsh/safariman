@@ -217,7 +217,8 @@ function TahapanResult({ row }: { row: LookupRow }) {
   const percent = Math.round((passedCount / totalActive) * 100);
 
   const failedStage = stages.find((s) => s.state === "failed");
-  const allPassed = activeStages.every((s) => s.state === "passed");
+  const interviewStage = stages.find((s) => s.key === "interview");
+  const allPassed = interviewStage?.state === "passed" && activeStages.every((s) => s.state === "passed");
 
   return (
     <div className="mt-5 space-y-5">
