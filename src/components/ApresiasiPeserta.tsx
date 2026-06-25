@@ -88,7 +88,7 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
               <br />
               <span className="text-xs">Pembimbing Manasik &amp; Praktisi Umrah</span>
             </p>
-            <ScheduleRow date={s?.kelas_tanggal ?? ""} link={s?.kelas_link ?? ""} loading={!s} />
+            <ScheduleRow date={s?.kelas_tanggal ?? ""} link={s?.kelas_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
           </div>
         </div>
 
