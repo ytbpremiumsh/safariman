@@ -11,7 +11,7 @@
   <url><loc>https://safariman.lovable.app/sukses</loc><priority>0.3</priority></url>
   <url><loc>https://safariman.lovable.app/berkas</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://safariman.lovable.app/essay</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://safariman.lovable.app/donasi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://safariman.lovable.app/kontribusi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://safariman.lovable.app/twibbon</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://safariman.lovable.app/cek-hasil</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://safariman.lovable.app/admin</loc><priority>0.2</priority></url>
