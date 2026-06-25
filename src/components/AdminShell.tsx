@@ -32,6 +32,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/admin/peserta/reguler/berkas", label: "Berkas Reguler", icon: ClipboardList },
       { to: "/admin/peserta/self-funded/pendaftaran", label: "Pendaftaran Self Funded", icon: UserCheck },
       { to: "/admin/peserta/essay", label: "Berkas & Essay", icon: FileText },
+      { to: "/admin/peserta/tahapan", label: "Tahapan TKA & Interview", icon: Layers },
     ],
   },
 
