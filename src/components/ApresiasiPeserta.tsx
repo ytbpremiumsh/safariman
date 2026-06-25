@@ -139,14 +139,15 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
   );
 }
 
-function ScheduleRow({ date, link, loading }: { date: string; link: string; loading: boolean }) {
+function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
+  const placeholder = hidePlaceholder ? <span className="text-muted-foreground">—</span> : <span className="text-amber-600">Coming Soon</span>;
   return (
     <div className="mt-4 pt-4 border-t border-border/60 space-y-2">
       <div className="flex items-center gap-2 text-xs">
         <Calendar className="size-3.5 text-emerald shrink-0" />
         <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
         <span className="font-semibold text-foreground">
-          {loading ? "…" : date ? formatDate(date) : <span className="text-amber-600">Coming Soon</span>}
+          {loading ? "…" : date ? formatDate(date) : placeholder}
         </span>
       </div>
       {link ? (
@@ -158,7 +159,7 @@ function ScheduleRow({ date, link, loading }: { date: string; link: string; load
         >
           <ExternalLink className="size-3.5" /> Buka Link Acara
         </a>
-      ) : (
+      ) : hidePlaceholder ? null : (
         <button
           disabled
           className="inline-flex items-center justify-center gap-1.5 w-full rounded-full bg-secondary text-muted-foreground px-4 py-2 text-xs font-semibold cursor-not-allowed"
@@ -171,8 +172,8 @@ function ScheduleRow({ date, link, loading }: { date: string; link: string; load
 }
 
 function BenefitButton({
-  icon: Icon, title, desc, link, loading,
-}: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean }) {
+  icon: Icon, title, desc, link, loading, hidePlaceholder = false,
+}: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
   const disabled = !link;
   const inner = (
     <>
