@@ -1,13 +1,19 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { requireAdmin } from "../_shared/admin-auth.ts";
 
 // Proxy ke MPWA (app.ayopintar.com) untuk bypass CORS browser.
 // Body: { endpoint: "generate-qr" | "send-message", payload: object }
+// Hanya admin yang boleh memanggil endpoint ini.
 const MPWA_BASE = "https://app.ayopintar.com";
 const ALLOWED = new Set(["generate-qr", "send-message"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
+
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { endpoint, payload } = (await req.json()) as { endpoint?: string; payload?: unknown };
     if (!endpoint || !ALLOWED.has(endpoint)) {
