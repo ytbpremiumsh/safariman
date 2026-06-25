@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.email-notify]
 verify_jwt = false
+
+[functions.essay-ai-grade]
+verify_jwt = true

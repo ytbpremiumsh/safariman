@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
-  ShieldCheck, ArrowRight, HeartHandshake,
+  ShieldCheck, ArrowRight, HeartHandshake, Sparkles, Loader2, Megaphone, EyeOff, Bot,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -37,10 +37,17 @@ type Row = {
   essay_worthy: string;
   essay_dream: string;
   essay_contribution: string;
+  case_study_1: string | null;
+  case_study_2: string | null;
   cv_url: string | null;
   photo_url: string | null;
   donation_status: string;
   donation_paid_at: string | null;
+  essay_ai_score: number | null;
+  essay_ai_percent: number | null;
+  essay_ai_verdict: "layak" | "tidak_layak" | "ragu" | null;
+  essay_ai_summary: string | null;
+  essay_ai_graded_at: string | null;
   created_at: string;
 };
 
@@ -76,12 +83,19 @@ function PesertaEssayPage() {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [published, setPublished] = useState(false);
+  const [pubBusy, setPubBusy] = useState(false);
 
   const reload = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("list_essay_complete_participants");
+    const [{ data, error }, settingRes] = await Promise.all([
+      supabase.rpc("list_essay_complete_participants"),
+      supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
+    ]);
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
+    setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
 
@@ -107,6 +121,8 @@ function PesertaEssayPage() {
     tidak: rows.filter((r) => r.status === "rejected").length,
   }), [rows]);
 
+  const allDecided = rows.length > 0 && rows.every((r) => r.status === "interview" || r.status === "rejected");
+
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
     if (error) { toast.error(error.message); return; }
@@ -114,6 +130,38 @@ function PesertaEssayPage() {
     if (detail?.id === id) setDetail({ ...detail, status: s });
     toast.success(`Status: ${STATUS_LABEL[s]}`);
   };
+
+  const togglePublish = async (next: boolean) => {
+    setPubBusy(true);
+    const { error } = await supabase.rpc("admin_set_setting", { p_key: "essay_results_published", p_value: next ? "true" : "false" });
+    setPubBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setPublished(next);
+    toast.success(next ? "Hasil Essay dipublikasikan ke peserta" : "Publikasi hasil Essay ditahan");
+  };
+
+  const runAiGrade = async (row: Row) => {
+    setAiBusy(true);
+    const { data, error } = await supabase.functions.invoke("essay-ai-grade", {
+      body: { participant_id: row.id },
+    });
+    setAiBusy(false);
+    if (error) { toast.error(error.message ?? "Gagal menjalankan koreksi AI"); return; }
+    const res = (data as any)?.result;
+    if (!res) { toast.error("Respons AI tidak valid"); return; }
+    const patched: Row = {
+      ...row,
+      essay_ai_score: res.score,
+      essay_ai_percent: res.ai_used_percent,
+      essay_ai_verdict: res.verdict,
+      essay_ai_summary: res.summary,
+      essay_ai_graded_at: new Date().toISOString(),
+    };
+    setRows((p) => p.map((r) => r.id === row.id ? patched : r));
+    if (detail?.id === row.id) setDetail(patched);
+    toast.success("Koreksi AI selesai");
+  };
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -172,7 +220,36 @@ function PesertaEssayPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Publish hasil */}
+      <div className={`rounded-2xl border p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
+        published ? "bg-emerald/10 border-emerald/30" : "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/40"
+      }`}>
+        <div className="flex items-start gap-3">
+          {published ? <Megaphone className="size-5 text-emerald shrink-0 mt-0.5" /> : <EyeOff className="size-5 text-amber-600 shrink-0 mt-0.5" />}
+          <div>
+            <div className="font-semibold text-sm">
+              {published ? "Hasil Essay & Studi Kasus sudah DIPUBLIKASIKAN" : "Hasil Essay & Studi Kasus DITAHAN (belum dipublikasikan)"}
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 max-w-2xl">
+              {published
+                ? "Peserta sudah dapat melihat keputusan di halaman Cek Tahapan."
+                : `Tandai semua keputusan terlebih dahulu, kemudian klik "Publish" agar peserta dapat melihat hasilnya. Saat ini ${stats.pending} peserta belum diputuskan.`}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => togglePublish(!published)}
+          disabled={pubBusy || (!published && !allDecided)}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50 shrink-0 ${
+            published ? "bg-secondary text-foreground border border-border" : "bg-emerald text-white shadow-emerald hover-lift"
+          }`}
+          title={!published && !allDecided ? "Selesaikan semua keputusan dulu" : undefined}
+        >
+          {pubBusy ? <Loader2 className="size-4 animate-spin" /> : <Megaphone className="size-4" />}
+          {published ? "Tarik Publikasi" : "Publish Hasil"}
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "Total Kirim Essay", value: stats.total, color: "text-foreground" },
@@ -343,12 +420,18 @@ function PesertaEssayPage() {
                 )}
               </div>
 
+              {/* Aksi Cepat — Pengoreksi AI */}
+              <AiGraderCard row={detail} busy={aiBusy} onRun={() => runAiGrade(detail)} />
+
               {/* Essays */}
               <div className="mt-6 space-y-4">
                 <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
                 <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
                 <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
+                <Essay title="Studi Kasus 1" body={detail.case_study_1 ?? ""} />
+                <Essay title="Studi Kasus 2" body={detail.case_study_2 ?? ""} />
               </div>
+
 
               {/* Keputusan */}
               <div className="mt-6 pt-4 border-t border-border space-y-2">
@@ -398,6 +481,97 @@ function Essay({ title, body }: { title: string; body: string }) {
     <div>
       <div className="text-xs font-semibold text-accent mb-1">{title}</div>
       <div className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-3 leading-relaxed">{body || "—"}</div>
+    </div>
+  );
+}
+
+function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: () => void }) {
+  const verdict = row.essay_ai_verdict;
+  const percent = row.essay_ai_percent;
+  const score = row.essay_ai_score;
+  const verdictMeta = verdict === "layak"
+    ? { label: "AI: LAYAK", cls: "bg-emerald text-white border-emerald" }
+    : verdict === "tidak_layak"
+    ? { label: "AI: TIDAK LAYAK", cls: "bg-red-500 text-white border-red-500" }
+    : verdict === "ragu"
+    ? { label: "AI: RAGU", cls: "bg-amber-500 text-white border-amber-500" }
+    : null;
+
+  const aiBadgeCls =
+    percent == null ? "bg-secondary text-muted-foreground"
+    : percent >= 70 ? "bg-red-100 text-red-700 border border-red-300"
+    : percent >= 40 ? "bg-amber-100 text-amber-700 border border-amber-300"
+    : "bg-emerald/15 text-emerald border border-emerald/30";
+
+  return (
+    <div className="mt-6 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/5 via-card to-emerald/5 p-4">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="flex items-start gap-3">
+          <div className="size-10 rounded-xl bg-accent/15 grid place-items-center shrink-0">
+            <Bot className="size-5 text-accent" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="font-display font-semibold">Aksi Cepat — Pengoreksi AI</div>
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent/15 text-accent">
+                <Sparkles className="size-3" /> Honest Review
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl leading-relaxed">
+              Jalankan koreksi otomatis untuk mendapat indikasi penggunaan AI, skor kualitas jawaban, dan rekomendasi
+              kesimpulan layak / tidak layak melanjutkan ke tahap berikutnya.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onRun}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+        >
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <Bot className="size-4" />}
+          {row.essay_ai_graded_at ? "Koreksi Ulang" : "Koreksi dengan AI"}
+        </button>
+      </div>
+
+      {row.essay_ai_graded_at && (
+        <div className="mt-4 grid sm:grid-cols-3 gap-3">
+          <div className={`rounded-xl p-3 ${aiBadgeCls}`}>
+            <div className="text-[10px] uppercase tracking-wider opacity-80">Indikasi Penggunaan AI</div>
+            <div className="text-2xl font-display font-bold">{percent ?? "—"}<span className="text-sm font-medium">/100</span></div>
+            <div className="text-[11px] opacity-80 mt-0.5">
+              {percent == null ? "—" : percent >= 70 ? "Tinggi (kemungkinan ditulis AI)" : percent >= 40 ? "Sedang" : "Rendah (otentik)"}
+            </div>
+          </div>
+          <div className="rounded-xl p-3 bg-secondary/60 border border-border">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Skor Kualitas</div>
+            <div className="text-2xl font-display font-bold">{score ?? "—"}<span className="text-sm font-medium">/100</span></div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Kedalaman, relevansi, otentisitas</div>
+          </div>
+          <div className="rounded-xl p-3 border bg-card flex flex-col">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rekomendasi</div>
+            {verdictMeta ? (
+              <span className={`inline-flex items-center justify-center text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border mt-1 self-start ${verdictMeta.cls}`}>
+                {verdictMeta.label}
+              </span>
+            ) : <span className="text-sm">—</span>}
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Dinilai {new Date(row.essay_ai_graded_at).toLocaleString("id-ID")}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {row.essay_ai_summary && (
+        <div className="mt-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Kesimpulan AI</div>
+          <div className="text-sm bg-card border border-border rounded-lg p-3 leading-relaxed whitespace-pre-wrap">
+            {row.essay_ai_summary}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-2 italic">
+            Catatan: hasil AI bersifat bantuan/indikasi. Keputusan akhir tetap di tangan tim seleksi.
+          </div>
+        </div>
+      )}
     </div>
   );
 }
