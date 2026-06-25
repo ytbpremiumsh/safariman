@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search, Loader2, ArrowLeft, CheckCircle2, XCircle, Clock, Sparkles,
-  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins,
+  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins, ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -270,14 +270,7 @@ function TahapanResult({ row }: { row: LookupRow }) {
           <li key={s.key}>
             <StageItem stage={s} index={i + 1} />
             {s.key === "kontribusi" && s.state === "passed" && (
-              <div className="mt-4 mb-1 rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald/5 to-accent/5 p-4 sm:p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-emerald font-bold bg-emerald/10 px-2.5 py-1 rounded-full">
-                    <Sparkles className="size-3" /> Apresiasi untukmu
-                  </span>
-                </div>
-                <ApresiasiPeserta compact />
-              </div>
+              <ApresiasiCollapsible />
             )}
           </li>
         ))}
@@ -295,6 +288,31 @@ function TahapanResult({ row }: { row: LookupRow }) {
           </p>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function ApresiasiCollapsible() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-3 rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald/5 to-accent/5 overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-emerald/5 transition"
+      >
+        <span className="inline-flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-emerald font-bold bg-emerald/10 px-2.5 py-1 rounded-full">
+            <Sparkles className="size-3" /> Apresiasi untukmu
+          </span>
+          <span className="text-xs text-muted-foreground">{open ? "Sembunyikan" : "Lihat detail"}</span>
+        </span>
+        <ChevronDown className={`size-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5 border-t border-emerald/10 pt-4">
+          <ApresiasiPeserta compact />
+        </div>
+      )}
     </div>
   );
 }
