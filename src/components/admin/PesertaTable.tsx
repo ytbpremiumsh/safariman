@@ -342,6 +342,32 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     toast.success(`${ids.length} peserta → ${STATUS_LABEL[s]}`);
   };
 
+  const deleteParticipant = async (id: string) => {
+    const row = rows.find((r) => r.id === id);
+    if (!row) return;
+    if (!confirm(`Hapus peserta "${row.full_name}" (${row.registration_code})? Tindakan ini tidak dapat dibatalkan.`)) return;
+    const { error } = await supabase.from("participants").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.filter((r) => r.id !== id));
+    setSelected((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    if (detail?.id === id) setDetail(null);
+    toast.success("Peserta dihapus");
+  };
+
+  const bulkDelete = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} peserta terpilih? Tindakan ini tidak dapat dibatalkan.`)) return;
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase.from("participants").delete().in("id", ids);
+    setBulkBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setRows((prev) => prev.filter((r) => !selected.has(r.id)));
+    setSelected(new Set());
+    toast.success(`${ids.length} peserta dihapus`);
+  };
+
+
 
   const unmarkPaidManual = async (id: string) => {
     if (!confirm("Batalkan status donasi valid peserta ini?")) return;
