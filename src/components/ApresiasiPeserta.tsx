@@ -184,7 +184,7 @@ function BenefitButton({
         <div className="font-semibold text-sm flex items-center gap-1.5">
           {title}
           {!loading && (disabled
-            ? <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">Coming Soon</span>
+            ? <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${hidePlaceholder ? "bg-secondary text-muted-foreground" : "bg-amber-100 text-amber-700 dark:bg-amber-950/40"}`}>{hidePlaceholder ? "—" : "Coming Soon"}</span>
             : <ExternalLink className="size-3 text-emerald" />
           )}
         </div>
