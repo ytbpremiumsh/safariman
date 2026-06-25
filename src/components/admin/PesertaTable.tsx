@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, Download, Eye, FileDown, Image as ImageIcon, Loader2, MessageCircle,
-  FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet,
+  FileCheck, FileX, HeartHandshake, XCircle, Copy, Wallet, Trash2,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
