@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles,
-  BookOpen, Utensils, Users, GraduationCap, MapPin, ShieldCheck, Lock, FileText,
+  BookOpen, Utensils, Users, ShieldCheck, Lock, FileText,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
