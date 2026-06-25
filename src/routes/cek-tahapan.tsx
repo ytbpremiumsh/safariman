@@ -303,7 +303,7 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
   const Icon = stage.icon;
   const cfg = STATE_STYLES[stage.state];
   return (
-    <li
+    <div
       className={`bg-card border rounded-2xl p-4 flex items-start gap-4 ${cfg.border} ${
         stage.state === "locked" || stage.state === "skipped" ? "opacity-60" : ""
       }`}
@@ -324,7 +324,7 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
       <div className={`shrink-0 size-7 rounded-full grid place-items-center ${cfg.markBg}`}>
         {cfg.mark}
       </div>
-    </li>
+    </div>
   );
 }
 
