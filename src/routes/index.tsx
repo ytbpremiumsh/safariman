@@ -741,7 +741,6 @@ function FAQ() {
     { q: "Apakah wajib bisa berbahasa Arab?", a: "Tidak wajib. Namun kemampuan dasar bahasa Arab atau Inggris menjadi nilai tambah dalam seleksi." },
     { q: "Apakah mahasiswa atau pelajar boleh mendaftar?", a: "Boleh. Program ini terbuka untuk anak muda usia 17–30 tahun, baik pelajar, mahasiswa, maupun profesional muda." },
     { q: "Bagaimana sistem seleksi peserta?", a: "Seleksi terdiri dari verifikasi administrasi, penilaian essay, dan wawancara online. Penilaian mencakup prestasi, kontribusi sosial, dan motivasi." },
-    { q: "Apakah ada biaya tersembunyi?", a: "Tidak ada. Semua biaya transparan sesuai jalur yang dipilih. Kami menjamin tidak ada pungutan tambahan di luar yang tercantum." },
   ];
   return (
     <section id="faq" className="relative py-24 sm:py-32">
