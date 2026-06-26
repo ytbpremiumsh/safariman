@@ -128,7 +128,7 @@ function DonasiPage() {
               <span className="text-emerald">Raih Berkah</span> di Tanah Suci
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              InsyaAllah sebagian donasi peserta digunakan untuk mendukung <strong className="text-foreground">kegiatan sosial, berbagi makanan, dan wakaf mushaf Al-Qur'an di Makkah dan Madinah</strong> — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
+              InsyaAllah sebagian kontribusi{"\u00a0"}peserta digunakan untuk disedekahkan untuk{"\u00a0"}kegiatan sosial, berbagi makanan, dan Al-Qur'an di Makkah dan Madinah — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
 
@@ -200,7 +200,7 @@ function DonasiPage() {
                   <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-emerald/10 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
                   <Sparkles className="size-3.5 text-emerald" />
                   <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-emerald font-bold whitespace-nowrap">Senilai</span>
-                  <span className="font-display text-lg sm:text-xl font-black text-emerald-deep dark:text-emerald tabular-nums whitespace-nowrap tracking-tight">Rp 75.000,-</span>
+                  <span className="font-display text-lg sm:text-xl font-black text-emerald-deep dark:text-emerald tabular-nums whitespace-nowrap tracking-tight">Rp 79.000,-</span>
                 </span>
               </div>
 
