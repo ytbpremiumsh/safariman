@@ -17,7 +17,7 @@ export const FAQ_CATEGORIES = [
 export const DEFAULT_FAQ: FaqItem[] = [
   // Umum
   { category: "Umum", q: "Apa itu Safar Iman?", a: "Safar Iman adalah program perjalanan ibadah & pengembangan diri ke Tanah Suci yang dirancang khusus untuk anak muda, hasil kolaborasi Hasanah Tour & Travel × Prestasi Kita." },
-  { category: "Umum", q: "Siapa saja yang bisa mengikuti Safar Iman?", a: "Pemuda/i Muslim usia 17–30 tahun yang berdomisili di Indonesia, sehat secara jasmani & rohani, serta bersedia mengikuti seluruh tahapan seleksi." },
+  { category: "Umum", q: "Siapa saja yang bisa mengikuti Safar Iman?", a: "Pemuda/i Muslim usia 12–45 tahun yang berdomisili di Indonesia, sehat secara jasmani & rohani, serta bersedia mengikuti seluruh tahapan seleksi." },
   { category: "Umum", q: "Apakah Safar Iman berbayar?", a: "Tersedia jalur Fully Funded (gratis biaya keberangkatan), Self Funded (mandiri), serta Gelombang 1 & 2 dengan biaya kontribusi tertentu. Detail bisa dilihat di halaman utama bagian Program." },
   { category: "Umum", q: "Dari kota mana saja peserta yang bisa mendaftar?", a: "Pendaftaran terbuka untuk seluruh wilayah Indonesia. Titik kumpul keberangkatan akan diinfokan setelah seleksi final." },
 

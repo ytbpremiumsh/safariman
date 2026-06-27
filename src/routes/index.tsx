@@ -739,7 +739,7 @@ function FAQ() {
   const items = [
     { q: "Apakah benar program ini gratis?", a: "Ya, untuk jalur Fully Funded seluruh biaya ditanggung 100% termasuk tiket, visa, dan hotel. Jalur Partial mendapat subsidi, jalur Self Funded bersifat mandiri." },
     { q: "Apakah wajib bisa berbahasa Arab?", a: "Tidak wajib. Namun kemampuan dasar bahasa Arab atau Inggris menjadi nilai tambah dalam seleksi." },
-    { q: "Apakah mahasiswa atau pelajar boleh mendaftar?", a: "Boleh. Program ini terbuka untuk anak muda usia 17–30 tahun, baik pelajar, mahasiswa, maupun profesional muda." },
+    { q: "Apakah mahasiswa atau pelajar boleh mendaftar?", a: "Boleh. Program ini terbuka untuk anak muda usia 12–45 tahun, baik pelajar, mahasiswa, maupun profesional muda." },
     { q: "Bagaimana sistem seleksi peserta?", a: "Seleksi terdiri dari verifikasi administrasi, penilaian essay, dan wawancara online. Penilaian mencakup prestasi, kontribusi sosial, dan motivasi." },
   ];
   return (

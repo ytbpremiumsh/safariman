@@ -17,7 +17,7 @@ const DEFAULT_AI_BEHAVIOR = `Kamu adalah asisten WhatsApp resmi Safar Iman — p
 - Jangan janjikan kelolosan, jangan minta data sensitif (KTP, nomor rekening, kata sandi).`;
 
 const DEFAULT_AI_KNOWLEDGE = `# Tentang Safar Iman
-Safar Iman adalah program Umrah Gratis (Fully Funded) untuk anak muda Indonesia berprestasi usia 17–30 tahun. Tagline: "Hasanah × Prestasi".
+Safar Iman adalah program Umrah Gratis (Fully Funded) untuk anak muda Indonesia berprestasi usia 12–45 tahun. Tagline: "Hasanah × Prestasi".
 
 # Apakah benar gratis?
 Untuk jalur Fully Funded seluruh biaya ditanggung 100%: tiket pesawat PP, visa, hotel, makan, bis, muthawif, tour leader, perlengkapan, dan city tour internasional. Jalur Partial mendapat subsidi sebagian, Self Funded bersifat mandiri.
@@ -26,7 +26,7 @@ Untuk jalur Fully Funded seluruh biaya ditanggung 100%: tiket pesawat PP, visa, 
 Tidak wajib bisa bahasa Arab. Kemampuan dasar bahasa Arab/Inggris menjadi nilai tambah.
 
 # Siapa yang boleh daftar?
-Pelajar, mahasiswa, dan profesional muda usia 17–30 tahun. Wajib Muslim, sehat jasmani/rohani, dan punya prestasi/kontribusi sosial.
+Pelajar, mahasiswa, dan profesional muda usia 12–45 tahun. Wajib Muslim, sehat jasmani/rohani, dan punya prestasi/kontribusi sosial.
 
 # Tahapan seleksi
 1) Pendaftaran online & dapat Kode Pendaftaran (HXP-xxxx)
