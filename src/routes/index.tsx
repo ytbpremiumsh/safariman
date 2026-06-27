@@ -251,8 +251,8 @@ function Hero() {
               {/* main card — Madinah */}
               <div className="absolute inset-0 rounded-[1.75rem] overflow-hidden border border-accent/30 shadow-gold">
                 <img
-                  src={madinahImg}
-                  alt="Masjid Nabawi Madinah"
+                  src={galMadinahPayung.url}
+                  alt="Masjid Nabawi - Payung Madinah"
                   className="size-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/80 via-transparent to-transparent" />
@@ -260,8 +260,8 @@ function Hero() {
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 text-emerald-deep px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
                     ✦ Destinasi
                   </span>
-                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Makkah · Madinah</p>
-                  <p className="text-xs text-white/80">Tanah Suci · Saudi Arabia</p>
+                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Masjid Nabawi</p>
+                  <p className="text-xs text-white/80">Payung Raksasa · Madinah, Saudi Arabia</p>
                 </div>
               </div>
 
