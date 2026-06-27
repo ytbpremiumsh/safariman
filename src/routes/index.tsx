@@ -272,7 +272,7 @@ function Hero() {
 
               {/* floating mini card — Eskalator Masjidil Haram */}
               <div className="absolute -bottom-6 -right-6 size-32 rounded-2xl overflow-hidden border border-accent/40 shadow-emerald rotate-[6deg] hover:rotate-0 transition-transform">
-                <img src={makkahEscalatorImg} alt="Eskalator Masjidil Haram Makkah" className="size-full object-cover" />
+                <img src={galKabahGrup.url} alt="Jamaah di Masjidil Haram" className="size-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/70 to-transparent" />
                 <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wider text-accent">
                   Masjidil Haram
