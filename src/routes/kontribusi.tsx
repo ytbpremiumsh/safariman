@@ -128,13 +128,13 @@ function DonasiPage() {
               <span className="text-emerald">Raih Berkah</span> di Tanah Suci
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              InsyaAllah sebagian kontribusi{"\u00a0"}peserta digunakan untuk disedekahkan untuk{"\u00a0"}kegiatan sosial, berbagi makanan, dan Al-Qur'an di Makkah dan Madinah — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
+              InsyaAllah sebagian kontribusi{"\u00a0"}peserta digunakan untuk sedekah Al-Qur'an, berbagi makanan, dan mendukung kegiatan Safar Iman di Makkah dan Madinah — wujud kolaborasi pemuda dalam kebaikan bersama <strong className="text-foreground">Safar Iman</strong>.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-5 mb-12">
             {[
-              { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Wakaf mushaf di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
+              { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Sedekah mushaf Al-Qur'an di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah.", bg: cardNabawiAsset.url, dark: true },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman.", bg: cardHaramAsset.url, dark: false },
             ].map((b) => (
