@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText, Instagram, CheckCircle2, Upload, RotateCcw, ZoomIn, ZoomOut, Music2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAffiliateGate } from "@/lib/affiliate";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import defaultFrame from "@/assets/twibbon.png";
 import defaultPoster from "@/assets/persyaratan-poster.jpg";
