@@ -446,7 +446,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                       <Upload className="size-4" /> {photoImg ? "Ganti Foto" : "Upload Foto"}
                     </button>
                     <button
-                      onClick={download}
+                      onClick={() => gateTwibbon(() => download())}
                       disabled={!photoImg}
                       className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 text-sm font-bold shadow-gold hover-lift disabled:opacity-50"
                     >
