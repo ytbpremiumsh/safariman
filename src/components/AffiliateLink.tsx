@@ -19,7 +19,7 @@ export function AffiliateLink({ selectorId, to, className, children, onNavigate 
   const [pending, setPending] = useState(false);
 
   useEffect(() => {
-    loadActiveMap().then((m) => setActive(!!m[selectorId]));
+    loadAffiliateActiveMap().then((m) => setActive(!!m[selectorId]));
   }, [selectorId]);
 
   const handle = async (e: MouseEvent<HTMLAnchorElement>) => {
