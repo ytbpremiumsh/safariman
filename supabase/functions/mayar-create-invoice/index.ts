@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
+import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
 
 function isPaidLike(value: unknown): boolean {
   return typeof value === "string" && /paid|success|settled|completed|capture/i.test(value);
@@ -87,13 +88,19 @@ Deno.serve(async (req) => {
     const origin = req.headers.get("origin") || req.headers.get("referer") || "";
     const redirectUrl = `${origin.replace(/\/$/, "")}/kontribusi-sukses?code=${encodeURIComponent(code)}`;
 
+    // Pastikan nama "Kepada" di invoice Mayar sesuai nama peserta.
+    const { email: mayarEmail } = await resolveMayarEmail(
+      supabaseAdmin,
+      p.full_name,
+      p.email,
+      p.registration_code,
+    );
+    await upsertMayarCustomer(apiKey, { name: p.full_name, email: mayarEmail, mobile: p.whatsapp });
+
     const body = {
       name: p.full_name,
-      customerName: p.full_name,
-      email: p.email,
-      customerEmail: p.email,
+      email: mayarEmail,
       mobile: p.whatsapp,
-      customerMobile: p.whatsapp,
       redirectUrl,
       description,
       items: [{ description: itemDescription, quantity: 1, rate: amount }],
