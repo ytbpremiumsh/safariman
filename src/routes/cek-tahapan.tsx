@@ -160,7 +160,7 @@ function buildStages(row: LookupRow): Stage[] {
   // Stage 2: Kontribusi
   let kontribusi: StageState;
   let kontribusiNote: string | undefined;
-  if (isFastTrack || isSelfFunded) {
+  if (isSelfFunded) {
     kontribusi = "skipped";
     kontribusiNote = "Tidak ada tahap kontribusi untuk kategori ini";
   } else if (berkas !== "passed") {
@@ -178,7 +178,7 @@ function buildStages(row: LookupRow): Stage[] {
   // Stage 3: Essay & Studi Kasus
   let essay: StageState;
   let essayNote: string | undefined;
-  if (isFastTrack || isSelfFunded) {
+  if (isSelfFunded) {
     essay = "skipped";
     essayNote = "Tidak ada tahap essay untuk kategori ini";
   } else if (kontribusi !== "passed") {
@@ -201,7 +201,7 @@ function buildStages(row: LookupRow): Stage[] {
   // Stage 3: TKA
   let tka: StageState;
   let tkaNote: string | undefined;
-  if (isFastTrack || isSelfFunded) {
+  if (isSelfFunded) {
     tka = "skipped";
     tkaNote = "Tidak ada tahap TKA untuk kategori ini";
   } else if (essay !== "passed") {
@@ -218,7 +218,7 @@ function buildStages(row: LookupRow): Stage[] {
   // Stage 4: Interview
   let interview: StageState;
   let interviewNote: string | undefined;
-  if (isFastTrack || isSelfFunded) {
+  if (isSelfFunded) {
     interview = "skipped";
     interviewNote = "Tidak ada tahap interview untuk kategori ini";
   } else if (tka !== "passed") {
@@ -231,6 +231,7 @@ function buildStages(row: LookupRow): Stage[] {
     interview = "pending";
     interviewNote = "Menunggu jadwal & hasil interview";
   }
+
 
   return [
     { key: "berkas", title: "Seleksi Berkas", icon: FileCheck2, state: berkas, note: berkasNote },
