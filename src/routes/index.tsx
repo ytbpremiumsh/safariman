@@ -797,12 +797,13 @@ function FinalCTA() {
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
           Jangan lewatkan kesempatan emas ini. Daftarkan dirimu sekarang dan jadilah bagian dari perjalanan transformatif Safar Iman.
         </p>
-        <Link
+        <AffiliateLink
+          selectorId="cta_daftar"
           to="/pendaftaran"
           className="mt-10 inline-flex items-center gap-3 rounded-full bg-gradient-gold text-emerald-deep px-10 py-5 text-lg font-bold shadow-gold hover-lift animate-glow-pulse"
         >
           Daftar Sekarang <ArrowRight className="size-5" />
-        </Link>
+        </AffiliateLink>
       </div>
     </section>
   );
