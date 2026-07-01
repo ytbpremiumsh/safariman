@@ -14,7 +14,8 @@ export const Route = createFileRoute("/admin/pengaturan/affiliate")({
 });
 
 type Target = { selector_id: string; label: string; enabled: boolean };
-type Config = { enabled: boolean; url: string; ratio: number; targets: Target[] };
+type UrlEntry = { label: string; url: string; enabled: boolean };
+type Config = { enabled: boolean; url: string; urls: UrlEntry[]; ratio: number; targets: Target[] };
 
 // Preset katalog tombol yang tersedia untuk affiliate, dikelompokkan per halaman.
 // Selector ID tersembunyi dari admin — cukup pilih tombol lewat checkbox.
