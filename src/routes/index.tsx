@@ -418,12 +418,6 @@ function Persyaratan() {
             <p className="mt-6 text-xs text-muted-foreground italic border-t border-border pt-4">
               *Ketentuan selengkapnya tersedia pada buku panduan program.
             </p>
-            <Link
-              to="/pendaftaran"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-3 text-sm font-semibold shadow-gold hover-lift"
-            >
-              Daftar Sekarang <ArrowRight className="size-4" />
-            </Link>
           </div>
 
           <div className="relative animate-scale-in flex items-end justify-center">
