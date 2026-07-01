@@ -44,7 +44,7 @@ const PRESET_GROUPS: PresetGroup[] = [
 const ALL_PRESETS: Preset[] = PRESET_GROUPS.flatMap((g) => g.buttons);
 const PRESET_LABEL = new Map(ALL_PRESETS.map((p) => [p.selector_id, p.label]));
 
-const DEFAULT_CFG: Config = { enabled: false, url: "", ratio: 3, targets: [] };
+const DEFAULT_CFG: Config = { enabled: false, url: "", urls: [], ratio: 3, targets: [] };
 
 function AffiliatePage() {
   const ready = useAdminGuard();
