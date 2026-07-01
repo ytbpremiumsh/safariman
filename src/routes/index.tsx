@@ -227,13 +227,14 @@ function Hero() {
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-              <Link
+              <AffiliateLink
+                selectorId="hero_daftar"
                 to="/pendaftaran"
                 className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
               >
                 Daftar Sekarang
                 <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </AffiliateLink>
               <a
                 href={panduanUrl}
                 {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
