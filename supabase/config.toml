@@ -16,10 +16,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.email-notify]
-verify_jwt = true
+verify_jwt = false
 
 [functions.wa-notify]
-verify_jwt = true
+verify_jwt = false
 
 [functions.mpwa-proxy]
 verify_jwt = true
