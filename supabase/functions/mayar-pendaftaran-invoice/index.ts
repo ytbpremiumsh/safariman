@@ -6,7 +6,11 @@ import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-custome
 type GelombangCfg = { name: string; start: string; end: string; price: number; enabled: boolean; description: string };
 
 function isPaidLike(value: unknown): boolean {
-  return typeof value === "string" && /paid|success|settled|completed|capture/i.test(value);
+  if (typeof value !== "string") return false;
+  const v = value.trim().toLowerCase();
+  if (!v) return false;
+  if (/^un/.test(v) || /pending|fail|expire|cancel|refund|void|await|process/.test(v)) return false;
+  return /\b(paid|success|successful|settled|completed|capture|captured|success_paid)\b/.test(v);
 }
 
 function invoiceLooksPaid(payload: any): boolean {

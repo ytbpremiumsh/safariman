@@ -4,7 +4,12 @@ import { getAdmin } from "../_shared/wa.ts";
 import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
 
 function isPaidLike(value: unknown): boolean {
-  return typeof value === "string" && /paid|success|settled|completed|capture/i.test(value);
+  if (typeof value !== "string") return false;
+  const v = value.trim().toLowerCase();
+  if (!v) return false;
+  // Hindari false positive: "unpaid" mengandung substring "paid".
+  if (/^un/.test(v) || /pending|fail|expire|cancel|refund|void|await|process/.test(v)) return false;
+  return /\b(paid|success|successful|settled|completed|capture|captured|success_paid)\b/.test(v);
 }
 
 function invoiceLooksPaid(payload: any): boolean {
