@@ -323,7 +323,7 @@ function Benefits() {
     { i: Globe2, t: "City Tour Tanah Suci", d: "Eksplorasi Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dan situs bersejarah Makkah-Madinah.", variant: "gold" as const },
     { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional.", variant: "emerald" as const },
     { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu.", variant: "gold" as const },
-    { i: BookOpen, t: "Wakaf Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang.", variant: "emerald" as const },
+    { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang.", variant: "emerald" as const },
     { i: Users, t: "Networking Nasional", d: "Bertemu pemuda Indonesia dari berbagai daerah.", variant: "gold" as const },
     { i: UtensilsCrossed, t: "Berbagi Makanan di Makkah dan Madinah", d: "Menjangkau saudara yang membutuhkan di Tanah Suci.", variant: "emerald" as const },
     { i: Heart, t: "Mentor & Pembinaan", d: "Pendampingan langsung dari mentor berpengalaman.", variant: "gold" as const },
