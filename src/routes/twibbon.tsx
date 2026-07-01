@@ -521,7 +521,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <span className="text-sm font-semibold">Caption Siap Pakai</span>
                   </div>
                   <button
-                    onClick={copyCaption}
+                    onClick={() => gateCaption(() => copyCaption())}
                     className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
                   >
                     <Copy className="size-3.5" /> Salin
