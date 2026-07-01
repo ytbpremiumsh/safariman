@@ -29,12 +29,12 @@ export async function mayarPendaftaranInvoice(code: string) {
   return data as { ok: boolean; url?: string; alreadyPaid?: boolean; synced?: boolean; reused?: boolean; error?: string };
 }
 
-export async function mayarCreateInvoice(code: string, force = false) {
+export async function mayarCreateInvoice(code: string, force = false, syncOnly = false) {
   const { data, error } = await supabase.functions.invoke("mayar-create-invoice", {
-    body: { code, force },
+    body: { code, force, syncOnly },
   });
   if (error) throw error;
-  return data as { ok: boolean; url?: string; alreadyPaid?: boolean; reused?: boolean; error?: string };
+  return data as { ok: boolean; url?: string; alreadyPaid?: boolean; reused?: boolean; synced?: boolean; error?: string };
 }
 
 export async function mpwaProxy(endpoint: "generate-qr" | "send-message", payload: Record<string, unknown>) {

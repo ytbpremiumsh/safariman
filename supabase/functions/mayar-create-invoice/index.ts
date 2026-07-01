@@ -2,12 +2,48 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 
+function isPaidLike(value: unknown): boolean {
+  return typeof value === "string" && /paid|success|settled|completed|capture/i.test(value);
+}
+
+function invoiceLooksPaid(payload: any): boolean {
+  const data = payload?.data ?? payload;
+  if (
+    isPaidLike(data?.status) ||
+    isPaidLike(data?.transactionStatus) ||
+    isPaidLike(data?.transaction_status) ||
+    isPaidLike(data?.invoice?.status) ||
+    isPaidLike(data?.payment?.status)
+  ) return true;
+  const transactions = Array.isArray(data?.transactions) ? data.transactions : [];
+  return transactions.some((tx: any) =>
+    isPaidLike(tx?.status) || isPaidLike(tx?.transactionStatus) || isPaidLike(tx?.transaction_status)
+  );
+}
+
+async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
+  if (!invoiceId) return false;
+  try {
+    const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
+      method: "GET",
+      headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || !invoiceLooksPaid(payload)) return false;
+    const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
+    return Boolean(updated);
+  } catch (e) {
+    console.warn("Gagal sinkron status donasi", e);
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
   try {
     const supabaseAdmin = getAdmin();
-    const { code, force } = (await req.json()) as { code?: string; force?: boolean };
+    const { code, syncOnly } = (await req.json()) as { code?: string; force?: boolean; syncOnly?: boolean };
     if (!code || code.length < 4) return json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
 
     const { data: settings } = await supabaseAdmin
@@ -20,22 +56,28 @@ Deno.serve(async (req) => {
 
     const amount = Number(cfg.mayar_donation_amount || "150000");
 
-
-
     const { data: p } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, status, donation_status, donation_url, registration_code, category")
+      .select("full_name, email, whatsapp, status, donation_status, donation_url, donation_invoice_id, registration_code, category")
       .ilike("registration_code", code)
       .maybeSingle();
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
+
+    // Sinkronisasi otomatis: kalau sudah ada invoice pending, cek ke Mayar dulu.
+    if (p.donation_status === "pending" && p.donation_invoice_id) {
+      const synced = await syncDonationStatus(supabaseAdmin, apiKey, p.donation_invoice_id);
+      if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
+    }
+    if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
+
+    // Mode sinkron saja — jangan buat invoice baru.
+    if (syncOnly) return json({ ok: true, alreadyPaid: false, synced: false });
+
     if (p.category === "self_funded")
       return json({ ok: false, error: "Peserta Self Funded tidak diwajibkan donasi" }, { status: 403 });
     const isFastTrack = p.category === "gelombang_1" || p.category === "gelombang_2";
     if (!isFastTrack && p.status !== "accepted")
       return json({ ok: false, error: "Peserta belum dinyatakan lolos berkas administrasi" }, { status: 403 });
-    if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
-    // Selalu generate invoice baru agar nama peserta pada invoice Mayar
-    // selalu sesuai dengan data terbaru (bukan cache invoice peserta lain).
 
     const baseDescription =
       cfg.mayar_donation_description ||
@@ -43,8 +85,7 @@ Deno.serve(async (req) => {
     const description = `Kontribusi Donasi Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code} — ${baseDescription}`;
     const itemDescription = `Donasi Kontribusi a/n ${p.full_name} — Kode ${p.registration_code}`;
     const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-    const redirectUrl =
-      cfg.mayar_redirect_url || `${origin.replace(/\/$/, "")}/kontribusi?code=${encodeURIComponent(code)}`;
+    const redirectUrl = `${origin.replace(/\/$/, "")}/kontribusi-sukses?code=${encodeURIComponent(code)}`;
 
     const body = {
       name: p.full_name,
