@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_clicks: {
+        Row: {
+          created_at: string
+          id: number
+          selector_id: string
+          triggered_affiliate: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          selector_id: string
+          triggered_affiliate?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          selector_id?: string
+          triggered_affiliate?: boolean
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           key: string
@@ -334,6 +355,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_affiliate_config: { Args: { p_json: string }; Returns: boolean }
       admin_set_essay_ai: {
         Args: {
           p_id: string
@@ -362,6 +384,8 @@ export type Database = {
         Returns: number
       }
       gen_registration_code: { Args: never; Returns: string }
+      get_affiliate_config: { Args: never; Returns: Json }
+      get_affiliate_stats: { Args: { p_days?: number }; Returns: Json }
       get_countdown_enabled: { Args: never; Returns: boolean }
       get_countdown_target: { Args: never; Returns: string }
       get_faq_config: { Args: never; Returns: Json }
@@ -444,6 +468,7 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      log_affiliate_click: { Args: { p_selector_id: string }; Returns: Json }
       log_twibbon_download: { Args: never; Returns: undefined }
       lookup_hasil_seleksi_by_code: {
         Args: { p_code: string }

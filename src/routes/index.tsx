@@ -16,6 +16,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { AffiliateLink } from "@/components/AffiliateLink";
 
 import heroImg from "@/assets/hero-jamaah-madinah.jpg";
 import madinahImg from "@/assets/madinah.jpg";
@@ -74,12 +75,13 @@ function Nav() {
               )
             )}
           </nav>
-          <Link
+          <AffiliateLink
+            selectorId="nav_daftar"
             to="/pendaftaran"
             className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
           >
             Daftar Sekarang <ArrowRight className="size-4" />
-          </Link>
+          </AffiliateLink>
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-foreground p-2"
@@ -101,9 +103,9 @@ function Nav() {
                 <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
               )
             )}
-            <Link to="/pendaftaran" className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
+            <AffiliateLink selectorId="nav_daftar" to="/pendaftaran" onNavigate={() => setOpen(false)} className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
-            </Link>
+            </AffiliateLink>
           </div>
         )}
       </div>
@@ -225,13 +227,14 @@ function Hero() {
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-              <Link
+              <AffiliateLink
+                selectorId="hero_daftar"
                 to="/pendaftaran"
                 className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
               >
                 Daftar Sekarang
                 <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </AffiliateLink>
               <a
                 href={panduanUrl}
                 {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -794,12 +797,13 @@ function FinalCTA() {
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
           Jangan lewatkan kesempatan emas ini. Daftarkan dirimu sekarang dan jadilah bagian dari perjalanan transformatif Safar Iman.
         </p>
-        <Link
+        <AffiliateLink
+          selectorId="cta_daftar"
           to="/pendaftaran"
           className="mt-10 inline-flex items-center gap-3 rounded-full bg-gradient-gold text-emerald-deep px-10 py-5 text-lg font-bold shadow-gold hover-lift animate-glow-pulse"
         >
           Daftar Sekarang <ArrowRight className="size-5" />
-        </Link>
+        </AffiliateLink>
       </div>
     </section>
   );
