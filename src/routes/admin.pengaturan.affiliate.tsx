@@ -103,18 +103,44 @@ function AffiliatePage() {
     });
   };
 
+  const updateUrl = (i: number, patch: Partial<UrlEntry>) => {
+    const next = cfg.urls.slice();
+    next[i] = { ...next[i], ...patch };
+    setCfg({ ...cfg, urls: next });
+  };
+  const addUrl = () => setCfg({ ...cfg, urls: [...cfg.urls, { label: "", url: "", enabled: true }] });
+  const removeUrl = (i: number) => setCfg({ ...cfg, urls: cfg.urls.filter((_, idx) => idx !== i) });
+
   const save = async () => {
-    if (cfg.enabled && !/^https?:\/\//i.test(cfg.url.trim())) {
-      toast.error("URL affiliate harus diawali http(s)://");
-      return;
+    const cleaned = cfg.urls
+      .map((u) => ({ ...u, label: u.label.trim(), url: u.url.trim() }))
+      .filter((u) => u.url.length > 0);
+    if (cfg.enabled) {
+      const activeOk = cleaned.some((u) => u.enabled && /^https?:\/\//i.test(u.url));
+      if (!activeOk) {
+        toast.error("Minimal satu URL affiliate aktif dan diawali http(s)://");
+        return;
+      }
+      for (const u of cleaned) {
+        if (u.enabled && !/^https?:\/\//i.test(u.url)) {
+          toast.error(`URL "${u.label || u.url}" harus diawali http(s)://`);
+          return;
+        }
+      }
     }
     if (cfg.ratio < 1) {
       toast.error("Rasio minimal 1");
       return;
     }
     setSaving(true);
+    const payload = {
+      ...cfg,
+      urls: cleaned,
+      // keep legacy 'url' field for backward compat (first active url)
+      url: cleaned.find((u) => u.enabled)?.url ?? cleaned[0]?.url ?? "",
+    };
     const { error } = await supabase.rpc("admin_set_affiliate_config", {
-      p_json: JSON.stringify({ ...cfg, url: cfg.url.trim() }),
+      p_json: JSON.stringify(payload),
     });
     setSaving(false);
     if (error) {
