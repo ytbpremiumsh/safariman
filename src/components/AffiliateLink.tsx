@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, MouseEvent, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { loadAffiliateActiveMap } from "@/lib/affiliate";
+import { loadAffiliateActiveMap, openAffiliateUrl } from "@/lib/affiliate";
 
 type Props = {
   selectorId: string;
@@ -15,7 +15,7 @@ type Props = {
 export function AffiliateLink({ selectorId, to, className, children, onNavigate }: Props) {
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
-  const armedRef = useRef(false); // true = next click goes to real link
+  const armedRef = useRef(false);
   const [pending, setPending] = useState(false);
 
   useEffect(() => {
@@ -24,31 +24,25 @@ export function AffiliateLink({ selectorId, to, className, children, onNavigate 
 
   const handle = async (e: MouseEvent<HTMLAnchorElement>) => {
     if (!active || armedRef.current) {
-      // Fall through to normal navigation
       if (armedRef.current) armedRef.current = false;
       return;
     }
     e.preventDefault();
     if (pending) return;
-    const popup = window.open("about:blank", "_blank");
-    if (popup) popup.opener = null;
     setPending(true);
     try {
       const { data } = await supabase.rpc("log_affiliate_click", { p_selector_id: selectorId });
       const trigger = !!(data as any)?.trigger_affiliate;
       const url = String((data as any)?.affiliate_url ?? "");
       if (trigger && url) {
-        if (popup) popup.location.href = url;
-        else window.open(url, "_blank", "noopener,noreferrer");
+        openAffiliateUrl(url);
         armedRef.current = true;
         toast("Klik sekali lagi untuk lanjut daftar", { duration: 2500 });
       } else {
-        popup?.close();
         onNavigate?.();
         navigate({ to });
       }
     } catch {
-      popup?.close();
       onNavigate?.();
       navigate({ to });
     } finally {
@@ -56,7 +50,6 @@ export function AffiliateLink({ selectorId, to, className, children, onNavigate 
     }
   };
 
-  // Render as normal Link so right-click/open-in-new-tab still works.
   return (
     <Link to={to} className={className} onClick={handle}>
       {children}
