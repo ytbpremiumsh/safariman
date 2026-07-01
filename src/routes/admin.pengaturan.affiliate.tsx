@@ -58,9 +58,21 @@ function AffiliatePage() {
       supabase.rpc("get_affiliate_config"),
       supabase.rpc("get_affiliate_stats", { p_days: 7 }),
     ]);
+    const rawUrls = Array.isArray((c as any)?.urls) ? (c as any).urls : [];
+    const parsedUrls: UrlEntry[] = rawUrls.map((u: any) => ({
+      label: String(u?.label ?? ""),
+      url: String(u?.url ?? ""),
+      enabled: u?.enabled !== false,
+    }));
+    // Migrate legacy single url into urls array if urls empty
+    const legacyUrl = String((c as any)?.url ?? "");
+    if (parsedUrls.length === 0 && legacyUrl) {
+      parsedUrls.push({ label: "Link Utama", url: legacyUrl, enabled: true });
+    }
     const parsed: Config = {
       enabled: !!(c as any)?.enabled,
-      url: String((c as any)?.url ?? ""),
+      url: legacyUrl,
+      urls: parsedUrls,
       ratio: Number((c as any)?.ratio ?? 3) || 3,
       targets: Array.isArray((c as any)?.targets)
         ? (c as any).targets.map((t: any) => ({
