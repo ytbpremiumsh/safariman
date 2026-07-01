@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, MouseEvent, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { loadAffiliateActiveMap } from "@/lib/affiliate";
 
 type Props = {
   selectorId: string;
@@ -10,30 +11,6 @@ type Props = {
   children: ReactNode;
   onNavigate?: () => void;
 };
-
-// Cache the affiliate enabled/target state per page load so we skip the RPC
-// when the feature is off or the selector is not registered/enabled.
-let cachedActive: Record<string, boolean> | null = null;
-async function loadActiveMap() {
-  if (cachedActive) return cachedActive;
-  const { data } = await supabase.rpc("get_affiliate_config");
-  const map: Record<string, boolean> = {};
-  try {
-    const cfg = (data ?? {}) as {
-      enabled?: boolean;
-      url?: string;
-      targets?: Array<{ selector_id: string; enabled?: boolean }>;
-    };
-    const globallyOn = !!cfg.enabled && !!cfg.url && cfg.url.trim().length > 0;
-    for (const t of cfg.targets ?? []) {
-      map[t.selector_id] = globallyOn && t.enabled !== false;
-    }
-  } catch {
-    /* ignore */
-  }
-  cachedActive = map;
-  return map;
-}
 
 export function AffiliateLink({ selectorId, to, className, children, onNavigate }: Props) {
   const navigate = useNavigate();
