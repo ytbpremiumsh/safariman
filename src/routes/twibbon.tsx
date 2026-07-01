@@ -49,6 +49,9 @@ function TwibbonPage() {
   const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
   const [pinch, setPinch] = useState<{ dist: number; scale: number } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gateTwibbon = useAffiliateGate("twibbon_download");
+  const gatePoster = useAffiliateGate("poster_download");
+  const gateCaption = useAffiliateGate("caption_copy");
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Load configurable frame URL — falls back to bundled default if none configured
