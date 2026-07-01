@@ -32,6 +32,15 @@ const PRESET_GROUPS: PresetGroup[] = [
     ],
   },
   {
+    page: "Timeline Program",
+    buttons: [
+      { selector_id: "timeline_pendaftaran", label: "Timeline — Daftar Sekarang" },
+      { selector_id: "timeline_twibbon", label: "Timeline — Buat Twibbon & Poster" },
+      { selector_id: "timeline_berkas", label: "Timeline — Kirim Berkas" },
+      { selector_id: "timeline_essay", label: "Timeline — Kirim Essay & Studi Kasus" },
+    ],
+  },
+  {
     page: "Halaman Twibbon & Poster",
     buttons: [
       { selector_id: "twibbon_download", label: "Download Twibbon" },

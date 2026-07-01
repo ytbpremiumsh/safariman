@@ -42,15 +42,11 @@ function PendaftaranHub() {
     (async () => {
       const { data } = await supabase.rpc("get_gelombang_config");
       setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
-      const { data: rows } = await supabase
-        .from("app_settings")
-        .select("key,value")
-        .in("key", ["self_funded_price", "self_funded_paid_enabled", "self_funded_enabled"]);
-      const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
-      const v = Number(map.get("self_funded_price"));
+      const { data: selfCfg } = await supabase.rpc("get_self_funded_public_config");
+      const v = Number((selfCfg as any)?.price);
       if (v && v > 0) setSelfPrice(v);
-      if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
-      if (map.get("self_funded_enabled") === "false") setSelfEnabled(false);
+      setSelfPaidEnabled((selfCfg as any)?.paid_enabled !== false);
+      setSelfEnabled((selfCfg as any)?.enabled !== false);
       setLoading(false);
     })();
   }, []);

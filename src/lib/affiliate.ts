@@ -12,9 +12,13 @@ export async function loadAffiliateActiveMap() {
     const cfg = (data ?? {}) as {
       enabled?: boolean;
       url?: string;
+      urls?: Array<{ url?: string; enabled?: boolean }>;
       targets?: Array<{ selector_id: string; enabled?: boolean }>;
     };
-    const globallyOn = !!cfg.enabled && !!cfg.url && cfg.url.trim().length > 0;
+    const hasActiveUrl =
+      (cfg.urls ?? []).some((u) => u.enabled !== false && /^https?:\/\//i.test(String(u.url ?? ""))) ||
+      /^https?:\/\//i.test(String(cfg.url ?? ""));
+    const globallyOn = !!cfg.enabled && hasActiveUrl;
     for (const t of cfg.targets ?? []) {
       map[t.selector_id] = globallyOn && t.enabled !== false;
     }
