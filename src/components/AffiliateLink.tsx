@@ -30,20 +30,25 @@ export function AffiliateLink({ selectorId, to, className, children, onNavigate 
     }
     e.preventDefault();
     if (pending) return;
+    const popup = window.open("about:blank", "_blank");
+    if (popup) popup.opener = null;
     setPending(true);
     try {
       const { data } = await supabase.rpc("log_affiliate_click", { p_selector_id: selectorId });
       const trigger = !!(data as any)?.trigger_affiliate;
       const url = String((data as any)?.affiliate_url ?? "");
       if (trigger && url) {
-        window.open(url, "_blank", "noopener,noreferrer");
+        if (popup) popup.location.href = url;
+        else window.open(url, "_blank", "noopener,noreferrer");
         armedRef.current = true;
         toast("Klik sekali lagi untuk lanjut daftar", { duration: 2500 });
       } else {
+        popup?.close();
         onNavigate?.();
         navigate({ to });
       }
     } catch {
+      popup?.close();
       onNavigate?.();
       navigate({ to });
     } finally {
