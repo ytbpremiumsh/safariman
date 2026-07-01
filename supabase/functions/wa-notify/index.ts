@@ -1,13 +1,13 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { sendWaForEvent, type WaEvent } from "../_shared/wa.ts";
-import { requireAdmin } from "../_shared/admin-auth.ts";
 
+// Public endpoint: dipanggil dari halaman pendaftaran/berkas/essay/sukses
+// setelah peserta submit — akses digating oleh registration_code (rahasia
+// per-peserta yang baru saja diterbitkan). Rate-limiting dilakukan di
+// tingkat Supabase Edge Runtime.
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
-
-  const denied = await requireAdmin(req);
-  if (denied) return denied;
 
   try {
     const { event, code } = (await req.json()) as { event?: WaEvent; code?: string };
