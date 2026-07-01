@@ -181,14 +181,57 @@ function AffiliatePage() {
           <Switch checked={cfg.enabled} onCheckedChange={(v) => setCfg({ ...cfg, enabled: v })} />
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-3">
-          <div className="sm:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">URL Affiliate (Shopee, dll)</label>
-            <Input type="url" value={cfg.url} onChange={(e) => setCfg({ ...cfg, url: e.target.value })} placeholder="https://s.shopee.co.id/..." />
+        <div className="space-y-1 max-w-[200px]">
+          <label className="text-xs font-medium text-muted-foreground">Rasio (setiap N klik)</label>
+          <Input type="number" min={1} value={cfg.ratio} onChange={(e) => setCfg({ ...cfg, ratio: Math.max(1, parseInt(e.target.value || "1", 10)) })} />
+          <p className="text-[11px] text-muted-foreground">Contoh: 3 = setiap klik ke-3 memicu link affiliate.</p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Daftar URL Affiliate</label>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Tambahkan beberapa link (Shopee, TikTok, dll). Saat terpicu, sistem akan bergiliran (round-robin) memakai link yang aktif.
+              </p>
+            </div>
+            <button type="button" onClick={addUrl} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">
+              <Plus className="size-3.5" /> Tambah Link
+            </button>
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Rasio (setiap N klik)</label>
-            <Input type="number" min={1} value={cfg.ratio} onChange={(e) => setCfg({ ...cfg, ratio: Math.max(1, parseInt(e.target.value || "1", 10)) })} />
+
+          {cfg.urls.length === 0 && (
+            <div className="text-xs text-muted-foreground italic border border-dashed border-border rounded-lg p-3 text-center">
+              Belum ada link. Klik "Tambah Link" untuk mulai.
+            </div>
+          )}
+
+          <div className="space-y-2">
+            {cfg.urls.map((u, i) => (
+              <div key={i} className="flex gap-2 items-start border border-border rounded-lg p-2.5">
+                <div className="flex-1 grid sm:grid-cols-5 gap-2">
+                  <Input
+                    className="sm:col-span-2"
+                    placeholder="Label (opsional, contoh: Shopee 1)"
+                    value={u.label}
+                    onChange={(e) => updateUrl(i, { label: e.target.value })}
+                  />
+                  <Input
+                    className="sm:col-span-3"
+                    type="url"
+                    placeholder="https://s.shopee.co.id/..."
+                    value={u.url}
+                    onChange={(e) => updateUrl(i, { url: e.target.value })}
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-1.5">
+                  <Switch checked={u.enabled} onCheckedChange={(v) => updateUrl(i, { enabled: v })} />
+                  <button type="button" onClick={() => removeUrl(i)} className="text-muted-foreground hover:text-destructive p-1" aria-label="Hapus">
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
