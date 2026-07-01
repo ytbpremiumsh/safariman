@@ -1,13 +1,11 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { sendEmailForEvent, type EmailEvent } from "../_shared/email.ts";
-import { requireAdmin } from "../_shared/admin-auth.ts";
 
+// Public endpoint: dipanggil dari halaman sukses pendaftaran/berkas/essay/kontribusi.
+// Akses digating oleh registration_code milik peserta.
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
-
-  const denied = await requireAdmin(req);
-  if (denied) return denied;
 
   try {
     const { event, code } = (await req.json()) as { event?: EmailEvent; code?: string };
