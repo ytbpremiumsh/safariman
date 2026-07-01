@@ -497,7 +497,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                 </div>
                 <div className="mt-3">
                   <button
-                    onClick={downloadPoster}
+                    onClick={() => gatePoster(() => downloadPoster())}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
                   >
                     <Download className="size-4" /> Download Poster
