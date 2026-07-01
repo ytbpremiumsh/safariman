@@ -63,7 +63,7 @@ const KATEGORI_LABEL: Record<string, string> = {
   gelombang_2: "Fast Track Gelombang 2",
 };
 
-const FROM_DOMAIN = "safariman.id";
+const FROM_DOMAIN = "mail.safariman.id";
 const DEFAULT_SENDER_NAME = "Safar Iman";
 const DEFAULT_SENDER_LOCAL = "noreply";
 
