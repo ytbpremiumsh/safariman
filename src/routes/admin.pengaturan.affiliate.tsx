@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Link2, CheckCircle2, Loader2, BarChart3 } from "lucide-react";
+import { ArrowLeft, Link2, CheckCircle2, Loader2, BarChart3, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,8 @@ export const Route = createFileRoute("/admin/pengaturan/affiliate")({
 });
 
 type Target = { selector_id: string; label: string; enabled: boolean };
-type Config = { enabled: boolean; url: string; ratio: number; targets: Target[] };
+type UrlEntry = { label: string; url: string; enabled: boolean };
+type Config = { enabled: boolean; url: string; urls: UrlEntry[]; ratio: number; targets: Target[] };
 
 // Preset katalog tombol yang tersedia untuk affiliate, dikelompokkan per halaman.
 // Selector ID tersembunyi dari admin — cukup pilih tombol lewat checkbox.
@@ -43,7 +44,7 @@ const PRESET_GROUPS: PresetGroup[] = [
 const ALL_PRESETS: Preset[] = PRESET_GROUPS.flatMap((g) => g.buttons);
 const PRESET_LABEL = new Map(ALL_PRESETS.map((p) => [p.selector_id, p.label]));
 
-const DEFAULT_CFG: Config = { enabled: false, url: "", ratio: 3, targets: [] };
+const DEFAULT_CFG: Config = { enabled: false, url: "", urls: [], ratio: 3, targets: [] };
 
 function AffiliatePage() {
   const ready = useAdminGuard();
@@ -57,9 +58,21 @@ function AffiliatePage() {
       supabase.rpc("get_affiliate_config"),
       supabase.rpc("get_affiliate_stats", { p_days: 7 }),
     ]);
+    const rawUrls = Array.isArray((c as any)?.urls) ? (c as any).urls : [];
+    const parsedUrls: UrlEntry[] = rawUrls.map((u: any) => ({
+      label: String(u?.label ?? ""),
+      url: String(u?.url ?? ""),
+      enabled: u?.enabled !== false,
+    }));
+    // Migrate legacy single url into urls array if urls empty
+    const legacyUrl = String((c as any)?.url ?? "");
+    if (parsedUrls.length === 0 && legacyUrl) {
+      parsedUrls.push({ label: "Link Utama", url: legacyUrl, enabled: true });
+    }
     const parsed: Config = {
       enabled: !!(c as any)?.enabled,
-      url: String((c as any)?.url ?? ""),
+      url: legacyUrl,
+      urls: parsedUrls,
       ratio: Number((c as any)?.ratio ?? 3) || 3,
       targets: Array.isArray((c as any)?.targets)
         ? (c as any).targets.map((t: any) => ({
@@ -90,18 +103,44 @@ function AffiliatePage() {
     });
   };
 
+  const updateUrl = (i: number, patch: Partial<UrlEntry>) => {
+    const next = cfg.urls.slice();
+    next[i] = { ...next[i], ...patch };
+    setCfg({ ...cfg, urls: next });
+  };
+  const addUrl = () => setCfg({ ...cfg, urls: [...cfg.urls, { label: "", url: "", enabled: true }] });
+  const removeUrl = (i: number) => setCfg({ ...cfg, urls: cfg.urls.filter((_, idx) => idx !== i) });
+
   const save = async () => {
-    if (cfg.enabled && !/^https?:\/\//i.test(cfg.url.trim())) {
-      toast.error("URL affiliate harus diawali http(s)://");
-      return;
+    const cleaned = cfg.urls
+      .map((u) => ({ ...u, label: u.label.trim(), url: u.url.trim() }))
+      .filter((u) => u.url.length > 0);
+    if (cfg.enabled) {
+      const activeOk = cleaned.some((u) => u.enabled && /^https?:\/\//i.test(u.url));
+      if (!activeOk) {
+        toast.error("Minimal satu URL affiliate aktif dan diawali http(s)://");
+        return;
+      }
+      for (const u of cleaned) {
+        if (u.enabled && !/^https?:\/\//i.test(u.url)) {
+          toast.error(`URL "${u.label || u.url}" harus diawali http(s)://`);
+          return;
+        }
+      }
     }
     if (cfg.ratio < 1) {
       toast.error("Rasio minimal 1");
       return;
     }
     setSaving(true);
+    const payload = {
+      ...cfg,
+      urls: cleaned,
+      // keep legacy 'url' field for backward compat (first active url)
+      url: cleaned.find((u) => u.enabled)?.url ?? cleaned[0]?.url ?? "",
+    };
     const { error } = await supabase.rpc("admin_set_affiliate_config", {
-      p_json: JSON.stringify({ ...cfg, url: cfg.url.trim() }),
+      p_json: JSON.stringify(payload),
     });
     setSaving(false);
     if (error) {
@@ -142,14 +181,57 @@ function AffiliatePage() {
           <Switch checked={cfg.enabled} onCheckedChange={(v) => setCfg({ ...cfg, enabled: v })} />
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-3">
-          <div className="sm:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">URL Affiliate (Shopee, dll)</label>
-            <Input type="url" value={cfg.url} onChange={(e) => setCfg({ ...cfg, url: e.target.value })} placeholder="https://s.shopee.co.id/..." />
+        <div className="space-y-1 max-w-[200px]">
+          <label className="text-xs font-medium text-muted-foreground">Rasio (setiap N klik)</label>
+          <Input type="number" min={1} value={cfg.ratio} onChange={(e) => setCfg({ ...cfg, ratio: Math.max(1, parseInt(e.target.value || "1", 10)) })} />
+          <p className="text-[11px] text-muted-foreground">Contoh: 3 = setiap klik ke-3 memicu link affiliate.</p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Daftar URL Affiliate</label>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Tambahkan beberapa link (Shopee, TikTok, dll). Saat terpicu, sistem akan bergiliran (round-robin) memakai link yang aktif.
+              </p>
+            </div>
+            <button type="button" onClick={addUrl} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">
+              <Plus className="size-3.5" /> Tambah Link
+            </button>
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">Rasio (setiap N klik)</label>
-            <Input type="number" min={1} value={cfg.ratio} onChange={(e) => setCfg({ ...cfg, ratio: Math.max(1, parseInt(e.target.value || "1", 10)) })} />
+
+          {cfg.urls.length === 0 && (
+            <div className="text-xs text-muted-foreground italic border border-dashed border-border rounded-lg p-3 text-center">
+              Belum ada link. Klik "Tambah Link" untuk mulai.
+            </div>
+          )}
+
+          <div className="space-y-2">
+            {cfg.urls.map((u, i) => (
+              <div key={i} className="flex gap-2 items-start border border-border rounded-lg p-2.5">
+                <div className="flex-1 grid sm:grid-cols-5 gap-2">
+                  <Input
+                    className="sm:col-span-2"
+                    placeholder="Label (opsional, contoh: Shopee 1)"
+                    value={u.label}
+                    onChange={(e) => updateUrl(i, { label: e.target.value })}
+                  />
+                  <Input
+                    className="sm:col-span-3"
+                    type="url"
+                    placeholder="https://s.shopee.co.id/..."
+                    value={u.url}
+                    onChange={(e) => updateUrl(i, { url: e.target.value })}
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-1.5">
+                  <Switch checked={u.enabled} onCheckedChange={(v) => updateUrl(i, { enabled: v })} />
+                  <button type="button" onClick={() => removeUrl(i)} className="text-muted-foreground hover:text-destructive p-1" aria-label="Hapus">
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
