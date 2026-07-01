@@ -171,8 +171,14 @@ Deno.serve(async (req) => {
       return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
     }
 
+    const normalizedStatus = (status || "").trim().toLowerCase();
+    const statusIsPaid =
+      !!normalizedStatus &&
+      !/^un/.test(normalizedStatus) &&
+      !/pending|fail|expire|cancel|refund|void|await|process/.test(normalizedStatus) &&
+      /\b(paid|success|successful|settled|completed|capture|captured)\b/.test(normalizedStatus);
     const paidLike =
-      (status && /paid|success|settled|completed|capture|SUCCESS/i.test(status)) ||
+      statusIsPaid ||
       (event && /payment\.(received|success|paid)|invoice\.paid|transaction\.(paid|success)/i.test(event));
     if (!paidLike) {
       console.log("Mayar webhook: event diabaikan", { event, status, invoiceCandidates, codeCandidates });
