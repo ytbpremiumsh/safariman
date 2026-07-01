@@ -321,7 +321,7 @@ function Benefits() {
   const items = [
     { i: Plane, t: "Umrah Full Experience", d: "Perjalanan ibadah lengkap dengan bimbingan ustadz.", variant: "emerald" as const },
     { i: Globe2, t: "City Tour Tanah Suci", d: "Eksplorasi Jabal Uhud, Masjid Quba, Jabal Rahmah, Jabal Nur, dan situs bersejarah Makkah-Madinah.", variant: "gold" as const },
-    { i: Megaphone, t: "Seminar Leadership", d: "Sesi kepemimpinan dengan tokoh internasional.", variant: "emerald" as const },
+    { i: Megaphone, t: "Jelajah Sejarah Nabi", d: "Belajar langsung dari jejak sejarah nabi di Makkah dan Madinah", variant: "emerald" as const },
     { i: Award, t: "Sertifikat Internasional", d: "Sertifikat resmi untuk portofolio kamu.", variant: "gold" as const },
     { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Berbagi mushaf untuk kebaikan jangka panjang.", variant: "emerald" as const },
     { i: Users, t: "Networking Nasional", d: "Bertemu pemuda Indonesia dari berbagai daerah.", variant: "gold" as const },
