@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
+import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
 
 type GelombangCfg = { name: string; start: string; end: string; price: number; enabled: boolean; description: string };
 
