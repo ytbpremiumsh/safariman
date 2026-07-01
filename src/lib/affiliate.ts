@@ -12,9 +12,13 @@ export async function loadAffiliateActiveMap() {
     const cfg = (data ?? {}) as {
       enabled?: boolean;
       url?: string;
+      urls?: Array<{ url?: string; enabled?: boolean }>;
       targets?: Array<{ selector_id: string; enabled?: boolean }>;
     };
-    const globallyOn = !!cfg.enabled && !!cfg.url && cfg.url.trim().length > 0;
+    const hasActiveUrl =
+      (cfg.urls ?? []).some((u) => u.enabled !== false && /^https?:\/\//i.test(String(u.url ?? ""))) ||
+      /^https?:\/\//i.test(String(cfg.url ?? ""));
+    const globallyOn = !!cfg.enabled && hasActiveUrl;
     for (const t of cfg.targets ?? []) {
       map[t.selector_id] = globallyOn && t.enabled !== false;
     }
@@ -48,19 +52,24 @@ export function useAffiliateGate(selectorId: string) {
       return;
     }
     if (pendingRef.current) return;
+    const popup = window.open("about:blank", "_blank");
+    if (popup) popup.opener = null;
     pendingRef.current = true;
     try {
       const { data } = await supabase.rpc("log_affiliate_click", { p_selector_id: selectorId });
       const trigger = !!(data as any)?.trigger_affiliate;
       const url = String((data as any)?.affiliate_url ?? "");
       if (trigger && url) {
-        window.open(url, "_blank", "noopener,noreferrer");
+        if (popup) popup.location.href = url;
+        else window.open(url, "_blank", "noopener,noreferrer");
         armedRef.current = true;
         toast("Klik sekali lagi untuk melanjutkan", { duration: 2500 });
       } else {
+        popup?.close();
         await action();
       }
     } catch {
+      popup?.close();
       await action();
     } finally {
       pendingRef.current = false;

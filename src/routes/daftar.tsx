@@ -67,13 +67,9 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   useEffect(() => {
     if (kind !== "self_funded") return;
     (async () => {
-      const { data } = await supabase
-        .from("app_settings")
-        .select("key,value")
-        .in("key", ["self_funded_paid_enabled", "self_funded_enabled"]);
-      const map = new Map((data ?? []).map((r: any) => [r.key, r.value]));
-      if (map.get("self_funded_paid_enabled") === "false") setSelfPaidEnabled(false);
-      if (map.get("self_funded_enabled") === "false") setSelfEnabled(false);
+      const { data } = await supabase.rpc("get_self_funded_public_config");
+      setSelfPaidEnabled((data as any)?.paid_enabled !== false);
+      setSelfEnabled((data as any)?.enabled !== false);
       setSelfLoaded(true);
     })();
   }, [kind]);
@@ -176,7 +172,11 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          {kind === "self_funded" && selfLoaded && !selfEnabled ? (
+          {kind === "self_funded" && !selfLoaded ? (
+            <div className="grid place-items-center py-20">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : kind === "self_funded" && !selfEnabled ? (
             <div className="rounded-3xl bg-card border border-border p-10 text-center animate-fade-up">
               <div className="size-14 rounded-full bg-amber-500/15 grid place-items-center mx-auto mb-4">
                 <Sparkles className="size-7 text-amber-500" />

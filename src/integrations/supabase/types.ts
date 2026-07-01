@@ -392,6 +392,7 @@ export type Database = {
       get_gelombang_config: { Args: never; Returns: string }
       get_panduan_url: { Args: never; Returns: string }
       get_poster_url: { Args: never; Returns: string }
+      get_self_funded_public_config: { Args: never; Returns: Json }
       get_social_accounts: { Args: never; Returns: Json }
       get_timeline_config: { Args: never; Returns: string }
       get_twibbon_download_stats: {

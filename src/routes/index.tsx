@@ -574,6 +574,7 @@ function Timeline() {
 
             const c = btnColors[idx % btnColors.length];
             const Icon = getIcon(s.icon);
+            const selectorId = getTimelineSelectorId(s, idx);
             return (
               <div
                 key={`${idx}-${s.title}`}
@@ -610,14 +611,15 @@ function Timeline() {
                     <h3 className="font-display text-2xl font-semibold mt-2">{s.title}</h3>
                     <p className="text-muted-foreground mt-1 text-sm">{s.desc}</p>
                     {s.ctaLabel && s.ctaTo && (
-                      <Link
-                        to={s.ctaTo as never}
+                      <AffiliateLink
+                        selectorId={selectorId}
+                        to={s.ctaTo}
                         className={`mt-4 inline-flex items-center gap-1.5 rounded-full ${c.bg} ${c.text} px-4 py-2 text-xs font-semibold ${c.shadow} hover-lift ${
                           idx % 2 === 0 ? "sm:ml-auto" : ""
                         }`}
                       >
                         {s.ctaLabel}<ArrowRight className="size-3.5" />
-                      </Link>
+                      </AffiliateLink>
                     )}
                   </div>
                 </div>
@@ -641,6 +643,14 @@ function Timeline() {
       </div>
     </section>
   );
+}
+
+function getTimelineSelectorId(step: TimelineStep, idx: number) {
+  if (step.ctaTo === "/pendaftaran") return "timeline_pendaftaran";
+  if (step.ctaTo === "/twibbon") return "timeline_twibbon";
+  if (step.ctaTo === "/berkas") return "timeline_berkas";
+  if (step.ctaTo === "/essay") return "timeline_essay";
+  return `timeline_${idx + 1}`;
 }
 
 function Testimonials() {
