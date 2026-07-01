@@ -172,7 +172,11 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          {kind === "self_funded" && selfLoaded && !selfEnabled ? (
+          {kind === "self_funded" && !selfLoaded ? (
+            <div className="grid place-items-center py-20">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : kind === "self_funded" && !selfEnabled ? (
             <div className="rounded-3xl bg-card border border-border p-10 text-center animate-fade-up">
               <div className="size-14 rounded-full bg-amber-500/15 grid place-items-center mx-auto mb-4">
                 <Sparkles className="size-7 text-amber-500" />
