@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Download, MessageCircle, Sparkles, Image as ImageIcon, Copy, FileText, Instagram, CheckCircle2, Upload, RotateCcw, ZoomIn, ZoomOut, Music2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAffiliateGate } from "@/lib/affiliate";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import defaultFrame from "@/assets/twibbon.png";
 import defaultPoster from "@/assets/persyaratan-poster.jpg";
@@ -48,6 +49,9 @@ function TwibbonPage() {
   const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
   const [pinch, setPinch] = useState<{ dist: number; scale: number } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gateTwibbon = useAffiliateGate("twibbon_download");
+  const gatePoster = useAffiliateGate("poster_download");
+  const gateCaption = useAffiliateGate("caption_copy");
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Load configurable frame URL — falls back to bundled default if none configured
@@ -442,7 +446,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                       <Upload className="size-4" /> {photoImg ? "Ganti Foto" : "Upload Foto"}
                     </button>
                     <button
-                      onClick={download}
+                      onClick={() => gateTwibbon(() => download())}
                       disabled={!photoImg}
                       className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 text-sm font-bold shadow-gold hover-lift disabled:opacity-50"
                     >
@@ -493,7 +497,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                 </div>
                 <div className="mt-3">
                   <button
-                    onClick={downloadPoster}
+                    onClick={() => gatePoster(() => downloadPoster())}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-4 py-2.5 text-sm font-semibold shadow-emerald hover-lift"
                   >
                     <Download className="size-4" /> Download Poster
@@ -517,7 +521,7 @@ WhatsApp : ${CP_WHATSAPP}`;
                     <span className="text-sm font-semibold">Caption Siap Pakai</span>
                   </div>
                   <button
-                    onClick={copyCaption}
+                    onClick={() => gateCaption(() => copyCaption())}
                     className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
                   >
                     <Copy className="size-3.5" /> Salin
