@@ -85,8 +85,7 @@ Deno.serve(async (req) => {
     const description = `Kontribusi Donasi Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code} — ${baseDescription}`;
     const itemDescription = `Donasi Kontribusi a/n ${p.full_name} — Kode ${p.registration_code}`;
     const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-    const redirectUrl =
-      cfg.mayar_redirect_url || `${origin.replace(/\/$/, "")}/kontribusi-sukses?code=${encodeURIComponent(code)}`;
+    const redirectUrl = `${origin.replace(/\/$/, "")}/kontribusi-sukses?code=${encodeURIComponent(code)}`;
 
     const body = {
       name: p.full_name,
