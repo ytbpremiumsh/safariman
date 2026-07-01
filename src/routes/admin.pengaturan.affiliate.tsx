@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Link2, CheckCircle2, Loader2, Plus, Trash2, BarChart3 } from "lucide-react";
+import { ArrowLeft, Link2, CheckCircle2, Loader2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/affiliate")({
@@ -14,6 +15,25 @@ export const Route = createFileRoute("/admin/pengaturan/affiliate")({
 
 type Target = { selector_id: string; label: string; enabled: boolean };
 type Config = { enabled: boolean; url: string; ratio: number; targets: Target[] };
+
+// Preset katalog tombol yang tersedia untuk affiliate, dikelompokkan per halaman.
+// Selector ID tersembunyi dari admin — cukup pilih tombol lewat checkbox.
+type Preset = { selector_id: string; label: string };
+type PresetGroup = { page: string; buttons: Preset[] };
+
+const PRESET_GROUPS: PresetGroup[] = [
+  {
+    page: "Halaman Utama",
+    buttons: [
+      { selector_id: "nav_daftar", label: "Navbar — Daftar Sekarang" },
+      { selector_id: "hero_daftar", label: "Hero — Daftar Sekarang" },
+      { selector_id: "cta_daftar", label: "CTA Bawah — Daftar Sekarang" },
+    ],
+  },
+];
+
+const ALL_PRESETS: Preset[] = PRESET_GROUPS.flatMap((g) => g.buttons);
+const PRESET_LABEL = new Map(ALL_PRESETS.map((p) => [p.selector_id, p.label]));
 
 const DEFAULT_CFG: Config = { enabled: false, url: "", ratio: 3, targets: [] };
 
@@ -33,18 +53,34 @@ function AffiliatePage() {
       enabled: !!(c as any)?.enabled,
       url: String((c as any)?.url ?? ""),
       ratio: Number((c as any)?.ratio ?? 3) || 3,
-      targets: Array.isArray((c as any)?.targets) ? (c as any).targets.map((t: any) => ({
-        selector_id: String(t.selector_id ?? ""),
-        label: String(t.label ?? ""),
-        enabled: t.enabled !== false,
-      })) : [],
+      targets: Array.isArray((c as any)?.targets)
+        ? (c as any).targets.map((t: any) => ({
+            selector_id: String(t.selector_id ?? ""),
+            label: String(t.label ?? PRESET_LABEL.get(String(t.selector_id ?? "")) ?? ""),
+            enabled: t.enabled !== false,
+          }))
+        : [],
     };
     setCfg(parsed);
     setStats(s);
     setLoading(false);
   };
 
-  useEffect(() => { if (ready) loadAll(); }, [ready]);
+  useEffect(() => {
+    if (ready) loadAll();
+  }, [ready]);
+
+  const isChecked = (selId: string) => cfg.targets.some((t) => t.selector_id === selId && t.enabled);
+
+  const toggleTarget = (preset: Preset, checked: boolean) => {
+    const others = cfg.targets.filter((t) => t.selector_id !== preset.selector_id);
+    setCfg({
+      ...cfg,
+      targets: checked
+        ? [...others, { selector_id: preset.selector_id, label: preset.label, enabled: true }]
+        : others,
+    });
+  };
 
   const save = async () => {
     if (cfg.enabled && !/^https?:\/\//i.test(cfg.url.trim())) {
@@ -55,29 +91,18 @@ function AffiliatePage() {
       toast.error("Rasio minimal 1");
       return;
     }
-    const ids = cfg.targets.map((t) => t.selector_id.trim());
-    if (ids.some((s) => !s)) {
-      toast.error("Selector ID tombol tidak boleh kosong");
-      return;
-    }
-    if (new Set(ids).size !== ids.length) {
-      toast.error("Selector ID harus unik");
-      return;
-    }
     setSaving(true);
     const { error } = await supabase.rpc("admin_set_affiliate_config", {
-      p_json: JSON.stringify({ ...cfg, url: cfg.url.trim(), targets: cfg.targets.map((t) => ({ ...t, selector_id: t.selector_id.trim() })) }),
+      p_json: JSON.stringify({ ...cfg, url: cfg.url.trim() }),
     });
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Konfigurasi affiliate disimpan");
     await loadAll();
   };
-
-  const addTarget = () => setCfg({ ...cfg, targets: [...cfg.targets, { selector_id: "", label: "", enabled: true }] });
-  const removeTarget = (i: number) => setCfg({ ...cfg, targets: cfg.targets.filter((_, idx) => idx !== i) });
-  const updateTarget = (i: number, patch: Partial<Target>) =>
-    setCfg({ ...cfg, targets: cfg.targets.map((t, idx) => (idx === i ? { ...t, ...patch } : t)) });
 
   if (!ready || loading) return <AdminLoading />;
 
@@ -96,7 +121,7 @@ function AffiliatePage() {
           <div className="font-display text-lg font-semibold">Sistem Tombol Affiliate</div>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Ketika aktif, setiap kelipatan <strong>N klik</strong> pada tombol terdaftar akan membuka
+          Ketika aktif, setiap kelipatan <strong>N klik</strong> pada tombol terpilih akan membuka
           link affiliate di tab baru. Klik berikutnya baru mengarahkan ke halaman tujuan asli.
           Perhitungan dilakukan di server berdasarkan total klik global lintas semua pengunjung.
         </p>
@@ -104,7 +129,7 @@ function AffiliatePage() {
         <div className="flex items-center justify-between rounded-lg border border-border p-3">
           <div>
             <div className="text-sm font-medium">Aktifkan Affiliate</div>
-            <div className="text-xs text-muted-foreground">Master switch untuk seluruh tombol terdaftar</div>
+            <div className="text-xs text-muted-foreground">Master switch untuk seluruh tombol terpilih</div>
           </div>
           <Switch checked={cfg.enabled} onCheckedChange={(v) => setCfg({ ...cfg, enabled: v })} />
         </div>
@@ -120,31 +145,35 @@ function AffiliatePage() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">Daftar Tombol Target</label>
-            <button onClick={addTarget} className="inline-flex items-center gap-1 text-xs text-emerald hover:underline">
-              <Plus className="size-3.5" /> Tambah Tombol
-            </button>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">Tombol Target</label>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Pilih tombol yang akan mengaktifkan link affiliate. Kelompok per halaman.
+            </p>
           </div>
-          <div className="space-y-2">
-            {cfg.targets.length === 0 && (
-              <div className="text-xs text-muted-foreground italic">Belum ada tombol terdaftar.</div>
-            )}
-            {cfg.targets.map((t, i) => (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto_auto] gap-2 items-center border border-border rounded-lg p-2">
-                <Input value={t.selector_id} onChange={(e) => updateTarget(i, { selector_id: e.target.value })} placeholder="selector_id (mis. hero_daftar)" />
-                <Input value={t.label} onChange={(e) => updateTarget(i, { label: e.target.value })} placeholder="Label untuk admin" />
-                <Switch checked={t.enabled} onCheckedChange={(v) => updateTarget(i, { enabled: v })} />
-                <button onClick={() => removeTarget(i)} className="text-red-500 hover:text-red-600 p-2" aria-label="Hapus">
-                  <Trash2 className="size-4" />
-                </button>
+
+          <div className="space-y-4">
+            {PRESET_GROUPS.map((group) => (
+              <div key={group.page} className="border border-border rounded-lg p-3 space-y-2">
+                <div className="text-sm font-semibold">{group.page}</div>
+                <div className="space-y-1.5">
+                  {group.buttons.map((btn) => (
+                    <label
+                      key={btn.selector_id}
+                      className="flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-secondary/50 cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={isChecked(btn.selector_id)}
+                        onCheckedChange={(v) => toggleTarget(btn, v === true)}
+                      />
+                      <span className="text-sm">{btn.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            Selector ID yang saat ini digunakan di halaman utama: <code>nav_daftar</code>, <code>hero_daftar</code>, <code>cta_daftar</code>.
-          </p>
         </div>
 
         <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-5 py-2.5 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60">
@@ -172,13 +201,13 @@ function AffiliatePage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground">
-                <tr><th className="py-1">Selector</th><th>Klik</th><th>Affiliate</th></tr>
+                <tr><th className="py-1">Tombol</th><th>Klik</th><th>Affiliate</th></tr>
               </thead>
               <tbody>
                 {bySelector.length === 0 && <tr><td colSpan={3} className="py-2 text-xs text-muted-foreground italic">Belum ada data.</td></tr>}
                 {bySelector.map((r) => (
                   <tr key={r.selector_id} className="border-t border-border">
-                    <td className="py-1.5 font-mono text-xs">{r.selector_id}</td>
+                    <td className="py-1.5">{PRESET_LABEL.get(r.selector_id) ?? r.selector_id}</td>
                     <td>{r.clicks}</td>
                     <td>{r.triggered}</td>
                   </tr>
