@@ -29,11 +29,30 @@ export async function loadAffiliateActiveMap() {
   return map;
 }
 
+function isMobile() {
+  if (typeof navigator === "undefined") return false;
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
+/**
+ * Open an affiliate URL. On mobile, navigate in the same tab so the platform
+ * (Shopee/TikTok/etc.) can hand off to its native app. On desktop, open a new tab.
+ */
+export function openAffiliateUrl(url: string) {
+  if (!url) return;
+  if (isMobile()) {
+    window.location.href = url;
+  } else {
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+    if (!w) {
+      // Popup blocked — fall back to same-tab navigation
+      window.location.href = url;
+    }
+  }
+}
+
 /**
  * Wraps any imperative action (download, copy, etc.) with the affiliate gate.
- * Usage:
- *   const gate = useAffiliateGate("twibbon_download");
- *   <button onClick={() => gate(() => download())}>...</button>
  * First qualifying click opens affiliate URL and arms the button; second click runs the action.
  */
 export function useAffiliateGate(selectorId: string) {
@@ -52,24 +71,19 @@ export function useAffiliateGate(selectorId: string) {
       return;
     }
     if (pendingRef.current) return;
-    const popup = window.open("about:blank", "_blank");
-    if (popup) popup.opener = null;
     pendingRef.current = true;
     try {
       const { data } = await supabase.rpc("log_affiliate_click", { p_selector_id: selectorId });
       const trigger = !!(data as any)?.trigger_affiliate;
       const url = String((data as any)?.affiliate_url ?? "");
       if (trigger && url) {
-        if (popup) popup.location.href = url;
-        else window.open(url, "_blank", "noopener,noreferrer");
+        openAffiliateUrl(url);
         armedRef.current = true;
         toast("Klik sekali lagi untuk melanjutkan", { duration: 2500 });
       } else {
-        popup?.close();
         await action();
       }
     } catch {
-      popup?.close();
       await action();
     } finally {
       pendingRef.current = false;
