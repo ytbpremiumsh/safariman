@@ -31,13 +31,20 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoSafarImanBadge from "@/assets/logo-safar-iman-badge.png";
 import legalitasBadges from "@/assets/legalitas-badges-hd.png";
-import galKabahMalam from "@/assets/galeri-kabah-malam.png.asset.json";
-import galMadinahPayung from "@/assets/galeri-madinah-payung.png.asset.json";
-import galKabahGrup from "@/assets/galeri-kabah-grup.png.asset.json";
-import galJabalRahmah from "@/assets/galeri-jabal-rahmah.png.asset.json";
-import galUmrohNovember from "@/assets/galeri-umroh-november.png.asset.json";
-import galTurkiyeHagia from "@/assets/galeri-turkiye-hagia.png.asset.json";
-import galMasjidQuba from "@/assets/galeri-masjid-quba.png.asset.json";
+import galKabahMalamUrl from "@/assets/galeri-kabah-malam.png";
+import galMadinahPayungUrl from "@/assets/galeri-madinah-payung.png";
+import galKabahGrupUrl from "@/assets/galeri-kabah-grup.png";
+import galJabalRahmahUrl from "@/assets/galeri-jabal-rahmah.png";
+import galUmrohNovemberUrl from "@/assets/galeri-umroh-november.png";
+import galTurkiyeHagiaUrl from "@/assets/galeri-turkiye-hagia.png";
+import galMasjidQubaUrl from "@/assets/galeri-masjid-quba.png";
+const galKabahMalam = { url: galKabahMalamUrl };
+const galMadinahPayung = { url: galMadinahPayungUrl };
+const galKabahGrup = { url: galKabahGrupUrl };
+const galJabalRahmah = { url: galJabalRahmahUrl };
+const galUmrohNovember = { url: galUmrohNovemberUrl };
+const galTurkiyeHagia = { url: galTurkiyeHagiaUrl };
+const galMasjidQuba = { url: galMasjidQubaUrl };
 
 export const Route = createFileRoute("/")({
   head: () => ({
