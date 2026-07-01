@@ -29,26 +29,21 @@ export async function loadAffiliateActiveMap() {
   return map;
 }
 
-function isMobile() {
-  if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-}
+// De-dupe rapid double-invocations of the same URL (e.g. React StrictMode / double click)
+let lastOpenedUrl = "";
+let lastOpenedAt = 0;
 
 /**
- * Open an affiliate URL. On mobile, navigate in the same tab so the platform
- * (Shopee/TikTok/etc.) can hand off to its native app. On desktop, open a new tab.
+ * Open an affiliate URL in a NEW tab only. The current page always stays put.
+ * Guards against opening the same URL twice in quick succession.
  */
 export function openAffiliateUrl(url: string) {
   if (!url) return;
-  if (isMobile()) {
-    window.location.href = url;
-  } else {
-    const w = window.open(url, "_blank", "noopener,noreferrer");
-    if (!w) {
-      // Popup blocked — fall back to same-tab navigation
-      window.location.href = url;
-    }
-  }
+  const now = Date.now();
+  if (url === lastOpenedUrl && now - lastOpenedAt < 1500) return;
+  lastOpenedUrl = url;
+  lastOpenedAt = now;
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 /**
