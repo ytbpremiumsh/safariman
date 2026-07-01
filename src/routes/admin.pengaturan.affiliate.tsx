@@ -30,6 +30,14 @@ const PRESET_GROUPS: PresetGroup[] = [
       { selector_id: "cta_daftar", label: "CTA Bawah — Daftar Sekarang" },
     ],
   },
+  {
+    page: "Halaman Twibbon & Poster",
+    buttons: [
+      { selector_id: "twibbon_download", label: "Download Twibbon" },
+      { selector_id: "poster_download", label: "Download Poster" },
+      { selector_id: "caption_copy", label: "Salin Caption" },
+    ],
+  },
 ];
 
 const ALL_PRESETS: Preset[] = PRESET_GROUPS.flatMap((g) => g.buttons);
