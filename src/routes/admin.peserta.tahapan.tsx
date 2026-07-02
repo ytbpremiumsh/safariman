@@ -240,3 +240,16 @@ function StageActions({ current, onSet }: { current: StageStatus; onSet: (v: Sta
 function Th({ children }: { children: React.ReactNode }) {
   return <th className="text-left px-3 py-2 font-medium">{children}</th>;
 }
+
+function TabBtn({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+        active ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
+      }`}
+    >
+      <Icon className="size-4" /> {label}
+    </button>
+  );
+}
