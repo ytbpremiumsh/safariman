@@ -31,6 +31,7 @@ type LookupRow = {
   has_essay: boolean;
   donation_status: string;
   payment_status: string;
+  essay_status: StageStatus;
   tka_status: StageStatus;
   interview_status: StageStatus;
   berkas_published?: boolean;
@@ -175,7 +176,7 @@ function buildStages(row: LookupRow): Stage[] {
     kontribusiNote = "Selesaikan pembayaran kontribusi untuk lanjut ke tahap essay";
   }
 
-  // Stage 3: Essay & Studi Kasus
+  // Stage 3: Essay & Studi Kasus (independen — dinilai tim juri)
   let essay: StageState;
   let essayNote: string | undefined;
   if (isSelfFunded) {
@@ -184,21 +185,21 @@ function buildStages(row: LookupRow): Stage[] {
   } else if (kontribusi !== "passed") {
     essay = "locked";
   } else if (!row.has_essay) {
-    essay = rejected ? "failed" : "pending";
+    essay = "pending";
     essayNote = "Kirim essay & studi kasus untuk lanjut";
   } else if (!essayPublished) {
     essay = "pending";
     essayNote = "Essay & Studi Kasus sudah terkirim. Hasil seleksi akan diumumkan setelah semua jawaban selesai dinilai tim juri.";
-  } else if (row.status === "rejected") {
-    essay = "failed";
-  } else if (row.status === "interview" || row.status === "accepted" || row.tka_status !== "pending") {
+  } else if (row.essay_status === "passed") {
     essay = "passed";
+  } else if (row.essay_status === "failed") {
+    essay = "failed";
   } else {
     essay = "pending";
     essayNote = "Essay sedang dinilai tim penilai";
   }
 
-  // Stage 3: TKA
+  // Stage 4: TKA (independen)
   let tka: StageState;
   let tkaNote: string | undefined;
   if (isSelfFunded) {

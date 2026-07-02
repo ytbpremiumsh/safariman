@@ -1,18 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Copy, CheckCircle2, XCircle, Clock, Brain, MessagesSquare } from "lucide-react";
+import { Search, Copy, CheckCircle2, XCircle, Clock, Brain, MessagesSquare, BookOpenCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/peserta/tahapan")({
-  head: () => ({ meta: [{ title: "Tahapan Seleksi (TKA & Interview) — Safar Iman Admin" }] }),
+  head: () => ({ meta: [{ title: "Tahapan Seleksi (Essay, TKA & Interview) — Safar Iman Admin" }] }),
   component: Page,
 });
 
 type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 type StageStatus = "pending" | "passed" | "failed";
+type StageKey = "essay" | "tka" | "interview";
 
 type Row = {
   id: string;
@@ -23,8 +24,10 @@ type Row = {
   city: string;
   category: Category | null;
   status: string;
+  essay_status: StageStatus;
   tka_status: StageStatus;
   interview_status: StageStatus;
+  essay_updated_at: string | null;
   tka_updated_at: string | null;
   interview_updated_at: string | null;
   created_at: string;
@@ -49,7 +52,7 @@ function Page() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [q, setQ] = useState("");
-  const [tab, setTab] = useState<"tka" | "interview">("tka");
+  const [tab, setTab] = useState<StageKey>("essay");
 
   const reload = async () => {
     setLoading(true);
@@ -61,11 +64,16 @@ function Page() {
 
   useEffect(() => { if (ready) void reload(); }, [ready]);
 
+  const eligible = (r: Row): boolean => {
+    if (tab === "essay") return true;
+    if (tab === "tka") return r.essay_status === "passed";
+    return r.tka_status === "passed"; // interview
+  };
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
-      // For interview tab, only show those who already passed TKA
-      if (tab === "interview" && r.tka_status !== "passed") return false;
+      if (!eligible(r)) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
@@ -73,22 +81,21 @@ function Page() {
   }, [rows, q, tab]);
 
   const stats = useMemo(() => {
-    const tkaPool = rows;
-    const intPool = rows.filter((r) => r.tka_status === "passed");
-    const pool = tab === "tka" ? tkaPool : intPool;
-    const field = tab === "tka" ? "tka_status" : "interview_status";
+    const pool = rows.filter(eligible);
+    const field = (tab + "_status") as "essay_status" | "tka_status" | "interview_status";
     return {
       total: pool.length,
-      pending: pool.filter((r) => r[field as keyof Row] === "pending").length,
-      passed: pool.filter((r) => r[field as keyof Row] === "passed").length,
-      failed: pool.filter((r) => r[field as keyof Row] === "failed").length,
+      pending: pool.filter((r) => r[field] === "pending").length,
+      passed: pool.filter((r) => r[field] === "passed").length,
+      failed: pool.filter((r) => r[field] === "failed").length,
     };
   }, [rows, tab]);
 
-  const setStage = async (id: string, stage: "tka" | "interview", value: StageStatus) => {
+  const setStage = async (id: string, stage: StageKey, value: StageStatus) => {
     const { error } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: stage, p_value: value });
     if (error) { toast.error(error.message); return; }
-    toast.success(`${stage === "tka" ? "TKA" : "Interview"}: ${STAGE_LABEL[value]}`);
+    const label = stage === "essay" ? "Essay" : stage === "tka" ? "TKA" : "Interview";
+    toast.success(`${label}: ${STAGE_LABEL[value]}`);
     void reload();
   };
 
@@ -97,36 +104,23 @@ function Page() {
   if (!ready || loading) return <AdminLoading />;
 
   return (
-    <AdminShell title="Tahapan Seleksi — TKA & Interview">
+    <AdminShell title="Tahapan Seleksi — Essay, TKA & Interview">
       <p className="text-sm text-muted-foreground -mt-3">
-        Tandai peserta yang lolos / tidak lolos pada tahap <strong>TKA</strong> dan <strong>Interview</strong>.
+        Tandai peserta yang lolos / tidak lolos pada tahap <strong>Essay & Studi Kasus</strong>, <strong>TKA</strong>, dan <strong>Interview</strong> secara terpisah.
         Hasil tampil otomatis di halaman publik <em>Cek Tahapan</em>.
       </p>
 
       {/* Tabs */}
-      <div className="bg-card border border-border rounded-2xl p-1 inline-flex">
-        <button
-          onClick={() => setTab("tka")}
-          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "tka" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
-          }`}
-        >
-          <Brain className="size-4" /> Tahap TKA
-        </button>
-        <button
-          onClick={() => setTab("interview")}
-          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "interview" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
-          }`}
-        >
-          <MessagesSquare className="size-4" /> Tahap Interview
-        </button>
+      <div className="bg-card border border-border rounded-2xl p-1 inline-flex flex-wrap gap-1">
+        <TabBtn active={tab === "essay"} onClick={() => setTab("essay")} icon={BookOpenCheck} label="Tahap Essay & Studi Kasus" />
+        <TabBtn active={tab === "tka"} onClick={() => setTab("tka")} icon={Brain} label="Tahap TKA" />
+        <TabBtn active={tab === "interview"} onClick={() => setTab("interview")} icon={MessagesSquare} label="Tahap Interview" />
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: tab === "tka" ? "Total Peserta TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
+          { label: tab === "essay" ? "Total Peserta Essay" : tab === "tka" ? "Eligible TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
           { label: "Menunggu", value: stats.pending, color: "text-amber-600" },
           { label: "Lolos", value: stats.passed, color: "text-emerald" },
           { label: "Tidak Lolos", value: stats.failed, color: "text-red-600" },
@@ -153,15 +147,18 @@ function Page() {
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
                 <Th>Kode</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th>
-                <Th>TKA</Th><Th>Interview</Th><Th>Aksi {tab === "tka" ? "TKA" : "Interview"}</Th>
+                <Th>Essay</Th><Th>TKA</Th><Th>Interview</Th>
+                <Th>Aksi {tab === "essay" ? "Essay" : tab === "tka" ? "TKA" : "Interview"}</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">
-                  {tab === "interview"
-                    ? "Belum ada peserta yang lolos TKA."
-                    : "Belum ada peserta yang lolos essay & siap ikut TKA."}
+                <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">
+                  {tab === "essay"
+                    ? "Belum ada peserta yang mengirim essay & studi kasus."
+                    : tab === "tka"
+                    ? "Belum ada peserta yang lolos Essay & siap ikut TKA."
+                    : "Belum ada peserta yang lolos TKA."}
                 </td></tr>
               ) : filtered.map((r) => (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
@@ -176,11 +173,12 @@ function Page() {
                     <div className="text-xs">{r.email}</div>
                     <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
                   </td>
+                  <td className="px-3 py-3"><StagePill v={r.essay_status} /></td>
                   <td className="px-3 py-3"><StagePill v={r.tka_status} /></td>
                   <td className="px-3 py-3"><StagePill v={r.interview_status} /></td>
                   <td className="px-3 py-3">
                     <StageActions
-                      current={tab === "tka" ? r.tka_status : r.interview_status}
+                      current={tab === "essay" ? r.essay_status : tab === "tka" ? r.tka_status : r.interview_status}
                       onSet={(v) => setStage(r.id, tab, v)}
                     />
                   </td>
@@ -241,4 +239,17 @@ function StageActions({ current, onSet }: { current: StageStatus; onSet: (v: Sta
 
 function Th({ children }: { children: React.ReactNode }) {
   return <th className="text-left px-3 py-2 font-medium">{children}</th>;
+}
+
+function TabBtn({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+        active ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
+      }`}
+    >
+      <Icon className="size-4" /> {label}
+    </button>
+  );
 }

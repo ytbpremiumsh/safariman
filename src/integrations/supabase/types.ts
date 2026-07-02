@@ -164,6 +164,8 @@ export type Database = {
           essay_ai_verdict: string | null
           essay_contribution: string | null
           essay_dream: string | null
+          essay_status: string
+          essay_updated_at: string | null
           essay_worthy: string | null
           full_name: string
           gender: string
@@ -212,6 +214,8 @@ export type Database = {
           essay_ai_verdict?: string | null
           essay_contribution?: string | null
           essay_dream?: string | null
+          essay_status?: string
+          essay_updated_at?: string | null
           essay_worthy?: string | null
           full_name: string
           gender: string
@@ -260,6 +264,8 @@ export type Database = {
           essay_ai_verdict?: string | null
           essay_contribution?: string | null
           essay_dream?: string | null
+          essay_status?: string
+          essay_updated_at?: string | null
           essay_worthy?: string | null
           full_name?: string
           gender?: string
@@ -459,6 +465,8 @@ export type Database = {
           city: string
           created_at: string
           email: string
+          essay_status: string
+          essay_updated_at: string
           full_name: string
           id: string
           interview_status: string
@@ -515,6 +523,7 @@ export type Database = {
           category: Database["public"]["Enums"]["program_category"]
           donation_status: string
           essay_published: boolean
+          essay_status: string
           found: boolean
           full_name: string
           has_berkas: boolean

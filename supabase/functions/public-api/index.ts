@@ -223,7 +223,8 @@ function buildTahapan(p: Record<string, any>, published: { berkas: boolean; essa
     kontribusiNote = "Selesaikan pembayaran kontribusi.";
   }
 
-  // 3. Essay & Studi Kasus
+  // 3. Essay & Studi Kasus (independen)
+  const essayStatus = String(p.essay_status ?? "pending");
   let essay: StageState;
   let essayNote: string | undefined;
   if (isSelfFunded) {
@@ -231,15 +232,15 @@ function buildTahapan(p: Record<string, any>, published: { berkas: boolean; essa
   } else if (kontribusi !== "passed") {
     essay = "locked";
   } else if (!hasEssay) {
-    essay = rejected ? "failed" : "pending";
+    essay = "pending";
     essayNote = "Kirim essay & studi kasus untuk lanjut.";
   } else if (!published.essay) {
     essay = "pending";
     essayNote = "Essay & Studi Kasus sudah terkirim. Menunggu pengumuman hasil.";
-  } else if (rejected) {
-    essay = "failed";
-  } else if (p.status === "interview" || p.status === "accepted" || tkaStatus !== "pending") {
+  } else if (essayStatus === "passed") {
     essay = "passed";
+  } else if (essayStatus === "failed") {
+    essay = "failed";
   } else {
     essay = "pending";
     essayNote = "Essay sedang dinilai tim penilai.";
@@ -340,7 +341,7 @@ Deno.serve(async (req) => {
       let q = admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, tka_status, tka_updated_at, interview_status, interview_updated_at, created_at, updated_at",
+          "id, registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, essay_status, essay_updated_at, tka_status, tka_updated_at, interview_status, interview_updated_at, created_at, updated_at",
         )
         // Filter DB-level: hanya yang salah satu status pembayaran = 'paid'
         .or("donation_status.eq.paid,payment_status.eq.paid")
@@ -386,7 +387,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, tka_status, interview_status",
+          "registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, essay_status, tka_status, interview_status",
         )
         .ilike("registration_code", code)
         .maybeSingle();
