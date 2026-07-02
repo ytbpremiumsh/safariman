@@ -31,6 +31,7 @@ type LookupRow = {
   has_essay: boolean;
   donation_status: string;
   payment_status: string;
+  essay_status: StageStatus;
   tka_status: StageStatus;
   interview_status: StageStatus;
   berkas_published?: boolean;
