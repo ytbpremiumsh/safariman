@@ -284,32 +284,33 @@ function PublicSection({ apiKey, setApiKey }: { apiKey: string; setApiKey: (v: s
           <div className="font-display text-lg font-semibold">Dokumentasi Endpoint API Umum</div>
           <p className="text-xs text-muted-foreground mt-1">
             Semua endpoint butuh header <code className="font-mono bg-secondary px-1.5 py-0.5 rounded">Authorization: Bearer &lt;API_KEY&gt;</code>.
-            Response berisi status seleksi, benefit sesuai jalur, validitas pembayaran, dan validitas kontribusi.
           </p>
+          <div className="mt-2 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-200 leading-relaxed">
+            ⚠️ Endpoint listing & lookup hanya mengembalikan peserta yang <strong>pembayaran ATAU kontribusinya valid</strong>. Peserta yang belum berkontribusi tidak diekspos via API umum.
+          </div>
         </div>
 
         <Endpoint
           method="GET" path="/participants" color="blue" access="Butuh API Key"
-          desc="List semua peserta. Filter opsional via query: ?category=fully_funded|partial_funded|self_funded|gelombang_1|gelombang_2, ?status=pending|berkas|essay|interview|accepted|rejected, ?paid=1 (hanya yang pembayaran valid), ?limit=500."
+          desc="List peserta yang sudah kontribusi/pembayaran valid. Filter opsional: ?category=fully_funded|partial_funded|self_funded|gelombang_1|gelombang_2, ?status=pending|berkas|essay|interview|accepted|rejected, ?paid=1, ?limit=500."
           response={`{
   "ok": true,
   "count": 120,
   "participants": [
     {
-      "id": "...",
       "registration_code": "HXP-XXXXXXXX",
       "full_name": "Nama Peserta",
       "category": "gelombang_1",
       "category_label": "Fast Track Gelombang 1",
       "status": "essay",
       "status_label": "Seleksi Essay & Studi Kasus",
-      "payment":      { "status": "paid",   "valid": true, "paid_at": "..." },
-      "contribution": { "status": "paid",   "valid": true, "paid_at": "..." },
+      "payment":      { "status": "paid", "valid": true, "paid_at": "..." },
+      "contribution": { "status": "paid", "valid": true, "paid_at": "..." },
       "benefits": [ "Fast track masuk seleksi tanpa antre reguler", "..." ],
       "selection": {
         "berkas_confirmed_at": "...",
         "essay_submitted": true,
-        "tka_status": "lolos",
+        "tka_status": "passed",
         "interview_status": null
       }
     }
@@ -320,7 +321,7 @@ function PublicSection({ apiKey, setApiKey }: { apiKey: string; setApiKey: (v: s
 
         <Endpoint
           method="GET" path="/participant/:code" color="blue" access="Butuh API Key"
-          desc="Detail lengkap 1 peserta (termasuk email, whatsapp, kota, pendidikan, dsb) berdasarkan kode pendaftaran."
+          desc="Detail lengkap 1 peserta (email, whatsapp, kota, pendidikan, dsb). Membalas 403 bila kontribusi/pembayaran belum valid."
           response={`{
   "ok": true,
   "participant": {
@@ -332,10 +333,10 @@ function PublicSection({ apiKey, setApiKey }: { apiKey: string; setApiKey: (v: s
     "category_label": "Fully Funded",
     "status": "interview",
     "status_label": "Tahap TKA / Interview",
-    "payment":      { "valid": true,  "status": "paid",   "paid_at": "..." },
-    "contribution": { "valid": true,  "status": "paid",   "paid_at": "..." },
+    "payment":      { "valid": true, "status": "paid", "paid_at": "..." },
+    "contribution": { "valid": true, "status": "paid", "paid_at": "..." },
     "benefits": [ "Biaya perjalanan umrah ditanggung penuh oleh Program Safar Iman", "..." ],
-    "selection": { "essay_submitted": true, "tka_status": "lolos", "interview_status": "lolos" }
+    "selection": { "essay_submitted": true, "tka_status": "passed", "interview_status": "passed" }
   }
 }`}
           baseUrl={baseUrl}
@@ -343,7 +344,7 @@ function PublicSection({ apiKey, setApiKey }: { apiKey: string; setApiKey: (v: s
 
         <Endpoint
           method="GET" path="/status/:code" color="blue" access="Butuh API Key"
-          desc="Status ringkas peserta — cocok untuk widget tracking pihak ke-3. Tidak mengembalikan PII lengkap."
+          desc="Status ringkas peserta — cocok untuk widget tracking pihak ke-3."
           response={`{
   "ok": true,
   "status": {
@@ -359,18 +360,47 @@ function PublicSection({ apiKey, setApiKey }: { apiKey: string; setApiKey: (v: s
         />
 
         <Endpoint
-          method="GET" path="/stats" color="blue" access="Butuh API Key"
-          desc="Agregat total peserta per kategori & per status, plus jumlah yang pembayaran dan kontribusinya valid."
+          method="GET" path="/tahapan/:code" color="blue" access="Butuh API Key"
+          desc="Tahapan seleksi terstruktur — persis seperti halaman publik /cek-tahapan. Mengembalikan 5 tahap (Berkas, Kontribusi, Essay & Studi Kasus, TKA, Interview) dengan state per tahap (passed | failed | pending | locked | skipped), progress, dan flag published hasil dari admin."
           response={`{
   "ok": true,
-  "total": 340,
-  "by_category": { "fully_funded": 40, "partial_funded": 60, "self_funded": 120, "gelombang_1": 70, "gelombang_2": 50 },
-  "by_status":   { "pending": 20, "berkas": 90, "essay": 100, "interview": 80, "accepted": 40, "rejected": 10 },
-  "payment_valid": 210,
+  "participant": {
+    "registration_code": "HXP-XXXXXXXX",
+    "full_name": "...",
+    "category": "fully_funded",
+    "category_label": "Fully Funded",
+    "status": "interview",
+    "status_label": "Tahap TKA / Interview",
+    "payment":      { "valid": true, "status": "paid", "paid_at": "..." },
+    "contribution": { "valid": true, "status": "paid", "paid_at": "..." }
+  },
+  "published": { "berkas": true, "essay": false },
+  "stages": [
+    { "key": "berkas",      "title": "Seleksi Berkas",                      "state": "passed",  "note": null },
+    { "key": "kontribusi",  "title": "Kontribusi",                          "state": "passed",  "note": "Kontribusi sudah diterima" },
+    { "key": "essay",       "title": "Seleksi Essay & Studi Kasus",         "state": "pending", "note": "Menunggu pengumuman hasil." },
+    { "key": "tka",         "title": "Seleksi TKA (Tes Kemampuan Akademik)","state": "locked",  "note": null },
+    { "key": "interview",   "title": "Seleksi Interview",                   "state": "locked",  "note": null }
+  ],
+  "summary": { "total_active": 5, "passed_count": 2, "percent": 40, "all_passed": false, "failed_stage": null }
+}`}
+          baseUrl={baseUrl}
+        />
+
+        <Endpoint
+          method="GET" path="/stats" color="blue" access="Butuh API Key"
+          desc="Agregat total peserta yang kontribusi/pembayarannya valid, per kategori & status."
+          response={`{
+  "ok": true,
+  "total": 210,
+  "by_category": { "fully_funded": 40, "partial_funded": 60, "self_funded": 40, "gelombang_1": 40, "gelombang_2": 30 },
+  "by_status":   { "berkas": 80, "essay": 60, "interview": 40, "accepted": 25, "rejected": 5 },
+  "payment_valid": 110,
   "contribution_valid": 190
 }`}
           baseUrl={baseUrl}
         />
+
 
         <div className="bg-secondary/40 rounded-xl p-4 text-xs space-y-2">
           <div className="font-semibold uppercase tracking-wider text-muted-foreground">Catatan</div>
