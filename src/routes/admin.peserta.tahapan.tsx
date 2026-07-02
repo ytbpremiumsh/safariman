@@ -104,36 +104,23 @@ function Page() {
   if (!ready || loading) return <AdminLoading />;
 
   return (
-    <AdminShell title="Tahapan Seleksi — TKA & Interview">
+    <AdminShell title="Tahapan Seleksi — Essay, TKA & Interview">
       <p className="text-sm text-muted-foreground -mt-3">
-        Tandai peserta yang lolos / tidak lolos pada tahap <strong>TKA</strong> dan <strong>Interview</strong>.
+        Tandai peserta yang lolos / tidak lolos pada tahap <strong>Essay & Studi Kasus</strong>, <strong>TKA</strong>, dan <strong>Interview</strong> secara terpisah.
         Hasil tampil otomatis di halaman publik <em>Cek Tahapan</em>.
       </p>
 
       {/* Tabs */}
-      <div className="bg-card border border-border rounded-2xl p-1 inline-flex">
-        <button
-          onClick={() => setTab("tka")}
-          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "tka" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
-          }`}
-        >
-          <Brain className="size-4" /> Tahap TKA
-        </button>
-        <button
-          onClick={() => setTab("interview")}
-          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "interview" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
-          }`}
-        >
-          <MessagesSquare className="size-4" /> Tahap Interview
-        </button>
+      <div className="bg-card border border-border rounded-2xl p-1 inline-flex flex-wrap gap-1">
+        <TabBtn active={tab === "essay"} onClick={() => setTab("essay")} icon={BookOpenCheck} label="Tahap Essay & Studi Kasus" />
+        <TabBtn active={tab === "tka"} onClick={() => setTab("tka")} icon={Brain} label="Tahap TKA" />
+        <TabBtn active={tab === "interview"} onClick={() => setTab("interview")} icon={MessagesSquare} label="Tahap Interview" />
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: tab === "tka" ? "Total Peserta TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
+          { label: tab === "essay" ? "Total Peserta Essay" : tab === "tka" ? "Eligible TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
           { label: "Menunggu", value: stats.pending, color: "text-amber-600" },
           { label: "Lolos", value: stats.passed, color: "text-emerald" },
           { label: "Tidak Lolos", value: stats.failed, color: "text-red-600" },
@@ -160,15 +147,18 @@ function Page() {
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
                 <Th>Kode</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th>
-                <Th>TKA</Th><Th>Interview</Th><Th>Aksi {tab === "tka" ? "TKA" : "Interview"}</Th>
+                <Th>Essay</Th><Th>TKA</Th><Th>Interview</Th>
+                <Th>Aksi {tab === "essay" ? "Essay" : tab === "tka" ? "TKA" : "Interview"}</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">
-                  {tab === "interview"
-                    ? "Belum ada peserta yang lolos TKA."
-                    : "Belum ada peserta yang lolos essay & siap ikut TKA."}
+                <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">
+                  {tab === "essay"
+                    ? "Belum ada peserta yang mengirim essay & studi kasus."
+                    : tab === "tka"
+                    ? "Belum ada peserta yang lolos Essay & siap ikut TKA."
+                    : "Belum ada peserta yang lolos TKA."}
                 </td></tr>
               ) : filtered.map((r) => (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
@@ -183,11 +173,12 @@ function Page() {
                     <div className="text-xs">{r.email}</div>
                     <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
                   </td>
+                  <td className="px-3 py-3"><StagePill v={r.essay_status} /></td>
                   <td className="px-3 py-3"><StagePill v={r.tka_status} /></td>
                   <td className="px-3 py-3"><StagePill v={r.interview_status} /></td>
                   <td className="px-3 py-3">
                     <StageActions
-                      current={tab === "tka" ? r.tka_status : r.interview_status}
+                      current={tab === "essay" ? r.essay_status : tab === "tka" ? r.tka_status : r.interview_status}
                       onSet={(v) => setStage(r.id, tab, v)}
                     />
                   </td>
