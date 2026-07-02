@@ -223,7 +223,8 @@ function buildTahapan(p: Record<string, any>, published: { berkas: boolean; essa
     kontribusiNote = "Selesaikan pembayaran kontribusi.";
   }
 
-  // 3. Essay & Studi Kasus
+  // 3. Essay & Studi Kasus (independen)
+  const essayStatus = String(p.essay_status ?? "pending");
   let essay: StageState;
   let essayNote: string | undefined;
   if (isSelfFunded) {
@@ -231,15 +232,15 @@ function buildTahapan(p: Record<string, any>, published: { berkas: boolean; essa
   } else if (kontribusi !== "passed") {
     essay = "locked";
   } else if (!hasEssay) {
-    essay = rejected ? "failed" : "pending";
+    essay = "pending";
     essayNote = "Kirim essay & studi kasus untuk lanjut.";
   } else if (!published.essay) {
     essay = "pending";
     essayNote = "Essay & Studi Kasus sudah terkirim. Menunggu pengumuman hasil.";
-  } else if (rejected) {
-    essay = "failed";
-  } else if (p.status === "interview" || p.status === "accepted" || tkaStatus !== "pending") {
+  } else if (essayStatus === "passed") {
     essay = "passed";
+  } else if (essayStatus === "failed") {
+    essay = "failed";
   } else {
     essay = "pending";
     essayNote = "Essay sedang dinilai tim penilai.";
