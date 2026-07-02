@@ -341,7 +341,7 @@ Deno.serve(async (req) => {
       let q = admin
         .from("participants")
         .select(
-          "id, registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, tka_status, tka_updated_at, interview_status, interview_updated_at, created_at, updated_at",
+          "id, registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, essay_status, essay_updated_at, tka_status, tka_updated_at, interview_status, interview_updated_at, created_at, updated_at",
         )
         // Filter DB-level: hanya yang salah satu status pembayaran = 'paid'
         .or("donation_status.eq.paid,payment_status.eq.paid")
@@ -387,7 +387,7 @@ Deno.serve(async (req) => {
       const { data: p } = await admin
         .from("participants")
         .select(
-          "registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, tka_status, interview_status",
+          "registration_code, full_name, category, status, payment_status, paid_at, donation_status, donation_paid_at, twibbon_confirmed_at, essay_worthy, essay_dream, essay_contribution, essay_status, tka_status, interview_status",
         )
         .ilike("registration_code", code)
         .maybeSingle();
