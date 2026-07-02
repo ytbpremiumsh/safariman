@@ -52,7 +52,7 @@ function Page() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [q, setQ] = useState("");
-  const [tab, setTab] = useState<"tka" | "interview">("tka");
+  const [tab, setTab] = useState<StageKey>("essay");
 
   const reload = async () => {
     setLoading(true);
@@ -64,11 +64,16 @@ function Page() {
 
   useEffect(() => { if (ready) void reload(); }, [ready]);
 
+  const eligible = (r: Row): boolean => {
+    if (tab === "essay") return true;
+    if (tab === "tka") return r.essay_status === "passed";
+    return r.tka_status === "passed"; // interview
+  };
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
-      // For interview tab, only show those who already passed TKA
-      if (tab === "interview" && r.tka_status !== "passed") return false;
+      if (!eligible(r)) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
@@ -76,22 +81,21 @@ function Page() {
   }, [rows, q, tab]);
 
   const stats = useMemo(() => {
-    const tkaPool = rows;
-    const intPool = rows.filter((r) => r.tka_status === "passed");
-    const pool = tab === "tka" ? tkaPool : intPool;
-    const field = tab === "tka" ? "tka_status" : "interview_status";
+    const pool = rows.filter(eligible);
+    const field = (tab + "_status") as "essay_status" | "tka_status" | "interview_status";
     return {
       total: pool.length,
-      pending: pool.filter((r) => r[field as keyof Row] === "pending").length,
-      passed: pool.filter((r) => r[field as keyof Row] === "passed").length,
-      failed: pool.filter((r) => r[field as keyof Row] === "failed").length,
+      pending: pool.filter((r) => r[field] === "pending").length,
+      passed: pool.filter((r) => r[field] === "passed").length,
+      failed: pool.filter((r) => r[field] === "failed").length,
     };
   }, [rows, tab]);
 
-  const setStage = async (id: string, stage: "tka" | "interview", value: StageStatus) => {
+  const setStage = async (id: string, stage: StageKey, value: StageStatus) => {
     const { error } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: stage, p_value: value });
     if (error) { toast.error(error.message); return; }
-    toast.success(`${stage === "tka" ? "TKA" : "Interview"}: ${STAGE_LABEL[value]}`);
+    const label = stage === "essay" ? "Essay" : stage === "tka" ? "TKA" : "Interview";
+    toast.success(`${label}: ${STAGE_LABEL[value]}`);
     void reload();
   };
 
