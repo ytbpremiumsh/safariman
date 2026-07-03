@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/peserta/tahapan")({
-  head: () => ({ meta: [{ title: "Tahapan Seleksi (Essay, TKA & Interview) — Safar Iman Admin" }] }),
+  head: () => ({ meta: [{ title: "Tahapan Seleksi (TKA & Interview) — Safar Iman Admin" }] }),
   component: Page,
 });
 
 type Category = "fully_funded" | "partial_funded" | "self_funded" | "gelombang_1" | "gelombang_2";
 type StageStatus = "pending" | "passed" | "failed";
-type StageKey = "essay" | "tka" | "interview";
+type StageKey = "tka" | "interview";
 
 type Row = {
   id: string;
