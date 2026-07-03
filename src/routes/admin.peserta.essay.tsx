@@ -126,6 +126,11 @@ function PesertaEssayPage() {
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
     if (error) { toast.error(error.message); return; }
+    // Sinkronkan juga essay_status agar Tahapan (TKA / Interview) & halaman Cek Tahapan konsisten
+    const stageValue: "passed" | "failed" | "pending" =
+      s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
+    const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
+    if (e2) { toast.error(e2.message); return; }
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
     if (detail?.id === id) setDetail({ ...detail, status: s });
     toast.success(`Status: ${STATUS_LABEL[s]}`);
