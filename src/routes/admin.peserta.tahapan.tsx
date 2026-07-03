@@ -52,7 +52,7 @@ function Page() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [q, setQ] = useState("");
-  const [tab, setTab] = useState<StageKey>("essay");
+  const [tab, setTab] = useState<StageKey>("tka");
 
   const reload = async () => {
     setLoading(true);
@@ -65,7 +65,6 @@ function Page() {
   useEffect(() => { if (ready) void reload(); }, [ready]);
 
   const eligible = (r: Row): boolean => {
-    if (tab === "essay") return true;
     if (tab === "tka") return r.essay_status === "passed";
     return r.tka_status === "passed"; // interview
   };
@@ -82,7 +81,7 @@ function Page() {
 
   const stats = useMemo(() => {
     const pool = rows.filter(eligible);
-    const field = (tab + "_status") as "essay_status" | "tka_status" | "interview_status";
+    const field = (tab + "_status") as "tka_status" | "interview_status";
     return {
       total: pool.length,
       pending: pool.filter((r) => r[field] === "pending").length,
@@ -94,7 +93,7 @@ function Page() {
   const setStage = async (id: string, stage: StageKey, value: StageStatus) => {
     const { error } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: stage, p_value: value });
     if (error) { toast.error(error.message); return; }
-    const label = stage === "essay" ? "Essay" : stage === "tka" ? "TKA" : "Interview";
+    const label = stage === "tka" ? "TKA" : "Interview";
     toast.success(`${label}: ${STAGE_LABEL[value]}`);
     void reload();
   };
@@ -104,15 +103,14 @@ function Page() {
   if (!ready || loading) return <AdminLoading />;
 
   return (
-    <AdminShell title="Tahapan Seleksi — Essay, TKA & Interview">
+    <AdminShell title="Tahapan Seleksi — TKA & Interview">
       <p className="text-sm text-muted-foreground -mt-3">
-        Tandai peserta yang lolos / tidak lolos pada tahap <strong>Essay & Studi Kasus</strong>, <strong>TKA</strong>, dan <strong>Interview</strong> secara terpisah.
-        Hasil tampil otomatis di halaman publik <em>Cek Tahapan</em>.
+        Tandai peserta yang lolos / tidak lolos pada tahap <strong>TKA</strong> dan <strong>Interview</strong> secara terpisah.
+        Untuk keputusan tahap <strong>Essay & Studi Kasus</strong>, gunakan halaman <em>Essay & Studi Kasus</em>. Hasil tampil otomatis di halaman publik <em>Cek Tahapan</em>.
       </p>
 
       {/* Tabs */}
       <div className="bg-card border border-border rounded-2xl p-1 inline-flex flex-wrap gap-1">
-        <TabBtn active={tab === "essay"} onClick={() => setTab("essay")} icon={BookOpenCheck} label="Tahap Essay & Studi Kasus" />
         <TabBtn active={tab === "tka"} onClick={() => setTab("tka")} icon={Brain} label="Tahap TKA" />
         <TabBtn active={tab === "interview"} onClick={() => setTab("interview")} icon={MessagesSquare} label="Tahap Interview" />
       </div>
@@ -120,7 +118,7 @@ function Page() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: tab === "essay" ? "Total Peserta Essay" : tab === "tka" ? "Eligible TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
+          { label: tab === "tka" ? "Eligible TKA" : "Eligible Interview", value: stats.total, color: "text-foreground" },
           { label: "Menunggu", value: stats.pending, color: "text-amber-600" },
           { label: "Lolos", value: stats.passed, color: "text-emerald" },
           { label: "Tidak Lolos", value: stats.failed, color: "text-red-600" },
@@ -148,15 +146,13 @@ function Page() {
               <tr>
                 <Th>Kode</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th>
                 <Th>Essay</Th><Th>TKA</Th><Th>Interview</Th>
-                <Th>Aksi {tab === "essay" ? "Essay" : tab === "tka" ? "TKA" : "Interview"}</Th>
+                <Th>Aksi {tab === "tka" ? "TKA" : "Interview"}</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">
-                  {tab === "essay"
-                    ? "Belum ada peserta yang mengirim essay & studi kasus."
-                    : tab === "tka"
+                  {tab === "tka"
                     ? "Belum ada peserta yang lolos Essay & siap ikut TKA."
                     : "Belum ada peserta yang lolos TKA."}
                 </td></tr>
@@ -178,7 +174,7 @@ function Page() {
                   <td className="px-3 py-3"><StagePill v={r.interview_status} /></td>
                   <td className="px-3 py-3">
                     <StageActions
-                      current={tab === "essay" ? r.essay_status : tab === "tka" ? r.tka_status : r.interview_status}
+                      current={tab === "tka" ? r.tka_status : r.interview_status}
                       onSet={(v) => setStage(r.id, tab, v)}
                     />
                   </td>
