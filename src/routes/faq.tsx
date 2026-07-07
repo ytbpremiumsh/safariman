@@ -4,14 +4,16 @@ import { ArrowLeft, HelpCircle, Loader2, Search } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { fetchFaqConfig, type FaqItem } from "@/lib/faq";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ — Pertanyaan Seputar Safar Iman" },
-      { name: "description", content: "Kumpulan pertanyaan dan jawaban seputar pendaftaran, berkas, essay, timeline, benefit, dan kontribusi program Safar Iman." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      path: "/faq",
+      title: "FAQ Safar Iman — Pertanyaan Umrah Fully Funded",
+      description:
+        "Jawaban lengkap seputar pendaftaran, berkas, essay, timeline, benefit, dan kontribusi Program Umrah Safar Iman.",
+    }),
   component: FaqPage,
 });
 

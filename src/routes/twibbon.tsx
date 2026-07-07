@@ -8,6 +8,7 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import defaultFrame from "@/assets/twibbon.png";
 import defaultPoster from "@/assets/persyaratan-poster.jpg";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import { seoHead } from "@/lib/seo";
 
 const CP_WHATSAPP = "6285927443433";
 const CP_NAME = "CP Safar Iman";
@@ -28,12 +29,13 @@ const DEFAULT_TIKTOK_ACCOUNTS: SocialAccount[] = [
 const EXPORT_MAX = 1080;
 
 export const Route = createFileRoute("/twibbon")({
-  head: () => ({
-    meta: [
-      { title: "Bagikan Twibbon dan Poster — Safar Iman" },
-      { name: "description", content: "Bagikan Twibbon ke Instagram & Poster ke WhatsApp untuk mendukung Safar Iman." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      path: "/twibbon",
+      title: "Twibbon Safar Iman — Dukung Umrah Pemuda Indonesia",
+      description:
+        "Unduh dan pasang twibbon Safar Iman di Instagram untuk mendukung gerakan Umrah Fully Funded generasi muda Indonesia.",
+    }),
   component: TwibbonPage,
 });
 
