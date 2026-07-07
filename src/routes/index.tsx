@@ -181,6 +181,9 @@ function Hero() {
         alt="Jamaah Umrah Safar Iman di Madinah"
         width={1920}
         height={1080}
+        fetchPriority="high"
+        loading="eager"
+        decoding="async"
         className="absolute inset-0 size-full object-cover object-center"
       />
       <div className="absolute inset-0 bg-gradient-hero" />
