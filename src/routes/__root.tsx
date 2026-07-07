@@ -5,7 +5,6 @@ import {
   useRouter,
   Link,
 } from "@tanstack/react-router";
-import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -61,11 +60,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <Outlet />
-        <Toaster richColors position="top-center" />
-      </QueryClientProvider>
-    </HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+      <Toaster richColors position="top-center" />
+    </QueryClientProvider>
   );
 }
