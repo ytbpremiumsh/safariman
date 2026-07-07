@@ -59,11 +59,28 @@ export function parseTimeline(raw: unknown): TimelineStep[] {
   }
 }
 
+// Module-level cache to prevent every landing render/nav from re-hitting
+// the RPC. Timeline changes infrequently (admin edits) so a 5 min stale
+// window is safe.
+let _timelineCache: { at: number; data: TimelineStep[] } | null = null;
+const TIMELINE_TTL_MS = 5 * 60_000;
+
 export async function fetchTimeline(): Promise<TimelineStep[]> {
+  const now = Date.now();
+  if (_timelineCache && now - _timelineCache.at < TIMELINE_TTL_MS) {
+    return _timelineCache.data;
+  }
   try {
     const { data } = await supabase.rpc("get_timeline_config");
-    return parseTimeline(data);
+    const parsed = parseTimeline(data);
+    _timelineCache = { at: now, data: parsed };
+    return parsed;
   } catch {
     return DEFAULT_TIMELINE;
   }
 }
+
+export function invalidateTimelineCache() {
+  _timelineCache = null;
+}
+
