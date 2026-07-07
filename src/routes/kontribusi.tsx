@@ -23,6 +23,7 @@ export const Route = createFileRoute("/kontribusi")({
   validateSearch: z.object({ code: z.string().optional() }),
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Kontribusi Kebaikan — Safar Iman" },
       { name: "description", content: "Tunaikan kontribusi peserta Safar Iman untuk mendukung kegiatan sosial, wakaf Al-Qur'an, dan keberlangsungan program." },
     ],

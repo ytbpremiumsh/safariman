@@ -24,6 +24,7 @@ const textsSchema = z.object({
 export const Route = createFileRoute("/berkas")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Kirim Berkas — Safar Iman" },
       { name: "description", content: "Kirim berkas pendukung program Safar Iman dengan kode pendaftaran." },
     ],

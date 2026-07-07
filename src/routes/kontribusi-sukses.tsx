@@ -14,7 +14,8 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 export const Route = createFileRoute("/kontribusi-sukses")({
   validateSearch: z.object({ code: z.string().optional() }),
   head: () => ({
-    meta: [{ title: "Status Kontribusi — Safar Iman" }],
+    meta: [
+      { name: "robots", content: "noindex, follow" },{ title: "Status Kontribusi — Safar Iman" }],
   }),
   component: KontribusiSukses,
 });

@@ -21,7 +21,8 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 export const Route = createFileRoute("/pendaftaran-sukses")({
   validateSearch: z.object({ code: z.string().optional() }),
   head: () => ({
-    meta: [{ title: "Status Pendaftaran — Safar Iman" }],
+    meta: [
+      { name: "robots", content: "noindex, follow" },{ title: "Status Pendaftaran — Safar Iman" }],
   }),
   component: PendaftaranSukses,
 });
