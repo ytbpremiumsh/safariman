@@ -7,7 +7,7 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoPrestasiKita from "@/assets/logo-prestasi-kita.png";
-import legalitasBadges from "@/assets/legalitas-badges-hd.png";
+import legalitasBadges from "@/assets/legalitas-badges-hd.jpg";
 
 export const Route = createFileRoute("/tentang")({
   head: () => ({
