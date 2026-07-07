@@ -224,7 +224,7 @@ function buildStages(row: LookupRow): Stage[] {
     interviewNote = "Tidak ada tahap interview untuk kategori ini";
   } else if (tka !== "passed") {
     interview = "locked";
-  } else if (row.interview_status === "passed" || row.status === "accepted") {
+  } else if (row.interview_status === "passed") {
     interview = "passed";
   } else if (row.interview_status === "failed") {
     interview = "failed";
