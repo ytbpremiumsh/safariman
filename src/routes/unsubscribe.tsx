@@ -4,7 +4,8 @@ import { CheckCircle2, Loader2, MailX, XCircle } from "lucide-react";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/unsubscribe")({
-  head: () => ({ meta: [{ title: "Berhenti Berlangganan Email — Safar Iman" }] }),
+  head: () => ({ meta: [
+      { name: "robots", content: "noindex, follow" },{ title: "Berhenti Berlangganan Email — Safar Iman" }] }),
   component: UnsubscribePage,
 });
 

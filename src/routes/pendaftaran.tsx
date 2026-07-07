@@ -16,6 +16,7 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 export const Route = createFileRoute("/pendaftaran")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Pilih Jalur Pendaftaran — Safar Iman" },
       { name: "description", content: "Pilih jalur Reguler atau Gelombang untuk pendaftaran Program Safar Iman." },
     ],

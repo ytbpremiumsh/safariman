@@ -5,7 +5,8 @@ import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import heroImg from "@/assets/hero-kaaba.jpg";
 
 export const Route = createFileRoute("/sukses")({
-  head: () => ({ meta: [{ title: "Pendaftaran Berhasil — Safar Iman" }] }),
+  head: () => ({ meta: [
+      { name: "robots", content: "noindex, follow" },{ title: "Pendaftaran Berhasil — Safar Iman" }] }),
   component: SuccessPage,
 });
 

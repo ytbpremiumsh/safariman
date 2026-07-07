@@ -8,16 +8,16 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 import logoHasanah from "@/assets/logo-hasanah.png";
 import logoPrestasiKita from "@/assets/logo-prestasi-kita.png";
 import legalitasBadges from "@/assets/legalitas-badges-hd.jpg";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/tentang")({
-  head: () => ({
-    meta: [
-      { title: "Tentang Safar Iman — Hasanah × Prestasi Kita" },
-      { name: "description", content: "Mengenal lebih dekat program Safar Iman: kolaborasi Hasanah Tour & Travel dan Prestasi Kita untuk pemuda Indonesia berprestasi." },
-      { property: "og:title", content: "Tentang Safar Iman — Hasanah × Prestasi Kita" },
-      { property: "og:description", content: "Kolaborasi tepercaya Hasanah Tour & Travel dan Prestasi Kita menghadirkan program Umrah gratis untuk generasi muda Indonesia." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      path: "/tentang",
+      title: "Tentang Safar Iman — Hasanah × Prestasi Kita",
+      description:
+        "Kolaborasi Hasanah Tour & Travel dan Prestasi Kita menghadirkan Program Umrah Fully Funded untuk pemuda Indonesia berprestasi.",
+    }),
   component: TentangPage,
 });
 

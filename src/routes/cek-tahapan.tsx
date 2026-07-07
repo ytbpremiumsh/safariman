@@ -11,6 +11,7 @@ import { ApresiasiPeserta } from "@/components/ApresiasiPeserta";
 export const Route = createFileRoute("/cek-tahapan")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Cek Tahapan Seleksi — Safar Iman" },
       { name: "description", content: "Lacak tahapan seleksi Safar Iman kamu — Berkas, Essay & Studi Kasus, TKA, dan Interview — dengan kode pendaftaran." },
     ],

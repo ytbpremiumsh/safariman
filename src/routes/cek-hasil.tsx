@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/cek-hasil")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Cek Hasil Seleksi Essay — Safar Iman" },
       { name: "description", content: "Cek hasil seleksi essay menuju tahap TKA ( Tes Kesiapan Awal) dengan kode pendaftaran." },
     ],

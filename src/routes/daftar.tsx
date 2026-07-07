@@ -11,14 +11,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { IslamicPattern } from "@/components/IslamicPattern";
 import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/daftar")({
-  head: () => ({
-    meta: [
-      { title: "Pendaftaran Reguler — Safar Iman" },
-      { name: "description", content: "Daftarkan diri untuk Program Umrah Gratis Safar Iman (Reguler / Fully Funded)." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      path: "/daftar",
+      title: "Daftar Umrah Fully Funded — Safar Iman",
+      description:
+        "Formulir pendaftaran Program Umrah Fully Funded Safar Iman untuk pemuda Indonesia. Isi data diri, upload dokumen, dan ikuti tahapan seleksi.",
+    }),
   component: () => <RegisterPage kind="fully_funded" />,
 });
 

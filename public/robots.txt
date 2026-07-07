@@ -1,5 +1,16 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /admin/
+Disallow: /pendaftaran
+Disallow: /pendaftaran-sukses
+Disallow: /sukses
+Disallow: /kontribusi-sukses
+Disallow: /berkas
+Disallow: /essay
+Disallow: /kontribusi
+Disallow: /cek-hasil
+Disallow: /cek-tahapan
+Disallow: /unsubscribe
 
-Sitemap: https://safariman.lovable.app/sitemap.xml
+Sitemap: https://safariman.my.id/sitemap.xml

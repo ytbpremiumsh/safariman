@@ -32,6 +32,7 @@ export const Route = createFileRoute("/essay")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, follow" },
       { title: "Kirim Essay dan Study Kasus — Safar Iman" },
       { name: "description", content: "Kirim essay dan study kasus program Safar Iman setelah menunaikan kontribusi." },
     ],
