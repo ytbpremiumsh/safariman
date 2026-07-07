@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { seoHead } from "@/lib/seo";
 import {
   Sparkles, Globe2, Award, BookOpen, Users, Building2, Heart,
   Plane, Hotel, Wallet, Star, CheckCircle2, ArrowRight, MapPin,
@@ -47,12 +48,30 @@ const galTurkiyeHagia = { url: galTurkiyeHagiaUrl };
 const galMasjidQuba = { url: galMasjidQubaUrl };
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Safar Iman — Umrah Gratis Fully Funded untuk Anak Muda Indonesia" },
-      { name: "description", content: "Program Umrah Gratis untuk generasi muda Indonesia: Umrah, Ibadah, City Tour, Wakaf & Islamic Journey Experience." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      path: "/",
+      title: "Safar Iman — Umrah Fully Funded untuk Anak Muda Indonesia",
+      description:
+        "Program Umrah Fully Funded untuk pemuda Indonesia berprestasi. Leadership, Ibadah, City Tour, Wakaf, dan Islamic Journey Experience bersama Safar Iman.",
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Safar Iman",
+          url: "https://safariman.my.id",
+          logo: "https://safariman.my.id/favicon.ico",
+          sameAs: ["https://instagram.com/safariman.id"],
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Safar Iman",
+          url: "https://safariman.my.id",
+          inLanguage: "id-ID",
+        },
+      ],
+    }),
   component: Landing,
 });
 
