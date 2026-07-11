@@ -116,7 +116,7 @@ function BerkasPage() {
         .catch(() => {});
 
       toast.success("Berkas terkirim. Barakallah!");
-      navigate({ to: "/sukses" });
+      navigate({ to: "/sukses", search: { code: code.trim().toUpperCase() } });
     } catch (e) {
       console.error(e);
       toast.error("Gagal mengirim. Coba lagi.");

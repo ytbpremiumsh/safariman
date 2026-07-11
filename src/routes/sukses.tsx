@@ -1,18 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
+import { z } from "zod";
+import { CheckCircle2, ArrowRight, Sparkles, HeartHandshake, FileText, Info } from "lucide-react";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import heroImg from "@/assets/hero-kaaba.jpg";
 
+const searchSchema = z.object({ code: z.string().optional() });
+
 export const Route = createFileRoute("/sukses")({
-  head: () => ({ meta: [
-      { name: "robots", content: "noindex, follow" },{ title: "Pendaftaran Berhasil — Safar Iman" }] }),
+  validateSearch: searchSchema,
+  head: () => ({
+    meta: [
+      { name: "robots", content: "noindex, follow" },
+      { title: "Pendaftaran Berhasil — Safar Iman" },
+    ],
+  }),
   component: SuccessPage,
 });
 
 function SuccessPage() {
+  const { code } = Route.useSearch();
+  const essaySearch = code ? { code } : undefined;
+
   return (
-    <div className="relative min-h-screen overflow-hidden grid place-items-center px-4">
+    <div className="relative min-h-screen overflow-hidden grid place-items-center px-4 py-16">
       <img src={heroImg} alt="" className="absolute inset-0 size-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-b from-emerald-deep/90 via-emerald-deep/95 to-emerald-deep" />
       <IslamicPattern className="absolute inset-0 size-full text-accent/10" />
@@ -31,31 +42,76 @@ function SuccessPage() {
 
         <h1 className="font-display text-4xl sm:text-6xl font-semibold text-white leading-tight">
           Barakallahu fiik!<br />
-          <span className="text-gradient-gold">Pengiriman berkas terkirim</span>
+          <span className="text-gradient-gold">Berkas kamu terkirim</span>
         </h1>
 
         <p className="mt-6 text-lg text-white/85 leading-relaxed">
-          Terima kasih telah mengirim berkas program <strong>Safar Iman</strong>.
-          Pantau progres seleksi kamu kapan saja melalui halaman Cek Tahapan.
+          Alhamdulillah, berkas program <strong>Safar Iman</strong> berhasil diterima.
+          Tahap berikutnya adalah mengirim <strong>Essay & Studi Kasus</strong>.
         </p>
 
-        <div className="mt-10 flex flex-wrap gap-3 justify-center">
+        {/* Alur berikutnya */}
+        <div className="mt-8 glass rounded-2xl p-5 sm:p-6 text-left border border-accent/30">
+          <div className="flex items-center gap-2 text-accent font-semibold mb-3">
+            <Info className="size-4" /> Alur tahap berikutnya
+          </div>
+          <ol className="space-y-3 text-sm text-white/90">
+            <li className="flex gap-3">
+              <span className="shrink-0 size-6 rounded-full bg-accent/20 text-accent grid place-items-center text-xs font-bold">1</span>
+              <span><strong>Tunaikan kontribusi</strong> terlebih dahulu sebagai syarat mengakses form Essay & Studi Kasus.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="shrink-0 size-6 rounded-full bg-accent/20 text-accent grid place-items-center text-xs font-bold">2</span>
+              <span>Setelah kontribusi terverifikasi, buka halaman <strong>Essay & Studi Kasus</strong> dan lengkapi jawabannya.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="shrink-0 size-6 rounded-full bg-accent/20 text-accent grid place-items-center text-xs font-bold">3</span>
+              <span>Pantau progres seleksi di halaman <strong>Cek Tahapan</strong>.</span>
+            </li>
+          </ol>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3 justify-center">
           <Link
-            to="/cek-tahapan"
+            to="/essay"
+            search={essaySearch as any}
             className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 font-bold shadow-gold hover-lift"
           >
-            Cek Tahapan <ArrowRight className="size-5" />
+            <FileText className="size-5" /> Lanjut Essay & Studi Kasus <ArrowRight className="size-5" />
+          </Link>
+          <Link
+            to="/kontribusi"
+            search={essaySearch as any}
+            className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 font-medium hover:bg-white/20"
+          >
+            <HeartHandshake className="size-5 text-accent" /> Tunaikan Kontribusi
+          </Link>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3 justify-center">
+          <Link
+            to="/cek-tahapan"
+            search={essaySearch as any}
+            className="inline-flex items-center gap-2 rounded-full glass text-white/90 px-5 py-3 text-sm hover:bg-white/20"
+          >
+            Cek Tahapan <ArrowRight className="size-4" />
           </Link>
           <WhatsAppChannelCTA variant="glass" />
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 font-medium hover:bg-white/20"
+            className="inline-flex items-center gap-2 rounded-full glass text-white/90 px-5 py-3 text-sm hover:bg-white/20"
           >
-            Kembali ke Beranda <ArrowRight className="size-4" />
+            Beranda
           </Link>
         </div>
 
-        <div className="mt-12 flex items-center justify-center gap-2 text-white/60 text-sm">
+        {code && (
+          <p className="mt-6 text-xs text-white/70">
+            Kode pendaftaran kamu: <span className="font-mono font-semibold text-accent">{code}</span>
+          </p>
+        )}
+
+        <div className="mt-8 flex items-center justify-center gap-2 text-white/60 text-sm">
           <Sparkles className="size-4 text-accent" />
           Hasanah × Prestasi Kita
         </div>
