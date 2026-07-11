@@ -460,6 +460,34 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      list_essay_pending_participants: {
+        Args: never
+        Returns: {
+          birth_date: string
+          category: Database["public"]["Enums"]["program_category"]
+          city: string
+          created_at: string
+          cv_url: string
+          donation_paid_at: string
+          donation_status: string
+          education: string
+          email: string
+          full_name: string
+          gender: string
+          has_case_study_1: boolean
+          has_case_study_2: boolean
+          has_essay_contribution: boolean
+          has_essay_dream: boolean
+          has_essay_worthy: boolean
+          id: string
+          occupation: string
+          photo_url: string
+          registration_code: string
+          status: Database["public"]["Enums"]["participant_status"]
+          updated_at: string
+          whatsapp: string
+        }[]
+      }
       list_tahapan_participants: {
         Args: never
         Returns: {

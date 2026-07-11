@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
   ShieldCheck, ArrowRight, HeartHandshake, Sparkles, Loader2, Megaphone, EyeOff, Bot,
+  Inbox, MailQuestion, MessageCircle,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -51,6 +52,23 @@ type Row = {
   created_at: string;
 };
 
+type PendingRow = {
+  id: string;
+  registration_code: string;
+  full_name: string;
+  email: string;
+  whatsapp: string;
+  city: string;
+  education: string;
+  category: Category | null;
+  has_essay_worthy: boolean;
+  has_essay_dream: boolean;
+  has_essay_contribution: boolean;
+  has_case_study_1: boolean;
+  has_case_study_2: boolean;
+  updated_at: string;
+};
+
 const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
@@ -80,6 +98,8 @@ function PesertaEssayPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
+  const [pendingRows, setPendingRows] = useState<PendingRow[]>([]);
+  const [tab, setTab] = useState<"sent" | "pending">("sent");
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
@@ -89,12 +109,15 @@ function PesertaEssayPage() {
 
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, settingRes] = await Promise.all([
+    const [{ data, error }, pendingRes, settingRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
+      (supabase.rpc as any)("list_essay_pending_participants"),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
     ]);
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
+    if (pendingRes.error) toast.error(pendingRes.error.message);
+    else setPendingRows((pendingRes.data ?? []) as PendingRow[]);
     setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
@@ -231,121 +254,154 @@ function PesertaEssayPage() {
         </div>
       </div>
 
-      {/* Publish hasil — TAHAP ESSAY & STUDI KASUS (terpisah dari toggle Berkas) */}
-      <EssayPublishBox
-        published={published}
-        pubBusy={pubBusy}
-        allDecided={allDecided}
-        pendingCount={stats.pending}
-        onToggle={togglePublish}
-      />
-
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: "Total Kirim Essay", value: stats.total, color: "text-foreground" },
-          { label: "Belum Diputuskan", value: stats.pending, color: "text-amber-600" },
-          { label: "LOLOS (Lanjut)", value: stats.lolos, color: "text-emerald" },
-          { label: "Tidak Lolos", value: stats.tidak, color: "text-red-600" },
-        ].map((s) => (
-          <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
-            <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Filters */}
-      <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as Status | "all")}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+      {/* Tabs: Sudah Kirim vs Belum Kirim */}
+      <div className="bg-card border border-border rounded-2xl p-1 inline-flex flex-wrap gap-1">
+        <button
+          onClick={() => setTab("sent")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+            tab === "sent" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
+          }`}
         >
-          <option value="all">Semua Keputusan</option>
-          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-          ))}
-        </select>
-        <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
-          <Download className="size-4" /> Export
+          <Inbox className="size-4" /> Sudah Kirim
+          <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-background/60 border border-border">
+            {rows.length}
+          </span>
+        </button>
+        <button
+          onClick={() => setTab("pending")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+            tab === "pending" ? "bg-amber-500 text-white shadow-md" : "text-muted-foreground hover:bg-secondary"
+          }`}
+        >
+          <MailQuestion className="size-4" /> Belum Kirim
+          <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/25 border border-white/30">
+            {pendingRows.length}
+          </span>
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
-              <tr>
-                <Th>Token CBT</Th><Th>Nama</Th><Th>Kategori</Th>
-                <Th>Kontak</Th><Th>Kota</Th><Th>Keputusan</Th><Th>Aksi Cepat</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Belum ada peserta yang kirim essay lengkap.</td></tr>
-              ) : filtered.map((r) => (
-                <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
-                  <td className="px-3 py-3">
-                    <button onClick={() => copy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
-                      {r.registration_code} <Copy className="size-3" />
-                    </button>
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="font-medium">{r.full_name}</div>
-                    <div className="text-xs text-muted-foreground">{r.education}</div>
-                  </td>
-                  <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
-                  <td className="px-3 py-3">
-                    <div className="text-xs">{r.email}</div>
-                    <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
-                  </td>
-                  <td className="px-3 py-3 text-xs">{r.city}</td>
-                  <td className="px-3 py-3">
-                    <select
-                      value={r.status}
-                      onChange={(e) => updateStatus(r.id, e.target.value as Status)}
-                      className={"h-8 rounded-md border px-2 text-xs font-medium " + STATUS_STYLE[r.status]}
-                    >
-                      {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-                        <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-border hover:bg-secondary" title="Detail">
-                        <FileText className="size-3.5" />
-                      </button>
-                      <button
-                        onClick={() => updateStatus(r.id, "interview")}
-                        disabled={r.status === "interview"}
-                        title="Loloskan"
-                        className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
-                      >
-                        <CheckCircle2 className="size-3.5" />
-                      </button>
-                      <button
-                        onClick={() => updateStatus(r.id, "rejected")}
-                        disabled={r.status === "rejected"}
-                        title="Tidak loloskan"
-                        className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-40 dark:bg-red-950/30"
-                      >
-                        <XCircle className="size-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+      {tab === "sent" && (
+        <>
+          {/* Publish hasil — TAHAP ESSAY & STUDI KASUS (terpisah dari toggle Berkas) */}
+          <EssayPublishBox
+            published={published}
+            pubBusy={pubBusy}
+            allDecided={allDecided}
+            pendingCount={stats.pending}
+            onToggle={togglePublish}
+          />
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Total Kirim Essay", value: stats.total, color: "text-foreground" },
+              { label: "Belum Diputuskan", value: stats.pending, color: "text-amber-600" },
+              { label: "LOLOS (Lanjut)", value: stats.lolos, color: "text-emerald" },
+              { label: "Tidak Lolos", value: stats.tidak, color: "text-red-600" },
+            ].map((s) => (
+              <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Filters */}
+          <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as Status | "all")}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">Semua Keputusan</option>
+              {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </select>
+            <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
+              <Download className="size-4" /> Export
+            </button>
+          </div>
+
+          {/* Table */}
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
+                  <tr>
+                    <Th>Token CBT</Th><Th>Nama</Th><Th>Kategori</Th>
+                    <Th>Kontak</Th><Th>Kota</Th><Th>Keputusan</Th><Th>Aksi Cepat</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Belum ada peserta yang kirim essay lengkap.</td></tr>
+                  ) : filtered.map((r) => (
+                    <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                      <td className="px-3 py-3">
+                        <button onClick={() => copy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
+                          {r.registration_code} <Copy className="size-3" />
+                        </button>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="font-medium">{r.full_name}</div>
+                        <div className="text-xs text-muted-foreground">{r.education}</div>
+                      </td>
+                      <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
+                      <td className="px-3 py-3">
+                        <div className="text-xs">{r.email}</div>
+                        <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
+                      </td>
+                      <td className="px-3 py-3 text-xs">{r.city}</td>
+                      <td className="px-3 py-3">
+                        <select
+                          value={r.status}
+                          onChange={(e) => updateStatus(r.id, e.target.value as Status)}
+                          className={"h-8 rounded-md border px-2 text-xs font-medium " + STATUS_STYLE[r.status]}
+                        >
+                          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+                            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-border hover:bg-secondary" title="Detail">
+                            <FileText className="size-3.5" />
+                          </button>
+                          <button
+                            onClick={() => updateStatus(r.id, "interview")}
+                            disabled={r.status === "interview"}
+                            title="Loloskan"
+                            className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
+                          >
+                            <CheckCircle2 className="size-3.5" />
+                          </button>
+                          <button
+                            onClick={() => updateStatus(r.id, "rejected")}
+                            disabled={r.status === "rejected"}
+                            title="Tidak loloskan"
+                            className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-40 dark:bg-red-950/30"
+                          >
+                            <XCircle className="size-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {tab === "pending" && (
+        <PendingEssaySection rows={pendingRows} q={q} setQ={setQ} onCopy={copy} />
+      )}
 
       {/* Detail dialog */}
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
@@ -650,3 +706,116 @@ function EssayPublishBox({
   );
 }
 
+
+function PendingEssaySection({
+  rows,
+  q,
+  setQ,
+  onCopy,
+}: {
+  rows: PendingRow[];
+  q: string;
+  setQ: (s: string) => void;
+  onCopy: (txt: string, label?: string) => void;
+}) {
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return rows;
+    return rows.filter((r) =>
+      [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
+        .some((v) => v?.toLowerCase().includes(term)),
+    );
+  }, [rows, q]);
+
+  const waLink = (wa: string, nama: string, kode: string) => {
+    const num = wa.replace(/[^\d]/g, "").replace(/^0/, "62");
+    const msg = encodeURIComponent(
+      `Assalamu'alaikum ${nama},\n\nKami dari panitia Safar Iman ingin mengingatkan bahwa kamu belum mengirimkan Essay & Studi Kasus untuk tahap seleksi berikutnya.\n\nKode: ${kode}\n\nMohon segera dilengkapi ya. Jazakumullah khairan.`,
+    );
+    return `https://wa.me/${num}?text=${msg}`;
+  };
+
+  return (
+    <>
+      <div className="bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-800 rounded-2xl p-4 flex items-start gap-3">
+        <MailQuestion className="size-5 text-amber-600 mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <div className="font-semibold text-amber-900 dark:text-amber-200">
+            {rows.length} peserta belum mengirim Essay & Studi Kasus
+          </div>
+          <div className="text-xs text-amber-800/80 dark:text-amber-200/70 mt-0.5">
+            Daftar peserta yang sudah lolos tahap Berkas namun belum melengkapi jawaban Essay & Studi Kasus. Hubungi via WhatsApp untuk mengingatkan.
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <div className="relative">
+          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
+              <tr>
+                <Th>Token</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th><Th>Kota</Th><Th>Kelengkapan</Th><Th>Aksi</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">
+                  🎉 Semua peserta sudah mengirim Essay & Studi Kasus.
+                </td></tr>
+              ) : filtered.map((r) => {
+                const filled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
+                return (
+                  <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                    <td className="px-3 py-3">
+                      <button onClick={() => onCopy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
+                        {r.registration_code} <Copy className="size-3" />
+                      </button>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="font-medium">{r.full_name}</div>
+                      <div className="text-xs text-muted-foreground">{r.education}</div>
+                    </td>
+                    <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
+                    <td className="px-3 py-3">
+                      <div className="text-xs">{r.email}</div>
+                      <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
+                    </td>
+                    <td className="px-3 py-3 text-xs">{r.city}</td>
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                        filled === 0
+                          ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                          : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                      }`}>
+                        {filled}/3 Essay
+                        {(r.has_case_study_1 || r.has_case_study_2) && " · Studi Kasus dimulai"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <a
+                        href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                        title="Ingatkan via WhatsApp"
+                      >
+                        <MessageCircle className="size-3.5" /> Ingatkan
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
