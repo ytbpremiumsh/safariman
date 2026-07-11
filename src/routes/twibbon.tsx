@@ -521,41 +521,64 @@ WhatsApp : ${CP_WHATSAPP}`;
           {/* STEP 4 — Caption */}
           <StepSection n={4} title="Caption — Twibbon Instagram & Poster WhatsApp" icon={<FileText className="size-5" />}>
             <p className="text-sm text-muted-foreground mb-4">
-              Caption digunakan untuk <strong className="text-foreground">Twibbon Instagram</strong> dan <strong className="text-foreground">Kirim Poster ke Social Media WhatsApp</strong>.
+              Salin caption di bawah — <strong className="text-foreground">satu untuk Twibbon Instagram</strong> dan <strong className="text-foreground">satu untuk Poster WhatsApp</strong>.
             </p>
 
-            <div className="flex justify-center">
-              <div className="w-full max-w-xl bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Caption Twibbon Instagram */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="size-4 text-accent" />
-                    <span className="text-sm font-semibold">Caption Siap Pakai</span>
+                    <Instagram className="size-4 text-accent" />
+                    <span className="text-sm font-semibold">Caption Twibbon (Instagram)</span>
                   </div>
                   <button
-                    onClick={() => gateCaption(() => copyCaption())}
+                    onClick={() => gateCaption(() => copyText(twibbonCaption, "Caption Twibbon"))}
                     className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
                   >
                     <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
                 <pre className="max-h-80 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
-{caption}
+{twibbonCaption}
                 </pre>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <a
-                    href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
-                  >
-                    <MessageCircle className="size-4" /> Chat {CP_NAME}
-                  </a>
+              </div>
+
+              {/* Caption Poster WhatsApp */}
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="size-4 text-accent" />
+                    <span className="text-sm font-semibold">Caption Poster (WhatsApp)</span>
+                  </div>
                   <button
-                    onClick={copyMessage}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background hover:bg-secondary px-4 py-2.5 text-sm font-medium"
+                    onClick={() => gateCaption(() => copyText(posterCaption, "Caption Poster"))}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
                   >
-                    <Copy className="size-4" /> Salin Pesan ke CP
+                    <Copy className="size-3.5" /> Salin
                   </button>
                 </div>
+                <pre className="max-h-80 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
+{posterCaption}
+                </pre>
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <div className="w-full max-w-xl grid grid-cols-2 gap-2">
+                <a
+                  href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
+                >
+                  <MessageCircle className="size-4" /> Chat {CP_NAME}
+                </a>
+                <button
+                  onClick={copyMessage}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background hover:bg-secondary px-4 py-2.5 text-sm font-medium"
+                >
+                  <Copy className="size-4" /> Salin Pesan ke CP
+                </button>
               </div>
             </div>
           </StepSection>
