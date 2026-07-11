@@ -55,21 +55,21 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Tentang Safar Iman",
     category: "Umum",
     message:
-      "Hi Sahabat Safar Iman! 🕋\n\nSafar Iman adalah program *Umrah Gratis untuk Anak Muda Berprestasi* yang bertujuan memberangkatkan pemuda-pemudi terbaik Indonesia untuk beribadah ke Tanah Suci sekaligus memperkuat karakter, kepemimpinan, dan kontribusi sosial.\n\nInfo lengkap: https://safariman.my.id",
+      "Hi Sahabat Safar Iman! 🕋\n\nSafar Iman adalah program *Umrah Gratis untuk Anak Muda Berprestasi* yang bertujuan memberangkatkan pemuda-pemudi terbaik Indonesia untuk beribadah ke Tanah Suci sekaligus memperkuat karakter, kepemimpinan, dan kontribusi sosial.\n\nInfo lengkap: https://www.safariman.id",
   },
   {
     keyword: "syarat",
     label: "Persyaratan Umum",
     category: "Umum",
     message:
-      "Hi Sahabat Safar Iman! 👋\n\nSebelum mendaftar, pastikan Kakak memenuhi persyaratan umum berikut:\n- Warga Negara Indonesia (WNI) beragama Islam\n- Usia muda produktif (pelajar, mahasiswa, fresh graduate, atau pemuda aktif)\n- Memiliki prestasi / kontribusi / semangat berdakwah\n- Berkomitmen mengikuti seluruh tahapan seleksi\n- Sehat jasmani & rohani, siap beribadah di Tanah Suci\n\n📌 Info lengkap: https://safariman.my.id",
+      "Hi Sahabat Safar Iman! 👋\n\nSebelum mendaftar, pastikan Kakak memenuhi persyaratan umum berikut:\n- Warga Negara Indonesia (WNI) beragama Islam\n- Usia muda produktif (pelajar, mahasiswa, fresh graduate, atau pemuda aktif)\n- Memiliki prestasi / kontribusi / semangat berdakwah\n- Berkomitmen mengikuti seluruh tahapan seleksi\n- Sehat jasmani & rohani, siap beribadah di Tanah Suci\n\n📌 Info lengkap: https://www.safariman.id",
   },
   {
     keyword: "kategori",
     label: "Kategori Program",
     category: "Umum",
     message:
-      "Program Safar Iman terbuka dalam beberapa kategori:\n\n1️⃣ *Reguler (Fully Funded)* — jalur utama, seleksi penuh.\n2️⃣ *Fast Track Gelombang 1 & 2* — jalur cepat dengan kuota terbatas.\n3️⃣ *Self Funded* — jalur mandiri bagi yang ingin berangkat bersama komunitas Safar Iman.\n\nDetail: https://safariman.my.id",
+      "Program Safar Iman terbuka dalam beberapa kategori:\n\n1️⃣ *Reguler (Fully Funded)* — jalur utama, seleksi penuh.\n2️⃣ *Fast Track Gelombang 1 & 2* — jalur cepat dengan kuota terbatas.\n3️⃣ *Self Funded* — jalur mandiri bagi yang ingin berangkat bersama komunitas Safar Iman.\n\nDetail: https://www.safariman.id",
   },
 
   // ===== PENDAFTARAN =====
@@ -78,7 +78,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Pendaftaran",
     category: "Pendaftaran",
     message:
-      "Hallo Kak 👋\n\nBerikut langkah pendaftaran Safar Iman:\n1. Buka website resmi: https://safariman.my.id\n2. Klik menu *Daftar Sekarang*\n3. Pilih kategori (Reguler / Fast Track / Self Funded)\n4. Isi formulir dengan data yang benar\n5. *Simpan Kode Pendaftaran* yang muncul — akan dipakai untuk semua tahapan berikutnya\n\nSemoga dimudahkan! 🤲",
+      "Hallo Kak 👋\n\nBerikut langkah pendaftaran Safar Iman:\n1. Buka website resmi: https://www.safariman.id\n2. Klik menu *Daftar Sekarang*\n3. Pilih kategori (Reguler / Fast Track / Self Funded)\n4. Isi formulir dengan data yang benar\n5. *Simpan Kode Pendaftaran* yang muncul — akan dipakai untuk semua tahapan berikutnya\n\nSemoga dimudahkan! 🤲",
   },
   {
     keyword: "kode",
@@ -92,14 +92,14 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Info Gelombang / Fast Track",
     category: "Pendaftaran",
     message:
-      "Program Fast Track dibuka dalam beberapa gelombang dengan kuota terbatas.\n\nCek jadwal & ketersediaan gelombang di:\nhttps://safariman.my.id\n\nDisarankan daftar lebih awal karena kuota bisa habis sewaktu-waktu ya, Kak ✨",
+      "Program Fast Track dibuka dalam beberapa gelombang dengan kuota terbatas.\n\nCek jadwal & ketersediaan gelombang di:\nhttps://www.safariman.id\n\nDisarankan daftar lebih awal karena kuota bisa habis sewaktu-waktu ya, Kak ✨",
   },
   {
     keyword: "mandiri",
     label: "Info Self Funded",
     category: "Pendaftaran",
     message:
-      "Jalur *Self Funded* cocok untuk Kakak yang ingin berangkat bersama komunitas Safar Iman tanpa melalui seleksi ketat kategori Reguler.\n\nInfo & pendaftaran Self Funded:\nhttps://safariman.my.id/daftar-mandiri",
+      "Jalur *Self Funded* cocok untuk Kakak yang ingin berangkat bersama komunitas Safar Iman tanpa melalui seleksi ketat kategori Reguler.\n\nInfo & pendaftaran Self Funded:\nhttps://www.safariman.id/daftar-mandiri",
   },
 
   // ===== BERKAS =====
@@ -108,7 +108,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Kirim Berkas",
     category: "Berkas",
     message:
-      "Untuk kirim berkas administrasi (CV & Foto), silakan:\n1. Buka https://safariman.my.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Upload CV format PDF (maks. 2 MB)\n4. Upload Foto formal (rasio 3x4, latar polos)\n5. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
+      "Untuk kirim berkas administrasi (CV & Foto), silakan:\n1. Buka https://www.safariman.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Upload CV format PDF (maks. 2 MB)\n4. Upload Foto formal (rasio 3x4, latar polos)\n5. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
   },
   {
     keyword: "cv",
@@ -129,7 +129,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cek Status Berkas",
     category: "Berkas",
     message:
-      "Untuk memastikan berkas sudah diterima, silakan cek status pendaftaran di:\nhttps://safariman.my.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Status akan menampilkan tahapan yang sudah/ belum diselesaikan ✅",
+      "Untuk memastikan berkas sudah diterima, silakan cek status pendaftaran di:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Status akan menampilkan tahapan yang sudah/ belum diselesaikan ✅",
   },
 
   // ===== ESSAY =====
@@ -138,7 +138,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Pengisian Essay",
     category: "Essay",
     message:
-      "Halaman pengisian essay:\nhttps://safariman.my.id/essay\n\nGunakan *Kode Pendaftaran* untuk masuk. Terdapat 3 pertanyaan utama:\n1. Kenapa layak berangkat umrah bersama Safar Iman?\n2. Mimpi & tujuan setelah umrah\n3. Kontribusi yang akan diberikan kepada umat\n\nTulis dengan jujur, reflektif, dan dari hati ya, Kak 🤲",
+      "Halaman pengisian essay:\nhttps://www.safariman.id/essay\n\nGunakan *Kode Pendaftaran* untuk masuk. Terdapat 3 pertanyaan utama:\n1. Kenapa layak berangkat umrah bersama Safar Iman?\n2. Mimpi & tujuan setelah umrah\n3. Kontribusi yang akan diberikan kepada umat\n\nTulis dengan jujur, reflektif, dan dari hati ya, Kak 🤲",
   },
   {
     keyword: "essay-tips",
@@ -154,7 +154,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Pembayaran / Kontribusi",
     category: "Pembayaran",
     message:
-      "Untuk melakukan pembayaran kontribusi, silakan:\n1. Buka status pendaftaran: https://safariman.my.id/cek-tahapan\n2. Klik tombol *Bayar* — akan diarahkan ke halaman Mayar\n3. Pilih metode pembayaran (QRIS, VA Bank, e-wallet, dll.)\n4. Selesaikan pembayaran\n\nStatus otomatis terupdate maksimal 5 menit setelah pembayaran berhasil ✅",
+      "Untuk melakukan pembayaran kontribusi, silakan:\n1. Buka status pendaftaran: https://www.safariman.id/cek-tahapan\n2. Klik tombol *Bayar* — akan diarahkan ke halaman Mayar\n3. Pilih metode pembayaran (QRIS, VA Bank, e-wallet, dll.)\n4. Selesaikan pembayaran\n\nStatus otomatis terupdate maksimal 5 menit setelah pembayaran berhasil ✅",
   },
   {
     keyword: "bukti-bayar",
@@ -170,7 +170,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cek Tahapan Seleksi",
     category: "Tahapan Seleksi",
     message:
-      "Untuk cek tahapan seleksi (Essay, TKA, Interview), silakan buka:\nhttps://safariman.my.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Hasil setiap tahap akan muncul di sini setelah diumumkan.",
+      "Untuk cek tahapan seleksi (Essay, TKA, Interview), silakan buka:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Hasil setiap tahap akan muncul di sini setelah diumumkan.",
   },
   {
     keyword: "seleksi",
@@ -198,7 +198,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cek Hasil Seleksi",
     category: "Tahapan Seleksi",
     message:
-      "Untuk cek hasil seleksi, silakan buka:\nhttps://safariman.my.id/cek-hasil\n\nMasukkan *Kode Pendaftaran*. Hasil hanya tampil setelah pengumuman resmi dari tim Safar Iman ya 🙏",
+      "Untuk cek hasil seleksi, silakan buka:\nhttps://www.safariman.id/cek-hasil\n\nMasukkan *Kode Pendaftaran*. Hasil hanya tampil setelah pengumuman resmi dari tim Safar Iman ya 🙏",
   },
 
   // ===== KONTRIBUSI =====
@@ -207,14 +207,14 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Info Kontribusi Peserta",
     category: "Kontribusi",
     message:
-      "Info lengkap kontribusi & benefit peserta lolos:\nhttps://safariman.my.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
+      "Info lengkap kontribusi & benefit peserta lolos:\nhttps://www.safariman.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
   },
   {
     keyword: "benefit",
     label: "Benefit Peserta Lolos",
     category: "Kontribusi",
     message:
-      "Benefit untuk Awardee Safar Iman:\n✔️ Umrah gratis bersama komunitas pemuda pilihan\n✔️ Pembinaan pra-keberangkatan (manasik, adab, materi ruhiyah)\n✔️ Pengalaman ibadah & networking dengan pemuda inspiratif se-Indonesia\n✔️ Merchandise & sertifikat Awardee\n\nDetail: https://safariman.my.id/kontribusi",
+      "Benefit untuk Awardee Safar Iman:\n✔️ Umrah gratis bersama komunitas pemuda pilihan\n✔️ Pembinaan pra-keberangkatan (manasik, adab, materi ruhiyah)\n✔️ Pengalaman ibadah & networking dengan pemuda inspiratif se-Indonesia\n✔️ Merchandise & sertifikat Awardee\n\nDetail: https://www.safariman.id/kontribusi",
   },
 
   // ===== LAINNYA =====
@@ -223,21 +223,21 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Arahkan ke FAQ",
     category: "Lainnya",
     message:
-      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://safariman.my.id/faq\n\nSilakan dicek dulu, siapa tahu jawabannya sudah tersedia di sana 🙏",
+      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://www.safariman.id/faq\n\nSilakan dicek dulu, siapa tahu jawabannya sudah tersedia di sana 🙏",
   },
   {
     keyword: "twibbon",
     label: "Twibbon Safar Iman",
     category: "Lainnya",
     message:
-      "Ikut ramaikan Safar Iman dengan pasang twibbon:\nhttps://safariman.my.id/twibbon\n\nJangan lupa share ke media sosial & tag @safariman.id ya, Kak ✨",
+      "Ikut ramaikan Safar Iman dengan pasang twibbon:\nhttps://www.safariman.id/twibbon\n\nJangan lupa share ke media sosial & tag @safariman.id ya, Kak ✨",
   },
   {
     keyword: "channel",
     label: "WhatsApp Channel",
     category: "Lainnya",
     message:
-      "Yuk gabung WhatsApp Channel Safar Iman untuk update info program, tips seleksi, & motivasi harian:\n\nCek link channel di https://safariman.my.id 🕋",
+      "Yuk gabung WhatsApp Channel Safar Iman untuk update info program, tips seleksi, & motivasi harian:\n\nCek link channel di https://www.safariman.id 🕋",
   },
   {
     keyword: "kontak",
