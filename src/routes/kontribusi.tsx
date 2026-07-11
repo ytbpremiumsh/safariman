@@ -135,10 +135,11 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-5 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
             {[
               { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Sedekah mushaf Al-Qur'an di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah.", bg: cardNabawiAsset.url, dark: true },
+              { i: Armchair, t: "Sedekah Kursi Duduk", d: "Wakaf kursi duduk untuk jamaah lansia beribadah dengan nyaman di masjid.", bg: cardKursiAsset.url, dark: true },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman.", bg: cardHaramAsset.url, dark: false },
             ].map((b) => (
               <div
