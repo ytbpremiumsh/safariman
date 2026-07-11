@@ -519,50 +519,29 @@ WhatsApp : ${CP_WHATSAPP}`;
           </StepSection>
 
           {/* STEP 4 — Caption */}
-          <StepSection n={4} title="Caption — Twibbon Instagram & Poster WhatsApp" icon={<FileText className="size-5" />}>
+          <StepSection n={4} title="Caption — Twibbon & Poster" icon={<FileText className="size-5" />}>
             <p className="text-sm text-muted-foreground mb-4">
-              Salin caption di bawah — <strong className="text-foreground">satu untuk Twibbon Instagram</strong> dan <strong className="text-foreground">satu untuk Poster WhatsApp</strong>.
+              Salin caption di bawah — pakai <strong className="text-foreground">yang sama</strong> untuk Twibbon di Instagram maupun Poster di grup WhatsApp.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Caption Twibbon Instagram */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <Instagram className="size-4 text-accent" />
-                    <span className="text-sm font-semibold">Caption Twibbon (Instagram)</span>
-                  </div>
-                  <button
-                    onClick={() => gateCaption(() => copyText(twibbonCaption, "Caption Twibbon"))}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
-                  >
-                    <Copy className="size-3.5" /> Salin
-                  </button>
+            <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col max-w-2xl mx-auto">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="size-4 text-accent" />
+                  <span className="text-sm font-semibold">Caption Twibbon & Poster</span>
                 </div>
-                <pre className="max-h-80 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
+                <button
+                  onClick={() => gateCaption(() => copyText(twibbonCaption, "Caption"))}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
+                >
+                  <Copy className="size-3.5" /> Salin
+                </button>
+              </div>
+              <pre className="max-h-96 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
 {twibbonCaption}
-                </pre>
-              </div>
-
-              {/* Caption Poster WhatsApp */}
-              <div className="bg-card border border-border rounded-2xl p-4 shadow-soft flex flex-col">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="size-4 text-accent" />
-                    <span className="text-sm font-semibold">Caption Poster (WhatsApp)</span>
-                  </div>
-                  <button
-                    onClick={() => gateCaption(() => copyText(posterCaption, "Caption Poster"))}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background hover:bg-secondary px-3 py-1.5 text-xs font-medium"
-                  >
-                    <Copy className="size-3.5" /> Salin
-                  </button>
-                </div>
-                <pre className="max-h-80 whitespace-pre-wrap break-words text-xs text-foreground/90 bg-secondary/50 border border-border rounded-xl p-3 overflow-y-auto font-sans leading-relaxed">
-{posterCaption}
-                </pre>
-              </div>
+              </pre>
             </div>
+
 
             <div className="mt-4 flex justify-center">
               <div className="w-full max-w-xl grid grid-cols-2 gap-2">
