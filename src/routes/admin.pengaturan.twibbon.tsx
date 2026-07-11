@@ -266,37 +266,24 @@ function TwibbonSetting() {
           </button>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Caption ini ditampilkan pada halaman Twibbon publik dan disalin oleh peserta saat membagikan Twibbon di Instagram maupun Poster ke grup WhatsApp. Kosongkan untuk memakai caption default.
+          Caption ini dipakai untuk <strong>Twibbon (Instagram)</strong> dan <strong>Poster (WhatsApp)</strong>. Kosongkan untuk memakai caption default.
         </p>
 
         <div className="space-y-2">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Caption Twibbon (Instagram)
+            Caption Twibbon & Poster
           </label>
           <textarea
-            value={twibbonCaption}
-            onChange={(e) => setTwibbonCaption(e.target.value)}
-            rows={10}
-            placeholder="Tulis caption untuk twibbon Instagram..."
+            value={shareCaption}
+            onChange={(e) => setShareCaption(e.target.value)}
+            rows={14}
+            placeholder="Tulis caption untuk dibagikan di Instagram & WhatsApp..."
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-mono leading-relaxed"
           />
-          <div className="text-[11px] text-muted-foreground text-right">{twibbonCaption.length} karakter</div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Caption Poster (WhatsApp)
-          </label>
-          <textarea
-            value={posterCaption}
-            onChange={(e) => setPosterCaption(e.target.value)}
-            rows={10}
-            placeholder="Tulis caption untuk kirim poster ke grup WhatsApp..."
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-mono leading-relaxed"
-          />
-          <div className="text-[11px] text-muted-foreground text-right">{posterCaption.length} karakter</div>
+          <div className="text-[11px] text-muted-foreground text-right">{shareCaption.length} karakter</div>
         </div>
       </div>
+
 
       {/* Social Accounts Editor */}
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
