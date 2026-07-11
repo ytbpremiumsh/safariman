@@ -268,7 +268,7 @@ function TwibbonPage() {
     toast.success("Pesan disalin!");
   };
 
-  const caption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA INDONESIA]
+  const defaultCaption = `[SAFAR IMAN — UMRAH GRATIS FULLY FUNDED UNTUK ANAK MUDA INDONESIA]
 
 ✨ Program perjalanan iman & wawasan untuk generasi muda Indonesia — Umrah, Ibadah, City Tour, hingga Islamic Journey Experience ke Tanah Suci!
 
@@ -299,9 +299,12 @@ Contact Person:
 Instagram : @safariman.id
 WhatsApp : ${CP_WHATSAPP}`;
 
-  const copyCaption = async () => {
-    await navigator.clipboard.writeText(caption);
-    toast.success("Caption disalin! Siap di-paste 🎉");
+  const twibbonCaption = twibbonCaptionOverride.trim() ? twibbonCaptionOverride : defaultCaption;
+  const posterCaption = posterCaptionOverride.trim() ? posterCaptionOverride : defaultCaption;
+
+  const copyText = async (text: string, label: string) => {
+    await navigator.clipboard.writeText(text);
+    toast.success(`${label} disalin! Siap di-paste 🎉`);
   };
 
 
