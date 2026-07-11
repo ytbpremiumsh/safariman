@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
   ShieldCheck, ArrowRight, HeartHandshake, Sparkles, Loader2, Megaphone, EyeOff, Bot,
+  Inbox, MailQuestion, MessageCircle,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
