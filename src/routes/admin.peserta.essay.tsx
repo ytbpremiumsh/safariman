@@ -706,3 +706,116 @@ function EssayPublishBox({
   );
 }
 
+
+function PendingEssaySection({
+  rows,
+  q,
+  setQ,
+  onCopy,
+}: {
+  rows: PendingRow[];
+  q: string;
+  setQ: (s: string) => void;
+  onCopy: (txt: string, label?: string) => void;
+}) {
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return rows;
+    return rows.filter((r) =>
+      [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
+        .some((v) => v?.toLowerCase().includes(term)),
+    );
+  }, [rows, q]);
+
+  const waLink = (wa: string, nama: string, kode: string) => {
+    const num = wa.replace(/[^\d]/g, "").replace(/^0/, "62");
+    const msg = encodeURIComponent(
+      `Assalamu'alaikum ${nama},\n\nKami dari panitia Safar Iman ingin mengingatkan bahwa kamu belum mengirimkan Essay & Studi Kasus untuk tahap seleksi berikutnya.\n\nKode: ${kode}\n\nMohon segera dilengkapi ya. Jazakumullah khairan.`,
+    );
+    return `https://wa.me/${num}?text=${msg}`;
+  };
+
+  return (
+    <>
+      <div className="bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-800 rounded-2xl p-4 flex items-start gap-3">
+        <MailQuestion className="size-5 text-amber-600 mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <div className="font-semibold text-amber-900 dark:text-amber-200">
+            {rows.length} peserta belum mengirim Essay & Studi Kasus
+          </div>
+          <div className="text-xs text-amber-800/80 dark:text-amber-200/70 mt-0.5">
+            Daftar peserta yang sudah lolos tahap Berkas namun belum melengkapi jawaban Essay & Studi Kasus. Hubungi via WhatsApp untuk mengingatkan.
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <div className="relative">
+          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
+              <tr>
+                <Th>Token</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th><Th>Kota</Th><Th>Kelengkapan</Th><Th>Aksi</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">
+                  🎉 Semua peserta sudah mengirim Essay & Studi Kasus.
+                </td></tr>
+              ) : filtered.map((r) => {
+                const filled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
+                return (
+                  <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                    <td className="px-3 py-3">
+                      <button onClick={() => onCopy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
+                        {r.registration_code} <Copy className="size-3" />
+                      </button>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="font-medium">{r.full_name}</div>
+                      <div className="text-xs text-muted-foreground">{r.education}</div>
+                    </td>
+                    <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
+                    <td className="px-3 py-3">
+                      <div className="text-xs">{r.email}</div>
+                      <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
+                    </td>
+                    <td className="px-3 py-3 text-xs">{r.city}</td>
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                        filled === 0
+                          ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                          : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                      }`}>
+                        {filled}/3 Essay
+                        {(r.has_case_study_1 || r.has_case_study_2) && " · Studi Kasus dimulai"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <a
+                        href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                        title="Ingatkan via WhatsApp"
+                      >
+                        <MessageCircle className="size-3.5" /> Ingatkan
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
