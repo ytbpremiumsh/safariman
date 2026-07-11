@@ -188,7 +188,7 @@ function BenefitButton({
         <div className="font-semibold text-sm flex items-center gap-1.5">
           {title}
           {!loading && (disabled
-            ? <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${hidePlaceholder ? "bg-secondary text-muted-foreground" : "bg-amber-100 text-amber-700 dark:bg-amber-950/40"}`}>{hidePlaceholder ? "—" : "Coming Soon"}</span>
+            ? (hidePlaceholder ? null : <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950/40">Coming Soon</span>)
             : <ExternalLink className="size-3 text-emerald" />
           )}
         </div>
@@ -197,6 +197,7 @@ function BenefitButton({
       {!disabled && <CheckCircle2 className="size-4 text-emerald shrink-0" />}
     </>
   );
+
   if (disabled) {
     return (
       <div className="flex items-start gap-3 rounded-xl bg-secondary/60 border border-border px-4 py-3 opacity-80">
