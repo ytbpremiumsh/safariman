@@ -299,7 +299,7 @@ Instagram : @safariman.id
 WhatsApp : ${CP_WHATSAPP}`;
 
   const twibbonCaption = twibbonCaptionOverride.trim() ? twibbonCaptionOverride : defaultCaption;
-  const posterCaption = posterCaptionOverride.trim() ? posterCaptionOverride : defaultCaption;
+
 
   const copyText = async (text: string, label: string) => {
     await navigator.clipboard.writeText(text);
