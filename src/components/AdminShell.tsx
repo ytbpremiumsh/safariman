@@ -347,7 +347,11 @@ export function AdminShell({ children, title }: { children: ReactNode; title?: s
                   <div className="text-sm font-semibold text-foreground truncate">{title}</div>
                 </>
               )}
+              <div className="ml-auto">
+                <AdminSearch />
+              </div>
             </header>
+
             <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
               {title && (
                 <div className="space-y-1">
