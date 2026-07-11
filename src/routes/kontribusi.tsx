@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft, ArrowRight, KeyRound, Loader2, HeartHandshake, CheckCircle2, Sparkles,
-  BookOpen, Utensils, Users, ShieldCheck, Lock, FileText,
+  BookOpen, Utensils, Users, Armchair, ShieldCheck, Lock, FileText,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -15,9 +15,11 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 import cardKaabaUrl from "@/assets/donasi-card-kaaba.jpg";
 import cardNabawiUrl from "@/assets/donasi-card-nabawi.jpg";
 import cardHaramUrl from "@/assets/donasi-card-haram.jpg";
+import cardKursiUrl from "@/assets/donasi-card-kursi.jpg";
 const cardKaabaAsset = { url: cardKaabaUrl };
 const cardNabawiAsset = { url: cardNabawiUrl };
 const cardHaramAsset = { url: cardHaramUrl };
+const cardKursiAsset = { url: cardKursiUrl };
 
 export const Route = createFileRoute("/kontribusi")({
   validateSearch: z.object({ code: z.string().optional() }),
@@ -133,10 +135,11 @@ function DonasiPage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-5 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
             {[
               { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Sedekah mushaf Al-Qur'an di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah.", bg: cardNabawiAsset.url, dark: true },
+              { i: Armchair, t: "Sedekah Kursi Duduk", d: "Wakaf kursi duduk untuk jamaah lansia beribadah dengan nyaman di masjid.", bg: cardKursiAsset.url, dark: true },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman.", bg: cardHaramAsset.url, dark: false },
             ].map((b) => (
               <div
