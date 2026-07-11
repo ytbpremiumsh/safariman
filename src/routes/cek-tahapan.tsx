@@ -85,8 +85,8 @@ function CekTahapanPage() {
             <Sparkles className="size-3" /> Pelacak Tahapan Seleksi
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">Cek Tahapan Seleksi</h1>
-          <p className="text-muted-foreground mt-2 leading-relaxed">
-            Pantau perjalanan seleksi kamu di Safar Iman — mulai dari berkas, essay & studi kasus, TKA, sampai interview.
+          <p className="text-muted-foreground mt-2 leading-relaxed max-w-xl mx-auto">
+            Pantau progres seleksimu di Safar Iman: <strong>Berkas</strong>, <strong>Essay &amp; Studi Kasus</strong>, <strong>TKA</strong>, hingga <strong>Interview</strong>.
           </p>
         </div>
 
