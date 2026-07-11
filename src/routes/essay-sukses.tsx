@@ -46,8 +46,9 @@ function EssaySuccessPage() {
         </h1>
 
         <p className="mt-6 text-lg text-white/85 leading-relaxed">
-          Alhamdulillah, jawaban Essay & Studi Kasus kamu telah kami terima.
-          Semoga Allah mudahkan langkahmu hingga menjadi peraih <strong>Fully Funded</strong>. Aamiin.
+          Alhamdulillah, kamu sudah berhasil menyelesaikan tahap <strong>Essay &amp; Studi Kasus</strong> —
+          jawabanmu telah kami terima dengan baik. Semoga Allah mudahkan langkah berikutnya:
+          lolos <strong>TKA</strong>, lancar di tahap <strong>Interview</strong>, hingga menjadi peraih <strong>Fully Funded</strong>. Aamiin.
         </p>
 
 
