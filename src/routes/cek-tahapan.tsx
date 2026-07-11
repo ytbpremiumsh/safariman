@@ -254,7 +254,7 @@ function stageHref(key: string, code: string): string | null {
   }
 }
 
-function TahapanResult({ row }: { row: LookupRow }) {
+function TahapanResult({ row, code }: { row: LookupRow; code: string }) {
   const stages = buildStages(row);
   const activeStages = stages.filter((s) => s.state !== "skipped");
   const passedCount = activeStages.filter((s) => s.state === "passed").length;
