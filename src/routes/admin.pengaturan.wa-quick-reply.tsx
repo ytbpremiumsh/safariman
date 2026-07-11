@@ -41,58 +41,215 @@ const CATEGORIES = [
   "Lainnya",
 ] as const;
 
-const DEFAULT_QUICK_REPLIES: QuickReply[] = [
+const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
+  // ===== UMUM =====
   {
     keyword: "salam",
     label: "Salam Pembuka",
+    category: "Umum",
     message:
-      "Assalamu'alaikum warahmatullahi wabarakatuh 🙏\n\nTerima kasih telah menghubungi Safar Iman. Ada yang bisa kami bantu?",
+      "Assalamu'alaikum warahmatullahi wabarakatuh 🙏\n\nTerima kasih telah menghubungi Safar Iman — program Umrah Gratis untuk anak muda berprestasi. Ada yang bisa kami bantu, Kak? 😊",
   },
+  {
+    keyword: "tentang",
+    label: "Tentang Safar Iman",
+    category: "Umum",
+    message:
+      "Hi Sahabat Safar Iman! 🕋\n\nSafar Iman adalah program *Umrah Gratis untuk Anak Muda Berprestasi* yang bertujuan memberangkatkan pemuda-pemudi terbaik Indonesia untuk beribadah ke Tanah Suci sekaligus memperkuat karakter, kepemimpinan, dan kontribusi sosial.\n\nInfo lengkap: https://safariman.my.id",
+  },
+  {
+    keyword: "syarat",
+    label: "Persyaratan Umum",
+    category: "Umum",
+    message:
+      "Hi Sahabat Safar Iman! 👋\n\nSebelum mendaftar, pastikan Kakak memenuhi persyaratan umum berikut:\n- Warga Negara Indonesia (WNI) beragama Islam\n- Usia muda produktif (pelajar, mahasiswa, fresh graduate, atau pemuda aktif)\n- Memiliki prestasi / kontribusi / semangat berdakwah\n- Berkomitmen mengikuti seluruh tahapan seleksi\n- Sehat jasmani & rohani, siap beribadah di Tanah Suci\n\n📌 Info lengkap: https://safariman.my.id",
+  },
+  {
+    keyword: "kategori",
+    label: "Kategori Program",
+    category: "Umum",
+    message:
+      "Program Safar Iman terbuka dalam beberapa kategori:\n\n1️⃣ *Reguler (Fully Funded)* — jalur utama, seleksi penuh.\n2️⃣ *Fast Track Gelombang 1 & 2* — jalur cepat dengan kuota terbatas.\n3️⃣ *Self Funded* — jalur mandiri bagi yang ingin berangkat bersama komunitas Safar Iman.\n\nDetail: https://safariman.my.id",
+  },
+
+  // ===== PENDAFTARAN =====
   {
     keyword: "daftar",
     label: "Cara Pendaftaran",
+    category: "Pendaftaran",
     message:
-      "Halo Kak 👋\n\nUntuk mendaftar program Safar Iman, silakan buka halaman berikut:\nhttps://safariman.my.id/daftar\n\nIsi formulir dengan data yang benar, lalu simpan kode pendaftaran yang muncul.",
+      "Hallo Kak 👋\n\nBerikut langkah pendaftaran Safar Iman:\n1. Buka website resmi: https://safariman.my.id\n2. Klik menu *Daftar Sekarang*\n3. Pilih kategori (Reguler / Fast Track / Self Funded)\n4. Isi formulir dengan data yang benar\n5. *Simpan Kode Pendaftaran* yang muncul — akan dipakai untuk semua tahapan berikutnya\n\nSemoga dimudahkan! 🤲",
   },
   {
-    keyword: "berkas",
-    label: "Kirim Berkas",
+    keyword: "kode",
+    label: "Lupa Kode Pendaftaran",
+    category: "Pendaftaran",
     message:
-      "Untuk kirim berkas (CV & Foto), silakan buka:\nhttps://safariman.my.id/berkas\n\nMasukkan kode pendaftaran, lalu upload CV (PDF) dan foto formal.",
+      "Kode pendaftaran otomatis muncul setelah Kakak berhasil daftar dan dikirim juga ke email/WhatsApp yang didaftarkan.\n\nJika belum menemukan, silakan cek:\n- Kotak masuk & folder Spam email\n- Riwayat chat WhatsApp dari Safar Iman\n\nJika masih belum ketemu, kirimkan *nama lengkap + email* yang dipakai daftar ya, akan kami bantu cek 🙏",
   },
+  {
+    keyword: "gelombang",
+    label: "Info Gelombang / Fast Track",
+    category: "Pendaftaran",
+    message:
+      "Program Fast Track dibuka dalam beberapa gelombang dengan kuota terbatas.\n\nCek jadwal & ketersediaan gelombang di:\nhttps://safariman.my.id\n\nDisarankan daftar lebih awal karena kuota bisa habis sewaktu-waktu ya, Kak ✨",
+  },
+  {
+    keyword: "mandiri",
+    label: "Info Self Funded",
+    category: "Pendaftaran",
+    message:
+      "Jalur *Self Funded* cocok untuk Kakak yang ingin berangkat bersama komunitas Safar Iman tanpa melalui seleksi ketat kategori Reguler.\n\nInfo & pendaftaran Self Funded:\nhttps://safariman.my.id/daftar-mandiri",
+  },
+
+  // ===== BERKAS =====
+  {
+    keyword: "berkas",
+    label: "Cara Kirim Berkas",
+    category: "Berkas",
+    message:
+      "Untuk kirim berkas administrasi (CV & Foto), silakan:\n1. Buka https://safariman.my.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Upload CV format PDF (maks. 2 MB)\n4. Upload Foto formal (rasio 3x4, latar polos)\n5. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
+  },
+  {
+    keyword: "cv",
+    label: "Ketentuan CV",
+    category: "Berkas",
+    message:
+      "Ketentuan CV Safar Iman:\n- Format PDF, ukuran maks. 2 MB\n- Berisi: data diri, riwayat pendidikan, pengalaman organisasi, prestasi, pengalaman dakwah/sosial (jika ada)\n- Rapi, mudah dibaca, boleh gunakan template Canva/Word\n\nCV adalah salah satu berkas utama yang dinilai, pastikan diisi jujur dan lengkap ya 🙌",
+  },
+  {
+    keyword: "foto",
+    label: "Ketentuan Foto",
+    category: "Berkas",
+    message:
+      "Ketentuan foto:\n- Foto formal terbaru\n- Rasio 3x4, latar belakang polos (biru/merah/putih)\n- Wajah terlihat jelas, berpakaian sopan & syar'i\n- Format JPG/PNG, maks. 2 MB",
+  },
+  {
+    keyword: "cek-berkas",
+    label: "Cek Status Berkas",
+    category: "Berkas",
+    message:
+      "Untuk memastikan berkas sudah diterima, silakan cek status pendaftaran di:\nhttps://safariman.my.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Status akan menampilkan tahapan yang sudah/ belum diselesaikan ✅",
+  },
+
+  // ===== ESSAY =====
   {
     keyword: "essay",
     label: "Pengisian Essay",
+    category: "Essay",
     message:
-      "Halaman pengisian essay:\nhttps://safariman.my.id/essay\n\nGunakan kode pendaftaran untuk masuk. Pastikan setiap essay ditulis dengan jujur dan reflektif.",
+      "Halaman pengisian essay:\nhttps://safariman.my.id/essay\n\nGunakan *Kode Pendaftaran* untuk masuk. Terdapat 3 pertanyaan utama:\n1. Kenapa layak berangkat umrah bersama Safar Iman?\n2. Mimpi & tujuan setelah umrah\n3. Kontribusi yang akan diberikan kepada umat\n\nTulis dengan jujur, reflektif, dan dari hati ya, Kak 🤲",
   },
   {
-    keyword: "bayar",
-    label: "Konfirmasi Pembayaran",
+    keyword: "essay-tips",
+    label: "Tips Menulis Essay",
+    category: "Essay",
     message:
-      "Untuk cek/lakukan pembayaran, silakan buka halaman status pendaftaran Anda dan klik tombol bayar melalui Mayar. Setelah pembayaran berhasil, status akan otomatis terupdate maksimal 5 menit.",
+      "Tips essay Safar Iman:\n- Tulis dengan bahasa sendiri, hindari copy-paste\n- Ceritakan pengalaman nyata & spesifik\n- Sampaikan niat & motivasi ibadah dengan tulus\n- Jelaskan rencana kontribusi setelah umrah\n- Perhatikan ejaan & tanda baca\n\nEssay adalah pintu utama seleksi, luangkan waktu untuk menulis dengan baik ya ✨",
   },
+
+  // ===== PEMBAYARAN =====
+  {
+    keyword: "bayar",
+    label: "Cara Pembayaran / Kontribusi",
+    category: "Pembayaran",
+    message:
+      "Untuk melakukan pembayaran kontribusi, silakan:\n1. Buka status pendaftaran: https://safariman.my.id/cek-tahapan\n2. Klik tombol *Bayar* — akan diarahkan ke halaman Mayar\n3. Pilih metode pembayaran (QRIS, VA Bank, e-wallet, dll.)\n4. Selesaikan pembayaran\n\nStatus otomatis terupdate maksimal 5 menit setelah pembayaran berhasil ✅",
+  },
+  {
+    keyword: "bukti-bayar",
+    label: "Bukti Pembayaran",
+    category: "Pembayaran",
+    message:
+      "Pembayaran melalui Mayar otomatis tercatat di sistem kami, jadi tidak perlu kirim bukti transfer manual ya, Kak 🙏\n\nJika status belum berubah setelah 15 menit, silakan kirim:\n- Kode Pendaftaran\n- Screenshot bukti pembayaran\nkami bantu cek 🙌",
+  },
+
+  // ===== TAHAPAN SELEKSI =====
   {
     keyword: "tahap",
     label: "Cek Tahapan Seleksi",
+    category: "Tahapan Seleksi",
     message:
-      "Untuk mengecek tahapan seleksi (Essay, TKA, Interview), silakan buka:\nhttps://safariman.my.id/cek-tahapan\n\nMasukkan kode pendaftaran Anda.",
+      "Untuk cek tahapan seleksi (Essay, TKA, Interview), silakan buka:\nhttps://safariman.my.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Hasil setiap tahap akan muncul di sini setelah diumumkan.",
   },
   {
-    keyword: "kontribusi",
-    label: "Kontribusi Peserta",
+    keyword: "seleksi",
+    label: "Alur Seleksi",
+    category: "Tahapan Seleksi",
     message:
-      "Untuk info kontribusi & benefit peserta lolos, silakan buka:\nhttps://safariman.my.id/kontribusi",
+      "Alur seleksi Safar Iman (kategori Reguler):\n1️⃣ Pendaftaran & Berkas Administrasi\n2️⃣ Essay\n3️⃣ TKA (Tes Kemampuan Akademik & Wawasan Keislaman)\n4️⃣ Interview\n5️⃣ Pengumuman Awardee\n\nSemua tahap dilakukan online. Semoga dimudahkan sampai akhir 🤲",
   },
+  {
+    keyword: "tka",
+    label: "Info Tes TKA",
+    category: "Tahapan Seleksi",
+    message:
+      "Tes TKA (Tes Kemampuan Akademik & Wawasan Keislaman) dilakukan secara online untuk mengukur:\n- Wawasan keislaman dasar\n- Logika & penalaran\n- Pengetahuan umum\n\nBisa dikerjakan via HP/laptop. Jadwal & link tes akan dikirim melalui WhatsApp & email peserta yang lolos essay ya, Kak.",
+  },
+  {
+    keyword: "interview",
+    label: "Info Interview",
+    category: "Tahapan Seleksi",
+    message:
+      "Interview dilakukan online (via Zoom/Google Meet) bersama tim Safar Iman.\n\nYang dinilai: motivasi, adab, kesiapan ibadah, rencana kontribusi, dan kesesuaian dengan nilai program.\n\nJadwal interview akan dikonfirmasi ke peserta yang lolos TKA melalui WhatsApp & email 📩",
+  },
+  {
+    keyword: "hasil",
+    label: "Cek Hasil Seleksi",
+    category: "Tahapan Seleksi",
+    message:
+      "Untuk cek hasil seleksi, silakan buka:\nhttps://safariman.my.id/cek-hasil\n\nMasukkan *Kode Pendaftaran*. Hasil hanya tampil setelah pengumuman resmi dari tim Safar Iman ya 🙏",
+  },
+
+  // ===== KONTRIBUSI =====
+  {
+    keyword: "kontribusi",
+    label: "Info Kontribusi Peserta",
+    category: "Kontribusi",
+    message:
+      "Info lengkap kontribusi & benefit peserta lolos:\nhttps://safariman.my.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
+  },
+  {
+    keyword: "benefit",
+    label: "Benefit Peserta Lolos",
+    category: "Kontribusi",
+    message:
+      "Benefit untuk Awardee Safar Iman:\n✔️ Umrah gratis bersama komunitas pemuda pilihan\n✔️ Pembinaan pra-keberangkatan (manasik, adab, materi ruhiyah)\n✔️ Pengalaman ibadah & networking dengan pemuda inspiratif se-Indonesia\n✔️ Merchandise & sertifikat Awardee\n\nDetail: https://safariman.my.id/kontribusi",
+  },
+
+  // ===== LAINNYA =====
   {
     keyword: "faq",
     label: "Arahkan ke FAQ",
+    category: "Lainnya",
     message:
-      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://safariman.my.id/faq\n\nSilakan cek dulu, siapa tahu jawabannya sudah ada di sana 🙏",
+      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://safariman.my.id/faq\n\nSilakan dicek dulu, siapa tahu jawabannya sudah tersedia di sana 🙏",
+  },
+  {
+    keyword: "twibbon",
+    label: "Twibbon Safar Iman",
+    category: "Lainnya",
+    message:
+      "Ikut ramaikan Safar Iman dengan pasang twibbon:\nhttps://safariman.my.id/twibbon\n\nJangan lupa share ke media sosial & tag @safariman.id ya, Kak ✨",
+  },
+  {
+    keyword: "channel",
+    label: "WhatsApp Channel",
+    category: "Lainnya",
+    message:
+      "Yuk gabung WhatsApp Channel Safar Iman untuk update info program, tips seleksi, & motivasi harian:\n\nCek link channel di https://safariman.my.id 🕋",
+  },
+  {
+    keyword: "kontak",
+    label: "Kontak Admin",
+    category: "Lainnya",
+    message:
+      "Kakak bisa menghubungi admin Safar Iman melalui WhatsApp ini di jam operasional (09.00–17.00 WIB, Senin–Jumat).\n\nDi luar jam tersebut, pesan tetap kami baca & akan dibalas secepatnya ya 🙏",
   },
   {
     keyword: "terima",
     label: "Penutup",
+    category: "Umum",
     message:
       "Baik Kak, terima kasih atas responsnya 🙏\nSemoga Allah mudahkan setiap langkah menuju Safar Iman.\n\nWassalamu'alaikum warahmatullahi wabarakatuh.",
   },
