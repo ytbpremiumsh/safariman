@@ -19,26 +19,26 @@ import {
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 
-type NavChild = { to: string; label: string };
-type NavItem = { to: string; label: string; icon: any; exact?: boolean; children?: NavChild[] };
+type NavChild = { to: string; label: string; keywords?: string };
+type NavItem = { to: string; label: string; icon: any; exact?: boolean; keywords?: string; children?: NavChild[] };
 type NavGroup = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Dashboard",
     items: [
-      { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+      { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true, keywords: "dashboard beranda ringkasan statistik home" },
     ],
   },
   {
     label: "Manajemen Peserta",
     items: [
-      { to: "/admin/peserta/reguler/pendaftaran", label: "Pendaftaran Reguler", icon: Users },
-      { to: "/admin/peserta/reguler/berkas", label: "Berkas Reguler", icon: ClipboardList },
-      { to: "/admin/peserta/self-funded/pendaftaran", label: "Pendaftaran Self Funded", icon: UserCheck },
-      { to: "/admin/peserta/essay", label: "Essay & Studi Kasus", icon: FileText },
-      { to: "/admin/peserta/kontribusi", label: "Kontribusi Valid", icon: HeartHandshake },
-      { to: "/admin/peserta/tahapan", label: "Tahapan TKA & Interview", icon: Layers },
+      { to: "/admin/peserta/reguler/pendaftaran", label: "Pendaftaran Reguler", icon: Users, keywords: "peserta daftar registrasi fully funded gelombang" },
+      { to: "/admin/peserta/reguler/berkas", label: "Berkas Reguler", icon: ClipboardList, keywords: "dokumen ktp paspor upload verifikasi berkas peserta" },
+      { to: "/admin/peserta/self-funded/pendaftaran", label: "Pendaftaran Self Funded", icon: UserCheck, keywords: "mandiri bayar sendiri self funded peserta daftar" },
+      { to: "/admin/peserta/essay", label: "Essay & Studi Kasus", icon: FileText, keywords: "essay tulisan studi kasus nilai grading ai" },
+      { to: "/admin/peserta/kontribusi", label: "Kontribusi Valid", icon: HeartHandshake, keywords: "donasi kontribusi pembayaran valid mayar" },
+      { to: "/admin/peserta/tahapan", label: "Tahapan TKA & Interview", icon: Layers, keywords: "tka test kesiapan awal interview wawancara tahap seleksi hasil" },
     ],
   },
 
@@ -49,22 +49,23 @@ const NAV_GROUPS: NavGroup[] = [
         to: "/admin/pengaturan",
         label: "Pengaturan",
         icon: Settings,
+        keywords: "settings konfigurasi",
         children: [
-          { to: "/admin/pengaturan/gelombang", label: "Daftar Gelombang" },
-          { to: "/admin/pengaturan/twibbon", label: "Twibbon & Poster" },
-          { to: "/admin/pengaturan/countdown", label: "Countdown" },
-          { to: "/admin/pengaturan/timeline", label: "Timeline Program" },
-          { to: "/admin/pengaturan/panduan", label: "Panduan Link" },
-          { to: "/admin/pengaturan/donasi", label: "Pembayaran & Donasi" },
-          { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi" },
-          { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded" },
-          { to: "/admin/pengaturan/email", label: "Template Email" },
-          { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp" },
-          { to: "/admin/pengaturan/faq", label: "Halaman FAQ" },
-          { to: "/admin/pengaturan/ai-provider", label: "AI Provider (WA & Essay)" },
-          { to: "/admin/pengaturan/affiliate", label: "Affiliate Button" },
-
-
+          { to: "/admin/pengaturan/gelombang", label: "Daftar Gelombang", keywords: "gelombang batch pendaftaran periode kuota" },
+          { to: "/admin/pengaturan/twibbon", label: "Twibbon & Poster", keywords: "twibbon frame poster caption instagram whatsapp share bagikan sosial media" },
+          { to: "/admin/pengaturan/countdown", label: "Countdown", keywords: "countdown hitung mundur timer deadline" },
+          { to: "/admin/pengaturan/timeline", label: "Timeline Program", keywords: "timeline jadwal urutan tahap program" },
+          { to: "/admin/pengaturan/panduan", label: "Panduan Link", keywords: "panduan guide link tutorial dokumen" },
+          { to: "/admin/pengaturan/donasi", label: "Pembayaran & Donasi", keywords: "donasi pembayaran mayar invoice kontribusi" },
+          { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi", keywords: "hasil pengumuman lolos seleksi publish" },
+          { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded", keywords: "dokumen self funded mandiri persyaratan berkas" },
+          { to: "/admin/pengaturan/email", label: "Template Email", keywords: "email template transactional smtp kirim notifikasi" },
+          { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp", keywords: "whatsapp channel saluran link grup wa" },
+          { to: "/admin/pengaturan/faq", label: "Halaman FAQ", keywords: "faq pertanyaan tanya jawab bantuan" },
+          { to: "/admin/pengaturan/ai-provider", label: "AI Provider (WA & Essay)", keywords: "ai openai gemini provider kunci api essay wa" },
+          { to: "/admin/pengaturan/affiliate", label: "Affiliate Button", keywords: "affiliate afiliasi tombol link referral" },
+          { to: "/admin/pengaturan/apresiasi", label: "Apresiasi Peserta", keywords: "apresiasi testimoni peserta" },
+          { to: "/admin/pengaturan/wa-quick-reply", label: "WA Quick Reply", keywords: "wa whatsapp quick reply balasan cepat template" },
         ],
       },
     ],
@@ -72,17 +73,122 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Integrasi",
     items: [
-      { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare },
+      { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare, keywords: "whatsapp wa ai setup mpwa provider integrasi" },
     ],
   },
   {
     label: "Alur Program",
     items: [
-      { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon },
-      { to: "/admin/alur/tahapan-seleksi", label: "Tahapan Seleksi (Poster)", icon: FileText },
+      { to: "/admin/alur/fully-funded", label: "Alur Fully Funded", icon: RouteIcon, keywords: "alur fully funded program tahapan" },
+      { to: "/admin/alur/tahapan-seleksi", label: "Tahapan Seleksi (Poster)", icon: FileText, keywords: "tahapan seleksi poster alur" },
     ],
   },
 ];
+
+type FlatEntry = { to: string; label: string; group: string; parentLabel?: string; keywords: string };
+
+function useSearchEntries(): FlatEntry[] {
+  return useMemo(() => {
+    const out: FlatEntry[] = [];
+    for (const g of NAV_GROUPS) {
+      for (const n of g.items) {
+        out.push({ to: n.to, label: n.label, group: g.label, keywords: n.keywords ?? "" });
+        if (n.children) {
+          for (const c of n.children) {
+            out.push({
+              to: c.to,
+              label: c.label,
+              group: g.label,
+              parentLabel: n.label,
+              keywords: `${n.keywords ?? ""} ${c.keywords ?? ""}`.trim(),
+            });
+          }
+        }
+      }
+    }
+    return out;
+  }, []);
+}
+
+function AdminSearch() {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const entries = useSearchEntries();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const grouped = useMemo(() => {
+    const m = new Map<string, FlatEntry[]>();
+    for (const e of entries) {
+      if (!m.has(e.group)) m.set(e.group, []);
+      m.get(e.group)!.push(e);
+    }
+    return Array.from(m.entries());
+  }, [entries]);
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground px-3 h-9 text-xs sm:text-sm transition-colors min-w-[180px] sm:min-w-[260px] justify-between"
+        title="Cari menu (Ctrl/Cmd + K)"
+      >
+        <span className="inline-flex items-center gap-2">
+          <Search className="size-3.5" />
+          <span>Cari menu…</span>
+        </span>
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+          ⌘K
+        </kbd>
+      </button>
+
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Cari menu, fitur, atau kata kunci…" />
+        <CommandList>
+          <CommandEmpty>Tidak ada hasil.</CommandEmpty>
+          {grouped.map(([group, items]) => (
+            <CommandGroup key={group} heading={group}>
+              {items.map((e) => (
+                <CommandItem
+                  key={e.to}
+                  value={`${e.label} ${e.parentLabel ?? ""} ${e.keywords} ${e.group}`}
+                  onSelect={() => {
+                    setOpen(false);
+                    navigate({ to: e.to });
+                  }}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-sm">
+                      {e.parentLabel && (
+                        <span className="text-muted-foreground">{e.parentLabel} · </span>
+                      )}
+                      {e.label}
+                    </span>
+                    {e.keywords && (
+                      <span className="text-[11px] text-muted-foreground line-clamp-1">
+                        {e.keywords}
+                      </span>
+                    )}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
+        </CommandList>
+      </CommandDialog>
+    </>
+  );
+}
+
 
 
 export function useAdminGuard() {
