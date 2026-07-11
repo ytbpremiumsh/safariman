@@ -21,8 +21,8 @@ function TwibbonSetting() {
   const [posterUrl, setPosterUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadingPoster, setUploadingPoster] = useState(false);
-  const [twibbonCaption, setTwibbonCaption] = useState("");
-  const [posterCaption, setPosterCaption] = useState("");
+  const [shareCaption, setShareCaption] = useState("");
+
   const [savingCaptions, setSavingCaptions] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
