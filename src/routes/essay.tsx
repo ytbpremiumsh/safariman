@@ -275,7 +275,7 @@ function BodyByStatus({
         <div className="size-14 rounded-2xl bg-gradient-gold grid place-items-center mx-auto shadow-gold">
           <CheckCircle2 className="size-7 text-emerald-deep" />
         </div>
-        <h3 className="font-display text-2xl font-semibold">Essay kamu sudah masuk</h3>
+        <h3 className="font-display text-2xl font-semibold">Essay dan Studi Kasus kamu sudah masuk</h3>
         <p className="text-muted-foreground text-sm">Semua tahap sudah lengkap. Tunggu pengumuman seleksi berikutnya, ya.</p>
         <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">Cek kode lain</button>
       </div>
