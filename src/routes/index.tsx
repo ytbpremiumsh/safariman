@@ -926,10 +926,6 @@ function Footer() {
                 <Mail className="size-4 text-emerald shrink-0 mt-0.5" />
                 <a href="mailto:hello@safariman.id" className="hover:text-emerald transition-colors">hello@safariman.id</a>
               </li>
-              <li className="flex items-start gap-2.5">
-                <MapPinned className="size-4 text-emerald shrink-0 mt-0.5" />
-                <span>Semarang, Indonesia</span>
-              </li>
             </ul>
           </div>
 
