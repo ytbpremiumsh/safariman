@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Download, Copy, HeartHandshake } from "lucide-react";
+import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,9 @@ const CAT_LABEL: Record<Category, string> = {
   gelombang_2: "Fast Track G2",
 };
 
+// Kategori yang wajib berkontribusi/donasi
+const DONATION_CATS: Category[] = ["fully_funded", "partial_funded"];
+
 type Row = {
   id: string;
   registration_code: string;
@@ -32,54 +35,75 @@ type Row = {
   category: Category | null;
   donation_status: string | null;
   donation_paid_at: string | null;
+  donation_url: string | null;
   created_at: string;
 };
 
 const COLS =
-  "id,registration_code,full_name,email,whatsapp,city,category,donation_status,donation_paid_at,created_at";
+  "id,registration_code,full_name,email,whatsapp,city,category,donation_status,donation_paid_at,donation_url,created_at";
 
 function PesertaKontribusiPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<Row[]>([]);
+  const [paidRows, setPaidRows] = useState<Row[]>([]);
+  const [unpaidRows, setUnpaidRows] = useState<Row[]>([]);
+  const [tab, setTab] = useState<"paid" | "unpaid">("paid");
   const [q, setQ] = useState("");
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
 
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const { data, error } = await supabase
-        .from("participants")
-        .select(COLS)
-        .eq("donation_status", "paid")
-        .order("donation_paid_at", { ascending: false });
-      if (error) toast.error(error.message);
-      else setRows((data ?? []) as Row[]);
+      const [paidRes, unpaidRes] = await Promise.all([
+        supabase
+          .from("participants")
+          .select(COLS)
+          .eq("donation_status", "paid")
+          .order("donation_paid_at", { ascending: false }),
+        supabase
+          .from("participants")
+          .select(COLS)
+          .in("category", DONATION_CATS)
+          .or("donation_status.is.null,donation_status.neq.paid")
+          .order("created_at", { ascending: false }),
+      ]);
+      if (paidRes.error) toast.error(paidRes.error.message);
+      else setPaidRows((paidRes.data ?? []) as Row[]);
+      if (unpaidRes.error) toast.error(unpaidRes.error.message);
+      else setUnpaidRows((unpaidRes.data ?? []) as Row[]);
       setLoading(false);
     })();
   }, [ready]);
 
+  const activeRows = tab === "paid" ? paidRows : unpaidRows;
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return rows.filter((r) => {
+    return activeRows.filter((r) => {
       if (catFilter !== "all" && r.category !== catFilter) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, catFilter]);
+  }, [activeRows, q, catFilter]);
 
   const stats = useMemo(() => {
-    const byCat = (c: Category) => rows.filter((r) => r.category === c).length;
+    const byCat = (c: Category) => paidRows.filter((r) => r.category === c).length;
     return {
-      total: rows.length,
+      total: paidRows.length,
       fully: byCat("fully_funded"),
       partial: byCat("partial_funded"),
       self: byCat("self_funded"),
       g1: byCat("gelombang_1"),
       g2: byCat("gelombang_2"),
     };
-  }, [rows]);
+  }, [paidRows]);
+
+  const unpaidStats = useMemo(() => ({
+    total: unpaidRows.length,
+    pending: unpaidRows.filter((r) => r.donation_status === "pending").length,
+    belumMulai: unpaidRows.filter((r) => !r.donation_status).length,
+  }), [unpaidRows]);
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -89,12 +113,13 @@ function PesertaKontribusiPage() {
       WhatsApp: r.whatsapp,
       Kota: r.city ?? "",
       Kategori: r.category ? CAT_LABEL[r.category] : "-",
+      Status: tab === "paid" ? "Valid" : (r.donation_status ?? "Belum Mulai"),
       "Tanggal Kontribusi": r.donation_paid_at ? new Date(r.donation_paid_at).toLocaleString("id-ID") : "-",
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Kontribusi");
-    XLSX.writeFile(wb, `safar-iman-kontribusi-${Date.now()}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, tab === "paid" ? "Kontribusi Valid" : "Belum Kontribusi");
+    XLSX.writeFile(wb, `safar-iman-kontribusi-${tab}-${Date.now()}.xlsx`);
     toast.success(`${data.length} data diekspor`);
   };
 
@@ -103,30 +128,91 @@ function PesertaKontribusiPage() {
     toast.success(`Disalin: ${txt}`);
   };
 
+  const waLink = (wa: string, nama: string, kode: string) => {
+    const num = (wa ?? "").replace(/[^\d]/g, "").replace(/^0/, "62");
+    const msg = encodeURIComponent(
+      `Assalamu'alaikum ${nama},\n\nKami dari panitia Safar Iman ingin mengingatkan bahwa kontribusi/donasi kamu belum tercatat.\n\nKode: ${kode}\n\nMohon segera diselesaikan agar bisa lanjut ke tahap berikutnya. Jazakumullah khairan.`,
+    );
+    return `https://wa.me/${num}?text=${msg}`;
+  };
+
   if (!ready || loading) return <AdminLoading />;
 
   return (
-    <AdminShell title="Peserta Kontribusi Valid">
+    <AdminShell title="Peserta Kontribusi">
       <p className="text-sm text-muted-foreground -mt-3">
-        Daftar peserta yang sudah <strong>benar-benar valid membayar kontribusi/donasi</strong>. Total di sini
-        merupakan perkiraan jumlah peserta yang telah menunaikan kontribusi.
+        Pantau peserta yang <strong>sudah berkontribusi</strong> maupun yang <strong>belum</strong>. Kategori Self Funded / Fast Track tidak termasuk daftar kontribusi (mereka via pembayaran pendaftaran).
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-        {[
-          { label: "Total Valid", value: stats.total, color: "text-accent" },
-          { label: "Fully Funded", value: stats.fully, color: "text-foreground" },
-          { label: "Partial Funded", value: stats.partial, color: "text-foreground" },
-          { label: "Self Funded", value: stats.self, color: "text-foreground" },
-          { label: "Fast Track G1", value: stats.g1, color: "text-foreground" },
-          { label: "Fast Track G2", value: stats.g2, color: "text-foreground" },
-        ].map((s) => (
-          <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
-            <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
-          </div>
-        ))}
+      {/* Tabs */}
+      <div className="bg-card border border-border rounded-2xl p-1 inline-flex flex-wrap gap-1">
+        <button
+          onClick={() => setTab("paid")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+            tab === "paid" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
+          }`}
+        >
+          <HeartHandshake className="size-4" /> Kontribusi Valid
+          <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-background/60 border border-border">
+            {paidRows.length}
+          </span>
+        </button>
+        <button
+          onClick={() => setTab("unpaid")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+            tab === "unpaid" ? "bg-amber-500 text-white shadow-md" : "text-muted-foreground hover:bg-secondary"
+          }`}
+        >
+          <HandCoins className="size-4" /> Belum Kontribusi
+          <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/25 border border-white/30">
+            {unpaidRows.length}
+          </span>
+        </button>
       </div>
+
+      {tab === "paid" ? (
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+          {[
+            { label: "Total Valid", value: stats.total, color: "text-accent" },
+            { label: "Fully Funded", value: stats.fully, color: "text-foreground" },
+            { label: "Partial Funded", value: stats.partial, color: "text-foreground" },
+            { label: "Self Funded", value: stats.self, color: "text-foreground" },
+            { label: "Fast Track G1", value: stats.g1, color: "text-foreground" },
+            { label: "Fast Track G2", value: stats.g2, color: "text-foreground" },
+          ].map((s) => (
+            <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+              <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-800 rounded-2xl p-4 flex items-start gap-3">
+            <AlertCircle className="size-5 text-amber-600 mt-0.5 shrink-0" />
+            <div className="text-sm">
+              <div className="font-semibold text-amber-900 dark:text-amber-200">
+                {unpaidRows.length} peserta belum berkontribusi
+              </div>
+              <div className="text-xs text-amber-800/80 dark:text-amber-200/70 mt-0.5">
+                Peserta kategori Fully / Partial Funded yang belum menyelesaikan kontribusi/donasi. Ingatkan via WhatsApp agar bisa lanjut ke tahap berikutnya.
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { label: "Total Belum", value: unpaidStats.total, color: "text-amber-600" },
+              { label: "Invoice Pending", value: unpaidStats.pending, color: "text-foreground" },
+              { label: "Belum Ada Invoice", value: unpaidStats.belumMulai, color: "text-foreground" },
+            ].map((s) => (
+              <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
@@ -144,7 +230,7 @@ function PesertaKontribusiPage() {
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
         >
           <option value="all">Semua Kategori</option>
-          {(Object.keys(CAT_LABEL) as Category[]).map((c) => (
+          {(tab === "unpaid" ? DONATION_CATS : (Object.keys(CAT_LABEL) as Category[])).map((c) => (
             <option key={c} value={c}>{CAT_LABEL[c]}</option>
           ))}
         </select>
@@ -162,14 +248,18 @@ function PesertaKontribusiPage() {
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
                 <Th>Kode</Th><Th>Nama</Th><Th>Kategori</Th>
-                <Th>Kontak</Th><Th>Kota</Th><Th>Tanggal Kontribusi</Th>
+                <Th>Kontak</Th><Th>Kota</Th>
+                <Th>{tab === "paid" ? "Tanggal Kontribusi" : "Status Donasi"}</Th>
+                {tab === "unpaid" && <Th>Aksi</Th>}
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-10 text-muted-foreground">
-                    Belum ada peserta yang valid berkontribusi.
+                  <td colSpan={tab === "unpaid" ? 7 : 6} className="text-center py-10 text-muted-foreground">
+                    {tab === "paid"
+                      ? "Belum ada peserta yang valid berkontribusi."
+                      : "🎉 Semua peserta sudah berkontribusi."}
                   </td>
                 </tr>
               ) : (
@@ -195,13 +285,36 @@ function PesertaKontribusiPage() {
                     </td>
                     <td className="px-3 py-3 text-xs">{r.city ?? "—"}</td>
                     <td className="px-3 py-3 text-xs">
-                      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 border bg-emerald/10 text-emerald border-emerald/30">
-                        <HeartHandshake className="size-3.5" />
-                        {r.donation_paid_at
-                          ? new Date(r.donation_paid_at).toLocaleString("id-ID")
-                          : "Valid"}
-                      </span>
+                      {tab === "paid" ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 border bg-emerald/10 text-emerald border-emerald/30">
+                          <HeartHandshake className="size-3.5" />
+                          {r.donation_paid_at
+                            ? new Date(r.donation_paid_at).toLocaleString("id-ID")
+                            : "Valid"}
+                        </span>
+                      ) : (
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 border ${
+                          r.donation_status === "pending"
+                            ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                            : "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                        }`}>
+                          {r.donation_status === "pending" ? "Invoice Pending" : "Belum Mulai"}
+                        </span>
+                      )}
                     </td>
+                    {tab === "unpaid" && (
+                      <td className="px-3 py-3">
+                        <a
+                          href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                          title="Ingatkan via WhatsApp"
+                        >
+                          <MessageCircle className="size-3.5" /> Ingatkan
+                        </a>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
