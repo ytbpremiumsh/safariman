@@ -293,7 +293,7 @@ function TahapanResult({ row, code }: { row: LookupRow; code: string }) {
       <ol className="relative space-y-3">
         {stages.map((s, i) => (
           <li key={s.key}>
-            <StageItem stage={s} index={i + 1} href={stageHref(s.key, row.full_name ? "" : "") || null} code={""} />
+            <StageItem stage={s} index={i + 1} href={stageHref(s.key, code)} />
             {s.key === "kontribusi" && s.state === "passed" && (
               <ApresiasiCollapsible />
             )}
