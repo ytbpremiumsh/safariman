@@ -111,7 +111,7 @@ function PesertaEssayPage() {
     setLoading(true);
     const [{ data, error }, pendingRes, settingRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
-      supabase.rpc("list_essay_pending_participants"),
+      (supabase.rpc as any)("list_essay_pending_participants"),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
     ]);
     if (error) toast.error(error.message);
