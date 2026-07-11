@@ -124,7 +124,7 @@ function EssayPage() {
         .catch(() => {});
 
       toast.success("Essay terkirim. Barakallah!");
-      navigate({ to: "/sukses" });
+      navigate({ to: "/essay-sukses", search: { code: code.trim().toUpperCase() } as any });
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Gagal mengirim. Coba lagi.");
