@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search, Loader2, ArrowLeft, CheckCircle2, XCircle, Clock, Sparkles,
-  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins, ChevronDown,
+  FileCheck2, BookOpenCheck, Brain, MessagesSquare, Heart, HandCoins, ChevronDown, ArrowRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ function CekTahapanPage() {
           </div>
         )}
 
-        {data && <TahapanResult row={data} />}
+        {data && <TahapanResult row={data} code={code.trim()} />}
       </div>
     </div>
   );
@@ -244,7 +244,17 @@ function buildStages(row: LookupRow): Stage[] {
   ];
 }
 
-function TahapanResult({ row }: { row: LookupRow }) {
+function stageHref(key: string, code: string): string | null {
+  const q = `?kode=${encodeURIComponent(code)}`;
+  switch (key) {
+    case "berkas": return `/berkas${q}`;
+    case "kontribusi": return `/kontribusi${q}`;
+    case "essay": return `/essay${q}`;
+    default: return null;
+  }
+}
+
+function TahapanResult({ row, code }: { row: LookupRow; code: string }) {
   const stages = buildStages(row);
   const activeStages = stages.filter((s) => s.state !== "skipped");
   const passedCount = activeStages.filter((s) => s.state === "passed").length;
@@ -283,13 +293,14 @@ function TahapanResult({ row }: { row: LookupRow }) {
       <ol className="relative space-y-3">
         {stages.map((s, i) => (
           <li key={s.key}>
-            <StageItem stage={s} index={i + 1} />
+            <StageItem stage={s} index={i + 1} href={stageHref(s.key, code)} />
             {s.key === "kontribusi" && s.state === "passed" && (
               <ApresiasiCollapsible />
             )}
           </li>
         ))}
       </ol>
+
 
       {/* Final message */}
       {failedStage ? (
@@ -332,9 +343,10 @@ function ApresiasiCollapsible() {
   );
 }
 
-function StageItem({ stage, index }: { stage: Stage; index: number }) {
+function StageItem({ stage, index, href }: { stage: Stage; index: number; href: string | null }) {
   const Icon = stage.icon;
   const cfg = STATE_STYLES[stage.state];
+  const showCta = stage.state === "pending" && !!href;
   return (
     <div
       className={`bg-card border rounded-2xl p-4 flex items-start gap-4 ${cfg.border} ${
@@ -353,6 +365,14 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
         </div>
         <h3 className="font-display text-base sm:text-lg font-semibold mt-1">{stage.title}</h3>
         {stage.note && <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{stage.note}</p>}
+        {showCta && (
+          <Link
+            to={href!}
+            className="inline-flex items-center gap-1.5 mt-3 rounded-full bg-emerald text-white px-3 py-1.5 text-xs font-semibold shadow-emerald hover-lift"
+          >
+            Buka Halaman <ArrowRight className="size-3.5" />
+          </Link>
+        )}
       </div>
       <div className={`shrink-0 size-7 rounded-full grid place-items-center ${cfg.markBg}`}>
         {cfg.mark}
@@ -360,6 +380,7 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
     </div>
   );
 }
+
 
 function EncourageCard({ failedTitle }: { failedTitle: string }) {
   return (
