@@ -194,7 +194,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Info Kontribusi Peserta",
     category: "Kontribusi",
     message:
-      "Info lengkap kontribusi & benefit peserta lolos:\nhttps://www.safariman.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
+      "Info lengkap kontribusi & apresiasi peserta:\nhttps://www.safariman.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\n✨ *Apresiasi Peserta (sudah termasuk):*\n🎓 Kelas Online — *Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur* bersama Ustadz Ahmad Fauzan, Lc.\n📖 Kajian — *Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah* bersama Ustadz Hilman Al Hazmi, Lc.\n📜 E-Sertifikat Resmi setelah menyelesaikan kelas\n▶️ Akses Rekaman — tonton ulang kapan saja\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
   },
   {
     keyword: "benefit",
