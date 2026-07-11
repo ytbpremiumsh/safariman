@@ -336,7 +336,7 @@ function ApresiasiCollapsible() {
       </button>
       {open && (
         <div className="px-4 pb-4 sm:px-5 sm:pb-5 border-t border-emerald/10 pt-4">
-          <ApresiasiPeserta compact />
+          <ApresiasiPeserta compact hidePlaceholder />
         </div>
       )}
     </div>

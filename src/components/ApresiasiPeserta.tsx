@@ -140,16 +140,19 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
 }
 
 function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
-  const placeholder = hidePlaceholder ? <span className="text-muted-foreground">—</span> : <span className="text-amber-600">Coming Soon</span>;
+  // When hidePlaceholder is true and there is neither a date nor a link, hide the row entirely.
+  if (hidePlaceholder && !loading && !date && !link) return null;
   return (
     <div className="mt-4 pt-4 border-t border-border/60 space-y-2">
-      <div className="flex items-center gap-2 text-xs">
-        <Calendar className="size-3.5 text-emerald shrink-0" />
-        <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
-        <span className="font-semibold text-foreground">
-          {loading ? "…" : date ? formatDate(date) : placeholder}
-        </span>
-      </div>
+      {(loading || date || !hidePlaceholder) && (
+        <div className="flex items-center gap-2 text-xs">
+          <Calendar className="size-3.5 text-emerald shrink-0" />
+          <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
+          <span className="font-semibold text-foreground">
+            {loading ? "…" : date ? formatDate(date) : <span className="text-amber-600">Coming Soon</span>}
+          </span>
+        </div>
+      )}
       {link ? (
         <a
           href={link}
@@ -171,6 +174,7 @@ function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: s
   );
 }
 
+
 function BenefitButton({
   icon: Icon, title, desc, link, loading, hidePlaceholder = false,
 }: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
@@ -184,7 +188,7 @@ function BenefitButton({
         <div className="font-semibold text-sm flex items-center gap-1.5">
           {title}
           {!loading && (disabled
-            ? <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${hidePlaceholder ? "bg-secondary text-muted-foreground" : "bg-amber-100 text-amber-700 dark:bg-amber-950/40"}`}>{hidePlaceholder ? "—" : "Coming Soon"}</span>
+            ? (hidePlaceholder ? null : <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950/40">Coming Soon</span>)
             : <ExternalLink className="size-3 text-emerald" />
           )}
         </div>
@@ -193,6 +197,7 @@ function BenefitButton({
       {!disabled && <CheckCircle2 className="size-4 text-emerald shrink-0" />}
     </>
   );
+
   if (disabled) {
     return (
       <div className="flex items-start gap-3 rounded-xl bg-secondary/60 border border-border px-4 py-3 opacity-80">
