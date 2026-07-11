@@ -966,7 +966,7 @@ function Footer() {
           <div className="flex items-center gap-4">
             <Link to="/tentang" className="hover:text-emerald transition-colors">Tentang</Link>
             <Link to="/pendaftaran" className="hover:text-emerald transition-colors">Daftar</Link>
-            <Link to="/admin/login" className="hover:text-emerald transition-colors">Admin</Link>
+            
           </div>
         </div>
       </div>
