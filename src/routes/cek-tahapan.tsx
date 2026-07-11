@@ -195,16 +195,10 @@ function buildStages(row: LookupRow): Stage[] {
     essay = "passed";
   } else if (row.essay_status === "failed") {
     essay = "failed";
-  } else if (row.status === "interview" || row.status === "accepted") {
-    // Fallback: admin sudah menaikkan peserta ke tahap berikutnya walau essay_status belum di-set eksplisit
-    essay = "passed";
-  } else if (row.status === "rejected") {
-    essay = "failed";
   } else {
     essay = "pending";
     essayNote = "Essay sedang dinilai tim penilai";
   }
-
 
   // Stage 4: TKA (independen)
   let tka: StageState;
