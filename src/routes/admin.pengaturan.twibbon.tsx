@@ -133,14 +133,17 @@ function TwibbonSetting() {
     try {
       const ext = (f.name.split(".").pop() || "png").toLowerCase();
       const path = `${prefix}-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("twibbon-assets").upload(path, f, { upsert: true, contentType: f.type });
-      if (upErr) throw upErr;
-      const { data } = supabase.storage.from("twibbon-assets").getPublicUrl(path);
-      const url = `${data.publicUrl}?v=${Date.now()}`;
-      const { error: sErr } = await supabase.from("app_settings").upsert({
-        key, value: url, updated_at: new Date().toISOString(),
+      const form = new FormData();
+      form.append("file", f);
+      form.append("key", key);
+      form.append("prefix", prefix);
+
+      const { data, error: fnErr } = await supabase.functions.invoke("admin-upload-twibbon-asset", {
+        body: form,
       });
-      if (sErr) throw sErr;
+      if (fnErr) throw fnErr;
+      const url = typeof data?.url === "string" ? data.url : "";
+      if (!url) throw new Error("Upload berhasil, tapi URL file tidak diterima");
       setUrl(url);
       toast.success("Berhasil diperbarui");
     } catch (err: any) {
