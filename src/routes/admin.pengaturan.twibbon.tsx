@@ -45,15 +45,15 @@ function TwibbonSetting() {
       const [{ data: rows }] = await Promise.all([
         supabase.from("app_settings").select("key,value").in("key", [
           "twibbon_frame_url", "poster_url", "social_ig_accounts", "social_tiktok_accounts",
-          "twibbon_caption", "poster_caption",
+          "twibbon_caption",
         ]),
         loadStats(rangeDays),
       ]);
       const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
       setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
       setPosterUrl((map.get("poster_url") as string) ?? "");
-      setTwibbonCaption((map.get("twibbon_caption") as string) ?? "");
-      setPosterCaption((map.get("poster_caption") as string) ?? "");
+      setShareCaption((map.get("twibbon_caption") as string) ?? "");
+
       const parse = (raw: unknown): SocialAccount[] => {
         try {
           const v = typeof raw === "string" ? JSON.parse(raw) : raw;
