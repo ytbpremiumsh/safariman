@@ -61,10 +61,12 @@ function TwibbonPage() {
   // Load configurable frame URL — falls back to bundled default if none configured
   useEffect(() => {
     (async () => {
-      const [{ data: frame }, { data: poster }, { data: social }] = await Promise.all([
+      const [{ data: frame }, { data: poster }, { data: social }, { data: twCap }, { data: poCap }] = await Promise.all([
         supabase.rpc("get_twibbon_frame_url"),
         supabase.rpc("get_poster_url"),
         supabase.rpc("get_social_accounts"),
+        supabase.rpc("get_twibbon_caption"),
+        supabase.rpc("get_poster_caption"),
       ]);
       const fUrl = (typeof frame === "string" && frame.trim()) ? frame.trim() : defaultFrame;
       setFrameUrl(fUrl);
@@ -73,6 +75,8 @@ function TwibbonPage() {
       const s = social as { instagram?: SocialAccount[]; tiktok?: SocialAccount[] } | null;
       if (Array.isArray(s?.instagram) && s!.instagram.length) setIgAccounts(s!.instagram);
       if (Array.isArray(s?.tiktok) && s!.tiktok.length) setTiktokAccounts(s!.tiktok);
+      if (typeof twCap === "string" && twCap.trim()) setTwibbonCaptionOverride(twCap);
+      if (typeof poCap === "string" && poCap.trim()) setPosterCaptionOverride(poCap);
     })();
   }, []);
 
