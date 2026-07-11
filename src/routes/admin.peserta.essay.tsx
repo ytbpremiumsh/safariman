@@ -98,6 +98,8 @@ function PesertaEssayPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
+  const [pendingRows, setPendingRows] = useState<PendingRow[]>([]);
+  const [tab, setTab] = useState<"sent" | "pending">("sent");
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
@@ -107,12 +109,15 @@ function PesertaEssayPage() {
 
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, settingRes] = await Promise.all([
+    const [{ data, error }, pendingRes, settingRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
+      supabase.rpc("list_essay_pending_participants"),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
     ]);
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
+    if (pendingRes.error) toast.error(pendingRes.error.message);
+    else setPendingRows((pendingRes.data ?? []) as PendingRow[]);
     setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
