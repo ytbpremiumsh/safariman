@@ -15,9 +15,11 @@ import logoSafarIman from "@/assets/logo-safar-iman.png";
 import cardKaabaUrl from "@/assets/donasi-card-kaaba.jpg";
 import cardNabawiUrl from "@/assets/donasi-card-nabawi.jpg";
 import cardHaramUrl from "@/assets/donasi-card-haram.jpg";
+import cardKursiUrl from "@/assets/donasi-card-kursi.jpg";
 const cardKaabaAsset = { url: cardKaabaUrl };
 const cardNabawiAsset = { url: cardNabawiUrl };
 const cardHaramAsset = { url: cardHaramUrl };
+const cardKursiAsset = { url: cardKursiUrl };
 
 export const Route = createFileRoute("/kontribusi")({
   validateSearch: z.object({ code: z.string().optional() }),
