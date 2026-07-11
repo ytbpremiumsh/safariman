@@ -48,28 +48,28 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Salam Pembuka",
     category: "Umum",
     message:
-      "Assalamu'alaikum warahmatullahi wabarakatuh 🙏\n\nTerima kasih telah menghubungi Safar Iman — program Umrah Gratis untuk anak muda berprestasi. Ada yang bisa kami bantu, Kak? 😊",
+      "Assalamu'alaikum warahmatullahi wabarakatuh 🙏\n\nTerima kasih telah menghubungi *Safar Iman* — program Umrah Gratis untuk anak muda berprestasi (kolaborasi *Hasanah Tour & Travel × Prestasi Kita*).\n\nAda yang bisa kami bantu, Kak? 😊",
   },
   {
     keyword: "tentang",
     label: "Tentang Safar Iman",
     category: "Umum",
     message:
-      "Hi Sahabat Safar Iman! 🕋\n\nSafar Iman adalah program *Umrah Gratis untuk Anak Muda Berprestasi* yang bertujuan memberangkatkan pemuda-pemudi terbaik Indonesia untuk beribadah ke Tanah Suci sekaligus memperkuat karakter, kepemimpinan, dan kontribusi sosial.\n\nInfo lengkap: https://www.safariman.id",
+      "Hi Sahabat Safar Iman! 🕋\n\n*Safar Iman* adalah program Umrah Gratis untuk anak muda berprestasi hasil kolaborasi *Hasanah Tour & Travel × Prestasi Kita*.\n\nKegiatan utama peserta:\n• Ibadah Umrah sesuai sunnah\n• Sedekah Al-Qur'an\n• Berbagi makanan di Makkah & Madinah\n• City Tour & Campus Tour\n• Networking Nasional pemuda inspiratif\n\nInfo lengkap: https://www.safariman.id",
   },
   {
     keyword: "syarat",
     label: "Persyaratan Umum",
     category: "Umum",
     message:
-      "Hi Sahabat Safar Iman! 👋\n\nSebelum mendaftar, pastikan Kakak memenuhi persyaratan umum berikut:\n- Warga Negara Indonesia (WNI) beragama Islam\n- Usia muda produktif (pelajar, mahasiswa, fresh graduate, atau pemuda aktif)\n- Memiliki prestasi / kontribusi / semangat berdakwah\n- Berkomitmen mengikuti seluruh tahapan seleksi\n- Sehat jasmani & rohani, siap beribadah di Tanah Suci\n\n📌 Info lengkap: https://www.safariman.id",
+      "*Persyaratan Umum Peserta Fully Funded* ✅\n\n• Muslim/Muslimah dengan niat kuat beribadah & belajar\n• WNI usia *12–45 tahun*\n• Terbuka untuk pelajar, mahasiswa, santri, maupun umum\n• Bersedia mengikuti seluruh tahapan & ketentuan program\n• Disiplin, bertanggung jawab, dan berakhlak baik\n• Siap mengikuti pembinaan, mentoring, dan kegiatan program\n• Tidak wajib fasih Bahasa Arab / Inggris\n• Terbuka untuk berbagai latar belakang pendidikan\n\nInfo lengkap: https://www.safariman.id",
   },
   {
     keyword: "kategori",
-    label: "Kategori Program",
+    label: "Kategori / Jalur Program",
     category: "Umum",
     message:
-      "Program Safar Iman terbuka dalam beberapa kategori:\n\n1️⃣ *Reguler (Fully Funded)* — jalur utama, seleksi penuh.\n2️⃣ *Fast Track Gelombang 1 & 2* — jalur cepat dengan kuota terbatas.\n3️⃣ *Self Funded* — jalur mandiri bagi yang ingin berangkat bersama komunitas Safar Iman.\n\nDetail: https://www.safariman.id",
+      "Program Safar Iman terbagi 3 jalur:\n\n1️⃣ *Fully Funded (Reguler)* — seleksi penuh, umrah gratis untuk peserta terpilih.\n2️⃣ *Partial Funded* — 30 peserta terbaik berikutnya (dari jalur Fully Funded) mendapat subsidi *Rp2.000.000/orang*.\n3️⃣ *Self Funded* — jalur mandiri tanpa seleksi ketat, kuota terbatas *10 peserta*.\n\nDetail: https://www.safariman.id",
   },
 
   // ===== PENDAFTARAN =====
@@ -78,61 +78,76 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Pendaftaran",
     category: "Pendaftaran",
     message:
-      "Hallo Kak 👋\n\nBerikut langkah pendaftaran Safar Iman:\n1. Buka website resmi: https://www.safariman.id\n2. Klik menu *Daftar Sekarang*\n3. Pilih kategori (Reguler / Fast Track / Self Funded)\n4. Isi formulir dengan data yang benar\n5. *Simpan Kode Pendaftaran* yang muncul — akan dipakai untuk semua tahapan berikutnya\n\nSemoga dimudahkan! 🤲",
+      "*Cara Mendaftar Safar Iman* 📝\n\n1. Buka website resmi: https://www.safariman.id\n2. Klik *Daftar Sekarang* dan pilih jalur (Fully Funded / Fast Track / Self Funded)\n3. Isi form pendaftaran dengan data yang benar\n4. Wajib follow akun *Instagram & TikTok* penyelenggara:\n   • @safariman.id\n   • @hasanah.tours.travel\n   • @hasanah.hajiumrohsemarang\n   • @prestasikita\n5. *Simpan Kode Pendaftaran* (format: HXP-XXXXXXXX) untuk semua tahapan berikutnya\n\nSemoga dimudahkan! 🤲",
   },
   {
     keyword: "kode",
-    label: "Lupa Kode Pendaftaran",
+    label: "Kode Pendaftaran (HXP-XXXXXXXX)",
     category: "Pendaftaran",
     message:
-      "Kode pendaftaran otomatis muncul setelah Kakak berhasil daftar dan dikirim juga ke email/WhatsApp yang didaftarkan.\n\nJika belum menemukan, silakan cek:\n- Kotak masuk & folder Spam email\n- Riwayat chat WhatsApp dari Safar Iman\n\nJika masih belum ketemu, kirimkan *nama lengkap + email* yang dipakai daftar ya, akan kami bantu cek 🙏",
+      "Setelah mendaftar online di https://www.safariman.id, peserta otomatis menerima *Kode Pendaftaran unik berformat HXP-XXXXXXXX*.\n\nKode ini dikirim via email & WhatsApp, dan wajib digunakan untuk:\n• Kirim berkas administrasi\n• Kontribusi\n• Essay & studi kasus\n• Cek tahapan & hasil seleksi\n\nJika belum menemukan, cek folder Spam email atau kirimkan *nama lengkap + email pendaftaran* ke admin, akan kami bantu cek 🙏",
   },
   {
-    keyword: "gelombang",
-    label: "Info Gelombang / Fast Track",
+    keyword: "sosmed",
+    label: "Akun yang Wajib Difollow",
     category: "Pendaftaran",
     message:
-      "Program Fast Track dibuka dalam beberapa gelombang dengan kuota terbatas.\n\nCek jadwal & ketersediaan gelombang di:\nhttps://www.safariman.id\n\nDisarankan daftar lebih awal karena kuota bisa habis sewaktu-waktu ya, Kak ✨",
+      "Peserta *wajib follow* akun berikut sebagai syarat pendaftaran:\n\n📸 *Instagram:*\n• @safariman.id\n• @hasanah.tours.travel\n• @hasanah.hajiumrohsemarang\n• @prestasikita\n\n🎵 *TikTok:*\n• @safariman.id\n• @hasanah.tours.travel\n• @hasanah.hajiumrohsemarang\n• @prestasikita",
   },
   {
     keyword: "mandiri",
     label: "Info Self Funded",
     category: "Pendaftaran",
     message:
-      "Jalur *Self Funded* cocok untuk Kakak yang ingin berangkat bersama komunitas Safar Iman tanpa melalui seleksi ketat kategori Reguler.\n\nInfo & pendaftaran Self Funded:\nhttps://www.safariman.id/daftar-mandiri",
+      "*Jalur Self Funded* 🕋\n\n• Mengisi form pendaftaran di https://www.safariman.id\n• Membayar administrasi pendaftaran *Rp50.000*\n• Wajib follow Instagram & TikTok penyelenggara (@safariman.id, @hasanah.tours.travel, @hasanah.hajiumrohsemarang, @prestasikita)\n• *Kuota terbatas hanya 10 peserta* — ditutup jika kuota terpenuhi\n\nCocok untuk yang ingin berangkat bersama komunitas Safar Iman tanpa seleksi ketat.\n\nPendaftaran: https://www.safariman.id/daftar-mandiri",
+  },
+
+  // ===== TIMELINE =====
+  {
+    keyword: "timeline",
+    label: "Timeline Pendaftaran Fully Funded",
+    category: "Pendaftaran",
+    message:
+      "*Timeline Pendaftaran Safar Iman — Fully Funded* 📅\n\n1️⃣ *Reguler (GRATIS)*\n🗓️ 13 Juli – 16 September 2026\n• Mengisi form di www.safariman.id\n• Membagikan Twibbon & Poster\n• Follow Instagram & TikTok\n• Mengirimkan berkas administrasi\n\n2️⃣ *Reguler Gelombang 1 — Rp20.000* (Fast Track)\n🗓️ 13 Juli – 25 Agustus 2026\n• Mengisi form di www.safariman.id\n• Tanpa membagikan Twibbon & Poster\n• Tanpa follow Instagram & TikTok\n• Tanpa mengirim berkas administrasi\n\n3️⃣ *Reguler Gelombang 2 — Rp50.000* (Fast Track)\n🗓️ 26 Agustus – 15 September 2026\n• Mengisi form di www.safariman.id\n• Tanpa membagikan Twibbon & Poster\n• Tanpa follow Instagram & TikTok\n• Tanpa mengirim berkas administrasi\n\nDetail: https://www.safariman.id",
+  },
+  {
+    keyword: "keberangkatan",
+    label: "Jadwal Keberangkatan",
+    category: "Pendaftaran",
+    message:
+      "*Jadwal Keberangkatan Safar Iman* ✈️\n\n🛫 *Start Jakarta*\n📅 *29 November – 8 Desember 2026*\n\nSeluruh peserta Fully Funded terpilih akan berangkat bersama sesuai jadwal di atas.\n\nInfo lengkap: https://www.safariman.id",
   },
 
   // ===== BERKAS =====
   {
     keyword: "berkas",
-    label: "Cara Kirim Berkas",
+    label: "Cara Kirim Berkas Administrasi",
     category: "Berkas",
     message:
-      "Untuk kirim berkas pendukung, silakan:\n1. Buka https://www.safariman.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Lengkapi data berkas pendukung sesuai instruksi di halaman tersebut\n4. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
+      "*Seleksi Tahap Berkas* 📄\n\n1. Pastikan sudah mendaftar di https://www.safariman.id dan menerima *Kode Pendaftaran (HXP-XXXXXXXX)*\n2. Buka https://www.safariman.id/berkas\n3. Masukkan Kode Pendaftaran\n4. Lengkapi data berkas administrasi sesuai instruksi\n5. Klik *Kirim Berkas*\n\nPeserta yang lolos berkas berhak melanjutkan ke tahap selanjutnya ✅",
   },
   {
     keyword: "cek-berkas",
     label: "Cek Status Berkas",
     category: "Berkas",
     message:
-      "Untuk memastikan berkas sudah diterima, silakan cek status pendaftaran di:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Status akan menampilkan tahapan yang sudah/ belum diselesaikan ✅",
+      "Untuk memastikan berkas sudah diterima, cek status pendaftaran di:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran (HXP-XXXXXXXX)*. Status akan menampilkan tahapan yang sudah / belum diselesaikan ✅",
   },
-
 
   // ===== ESSAY =====
   {
     keyword: "essay",
-    label: "Pengisian Essay",
+    label: "Tahap Essay & Studi Kasus",
     category: "Essay",
     message:
-      "Halaman pengisian essay:\nhttps://www.safariman.id/essay\n\nGunakan *Kode Pendaftaran* untuk masuk. Terdapat 3 pertanyaan utama:\n1. Kenapa layak berangkat umrah bersama Safar Iman?\n2. Mimpi & tujuan setelah umrah\n3. Kontribusi yang akan diberikan kepada umat\n\nTulis dengan jujur, reflektif, dan dari hati ya, Kak 🤲",
+      "*Tahap Essay & Studi Kasus* ✍️\n\n• Hanya diikuti peserta yang lolos seleksi berkas administrasi\n• Sebelum mengerjakan, peserta wajib menunaikan *donasi Rp100.000* melalui halaman resmi: https://www.safariman.id/kontribusi\n• Setelah kontribusi selesai, akses halaman essay & studi kasus di: https://www.safariman.id/essay\n• Tim seleksi akan meninjau essay — peserta yang lolos akan lanjut ke tahap *TKA (Tes Kesiapan Awal)*",
   },
   {
     keyword: "essay-tips",
     label: "Tips Menulis Essay",
     category: "Essay",
     message:
-      "Tips essay Safar Iman:\n- Tulis dengan bahasa sendiri, hindari copy-paste\n- Ceritakan pengalaman nyata & spesifik\n- Sampaikan niat & motivasi ibadah dengan tulus\n- Jelaskan rencana kontribusi setelah umrah\n- Perhatikan ejaan & tanda baca\n\nEssay adalah pintu utama seleksi, luangkan waktu untuk menulis dengan baik ya ✨",
+      "*Tips Essay Safar Iman* ✨\n\n• Tulis dengan bahasa sendiri, hindari copy-paste\n• Ceritakan pengalaman nyata & spesifik\n• Sampaikan niat & motivasi ibadah dengan tulus\n• Jelaskan rencana kontribusi setelah umrah\n• Perhatikan ejaan & tanda baca\n\nEssay adalah pintu utama seleksi, luangkan waktu menulis dengan baik ya 🤲",
   },
 
   // ===== PEMBAYARAN =====
@@ -141,14 +156,21 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Pembayaran / Kontribusi",
     category: "Pembayaran",
     message:
-      "Untuk melakukan pembayaran kontribusi, silakan:\n1. Buka status pendaftaran: https://www.safariman.id/cek-tahapan\n2. Klik tombol *Bayar* — akan diarahkan ke halaman Mayar\n3. Pilih metode pembayaran (QRIS, VA Bank, e-wallet, dll.)\n4. Selesaikan pembayaran\n\nStatus otomatis terupdate maksimal 5 menit setelah pembayaran berhasil ✅",
+      "*Cara Pembayaran Kontribusi* 💳\n\n1. Buka halaman kontribusi: https://www.safariman.id/kontribusi\n   (atau via https://www.safariman.id/cek-tahapan)\n2. Klik tombol *Bayar* — akan diarahkan ke halaman Mayar\n3. Pilih metode pembayaran (QRIS, VA Bank, e-wallet, dll.)\n4. Selesaikan pembayaran\n\nStatus otomatis terupdate maksimal 5 menit setelah pembayaran berhasil ✅",
   },
   {
     keyword: "bukti-bayar",
     label: "Bukti Pembayaran",
     category: "Pembayaran",
     message:
-      "Pembayaran melalui Mayar otomatis tercatat di sistem kami, jadi tidak perlu kirim bukti transfer manual ya, Kak 🙏\n\nJika status belum berubah setelah 15 menit, silakan kirim:\n- Kode Pendaftaran\n- Screenshot bukti pembayaran\nkami bantu cek 🙌",
+      "Pembayaran melalui Mayar otomatis tercatat di sistem kami, jadi tidak perlu kirim bukti transfer manual ya, Kak 🙏\n\nJika status belum berubah setelah 15 menit, silakan kirim:\n• Kode Pendaftaran (HXP-XXXXXXXX)\n• Screenshot bukti pembayaran\nkami bantu cek 🙌",
+  },
+  {
+    keyword: "nominal",
+    label: "Nominal Biaya Program",
+    category: "Pembayaran",
+    message:
+      "*Nominal Biaya Program Safar Iman* 💰\n\n📌 *Fully Funded — Reguler:* GRATIS\n📌 *Fully Funded — Gelombang 1 (Fast Track):* Rp20.000\n📌 *Fully Funded — Gelombang 2 (Fast Track):* Rp50.000\n📌 *Kontribusi Tahap Essay & Studi Kasus:* Rp100.000\n📌 *Self Funded — Administrasi Pendaftaran:* Rp50.000\n\nSeluruh kontribusi peserta digunakan untuk kegiatan Safar Iman, berbagi makanan, dan sedekah Al-Qur'an di Makkah & Madinah 🤍",
   },
 
   // ===== TAHAPAN SELEKSI =====
@@ -157,51 +179,65 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cek Tahapan Seleksi",
     category: "Tahapan Seleksi",
     message:
-      "Untuk cek tahapan seleksi (Essay, TKA, Interview), silakan buka:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Hasil setiap tahap akan muncul di sini setelah diumumkan.",
+      "Untuk cek tahapan seleksi (Berkas, Essay, TKA, Interview), buka:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran (HXP-XXXXXXXX)*. Hasil setiap tahap akan muncul setelah diumumkan.",
   },
   {
     keyword: "seleksi",
-    label: "Alur Seleksi",
+    label: "Alur Seleksi Fully Funded",
     category: "Tahapan Seleksi",
     message:
-      "Alur seleksi Safar Iman (kategori Reguler):\n1️⃣ Pendaftaran & Berkas Administrasi\n2️⃣ Essay\n3️⃣ TKA (Tes Kemampuan Akademik & Wawasan Keislaman)\n4️⃣ Interview\n5️⃣ Pengumuman Awardee\n\nSemua tahap dilakukan online. Semoga dimudahkan sampai akhir 🤲",
+      "*Alur Seleksi Safar Iman — Fully Funded* 📋\n\n1️⃣ *Seleksi Berkas* — berdasarkan berkas form yang ditentukan panitia\n2️⃣ *Essay & Studi Kasus* — menjawab studi kasus & memberikan solusi melalui form online (didahului kontribusi Rp100.000)\n3️⃣ *TKA (Tes Kesiapan Awal)* — Computer Based Test (CBT) online untuk mengukur kesiapan, kemampuan berpikir & pemahaman dasar\n4️⃣ *Interview Online* — bersama tim seleksi\n5️⃣ *Pengumuman Awardee*\n\n📌 Catatan:\n• Ketiga tahap awal harus dikerjakan berurutan, tidak dapat dilewati\n• Peserta *Fast Track* dinyatakan langsung lolos berkas dan lanjut ke tahap kontribusi + Essay & Studi Kasus\n• Pastikan nomor WhatsApp aktif agar tidak ketinggalan info penting 🤲",
   },
   {
     keyword: "tka",
     label: "Info Tes TKA",
     category: "Tahapan Seleksi",
     message:
-      "Tes TKA (Tes Kemampuan Akademik & Wawasan Keislaman) dilakukan secara online untuk mengukur:\n- Wawasan keislaman dasar\n- Logika & penalaran\n- Pengetahuan umum\n\nBisa dikerjakan via HP/laptop. Jadwal & link tes akan dikirim melalui WhatsApp & email peserta yang lolos essay ya, Kak.",
+      "*Tahap Kesiapan Awal (TKA)* 🖥️\n\n• Diikuti oleh peserta yang lolos essay & studi kasus\n• Berbasis *Computer Based Test (CBT) online*, mengukur kesiapan, kemampuan berpikir, dan pemahaman dasar\n• Akses website TKA: *https://tka.safariman.id*\n• Soal berbentuk pilihan ganda dengan batas waktu — hasil tercatat otomatis di sistem\n• *10 peserta dengan nilai tertinggi* berhak lanjut ke sesi *Interview*\n\nPastikan mengikuti jadwal resmi Safar Iman ya, Kak 🙏",
   },
   {
     keyword: "interview",
     label: "Info Interview",
     category: "Tahapan Seleksi",
     message:
-      "Interview dilakukan online (via Zoom/Google Meet) bersama tim Safar Iman.\n\nYang dinilai: motivasi, adab, kesiapan ibadah, rencana kontribusi, dan kesesuaian dengan nilai program.\n\nJadwal interview akan dikonfirmasi ke peserta yang lolos TKA melalui WhatsApp & email 📩",
+      "*Interview Online* 🎤\n\n• Diikuti oleh *10 peserta dengan nilai TKA tertinggi*\n• Dilakukan online (via Zoom / Google Meet) bersama tim seleksi Safar Iman\n• Yang dinilai: motivasi, adab, kesiapan ibadah, rencana kontribusi, kesesuaian dengan nilai program\n\nJadwal interview dikonfirmasi via WhatsApp & email ke peserta yang lolos TKA 📩",
+  },
+  {
+    keyword: "partial",
+    label: "Info Partial Funded",
+    category: "Tahapan Seleksi",
+    message:
+      "*Jalur Partial Funded* 🎗️\n\n• Diperuntukkan bagi peserta yang telah mendaftar jalur *Fully Funded* namun belum terpilih sebagai penerima pembiayaan penuh\n• Sebanyak *30 orang peserta terbaik berikutnya* berkesempatan memperoleh *subsidi program sebesar Rp2.000.000/orang*\n\nInfo lengkap: https://www.safariman.id",
   },
   {
     keyword: "hasil",
     label: "Cek Hasil Seleksi",
     category: "Tahapan Seleksi",
     message:
-      "Untuk cek hasil seleksi, silakan buka:\nhttps://www.safariman.id/cek-hasil\n\nMasukkan *Kode Pendaftaran*. Hasil hanya tampil setelah pengumuman resmi dari tim Safar Iman ya 🙏",
+      "Untuk cek hasil seleksi, buka:\nhttps://www.safariman.id/cek-hasil\n\nMasukkan *Kode Pendaftaran (HXP-XXXXXXXX)*. Hasil hanya tampil setelah pengumuman resmi tim Safar Iman. Pengumuman juga disiarkan di kanal resmi Safar Iman 🙏",
   },
 
   // ===== KONTRIBUSI =====
   {
     keyword: "kontribusi",
-    label: "Info Kontribusi Peserta",
+    label: "Info Kontribusi & Apresiasi Peserta",
     category: "Kontribusi",
     message:
-      "Info lengkap kontribusi & apresiasi peserta:\nhttps://www.safariman.id/kontribusi\n\nKontribusi peserta InsyaAllah digunakan untuk:\n- Sedekah Al-Qur'an\n- Berbagi makanan\n- Sedekah kursi duduk di Makkah & Madinah\n- Mendukung kegiatan Safar Iman\n\n✨ *Apresiasi Peserta (sudah termasuk):*\n🎓 Kelas Online — *Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur* bersama Ustadz Ahmad Fauzan, Lc.\n📖 Kajian — *Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah* bersama Ustadz Hilman Al Hazmi, Lc.\n📜 E-Sertifikat Resmi setelah menyelesaikan kelas\n▶️ Akses Rekaman — tonton ulang kapan saja\n\nSetiap rupiahnya berputar jadi kebaikan bersama 🤍",
+      "*Kontribusi Peserta Safar Iman* 🤍\n\nHalaman kontribusi: https://www.safariman.id/kontribusi\nNominal: *Rp100.000* (tahap essay & studi kasus)\n\nKontribusi digunakan untuk mendukung *kegiatan Safar Iman, berbagi makanan, dan sedekah Al-Qur'an di Makkah & Madinah* sebagai bentuk kolaborasi kebaikan.\n\n✨ *Apresiasi Peserta (senilai Rp79.000, GRATIS untuk yang berkontribusi):*\n🎓 Kelas Online — *Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur* bersama *Ustadz Ahmad Fauzan, Lc.* (Pembimbing Manasik & Praktisi Umrah)\n📖 Kajian — *Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah* bersama *Ustadz Hilman Al Hazmi, Lc.* (Alumni Syariah Islamiyyah Al Azhar University)\n📜 E-Sertifikat Resmi setelah menyelesaikan kelas\n▶️ Akses Rekaman — tonton ulang kapan saja",
   },
   {
     keyword: "benefit",
-    label: "Benefit Peserta Lolos",
+    label: "Benefit & Fasilitas Fully Funded",
     category: "Kontribusi",
     message:
-      "Benefit untuk Awardee Safar Iman:\n✔️ Umrah gratis bersama komunitas pemuda pilihan\n✔️ Pembinaan pra-keberangkatan (manasik, adab, materi ruhiyah)\n✔️ Pengalaman ibadah & networking dengan pemuda inspiratif se-Indonesia\n✔️ Merchandise & sertifikat Awardee\n\nDetail: https://www.safariman.id/kontribusi",
+      "*Benefit & Fasilitas Peserta Fully Funded* 🕋\n\nDisiapkan khusus oleh *Safar Iman × Hasanah × Prestasi Kita* untuk peserta yang terpilih melalui jalur pembiayaan penuh.\n\n🛫 *Start Jakarta — 29 November – 8 Desember 2026*\n\n*Fasilitas:*\n🏨 Hotel Bintang 4\n✈️ Tiket pesawat PP\n🍱 Makan 3x sehari\n🧑‍🏫 Pembimbing ibadah\n🚌 Bus AC & city tour\n🧳 Perlengkapan umrah\n📘 Visa dan Asuransi\n🪪 ID Siskopatuh\n🕌 Manasik Umrah\n👆 Akses Kelas Tamu Allah\n\n📌 *Catatan:*\n• Seluruh peserta melalui tahapan seleksi yang sama sesuai ketentuan program\n• Penetapan penerima manfaat berdasarkan hasil administrasi, essay, wawancara, dan tahapan lanjutan\n• Hasil seleksi diumumkan terbuka melalui kanal resmi Safar Iman\n\nDetail: https://www.safariman.id",
+  },
+  {
+    keyword: "kegiatan",
+    label: "Kegiatan Program Safar Iman",
+    category: "Kontribusi",
+    message:
+      "*Kegiatan Detail Program Safar Iman* 🕋\n\nSafar Iman adalah program Umrah Gratis yang memadukan ibadah sesuai sunnah dengan kegiatan berbagi & pembelajaran:\n\n🕋 Ibadah Umrah\n📖 Sedekah Al-Qur'an\n🏛️ City Tour\n🍱 Berbagi Makanan (Makkah & Madinah)\n🤝 Networking Nasional\n🎓 Campus Tour\n\nMenghadirkan pengalaman spiritual yang bermakna dan penuh keberkahan.\n\nInfo lengkap: https://www.safariman.id",
   },
 
   // ===== LAINNYA =====
@@ -210,28 +246,28 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Arahkan ke FAQ",
     category: "Lainnya",
     message:
-      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://www.safariman.id/faq\n\nSilakan dicek dulu, siapa tahu jawabannya sudah tersedia di sana 🙏",
+      "Pertanyaan umum sudah kami rangkum di halaman FAQ:\nhttps://www.safariman.id/faq\n\nSilakan dicek dulu, siapa tahu jawabannya sudah tersedia 🙏",
   },
   {
     keyword: "twibbon",
     label: "Twibbon Safar Iman",
     category: "Lainnya",
     message:
-      "Ikut ramaikan Safar Iman dengan pasang twibbon:\nhttps://www.safariman.id/twibbon\n\nJangan lupa share ke media sosial & tag @safariman.id ya, Kak ✨",
+      "*Cara Ikut Twibbon Safar Iman* 📸\n\n1. Unduh twibbon di https://www.safariman.id/twibbon\n2. Unggah di feed Instagram dengan caption yang sudah disediakan\n3. Tag *5 teman* di caption\n4. Bagikan twibbon ke *5 grup WhatsApp*\n5. Jangan lupa tag @safariman.id ✨\n\nTwibbon & caption resmi tersedia di https://www.safariman.id",
   },
   {
     keyword: "channel",
     label: "WhatsApp Channel",
     category: "Lainnya",
     message:
-      "Yuk gabung WhatsApp Channel Safar Iman untuk update info program, tips seleksi, & motivasi harian:\n\nCek link channel di https://www.safariman.id 🕋",
+      "Yuk gabung *WhatsApp Channel Safar Iman* untuk update info program, tips seleksi, & motivasi harian:\n\nCek link channel di https://www.safariman.id 🕋",
   },
   {
     keyword: "kontak",
     label: "Kontak Admin",
     category: "Lainnya",
     message:
-      "Kakak bisa menghubungi admin Safar Iman melalui WhatsApp ini di jam operasional (09.00–17.00 WIB, Senin–Jumat).\n\nDi luar jam tersebut, pesan tetap kami baca & akan dibalas secepatnya ya 🙏",
+      "Kakak bisa menghubungi admin Safar Iman via WhatsApp ini pada jam operasional (09.00–17.00 WIB, Senin–Jumat).\n\nDi luar jam tersebut, pesan tetap kami baca & akan dibalas secepatnya ya 🙏",
   },
   {
     keyword: "terima",
