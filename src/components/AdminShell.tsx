@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
   Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
   Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
+  Search,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -12,7 +13,11 @@ import {
   SidebarInset, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+} from "@/components/ui/command";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+
 
 type NavChild = { to: string; label: string };
 type NavItem = { to: string; label: string; icon: any; exact?: boolean; children?: NavChild[] };
