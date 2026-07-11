@@ -74,6 +74,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Integrasi",
     items: [
       { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare, keywords: "whatsapp wa ai setup mpwa provider integrasi" },
+      { to: "/admin/pengaturan/wa-quick-reply", label: "Balas Cepat WhatsApp", icon: MessageSquareText, keywords: "wa whatsapp quick reply balas cepat template pesan siap kirim" },
     ],
   },
   {
