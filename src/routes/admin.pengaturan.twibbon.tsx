@@ -119,6 +119,48 @@ function TwibbonSetting() {
   const maxCount = useMemo(() => Math.max(1, ...stats.map((s) => s.count)), [stats]);
 
 
+  const compressImage = async (
+    f: File,
+    prefix: string
+  ): Promise<File> => {
+    // Frame: keep PNG transparency, resize to max 1080x1080
+    // Poster: convert to JPEG quality 0.85, resize to max 1440px longest side
+    const isFrame = prefix === "frame";
+    const maxDim = isFrame ? 1080 : 1440;
+    const outputType = isFrame ? "image/png" : "image/jpeg";
+    const quality = isFrame ? undefined : 0.85;
+    const outputExt = isFrame ? "png" : "jpg";
+
+    const bitmap = await createImageBitmap(f).catch(() => null);
+    if (!bitmap) return f;
+
+    let { width, height } = bitmap;
+    const scale = Math.min(1, maxDim / Math.max(width, height));
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return f;
+    if (!isFrame) {
+      // white background for JPEG (avoids black bg from transparent source)
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+    }
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close?.();
+
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob(resolve, outputType, quality)
+    );
+    if (!blob) return f;
+    // If compression makes it larger (rare), keep original
+    if (blob.size >= f.size && f.type === outputType) return f;
+    return new File([blob], `${prefix}.${outputExt}`, { type: outputType });
+  };
+
   const uploadAsset = async (
     f: File,
     key: "twibbon_frame_url" | "poster_url",
@@ -128,13 +170,15 @@ function TwibbonSetting() {
     ref: React.RefObject<HTMLInputElement | null>
   ) => {
     if (!f.type.startsWith("image/")) { toast.error("File harus gambar"); return; }
-    if (f.size > 8 * 1024 * 1024) { toast.error("Maks 8MB"); return; }
+    if (f.size > 20 * 1024 * 1024) { toast.error("Maks 20MB"); return; }
     setBusy(true);
     try {
-      const ext = (f.name.split(".").pop() || "png").toLowerCase();
-      const path = `${prefix}-${Date.now()}.${ext}`;
+      const compressed = await compressImage(f, prefix);
+      if (compressed.size > 8 * 1024 * 1024) {
+        throw new Error("Gambar masih terlalu besar setelah kompresi (maks 8MB)");
+      }
       const form = new FormData();
-      form.append("file", f);
+      form.append("file", compressed);
       form.append("key", key);
       form.append("prefix", prefix);
 
@@ -145,7 +189,12 @@ function TwibbonSetting() {
       const url = typeof data?.url === "string" ? data.url : "";
       if (!url) throw new Error("Upload berhasil, tapi URL file tidak diterima");
       setUrl(url);
-      toast.success("Berhasil diperbarui");
+      const savedKb = Math.max(0, Math.round((f.size - compressed.size) / 1024));
+      toast.success(
+        savedKb > 0
+          ? `Berhasil diperbarui (hemat ${savedKb} KB)`
+          : "Berhasil diperbarui"
+      );
     } catch (err: any) {
       toast.error(err?.message ?? "Gagal upload");
     } finally {
