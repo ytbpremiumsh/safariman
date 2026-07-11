@@ -94,9 +94,10 @@ function TwibbonSetting() {
     try {
       const now = new Date().toISOString();
       const { error } = await supabase.from("app_settings").upsert([
-        { key: "twibbon_caption", value: twibbonCaption, updated_at: now },
-        { key: "poster_caption", value: posterCaption, updated_at: now },
+        { key: "twibbon_caption", value: shareCaption, updated_at: now },
+        { key: "poster_caption", value: shareCaption, updated_at: now },
       ]);
+
       if (error) throw error;
       toast.success("Caption tersimpan");
     } catch (err: any) {
