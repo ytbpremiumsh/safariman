@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar, Instagram, Music2, Plus, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar, Instagram, Music2, Plus, Trash2, Save, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
