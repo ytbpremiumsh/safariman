@@ -310,10 +310,10 @@ function DonasiPage() {
                         : "Selamat, kamu lolos berkas!"}
                     </div>
                     <div className="font-display text-white text-2xl sm:text-3xl leading-snug">
-                      Selangkah lagi menuju tahap Essay
+                      Selangkah lagi menuju Pengiriman Essay dan Studi Kasus
                     </div>
                     <p className="text-accent/95 text-base sm:text-lg mt-4 leading-relaxed font-medium">
-                      Tunaikan donasi terlebih dahulu untuk membuka akses ke tahap penulisan Essay.
+                      Tunaikan donasi terlebih dahulu untuk membuka akses ke tahap Pengiriman Essay dan Studi Kasus.
                     </p>
                   </div>
                   <button
