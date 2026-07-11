@@ -225,35 +225,15 @@ function PesertaEssayPage() {
         </div>
       </div>
 
-      {/* Publish hasil */}
-      <div className={`rounded-2xl border p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
-        published ? "bg-emerald/10 border-emerald/30" : "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/40"
-      }`}>
-        <div className="flex items-start gap-3">
-          {published ? <Megaphone className="size-5 text-emerald shrink-0 mt-0.5" /> : <EyeOff className="size-5 text-amber-600 shrink-0 mt-0.5" />}
-          <div>
-            <div className="font-semibold text-sm">
-              {published ? "Hasil Essay & Studi Kasus sudah DIPUBLIKASIKAN" : "Hasil Essay & Studi Kasus DITAHAN (belum dipublikasikan)"}
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5 max-w-2xl">
-              {published
-                ? "Peserta sudah dapat melihat keputusan di halaman Cek Tahapan."
-                : `Tandai semua keputusan terlebih dahulu, kemudian klik "Publish" agar peserta dapat melihat hasilnya. Saat ini ${stats.pending} peserta belum diputuskan.`}
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={() => togglePublish(!published)}
-          disabled={pubBusy || (!published && !allDecided)}
-          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50 shrink-0 ${
-            published ? "bg-secondary text-foreground border border-border" : "bg-emerald text-white shadow-emerald hover-lift"
-          }`}
-          title={!published && !allDecided ? "Selesaikan semua keputusan dulu" : undefined}
-        >
-          {pubBusy ? <Loader2 className="size-4 animate-spin" /> : <Megaphone className="size-4" />}
-          {published ? "Tarik Publikasi" : "Publish Hasil"}
-        </button>
-      </div>
+      {/* Publish hasil — TAHAP ESSAY & STUDI KASUS (terpisah dari toggle Berkas) */}
+      <EssayPublishBox
+        published={published}
+        pubBusy={pubBusy}
+        allDecided={allDecided}
+        pendingCount={stats.pending}
+        onToggle={togglePublish}
+      />
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
@@ -580,3 +560,87 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
     </div>
   );
 }
+
+function EssayPublishBox({
+  published, pubBusy, allDecided, pendingCount, onToggle,
+}: {
+  published: boolean;
+  pubBusy: boolean;
+  allDecided: boolean;
+  pendingCount: number;
+  onToggle: (next: boolean) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const canPublish = published || allDecided;
+  return (
+    <div
+      className={`rounded-2xl border-2 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
+        published
+          ? "bg-indigo-50 border-indigo-500 ring-2 ring-indigo-300 dark:bg-indigo-950/20"
+          : "bg-amber-50 border-amber-300 dark:bg-amber-950/20 dark:border-amber-700"
+      }`}
+    >
+      <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className={`shrink-0 size-10 rounded-xl grid place-items-center ${published ? "bg-indigo-600 text-white" : "bg-amber-400 text-white"}`}>
+          {published ? <Megaphone className="size-5" /> : <EyeOff className="size-5" />}
+        </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-indigo-600 text-white">
+              Tahap 3 · Essay &amp; Studi Kasus
+            </span>
+            <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${published ? "bg-emerald text-white" : "bg-amber-500 text-white"}`}>
+              {published ? "Status: AKTIF" : "Status: NONAKTIF"}
+            </span>
+          </div>
+          <div className="font-semibold text-sm mt-1">
+            {published
+              ? "Hasil Essay & Studi Kasus sudah DIPUBLIKASIKAN"
+              : "Hasil Essay & Studi Kasus BELUM DIPUBLIKASIKAN"}
+          </div>
+          <p className="text-xs text-muted-foreground mt-0.5 max-w-2xl leading-relaxed">
+            {published
+              ? "Peserta sudah dapat melihat keputusan Essay & Studi Kasus di halaman Cek Tahapan. Toggle ini terpisah dari Seleksi Berkas."
+              : `Tandai semua keputusan Essay & Studi Kasus dulu, lalu Publish. Saat ini ${pendingCount} peserta belum diputuskan.`}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {confirming ? (
+          <>
+            <button
+              onClick={() => setConfirming(false)}
+              disabled={pubBusy}
+              className="px-3 py-2 rounded-lg text-xs font-semibold bg-secondary border border-border"
+            >
+              Batal
+            </button>
+            <button
+              onClick={() => { onToggle(!published); setConfirming(false); }}
+              disabled={pubBusy}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-lg ${published ? "bg-red-600 hover:bg-red-700" : "bg-indigo-600 hover:bg-indigo-700"}`}
+            >
+              {pubBusy ? <Loader2 className="size-4 animate-spin" /> : <Megaphone className="size-4" />}
+              Ya, {published ? "tarik" : "publish"}
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            disabled={pubBusy || !canPublish}
+            title={!canPublish ? "Selesaikan semua keputusan dulu" : undefined}
+            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50 ${
+              published
+                ? "bg-white text-red-700 border-2 border-red-300 hover:bg-red-50 dark:bg-transparent"
+                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg"
+            }`}
+          >
+            <Megaphone className="size-4" />
+            {published ? "Tarik Publikasi" : "Publish Hasil"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+

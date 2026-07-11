@@ -61,6 +61,9 @@ export function PublishHasilToggle({ settingKey, label, description }: Props) {
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-sky-600 text-white">
+              Tahap 1 · Seleksi Berkas
+            </span>
             <span
               className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
                 published ? "bg-emerald text-white" : "bg-amber-500 text-white"
@@ -72,10 +75,8 @@ export function PublishHasilToggle({ settingKey, label, description }: Props) {
                 <><AlertTriangle className="size-3" /> Status: NONAKTIF</>
               )}
             </span>
-            <span className="text-[11px] text-muted-foreground">
-              {published ? "terlihat oleh peserta" : "tersembunyi dari peserta"}
-            </span>
           </div>
+
           <div className="font-semibold text-sm mt-1">
             {published
               ? `Hasil ${label} sudah DIPUBLIKASIKAN`
