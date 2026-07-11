@@ -62,7 +62,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Persyaratan Umum",
     category: "Umum",
     message:
-      "*Persyaratan Umum Peserta Fully Funded* ✅\n\n• Muslim/Muslimah dengan niat kuat beribadah & belajar\n• WNI usia *12–45 tahun*\n• Terbuka untuk pelajar, mahasiswa, santri, maupun umum\n• Bersedia mengikuti seluruh tahapan & ketentuan program\n• Disiplin, bertanggung jawab, dan berakhlak baik\n• Siap mengikuti pembinaan, mentoring, dan kegiatan program\n• Tidak wajib fasih Bahasa Arab / Inggris\n• Terbuka untuk berbagai latar belakang pendidikan\n\nInfo lengkap: https://www.safariman.id",
+      "*Persyaratan Umum Peserta Safar Iman* ✅\n\nProgram Safar Iman terbuka luas untuk pemuda-pemudi Indonesia yang siap menempuh perjalanan keimanan:\n\n1. Muslim/Muslimah yang memiliki niat kuat untuk beribadah dan belajar.\n2. Warga Negara Indonesia usia *12–45 tahun*.\n3. Terbuka untuk pelajar, mahasiswa, santri, maupun umum.\n4. Bersedia mengikuti seluruh tahapan dan ketentuan program.\n5. Memiliki sikap disiplin, bertanggung jawab, dan berakhlak baik.\n6. Siap mengikuti pembinaan, mentoring, dan kegiatan program.\n7. Tidak wajib fasih Bahasa Arab atau Bahasa Inggris.\n8. Terbuka bagi peserta dari berbagai latar belakang pendidikan.\n\n_*Ketentuan selengkapnya tersedia pada buku panduan program._\n\nInfo lengkap: https://www.safariman.id/#persyaratan",
   },
   {
     keyword: "kategori",
