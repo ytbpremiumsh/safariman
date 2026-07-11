@@ -108,21 +108,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     label: "Cara Kirim Berkas",
     category: "Berkas",
     message:
-      "Untuk kirim berkas administrasi (CV & Foto), silakan:\n1. Buka https://www.safariman.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Upload CV format PDF (maks. 2 MB)\n4. Upload Foto formal (rasio 3x4, latar polos)\n5. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
-  },
-  {
-    keyword: "cv",
-    label: "Ketentuan CV",
-    category: "Berkas",
-    message:
-      "Ketentuan CV Safar Iman:\n- Format PDF, ukuran maks. 2 MB\n- Berisi: data diri, riwayat pendidikan, pengalaman organisasi, prestasi, pengalaman dakwah/sosial (jika ada)\n- Rapi, mudah dibaca, boleh gunakan template Canva/Word\n\nCV adalah salah satu berkas utama yang dinilai, pastikan diisi jujur dan lengkap ya 🙌",
-  },
-  {
-    keyword: "foto",
-    label: "Ketentuan Foto",
-    category: "Berkas",
-    message:
-      "Ketentuan foto:\n- Foto formal terbaru\n- Rasio 3x4, latar belakang polos (biru/merah/putih)\n- Wajah terlihat jelas, berpakaian sopan & syar'i\n- Format JPG/PNG, maks. 2 MB",
+      "Untuk kirim berkas pendukung, silakan:\n1. Buka https://www.safariman.id/berkas\n2. Masukkan *Kode Pendaftaran*\n3. Lengkapi data berkas pendukung sesuai instruksi di halaman tersebut\n4. Klik *Kirim Berkas*\n\nStatus akan otomatis terupdate setelah berkas diterima.",
   },
   {
     keyword: "cek-berkas",
@@ -131,6 +117,7 @@ const DEFAULT_QUICK_REPLIES: (QuickReply & { category?: string })[] = [
     message:
       "Untuk memastikan berkas sudah diterima, silakan cek status pendaftaran di:\nhttps://www.safariman.id/cek-tahapan\n\nMasukkan *Kode Pendaftaran* Kakak. Status akan menampilkan tahapan yang sudah/ belum diselesaikan ✅",
   },
+
 
   // ===== ESSAY =====
   {
