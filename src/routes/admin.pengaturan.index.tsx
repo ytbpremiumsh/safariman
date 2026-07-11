@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, ListOrdered, Sparkles } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -73,6 +73,12 @@ const ITEMS = [
     icon: MessageCircle,
     title: "Link Saluran WhatsApp",
     desc: "URL Saluran WhatsApp yang ditampilkan sebagai ajakan gabung di seluruh halaman sukses pendaftaran.",
+  },
+  {
+    to: "/admin/pengaturan/wa-quick-reply",
+    icon: MessageSquareText,
+    title: "Balas Cepat WhatsApp",
+    desc: "Kumpulan template pesan siap-kirim (keyword + isi) untuk membalas peserta di WhatsApp. Tinggal klik Salin lalu tempel.",
   },
   {
     to: "/admin/pengaturan/faq",

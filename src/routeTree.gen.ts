@@ -38,6 +38,7 @@ import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.
 import { Route as AdminPesertaKontribusiRouteImport } from './routes/admin.peserta.kontribusi'
 import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
 import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
+import { Route as AdminPengaturanWaQuickReplyRouteImport } from './routes/admin.pengaturan.wa-quick-reply'
 import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
@@ -205,6 +206,12 @@ const AdminPesertaEssayRoute = AdminPesertaEssayRouteImport.update({
   path: '/admin/peserta/essay',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanWaQuickReplyRoute =
+  AdminPengaturanWaQuickReplyRouteImport.update({
+    id: '/admin/pengaturan/wa-quick-reply',
+    path: '/admin/pengaturan/wa-quick-reply',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanWaChannelRoute =
   AdminPengaturanWaChannelRouteImport.update({
     id: '/admin/pengaturan/wa-channel',
@@ -362,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
+  '/admin/pengaturan/wa-quick-reply': typeof AdminPengaturanWaQuickReplyRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
@@ -414,6 +422,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
+  '/admin/pengaturan/wa-quick-reply': typeof AdminPengaturanWaQuickReplyRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
@@ -465,6 +474,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
+  '/admin/pengaturan/wa-quick-reply': typeof AdminPengaturanWaQuickReplyRoute
   '/admin/peserta/essay': typeof AdminPesertaEssayRoute
   '/admin/peserta/essay-api': typeof AdminPesertaEssayApiRoute
   '/admin/peserta/kontribusi': typeof AdminPesertaKontribusiRoute
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
+    | '/admin/pengaturan/wa-quick-reply'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/peserta/kontribusi'
@@ -571,6 +582,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
+    | '/admin/pengaturan/wa-quick-reply'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/peserta/kontribusi'
@@ -621,6 +633,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
+    | '/admin/pengaturan/wa-quick-reply'
     | '/admin/peserta/essay'
     | '/admin/peserta/essay-api'
     | '/admin/peserta/kontribusi'
@@ -674,6 +687,7 @@ export interface RootRouteChildren {
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
   AdminPengaturanWaChannelRoute: typeof AdminPengaturanWaChannelRoute
+  AdminPengaturanWaQuickReplyRoute: typeof AdminPengaturanWaQuickReplyRoute
   AdminPesertaEssayRoute: typeof AdminPesertaEssayRoute
   AdminPesertaEssayApiRoute: typeof AdminPesertaEssayApiRoute
   AdminPesertaKontribusiRoute: typeof AdminPesertaKontribusiRoute
@@ -887,6 +901,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/peserta/essay'
       fullPath: '/admin/peserta/essay'
       preLoaderRoute: typeof AdminPesertaEssayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/wa-quick-reply': {
+      id: '/admin/pengaturan/wa-quick-reply'
+      path: '/admin/pengaturan/wa-quick-reply'
+      fullPath: '/admin/pengaturan/wa-quick-reply'
+      preLoaderRoute: typeof AdminPengaturanWaQuickReplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pengaturan/wa-channel': {
@@ -1109,6 +1130,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
   AdminPengaturanWaChannelRoute: AdminPengaturanWaChannelRoute,
+  AdminPengaturanWaQuickReplyRoute: AdminPengaturanWaQuickReplyRoute,
   AdminPesertaEssayRoute: AdminPesertaEssayRoute,
   AdminPesertaEssayApiRoute: AdminPesertaEssayApiRoute,
   AdminPesertaKontribusiRoute: AdminPesertaKontribusiRoute,
