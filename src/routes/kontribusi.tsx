@@ -139,7 +139,7 @@ function DonasiPage() {
             {[
               { i: BookOpen, t: "Sedekah Al-Qur'an", d: "Sedekah mushaf Al-Qur'an di Makkah dan Madinah sebagai amal jariyah.", bg: cardKaabaAsset.url, dark: false },
               { i: Utensils, t: "Berbagi Makanan", d: "Menjangkau saudara yang membutuhkan di Makkah dan Madinah.", bg: cardNabawiAsset.url, dark: true },
-              { i: Armchair, t: "Sedekah Kursi Duduk", d: "Sedekah kursi duduk untuk jamaah lansia beribadah dengan nyaman di masjid.", bg: cardKursiAsset.url, dark: true },
+              { i: Armchair, t: "Sedekah Kursi Duduk", d: "Sedekah kursi duduk di Makkah dan Madinah untuk jamaah lansia beribadah dengan nyaman.", bg: cardKursiAsset.url, dark: true },
               { i: Users, t: "Kegiatan Safar Iman", d: "Mendukung keberlangsungan kegiatan Safar Iman.", bg: cardHaramAsset.url, dark: false },
             ].map((b) => (
               <div
