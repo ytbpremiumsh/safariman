@@ -123,7 +123,7 @@ function CekTahapanPage() {
           </div>
         )}
 
-        {data && <TahapanResult row={data} />}
+        {data && <TahapanResult row={data} code={code.trim()} />}
       </div>
     </div>
   );
