@@ -79,7 +79,7 @@ function Nav() {
   const [open, setOpen] = useState(false);
   const links = [
     { href: "#program", label: "Program" },
-    { href: "#kuota", label: "Kuota" },
+    
     { href: "#timeline", label: "Timeline" },
     { href: "/cek-tahapan", label: "Cek Tahapan" },
     { href: "/faq", label: "FAQ" },
