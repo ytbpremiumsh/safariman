@@ -47,10 +47,10 @@ function EssaySuccessPage() {
 
         <p className="mt-6 text-lg text-white/85 leading-relaxed">
           Alhamdulillah, jawaban Essay & Studi Kasus kamu telah kami terima.
-          Seluruh tahapan seleksimu — mulai dari <strong>Berkas</strong>, <strong>Essay & Studi Kasus</strong>,
-          <strong> TKA</strong>, hingga <strong>Interview</strong> — dapat kamu pantau kapan saja
-          di halaman <strong>Cek Tahapan</strong>.
+          Semoga Allah mudahkan langkahmu — lolos <strong>TKA</strong>, lancar di tahap <strong>Interview</strong>,
+          hingga menjadi peraih <strong>Fully Funded</strong>. Aamiin.
         </p>
+
 
         {/* Info Cek Tahapan */}
         <div className="mt-8 glass rounded-2xl p-5 sm:p-6 text-left border border-accent/30">
