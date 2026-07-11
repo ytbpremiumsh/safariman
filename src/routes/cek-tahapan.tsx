@@ -343,9 +343,10 @@ function ApresiasiCollapsible() {
   );
 }
 
-function StageItem({ stage, index }: { stage: Stage; index: number }) {
+function StageItem({ stage, index, href }: { stage: Stage; index: number; href: string | null }) {
   const Icon = stage.icon;
   const cfg = STATE_STYLES[stage.state];
+  const showCta = stage.state === "pending" && !!href;
   return (
     <div
       className={`bg-card border rounded-2xl p-4 flex items-start gap-4 ${cfg.border} ${
@@ -364,6 +365,14 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
         </div>
         <h3 className="font-display text-base sm:text-lg font-semibold mt-1">{stage.title}</h3>
         {stage.note && <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{stage.note}</p>}
+        {showCta && (
+          <Link
+            to={href!}
+            className="inline-flex items-center gap-1.5 mt-3 rounded-full bg-emerald text-white px-3 py-1.5 text-xs font-semibold shadow-emerald hover-lift"
+          >
+            Buka Halaman <ArrowRight className="size-3.5" />
+          </Link>
+        )}
       </div>
       <div className={`shrink-0 size-7 rounded-full grid place-items-center ${cfg.markBg}`}>
         {cfg.mark}
@@ -371,6 +380,7 @@ function StageItem({ stage, index }: { stage: Stage; index: number }) {
     </div>
   );
 }
+
 
 function EncourageCard({ failedTitle }: { failedTitle: string }) {
   return (
