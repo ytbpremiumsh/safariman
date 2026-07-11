@@ -30,8 +30,8 @@ export const DEFAULT_FAQ: FaqItem[] = [
   { category: "Pendaftaran", q: "Apakah ada biaya pendaftaran?", a: "Pendaftaran tidak dipungut biaya. Kontribusi hanya berlaku untuk jalur Self Funded / Gelombang / Add-on benefit yang sifatnya opsional." },
 
   // Berkas
-  { category: "Berkas", q: "Berkas apa saja yang harus dikirim?", a: "CV/Curriculum Vitae terbaru (PDF), foto diri formal (JPG/PNG), serta data pendukung lain sesuai instruksi pada halaman /berkas." },
-  { category: "Berkas", q: "Berapa ukuran maksimal file berkas?", a: "Maksimal 5 MB per file. Gunakan format PDF untuk CV dan JPG/PNG untuk foto agar mudah diproses." },
+  { category: "Berkas", q: "Berkas apa saja yang harus dikirim?", a: "Data identitas diri, sertifikat pendukung, portofolio kegiatan, serta informasi pengalaman & skill sesuai instruksi pada halaman /berkas." },
+  { category: "Berkas", q: "Bagaimana cara melampirkan file berkas?", a: "Upload file ke Google Drive kamu terlebih dahulu (pastikan akses 'Anyone with the link can view'), lalu paste link-nya di formulir pengiriman berkas." },
   { category: "Berkas", q: "Apakah saya bisa mengubah berkas setelah dikirim?", a: "Selama pendaftaran masih dibuka (sebelum 31 Agustus 2026), kamu bisa mengirim ulang berkas dengan Kode Pendaftaran yang sama; data baru akan menimpa data lama." },
   { category: "Berkas", q: "Bagaimana cara mengetahui berkas saya sudah diterima?", a: "Setelah submit, halaman sukses akan menampilkan konfirmasi. Kamu juga akan menerima notifikasi email dan dapat mengecek status di halaman /cek-hasil." },
 
