@@ -86,7 +86,7 @@ function CekTahapanPage() {
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">Cek Tahapan Seleksi</h1>
           <p className="text-muted-foreground mt-2 leading-relaxed max-w-xl mx-auto">
-            Pantau progres seleksimu di Safar Iman:<br /><strong>Berkas</strong>, <strong>Essay &amp; Studi Kasus</strong>, <strong>TKA</strong>, hingga <strong>Interview</strong>.
+            Pantau progres seleksimu di Safar Iman:<br /><strong>Berkas</strong>, <strong>Essay &amp; Studi Kasus</strong>, <strong>Test Kesiapan Awal (TKA)</strong>, hingga <strong>Interview</strong>.
           </p>
         </div>
 
