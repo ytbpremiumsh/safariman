@@ -14,7 +14,7 @@ const MIN_ESSAY_WORDS = 50;
 const MIN_CASE_WORDS = 30;
 const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 const essayField = (label: string, min = MIN_ESSAY_WORDS) =>
-  z.string().trim().max(3000).refine((v) => countWords(v) >= min, {
+  z.string().trim().max(10000, `${label} maksimal 10.000 karakter`).refine((v) => countWords(v) >= min, {
     message: `${label} minimal ${min} kata`,
   });
 const essaySchema = z.object({
