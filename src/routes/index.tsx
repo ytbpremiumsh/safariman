@@ -82,7 +82,6 @@ function Nav() {
     
     { href: "#timeline", label: "Timeline" },
     { href: "/cek-tahapan", label: "Cek Tahapan" },
-    { href: "/faq", label: "FAQ" },
     { href: "/tentang", label: "Tentang" },
   ];
   return (
