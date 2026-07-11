@@ -133,7 +133,13 @@ function PesertaEssayPage() {
     if (e2) { toast.error(e2.message); return; }
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
     if (detail?.id === id) setDetail({ ...detail, status: s });
-    toast.success(`Status: ${STATUS_LABEL[s]}`);
+    if (s === "interview") {
+      toast.success(`Lolos Essay & Studi Kasus — otomatis dipindahkan ke tahap TKA`);
+    } else if (s === "rejected") {
+      toast.success(`Ditandai Tidak Lolos Essay & Studi Kasus`);
+    } else {
+      toast.success(`Status: ${STATUS_LABEL[s]}`);
+    }
   };
 
   const togglePublish = async (next: boolean) => {
