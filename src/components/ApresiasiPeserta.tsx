@@ -140,16 +140,19 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
 }
 
 function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
-  const placeholder = hidePlaceholder ? <span className="text-muted-foreground">—</span> : <span className="text-amber-600">Coming Soon</span>;
+  // When hidePlaceholder is true and there is neither a date nor a link, hide the row entirely.
+  if (hidePlaceholder && !loading && !date && !link) return null;
   return (
     <div className="mt-4 pt-4 border-t border-border/60 space-y-2">
-      <div className="flex items-center gap-2 text-xs">
-        <Calendar className="size-3.5 text-emerald shrink-0" />
-        <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
-        <span className="font-semibold text-foreground">
-          {loading ? "…" : date ? formatDate(date) : placeholder}
-        </span>
-      </div>
+      {(loading || date || !hidePlaceholder) && (
+        <div className="flex items-center gap-2 text-xs">
+          <Calendar className="size-3.5 text-emerald shrink-0" />
+          <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
+          <span className="font-semibold text-foreground">
+            {loading ? "…" : date ? formatDate(date) : <span className="text-amber-600">Coming Soon</span>}
+          </span>
+        </div>
+      )}
       {link ? (
         <a
           href={link}
@@ -170,6 +173,7 @@ function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: s
     </div>
   );
 }
+
 
 function BenefitButton({
   icon: Icon, title, desc, link, loading, hidePlaceholder = false,
