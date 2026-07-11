@@ -244,6 +244,16 @@ function buildStages(row: LookupRow): Stage[] {
   ];
 }
 
+function stageHref(key: string, code: string): string | null {
+  const q = `?kode=${encodeURIComponent(code)}`;
+  switch (key) {
+    case "berkas": return `/berkas${q}`;
+    case "kontribusi": return `/kontribusi${q}`;
+    case "essay": return `/essay${q}`;
+    default: return null;
+  }
+}
+
 function TahapanResult({ row }: { row: LookupRow }) {
   const stages = buildStages(row);
   const activeStages = stages.filter((s) => s.state !== "skipped");
@@ -283,13 +293,14 @@ function TahapanResult({ row }: { row: LookupRow }) {
       <ol className="relative space-y-3">
         {stages.map((s, i) => (
           <li key={s.key}>
-            <StageItem stage={s} index={i + 1} />
+            <StageItem stage={s} index={i + 1} href={stageHref(s.key, row.full_name ? "" : "") || null} code={""} />
             {s.key === "kontribusi" && s.state === "passed" && (
               <ApresiasiCollapsible />
             )}
           </li>
         ))}
       </ol>
+
 
       {/* Final message */}
       {failedStage ? (
