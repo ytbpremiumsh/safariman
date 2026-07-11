@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar, Instagram, Music2, Plus, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Loader2, Upload, Download, TrendingUp, Calendar, Instagram, Music2, Plus, Trash2, Save, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
@@ -21,6 +21,9 @@ function TwibbonSetting() {
   const [posterUrl, setPosterUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadingPoster, setUploadingPoster] = useState(false);
+  const [twibbonCaption, setTwibbonCaption] = useState("");
+  const [posterCaption, setPosterCaption] = useState("");
+  const [savingCaptions, setSavingCaptions] = useState(false);
   const [stats, setStats] = useState<DayStat[]>([]);
   const [rangeDays, setRangeDays] = useState(30);
   const [igAccounts, setIgAccounts] = useState<SocialAccount[]>([]);
@@ -42,12 +45,15 @@ function TwibbonSetting() {
       const [{ data: rows }] = await Promise.all([
         supabase.from("app_settings").select("key,value").in("key", [
           "twibbon_frame_url", "poster_url", "social_ig_accounts", "social_tiktok_accounts",
+          "twibbon_caption", "poster_caption",
         ]),
         loadStats(rangeDays),
       ]);
       const map = new Map((rows ?? []).map((r: any) => [r.key, r.value]));
       setTwibbonFrameUrl((map.get("twibbon_frame_url") as string) ?? "");
       setPosterUrl((map.get("poster_url") as string) ?? "");
+      setTwibbonCaption((map.get("twibbon_caption") as string) ?? "");
+      setPosterCaption((map.get("poster_caption") as string) ?? "");
       const parse = (raw: unknown): SocialAccount[] => {
         try {
           const v = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -80,6 +86,23 @@ function TwibbonSetting() {
       toast.error(err?.message ?? "Gagal menyimpan");
     } finally {
       setSavingSocial(false);
+    }
+  };
+
+  const saveCaptions = async () => {
+    setSavingCaptions(true);
+    try {
+      const now = new Date().toISOString();
+      const { error } = await supabase.from("app_settings").upsert([
+        { key: "twibbon_caption", value: twibbonCaption, updated_at: now },
+        { key: "poster_caption", value: posterCaption, updated_at: now },
+      ]);
+      if (error) throw error;
+      toast.success("Caption tersimpan");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Gagal menyimpan");
+    } finally {
+      setSavingCaptions(false);
     }
   };
 
@@ -222,6 +245,55 @@ function TwibbonSetting() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Caption Editor */}
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <FileText className="size-5 text-accent" />
+            <div className="font-display text-lg font-semibold">Caption Twibbon & Poster</div>
+          </div>
+          <button
+            onClick={saveCaptions}
+            disabled={savingCaptions}
+            className="inline-flex items-center gap-2 rounded-full bg-emerald text-white px-4 py-2 text-sm font-semibold shadow-emerald hover-lift disabled:opacity-60"
+          >
+            {savingCaptions ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            {savingCaptions ? "Menyimpan..." : "Simpan"}
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Caption ini ditampilkan pada halaman Twibbon publik dan disalin oleh peserta saat membagikan Twibbon di Instagram maupun Poster ke grup WhatsApp. Kosongkan untuk memakai caption default.
+        </p>
+
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Caption Twibbon (Instagram)
+          </label>
+          <textarea
+            value={twibbonCaption}
+            onChange={(e) => setTwibbonCaption(e.target.value)}
+            rows={10}
+            placeholder="Tulis caption untuk twibbon Instagram..."
+            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-mono leading-relaxed"
+          />
+          <div className="text-[11px] text-muted-foreground text-right">{twibbonCaption.length} karakter</div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Caption Poster (WhatsApp)
+          </label>
+          <textarea
+            value={posterCaption}
+            onChange={(e) => setPosterCaption(e.target.value)}
+            rows={10}
+            placeholder="Tulis caption untuk kirim poster ke grup WhatsApp..."
+            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-mono leading-relaxed"
+          />
+          <div className="text-[11px] text-muted-foreground text-right">{posterCaption.length} karakter</div>
         </div>
       </div>
 
