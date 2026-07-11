@@ -52,6 +52,23 @@ type Row = {
   created_at: string;
 };
 
+type PendingRow = {
+  id: string;
+  registration_code: string;
+  full_name: string;
+  email: string;
+  whatsapp: string;
+  city: string;
+  education: string;
+  category: Category | null;
+  has_essay_worthy: boolean;
+  has_essay_dream: boolean;
+  has_essay_contribution: boolean;
+  has_case_study_1: boolean;
+  has_case_study_2: boolean;
+  updated_at: string;
+};
+
 const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
