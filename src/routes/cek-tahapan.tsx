@@ -151,12 +151,12 @@ function buildStages(row: LookupRow): Stage[] {
     berkas = row.has_berkas ? "pending" : "pending";
     berkasNote = row.has_berkas
       ? "Berkas sudah terkirim. Hasil seleksi akan diumumkan setelah seluruh berkas selesai dinilai."
-      : "Lengkapi pengiriman berkas (CV & foto)";
+      : "Lengkapi pengiriman berkas";
   } else if (row.has_berkas) {
     berkas = rejected && !row.has_essay ? "failed" : "passed";
   } else {
     berkas = rejected ? "failed" : "pending";
-    berkasNote = "Lengkapi pengiriman berkas (CV & foto)";
+    berkasNote = "Lengkapi pengiriman berkas";
   }
 
   // Stage 2: Kontribusi
