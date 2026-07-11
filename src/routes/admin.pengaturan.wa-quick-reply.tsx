@@ -165,9 +165,8 @@ function WaQuickReplySetting() {
         keyword: "keyword-baru",
         label: "Template Baru",
         message: "Tulis pesan balasan di sini.",
-        // @ts-expect-error extra prop tolerated
         category: "Umum",
-      },
+      } as QuickReply,
     ]);
 
   const resetDefaults = () => {
