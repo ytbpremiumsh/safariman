@@ -47,7 +47,7 @@ function TwibbonPage() {
   const [igAccounts, setIgAccounts] = useState<SocialAccount[]>(DEFAULT_IG_ACCOUNTS);
   const [tiktokAccounts, setTiktokAccounts] = useState<SocialAccount[]>(DEFAULT_TIKTOK_ACCOUNTS);
   const [twibbonCaptionOverride, setTwibbonCaptionOverride] = useState<string>("");
-  const [posterCaptionOverride, setPosterCaptionOverride] = useState<string>("");
+
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [drag, setDrag] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
