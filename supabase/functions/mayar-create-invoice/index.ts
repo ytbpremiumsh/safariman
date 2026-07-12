@@ -14,17 +14,56 @@ function isPaidLike(value: unknown): boolean {
 
 function invoiceLooksPaid(payload: any): boolean {
   const data = payload?.data ?? payload;
-  if (
+  const statusPaid =
     isPaidLike(data?.status) ||
     isPaidLike(data?.transactionStatus) ||
     isPaidLike(data?.transaction_status) ||
     isPaidLike(data?.invoice?.status) ||
-    isPaidLike(data?.payment?.status)
-  ) return true;
+    isPaidLike(data?.payment?.status);
   const transactions = Array.isArray(data?.transactions) ? data.transactions : [];
-  return transactions.some((tx: any) =>
+  const txPaid = transactions.some((tx: any) =>
     isPaidLike(tx?.status) || isPaidLike(tx?.transactionStatus) || isPaidLike(tx?.transaction_status)
   );
+  // Mayar's invoice detail endpoint kadang mengembalikan status "paid"
+  // meski peserta hanya membuka halaman pembayaran tanpa menyelesaikan
+  // transaksi. Untuk memastikan pembayaran benar-benar sukses, wajibkan
+  // bukti transaksi nyata: minimal ada satu transaksi dengan extraData
+  // yang ter-isi (menandakan payment method dipilih & transaksi selesai)
+  // ATAU salah satu transaksi status-nya paid/settled secara eksplisit.
+  const hasRealTx = transactions.some((tx: any) => {
+    const extra = tx?.extraData;
+    if (!extra) return false;
+    if (typeof extra === "object" && Object.keys(extra).length === 0) return false;
+    return true;
+  });
+  if (txPaid) return true;
+  return statusPaid && hasRealTx;
+}
+
+async function verifyPaidViaTransactions(
+  apiKey: string,
+  invoiceId: string,
+  transactionIds: string[],
+): Promise<boolean> {
+  // Cross-verify: cari di list transaksi apakah paymentLinkId == invoiceId
+  // dengan status paid/settled. Jika tidak ketemu → JANGAN tandai paid.
+  try {
+    const res = await fetch("https://api.mayar.id/hl/v1/transactions?page=1&pageSize=50", {
+      method: "GET",
+      headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
+    });
+    if (!res.ok) return false;
+    const payload = await res.json().catch(() => ({}));
+    const list: any[] = Array.isArray(payload?.data) ? payload.data : [];
+    return list.some((tx) => {
+      if (tx?.paymentLinkId !== invoiceId) return false;
+      if (transactionIds.length > 0 && !transactionIds.includes(tx?.paymentLinkTransactionId)) return false;
+      return isPaidLike(tx?.status);
+    });
+  } catch (e) {
+    console.warn("verifyPaidViaTransactions error", e);
+    return false;
+  }
 }
 
 async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
@@ -36,6 +75,19 @@ async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?
     });
     const payload = await res.json().catch(() => ({}));
     if (!res.ok || !invoiceLooksPaid(payload)) return false;
+    // Verifikasi silang ke endpoint /transactions supaya tidak false-positive
+    // ketika Mayar mengembalikan status "paid" di detail invoice padahal
+    // transaksi belum benar-benar settled.
+    const data = payload?.data ?? payload;
+    const txIds = Array.isArray(data?.transactions)
+      ? data.transactions.map((t: any) => t?.id).filter(Boolean)
+      : [];
+    if (data?.transactionId) txIds.push(data.transactionId);
+    const verified = await verifyPaidViaTransactions(apiKey, invoiceId, txIds);
+    if (!verified) {
+      console.warn("syncDonationStatus: invoice.status paid tapi tidak ada transaksi paid di /transactions", { invoiceId });
+      return false;
+    }
     const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
     return Boolean(updated);
   } catch (e) {
