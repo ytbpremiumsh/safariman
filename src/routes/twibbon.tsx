@@ -280,7 +280,7 @@ function TwibbonPage() {
 - Berbagi Makanan & Wakaf Al-Qur'an di Tanah Suci
 - Cultural Tour Tanah Suci
 
-🪪 Dapatkan Sertifikat Internasional!
+🪪 Dapatkan Sertifikat Nasional!
 
 ✈️ FULLY FUNDED PP PESAWAT
 🎟️ GRATIS BIAYA PENDAFTARAN
