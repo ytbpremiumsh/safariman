@@ -75,6 +75,19 @@ async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?
     });
     const payload = await res.json().catch(() => ({}));
     if (!res.ok || !invoiceLooksPaid(payload)) return false;
+    // Verifikasi silang ke endpoint /transactions supaya tidak false-positive
+    // ketika Mayar mengembalikan status "paid" di detail invoice padahal
+    // transaksi belum benar-benar settled.
+    const data = payload?.data ?? payload;
+    const txIds = Array.isArray(data?.transactions)
+      ? data.transactions.map((t: any) => t?.id).filter(Boolean)
+      : [];
+    if (data?.transactionId) txIds.push(data.transactionId);
+    const verified = await verifyPaidViaTransactions(apiKey, invoiceId, txIds);
+    if (!verified) {
+      console.warn("syncDonationStatus: invoice.status paid tapi tidak ada transaksi paid di /transactions", { invoiceId });
+      return false;
+    }
     const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
     return Boolean(updated);
   } catch (e) {
