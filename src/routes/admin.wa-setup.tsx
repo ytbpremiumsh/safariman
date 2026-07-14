@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles, CheckCircle2, PowerOff, CircleDashed } from "lucide-react";
+import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles, CheckCircle2, PowerOff, CircleDashed, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -86,6 +86,7 @@ function WaSetupPage() {
   const [testing, setTesting] = useState(false);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
@@ -230,7 +231,23 @@ function WaSetupPage() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm">API Key</Label>
-              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="MPWA API Key" className="font-mono" />
+              <div className="relative">
+                <Input
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="MPWA API Key"
+                  className="font-mono pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  aria-label={showApiKey ? "Sembunyikan API Key" : "Tampilkan API Key"}
+                >
+                  {showApiKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <Label className="text-sm">Sender / Nomor Device</Label>
