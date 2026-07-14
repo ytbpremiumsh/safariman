@@ -215,8 +215,8 @@ function Hero() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-32 pb-16 w-full">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* LEFT: copy */}
-          <div className="lg:col-span-7">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6 animate-fade-up">
+          <div className="lg:col-span-7 text-center lg:text-left">
+            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-2 sm:gap-3 mb-6 animate-fade-up">
               <span className="hidden sm:block h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
               <span className="text-accent text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.45em] font-medium break-words">
                 Safar Iman · Exclusive Edition
@@ -236,7 +236,7 @@ function Hero() {
               </span>
             </h1>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+            <div className="mt-6 flex flex-wrap justify-center lg:justify-start items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
               <span className="inline-flex items-center gap-2 rounded-full bg-accent border border-accent text-emerald-deep px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
                 ✦ 100% Fully Funded
               </span>
@@ -246,7 +246,7 @@ function Hero() {
             </div>
 
             <p
-              className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl leading-relaxed animate-fade-up"
+              className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto lg:mx-0 leading-relaxed animate-fade-up"
               style={{ animationDelay: "0.2s" }}
             >
               Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
@@ -254,7 +254,7 @@ function Hero() {
               yang sepenuhnya dibiayai.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <div className="mt-9 flex flex-wrap justify-center lg:justify-start gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               <AffiliateLink
                 selectorId="hero_daftar"
                 to="/pendaftaran"
@@ -272,6 +272,7 @@ function Hero() {
               </a>
             </div>
           </div>
+
 
           {/* RIGHT: stacked image collage */}
           <div className="lg:col-span-5 hidden lg:block animate-fade-up" style={{ animationDelay: "0.25s" }}>
