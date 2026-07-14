@@ -121,6 +121,19 @@ function WaSetupPage() {
       const { edgeFunctionUrl } = await import("@/lib/api");
       setWebhookUrl(edgeFunctionUrl("mpwa-webhook"));
       setLoading(false);
+
+      // Auto-check connection status (silent, no QR display, no force)
+      const key = map.mpwa_api_key ?? "";
+      const snd = map.mpwa_sender ?? "";
+      if (key && snd) {
+        try {
+          const { mpwaProxy } = await import("@/lib/api");
+          const json: any = await mpwaProxy("generate-qr", { device: snd, api_key: key });
+          setConnected(!json?.qrcode);
+        } catch {
+          setConnected(false);
+        }
+      }
     })();
   }, [navigate]);
 
