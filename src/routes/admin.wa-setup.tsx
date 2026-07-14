@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles } from "lucide-react";
+import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles, CheckCircle2, PowerOff, CircleDashed } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -84,6 +84,8 @@ function WaSetupPage() {
   const [qrLoading, setQrLoading] = useState(false);
   const [testNumber, setTestNumber] = useState("");
   const [testing, setTesting] = useState(false);
+  const [connected, setConnected] = useState<boolean | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
@@ -159,13 +161,36 @@ function WaSetupPage() {
     try {
       const { mpwaProxy } = await import("@/lib/api");
       const json: any = await mpwaProxy("generate-qr", { device: sender, api_key: apiKey, force: true });
-      if (json?.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp > Perangkat Tertaut"); }
-      else toast.success(json?.msg || "Device sudah terhubung");
+      if (json?.qrcode) {
+        setQr(json.qrcode);
+        setConnected(false);
+        toast.success("Scan QR di WhatsApp > Perangkat Tertaut");
+      } else {
+        setConnected(true);
+        toast.success(json?.msg || "Device sudah terhubung");
+      }
     } catch (e) {
       console.error(e);
       toast.error("Gagal generate QR");
     } finally {
       setQrLoading(false);
+    }
+  };
+
+  const disconnectDevice = async () => {
+    if (!apiKey || !sender) { toast.error("Lengkapi API Key & Sender"); return; }
+    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?")) return;
+    setDisconnecting(true);
+    try {
+      const { mpwaProxy } = await import("@/lib/api");
+      const json: any = await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
+      setConnected(false);
+      setQr(null);
+      toast.success(json?.msg || "Device diputuskan");
+    } catch (e: any) {
+      toast.error(e.message || "Gagal memutuskan device");
+    } finally {
+      setDisconnecting(false);
     }
   };
 
@@ -212,13 +237,59 @@ function WaSetupPage() {
               <Input value={sender} onChange={(e) => setSender(e.target.value)} placeholder="6281234567890" />
             </div>
           </div>
+          {/* Status indicator */}
+          <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+            connected === true
+              ? "border-emerald/40 bg-emerald/5"
+              : connected === false
+              ? "border-destructive/40 bg-destructive/5"
+              : "border-border bg-secondary/40"
+          }`}>
+            {connected === true ? (
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-emerald" />
+              </span>
+            ) : connected === false ? (
+              <span className="inline-flex size-3 rounded-full bg-destructive" />
+            ) : (
+              <CircleDashed className="size-4 text-muted-foreground animate-spin [animation-duration:3s]" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold flex items-center gap-2">
+                {connected === true ? (
+                  <>
+                    <CheckCircle2 className="size-4 text-emerald animate-pulse" />
+                    Perangkat Terhubung
+                  </>
+                ) : connected === false ? (
+                  "Perangkat Belum Terhubung"
+                ) : (
+                  "Status Tidak Diketahui"
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {connected === true
+                  ? "MPWA siap mengirim & menerima pesan WhatsApp."
+                  : connected === false
+                  ? "Klik Generate QR untuk menautkan perangkat."
+                  : "Klik Generate QR untuk mengecek status device."}
+              </p>
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-2 pt-2">
             <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald disabled:opacity-60">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Pengaturan
             </button>
             <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-2 rounded-full bg-accent/15 text-accent px-5 py-2.5 text-sm font-semibold hover:bg-accent/25 disabled:opacity-60">
-              {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} Generate QR
+              {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} {connected ? "Cek / Refresh QR" : "Generate QR"}
             </button>
+            {connected && (
+              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60 animate-fade-in">
+                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek
+              </button>
+            )}
           </div>
           {qr && (
             <div className="rounded-2xl border border-border p-5 bg-secondary/30 grid place-items-center">

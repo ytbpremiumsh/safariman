@@ -5,7 +5,7 @@ import { requireAdmin } from "../_shared/admin-auth.ts";
 // Body: { endpoint: "generate-qr" | "send-message", payload: object }
 // Hanya admin yang boleh memanggil endpoint ini.
 const MPWA_BASE = "https://app.ayopintar.com";
-const ALLOWED = new Set(["generate-qr", "send-message"]);
+const ALLOWED = new Set(["generate-qr", "send-message", "delete-device"]);
 
 function normalizeDevice(raw: unknown): string {
   const digits = String(raw ?? "").replace(/\D/g, "");
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     if (body.number !== undefined) body.number = normalizeDevice(body.number);
 
     let upstream: Response;
-    if (endpoint === "generate-qr") {
+    if (endpoint === "generate-qr" || endpoint === "delete-device") {
       // MPWA's /generate-qr expects GET with query params (?api_key=...&device=...).
       const qs = new URLSearchParams();
       for (const [k, v] of Object.entries(body)) {
