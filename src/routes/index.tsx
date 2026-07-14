@@ -325,9 +325,13 @@ function Hero() {
       </div>
 
 
-      <div className="absolute bottom-6 inset-x-0 flex justify-center text-white/50 text-xs animate-float">
+      <div className="hidden lg:flex absolute bottom-6 inset-x-0 justify-center text-white/50 text-xs animate-float">
         ↓ Scroll
       </div>
+
+      {/* subtle vignette frame */}
+      <div className="pointer-events-none absolute inset-0 border-[10px] sm:border-[14px] border-emerald-deep/25 mix-blend-multiply" />
+
     </section>
   );
 }
