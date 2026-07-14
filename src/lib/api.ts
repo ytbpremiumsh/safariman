@@ -37,7 +37,7 @@ export async function mayarCreateInvoice(code: string, force = false, syncOnly =
   return data as { ok: boolean; url?: string; alreadyPaid?: boolean; reused?: boolean; synced?: boolean; error?: string };
 }
 
-export async function mpwaProxy(endpoint: "generate-qr" | "send-message", payload: Record<string, unknown>) {
+export async function mpwaProxy(endpoint: "generate-qr" | "send-message" | "delete-device", payload: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke("mpwa-proxy", {
     body: { endpoint, payload },
   });
