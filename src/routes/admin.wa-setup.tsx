@@ -237,13 +237,59 @@ function WaSetupPage() {
               <Input value={sender} onChange={(e) => setSender(e.target.value)} placeholder="6281234567890" />
             </div>
           </div>
+          {/* Status indicator */}
+          <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+            connected === true
+              ? "border-emerald/40 bg-emerald/5"
+              : connected === false
+              ? "border-destructive/40 bg-destructive/5"
+              : "border-border bg-secondary/40"
+          }`}>
+            {connected === true ? (
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-emerald" />
+              </span>
+            ) : connected === false ? (
+              <span className="inline-flex size-3 rounded-full bg-destructive" />
+            ) : (
+              <CircleDashed className="size-4 text-muted-foreground animate-spin [animation-duration:3s]" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold flex items-center gap-2">
+                {connected === true ? (
+                  <>
+                    <CheckCircle2 className="size-4 text-emerald animate-pulse" />
+                    Perangkat Terhubung
+                  </>
+                ) : connected === false ? (
+                  "Perangkat Belum Terhubung"
+                ) : (
+                  "Status Tidak Diketahui"
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {connected === true
+                  ? "MPWA siap mengirim & menerima pesan WhatsApp."
+                  : connected === false
+                  ? "Klik Generate QR untuk menautkan perangkat."
+                  : "Klik Generate QR untuk mengecek status device."}
+              </p>
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-2 pt-2">
             <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald disabled:opacity-60">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Pengaturan
             </button>
             <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-2 rounded-full bg-accent/15 text-accent px-5 py-2.5 text-sm font-semibold hover:bg-accent/25 disabled:opacity-60">
-              {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} Generate QR
+              {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} {connected ? "Cek / Refresh QR" : "Generate QR"}
             </button>
+            {connected && (
+              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60 animate-fade-in">
+                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek
+              </button>
+            )}
           </div>
           {qr && (
             <div className="rounded-2xl border border-border p-5 bg-secondary/30 grid place-items-center">
