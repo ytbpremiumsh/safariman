@@ -5,7 +5,7 @@ import { requireAdmin } from "../_shared/admin-auth.ts";
 // Body: { endpoint: "generate-qr" | "send-message", payload: object }
 // Hanya admin yang boleh memanggil endpoint ini.
 const MPWA_BASE = "https://app.ayopintar.com";
-const ALLOWED = new Set(["generate-qr", "send-message"]);
+const ALLOWED = new Set(["generate-qr", "send-message", "delete-device"]);
 
 function normalizeDevice(raw: unknown): string {
   const digits = String(raw ?? "").replace(/\D/g, "");
