@@ -249,13 +249,14 @@ function Hero() {
             </div>
 
             <p
-              className="mt-8 sm:mt-10 text-sm sm:text-base text-white/70 font-light leading-relaxed tracking-wide max-w-[300px] sm:max-w-xl mx-auto lg:mx-0 animate-fade-up"
+              className="mt-8 sm:mt-10 text-base sm:text-lg text-white/90 font-normal leading-relaxed tracking-normal max-w-[320px] sm:max-w-xl mx-auto lg:mx-0 animate-fade-up drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]"
               style={{ animationDelay: "0.2s" }}
             >
-              Program <span className="text-white font-normal">Safar Iman</span> membuka jalan menuju Baitullah
+              Program <strong className="text-white font-semibold">Safar Iman</strong> membuka jalan menuju Baitullah
               bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour
               yang sepenuhnya dibiayai.
             </p>
+
 
             <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up max-w-sm sm:max-w-none mx-auto lg:mx-0" style={{ animationDelay: "0.3s" }}>
               <AffiliateLink
