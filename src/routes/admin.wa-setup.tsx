@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles } from "lucide-react";
+import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles, CheckCircle2, PowerOff, CircleDashed } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
