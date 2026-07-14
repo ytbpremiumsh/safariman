@@ -86,6 +86,7 @@ function WaSetupPage() {
   const [testing, setTesting] = useState(false);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
