@@ -218,9 +218,10 @@ function Hero() {
           <div className="lg:col-span-7 text-center lg:text-left">
             <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3 mb-8 sm:mb-10 animate-fade-up">
               <span className="hidden sm:block h-px w-8 bg-accent/60" />
-              <span className="text-accent text-[10px] sm:text-[11px] uppercase tracking-[0.4em] sm:tracking-[0.5em] font-medium opacity-90">
+              <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.4em] sm:tracking-[0.5em] font-bold opacity-100 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
                 Safar Iman · Exclusive Edition
               </span>
+
               <span className="hidden sm:block h-px w-8 bg-accent/60" />
             </div>
 
