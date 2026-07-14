@@ -216,62 +216,71 @@ function Hero() {
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* LEFT: copy */}
           <div className="lg:col-span-7 text-center lg:text-left">
-            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-2 sm:gap-3 mb-6 animate-fade-up">
-              <span className="hidden sm:block h-px w-10 bg-gradient-to-r from-transparent via-accent to-accent" />
-              <span className="text-accent text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.45em] font-medium break-words">
+            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3 mb-8 sm:mb-10 animate-fade-up">
+              <span className="hidden sm:block h-px w-8 bg-accent/60" />
+              <span className="text-accent text-[10px] sm:text-[11px] uppercase tracking-[0.4em] sm:tracking-[0.5em] font-medium opacity-90">
                 Safar Iman · Exclusive Edition
               </span>
-              <span className="hidden sm:block h-px w-10 bg-gradient-to-l from-transparent via-accent to-accent" />
+              <span className="hidden sm:block h-px w-8 bg-accent/60" />
             </div>
 
             <h1
-              className="font-display font-semibold text-white leading-[1] animate-fade-up tracking-tight"
+              className="font-display text-white animate-fade-up"
               style={{ animationDelay: "0.1s" }}
             >
-              <span className="block text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white break-words">
+              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-light leading-[0.95] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white break-words">
                 Safar Iman
               </span>
-              <span className="block mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] text-gradient-gold min-h-[1.2em] break-words">
+              <span className="block mt-2 sm:mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] italic font-light text-gradient-gold min-h-[1.2em] break-words tracking-tight">
                 <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua", "Makkah & Madinah"]} />
               </span>
             </h1>
 
-            <div className="mt-6 flex flex-wrap justify-center lg:justify-start items-center gap-3 animate-fade-up" style={{ animationDelay: "0.15s" }}>
-              <span className="inline-flex items-center gap-2 rounded-full bg-accent border border-accent text-emerald-deep px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
-                ✦ 100% Fully Funded
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start items-center gap-2.5 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-accent/40 bg-accent/5 backdrop-blur-sm">
+                <span className="w-1 h-1 bg-accent rounded-full mr-2 shadow-[0_0_8px_hsl(var(--accent))]" />
+                <span className="text-accent text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase">100% Fully Funded</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-emerald border border-emerald text-white px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide">
-                ✦ Gratis Biaya Pendaftaran
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/5 backdrop-blur-sm">
+                <span className="w-1 h-1 bg-emerald-400 rounded-full mr-2 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                <span className="text-emerald-100/85 text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase">Gratis Biaya Pendaftaran</span>
               </span>
             </div>
 
             <p
-              className="mt-7 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto lg:mx-0 leading-relaxed animate-fade-up"
+              className="mt-8 sm:mt-10 text-sm sm:text-base text-white/70 font-light leading-relaxed tracking-wide max-w-[300px] sm:max-w-xl mx-auto lg:mx-0 animate-fade-up"
               style={{ animationDelay: "0.2s" }}
             >
-              Program <strong className="text-white">Safar Iman</strong> membuka jalan menuju Baitullah
+              Program <span className="text-white font-normal">Safar Iman</span> membuka jalan menuju Baitullah
               bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour
               yang sepenuhnya dibiayai.
             </p>
 
-            <div className="mt-9 flex flex-wrap justify-center lg:justify-start gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up max-w-sm sm:max-w-none mx-auto lg:mx-0" style={{ animationDelay: "0.3s" }}>
               <AffiliateLink
                 selectorId="hero_daftar"
                 to="/pendaftaran"
-                className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-semibold shadow-gold hover-lift"
+                className="group inline-flex items-center justify-center gap-3 bg-accent text-emerald-deep px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase shadow-gold hover:bg-accent/90 transition-colors"
               >
                 Daftar Sekarang
-                <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </AffiliateLink>
               <a
                 href={panduanUrl}
                 {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="inline-flex items-center gap-2 rounded-full glass text-white px-7 py-4 text-base font-medium hover:bg-white/20 transition-colors border border-white/20"
+                className="inline-flex items-center justify-center border border-white/20 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/5 transition-colors"
               >
                 Panduan Link
               </a>
             </div>
+
+            {/* Scroll cue — mobile only */}
+            <div className="lg:hidden mt-12 flex flex-col items-center gap-2 animate-fade-up" style={{ animationDelay: "0.4s" }}>
+              <div className="w-px h-10 bg-gradient-to-b from-accent to-transparent" />
+              <span className="text-[8px] tracking-[0.5em] text-accent/60 uppercase pl-[0.5em]">Scroll</span>
+            </div>
           </div>
+
 
 
           {/* RIGHT: stacked image collage */}
