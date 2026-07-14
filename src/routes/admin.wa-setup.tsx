@@ -161,13 +161,36 @@ function WaSetupPage() {
     try {
       const { mpwaProxy } = await import("@/lib/api");
       const json: any = await mpwaProxy("generate-qr", { device: sender, api_key: apiKey, force: true });
-      if (json?.qrcode) { setQr(json.qrcode); toast.success("Scan QR di WhatsApp > Perangkat Tertaut"); }
-      else toast.success(json?.msg || "Device sudah terhubung");
+      if (json?.qrcode) {
+        setQr(json.qrcode);
+        setConnected(false);
+        toast.success("Scan QR di WhatsApp > Perangkat Tertaut");
+      } else {
+        setConnected(true);
+        toast.success(json?.msg || "Device sudah terhubung");
+      }
     } catch (e) {
       console.error(e);
       toast.error("Gagal generate QR");
     } finally {
       setQrLoading(false);
+    }
+  };
+
+  const disconnectDevice = async () => {
+    if (!apiKey || !sender) { toast.error("Lengkapi API Key & Sender"); return; }
+    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?")) return;
+    setDisconnecting(true);
+    try {
+      const { mpwaProxy } = await import("@/lib/api");
+      const json: any = await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
+      setConnected(false);
+      setQr(null);
+      toast.success(json?.msg || "Device diputuskan");
+    } catch (e: any) {
+      toast.error(e.message || "Gagal memutuskan device");
+    } finally {
+      setDisconnecting(false);
     }
   };
 
