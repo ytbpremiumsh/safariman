@@ -228,13 +228,14 @@ function Hero() {
               className="font-display text-white animate-fade-up"
               style={{ animationDelay: "0.1s" }}
             >
-              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-light leading-[0.95] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] text-white break-words">
+              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-semibold leading-[0.95] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)] text-white break-words">
                 Safar Iman
               </span>
-              <span className="block mt-2 sm:mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] italic font-light text-gradient-gold min-h-[1.2em] break-words tracking-tight">
+              <span className="block mt-2 sm:mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] italic font-semibold text-gradient-gold min-h-[1.2em] break-words tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
                 <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua", "Makkah & Madinah"]} />
               </span>
             </h1>
+
 
             <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start items-center gap-2.5 animate-fade-up" style={{ animationDelay: "0.15s" }}>
               <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-accent/40 bg-accent/5 backdrop-blur-sm">
