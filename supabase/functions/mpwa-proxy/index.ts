@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     if (body.number !== undefined) body.number = normalizeDevice(body.number);
 
     let upstream: Response;
-    if (endpoint === "generate-qr") {
+    if (endpoint === "generate-qr" || endpoint === "delete-device") {
       // MPWA's /generate-qr expects GET with query params (?api_key=...&device=...).
       const qs = new URLSearchParams();
       for (const [k, v] of Object.entries(body)) {
