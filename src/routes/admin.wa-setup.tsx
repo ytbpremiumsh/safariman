@@ -84,6 +84,8 @@ function WaSetupPage() {
   const [qrLoading, setQrLoading] = useState(false);
   const [testNumber, setTestNumber] = useState("");
   const [testing, setTesting] = useState(false);
+  const [connected, setConnected] = useState<boolean | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
