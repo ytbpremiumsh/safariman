@@ -230,7 +230,23 @@ function WaSetupPage() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm">API Key</Label>
-              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="MPWA API Key" className="font-mono" />
+              <div className="relative">
+                <Input
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="MPWA API Key"
+                  className="font-mono pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  aria-label={showApiKey ? "Sembunyikan API Key" : "Tampilkan API Key"}
+                >
+                  {showApiKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <Label className="text-sm">Sender / Nomor Device</Label>
