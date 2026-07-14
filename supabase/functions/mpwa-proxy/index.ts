@@ -55,12 +55,14 @@ Deno.serve(async (req) => {
     }
 
     const text = await upstream.text();
+    // MPWA returns non-2xx for informational responses like
+    // "Perangkat sudah terhubung!". Forward JSON payloads as 200 so the
+    // client can read the message instead of throwing FunctionsHttpError.
+    const contentType = upstream.headers.get("content-type") ?? "application/json";
+    const isJson = contentType.includes("application/json") || text.trim().startsWith("{");
     return new Response(text, {
-      status: upstream.status,
-      headers: {
-        ...corsHeaders,
-        "content-type": upstream.headers.get("content-type") ?? "application/json",
-      },
+      status: isJson ? 200 : upstream.status,
+      headers: { ...corsHeaders, "content-type": contentType },
     });
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, { status: 500 });
