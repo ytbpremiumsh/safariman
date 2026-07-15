@@ -45,7 +45,7 @@ const schema = z.object({
   whatsapp: z.string().trim().min(8, "Nomor WA tidak valid").max(20),
   gender: z.string().min(1, "Wajib dipilih"),
   birth_date: z.string().min(1, "Wajib diisi"),
-  religion: z.string().trim().min(1, "Agama wajib dipilih").max(30),
+  religion: z.string().trim().max(30).optional(),
   city: z.string().trim().min(2).max(100),
   education: z.string().trim().min(2).max(100),
   occupation: z.string().trim().min(2).max(100),
@@ -422,22 +422,6 @@ function Step1({ data, set }: { data: FormData; set: <K extends keyof FormData>(
         <Field label="Tanggal Lahir">
           <Input type="date" value={data.birth_date} onChange={(e) => set("birth_date", e.target.value)} />
         </Field>
-        <Field label="Agama">
-          <select
-            value={data.religion}
-            onChange={(e) => set("religion", e.target.value)}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-          >
-            <option value="">Pilih agama…</option>
-            <option value="Islam">Islam</option>
-            <option value="Kristen">Kristen</option>
-            <option value="Katolik">Katolik</option>
-            <option value="Hindu">Hindu</option>
-            <option value="Buddha">Buddha</option>
-            <option value="Konghucu">Konghucu</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
-        </Field>
         <Field label="Kota Asal">
           <Input value={data.city} onChange={(e) => set("city", e.target.value)} placeholder="Jakarta" />
         </Field>
@@ -476,7 +460,7 @@ function Step2Review({ data, kind }: { data: FormData; kind: Kind }) {
         <ReviewRow label="WhatsApp" v={data.whatsapp} />
         <ReviewRow label="Jenis Kelamin" v={data.gender} />
         <ReviewRow label="Tanggal Lahir" v={data.birth_date} />
-        <ReviewRow label="Agama" v={data.religion} />
+        
         <ReviewRow label="Kota" v={data.city} />
         <ReviewRow label="Pendidikan" v={data.education} />
         <ReviewRow label="Pekerjaan" v={data.occupation} />
