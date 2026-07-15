@@ -543,21 +543,13 @@ WhatsApp : ${CP_WHATSAPP}`;
 
 
             <div className="mt-4 flex justify-center">
-              <div className="w-full max-w-xl grid grid-cols-2 gap-2">
-                <a
-                  href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
-                >
-                  <MessageCircle className="size-4" /> Chat {CP_NAME}
-                </a>
-                <button
-                  onClick={copyMessage}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background hover:bg-secondary px-4 py-2.5 text-sm font-medium"
-                >
-                  <Copy className="size-4" /> Salin Pesan ke CP
-                </button>
-              </div>
+              <a
+                href={`https://wa.me/${CP_WHATSAPP}?text=${waMessage}`}
+                target="_blank" rel="noopener noreferrer"
+                className="w-full max-w-xl inline-flex items-center justify-center gap-2 rounded-full bg-emerald text-white px-4 py-2.5 text-sm font-bold hover-lift"
+              >
+                <MessageCircle className="size-4" /> Chat {CP_NAME}
+              </a>
             </div>
           </StepSection>
 
