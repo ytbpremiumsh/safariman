@@ -137,7 +137,9 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
   const replyToRaw = (cfg.email_reply_to || "").trim();
   const replyTo = replyToRaw && isValidEmail(replyToRaw) ? replyToRaw : undefined;
 
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const { data, error } = await admin.functions.invoke("send-transactional-email", {
+    headers: { Authorization: `Bearer ${serviceKey}` },
     body: {
       templateName: "custom-event",
       recipientEmail: p.email,
