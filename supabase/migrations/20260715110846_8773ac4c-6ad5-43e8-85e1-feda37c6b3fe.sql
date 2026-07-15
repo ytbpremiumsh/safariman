@@ -1,0 +1,6 @@
+DROP POLICY IF EXISTS "Public can read whitelisted settings" ON public.app_settings;
+CREATE POLICY "Public can read whitelisted settings" ON public.app_settings
+FOR SELECT TO anon, authenticated
+USING (key = ANY (ARRAY[
+'hasil_seleksi_enabled','hasil_reveal_at','hasil_page_title','hasil_page_subtitle','hasil_text_lolos','hasil_text_tidak_lolos','hasil_text_pending','hasil_text_disabled','berkas_results_published','essay_results_published','countdown_enabled','countdown_target','poster_url','panduan_url','twibbon_frame_url','wa_channel_url','timeline_config','faq_enabled','faq_items','gelombang_config','donasi_enabled','donasi_title','donasi_subtitle','donasi_amount','apresiasi_kelas_link','apresiasi_kelas_tanggal','apresiasi_kajian_link','apresiasi_kajian_tanggal','apresiasi_sertifikat_link','apresiasi_rekaman_link','self_funded_enabled','self_funded_paid_enabled','self_funded_price','sf_doc_signer_name','sf_doc_signer_title','sf_doc_signature_url','sf_doc_stamp_url','sf_doc_loa_body','sf_doc_payment_body','sf_doc_attendance_body','sf_doc_proposal_body','sf_doc_letterhead_url','sf_doc_footer_note','social_ig_accounts','social_tiktok_accounts','ga_measurement_id'
+]));
