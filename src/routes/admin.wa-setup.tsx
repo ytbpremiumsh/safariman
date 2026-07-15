@@ -125,10 +125,15 @@ function WaSetupPage() {
       setWebhookUrl(edgeFunctionUrl("mpwa-webhook"));
       setLoading(false);
 
-      // Auto-check connection status (silent, no QR display, no force)
+      // Auto-check connection status (silent). Skip if admin baru saja
+      // memutuskan device — jangan panggil generate-qr karena beberapa
+      // build MPWA otomatis meregistrasi ulang sesi hanya karena endpoint
+      // ini dihit. Admin bisa cek manual via tombol.
       const key = map.mpwa_api_key ?? "";
       const snd = map.mpwa_sender ?? "";
-      if (key && snd) {
+      const skipKey = `wa_skip_auto_check:${snd}`;
+      const skipAuto = typeof window !== "undefined" && sessionStorage.getItem(skipKey) === "1";
+      if (key && snd && !skipAuto) {
         try {
           const { mpwaProxy } = await import("@/lib/api");
           const json: any = await mpwaProxy("generate-qr", { device: snd, api_key: key });
@@ -136,6 +141,8 @@ function WaSetupPage() {
         } catch {
           setConnected(false);
         }
+      } else if (skipAuto) {
+        setConnected(false);
       }
     })();
   }, [navigate]);
