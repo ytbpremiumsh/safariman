@@ -39,6 +39,12 @@ function rewriteHost(url: string, base: string): string {
     const b = new URL(base);
     u.protocol = b.protocol;
     u.host = b.host;
+    // Shorten path: strip Supabase storage prefix so path becomes just /<filename>
+    // e.g. /storage/v1/object/sign/media-library/foo.png -> /foo.png
+    u.pathname = u.pathname.replace(
+      /^\/storage\/v1\/object\/(?:sign|public|authenticated)\/[^/]+\//,
+      "/",
+    );
     return u.toString();
   } catch {
     return url;
