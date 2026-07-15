@@ -416,7 +416,7 @@ WhatsApp : ${CP_WHATSAPP}`;
 
             <div className="mt-5 flex items-start gap-2 text-xs text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald shrink-0 mt-0.5" />
-              <span>Bukti follow akan diminta CP saat verifikasi.</span>
+              <span>Bukti follow kirimkan ke nomo Contack Person di bawah</span>
             </div>
           </StepSection>
 
