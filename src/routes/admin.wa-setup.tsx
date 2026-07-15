@@ -203,19 +203,41 @@ function WaSetupPage() {
 
   const disconnectDevice = async () => {
     if (!apiKey || !sender) { toast.error("Lengkapi API Key & Sender"); return; }
-    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?")) return;
+    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?\n\nSetelah diputus, admin harus scan QR ulang untuk mengaktifkan kembali.")) return;
     setDisconnecting(true);
     try {
       const { mpwaProxy } = await import("@/lib/api");
+      // Panggil delete-device 2x untuk memastikan sesi benar-benar dihapus
+      // di sisi MPWA (kadang butuh 2 request supaya session store bersih).
+      await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
+      await new Promise((r) => setTimeout(r, 400));
       const json: any = await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
       setConnected(false);
       setQr(null);
-      toast.success(json?.msg || "Device diputuskan");
+      // Cegah useEffect / re-render memanggil generate-qr yang bisa
+      // memicu MPWA meregistrasi ulang sesi.
+      try { sessionStorage.setItem(`wa_skip_auto_check:${sender}`, "1"); } catch { /* noop */ }
+      toast.success(json?.msg || "Device diputuskan. Scan QR ulang untuk konek kembali.");
     } catch (e: any) {
       toast.error(e.message || "Gagal memutuskan device");
     } finally {
       setDisconnecting(false);
     }
+  };
+
+  const toggleNotif = async (next: boolean) => {
+    setSavingNotif(true);
+    setNotifEnabled(next);
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "wa_notif_enabled", value: next ? "true" : "false", updated_at: new Date().toISOString() },
+    ]);
+    setSavingNotif(false);
+    if (error) {
+      setNotifEnabled(!next);
+      toast.error(error.message);
+      return;
+    }
+    toast.success(next ? "Notifikasi WA diaktifkan" : "Notifikasi WA dinonaktifkan");
   };
 
   const sendTest = async () => {
