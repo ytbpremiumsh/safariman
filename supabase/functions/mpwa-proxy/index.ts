@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     if (body.number !== undefined) body.number = normalizeDevice(body.number);
 
     let upstream: Response;
-    if (endpoint === "generate-qr" || endpoint === "delete-device") {
+    if (endpoint === "generate-qr") {
       // MPWA's /generate-qr expects GET with query params (?api_key=...&device=...).
       const qs = new URLSearchParams();
       for (const [k, v] of Object.entries(body)) {
@@ -46,6 +46,23 @@ Deno.serve(async (req) => {
         method: "GET",
         headers: { Accept: "application/json" },
       });
+    } else if (endpoint === "delete-device") {
+      // Try GET first (older MPWA), fall back to POST when server returns 404/405.
+      const qs = new URLSearchParams();
+      for (const [k, v] of Object.entries(body)) {
+        if (v !== undefined && v !== null) qs.set(k, String(v));
+      }
+      upstream = await fetch(`${MPWA_BASE}/${endpoint}?${qs.toString()}`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+      if (upstream.status === 404 || upstream.status === 405) {
+        upstream = await fetch(`${MPWA_BASE}/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(body),
+        });
+      }
     } else {
       upstream = await fetch(`${MPWA_BASE}/${endpoint}`, {
         method: "POST",
