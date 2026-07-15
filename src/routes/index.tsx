@@ -239,14 +239,15 @@ function Hero() {
 
 
             <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start items-center gap-2.5 animate-fade-up" style={{ animationDelay: "0.15s" }}>
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-accent/40 bg-accent/5 backdrop-blur-sm">
-                <span className="w-1 h-1 bg-accent rounded-full mr-2 shadow-[0_0_8px_hsl(var(--accent))]" />
-                <span className="text-accent text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase">100% Fully Funded</span>
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-accent bg-accent shadow-md">
+                <span className="w-1 h-1 bg-accent-foreground rounded-full mr-2" />
+                <span className="text-accent-foreground text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase">100% Fully Funded</span>
               </span>
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/5 backdrop-blur-sm">
-                <span className="w-1 h-1 bg-emerald-400 rounded-full mr-2 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-                <span className="text-emerald-100/85 text-[10px] sm:text-[11px] font-medium tracking-[0.2em] uppercase">Gratis Biaya Pendaftaran</span>
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-600 bg-emerald-600 shadow-md">
+                <span className="w-1 h-1 bg-white rounded-full mr-2" />
+                <span className="text-white text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase">Gratis Biaya Pendaftaran</span>
               </span>
+
             </div>
 
             <p
