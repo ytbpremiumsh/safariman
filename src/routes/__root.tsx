@@ -3,9 +3,58 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   Link,
 } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+function GoogleAnalytics() {
+  const [gaId, setGaId] = useState<string | null>(null);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "ga_measurement_id")
+        .maybeSingle();
+      const id = (data?.value ?? "").trim();
+      if (!cancelled && id) setGaId(id);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!gaId) return;
+    if (document.getElementById("ga-loader")) return;
+    const s = document.createElement("script");
+    s.id = "ga-loader";
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    document.head.appendChild(s);
+    const inline = document.createElement("script");
+    inline.id = "ga-init";
+    inline.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config','${gaId}',{send_page_view:false});`;
+    document.head.appendChild(inline);
+  }, [gaId]);
+
+  useEffect(() => {
+    if (!gaId || typeof (window as any).gtag !== "function") return;
+    (window as any).gtag("event", "page_view", {
+      page_path: pathname + window.location.search,
+      page_location: window.location.href,
+      page_title: document.title,
+    });
+  }, [gaId, pathname]);
+
+  return null;
+}
 
 function NotFoundComponent() {
   return (
