@@ -460,7 +460,7 @@ function Step2Review({ data, kind }: { data: FormData; kind: Kind }) {
         <ReviewRow label="WhatsApp" v={data.whatsapp} />
         <ReviewRow label="Jenis Kelamin" v={data.gender} />
         <ReviewRow label="Tanggal Lahir" v={data.birth_date} />
-        <ReviewRow label="Agama" v={data.religion} />
+        
         <ReviewRow label="Kota" v={data.city} />
         <ReviewRow label="Pendidikan" v={data.education} />
         <ReviewRow label="Pekerjaan" v={data.occupation} />
