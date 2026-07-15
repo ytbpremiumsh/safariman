@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Upload, Loader2, Copy, Download, Trash2, FileIcon, RefreshCw, Search } from "lucide-react";
+import { Upload, Loader2, Copy, Download, Trash2, FileIcon, RefreshCw, Search, Save } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/admin/pengaturan/media")({
 const BUCKET = "media-library";
 // 10 years in seconds — effectively permanent link
 const SIGNED_TTL = 60 * 60 * 24 * 365 * 10;
+const DOMAIN_KEY = "media_public_base_url";
 
 type MediaItem = {
   name: string;
@@ -30,17 +31,47 @@ function formatBytes(bytes: number) {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
 }
 
+function rewriteHost(url: string, base: string): string {
+  if (!url) return url;
+  if (!base) return url;
+  try {
+    const u = new URL(url);
+    const b = new URL(base);
+    u.protocol = b.protocol;
+    u.host = b.host;
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 function MediaPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<MediaItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [query, setQuery] = useState("");
+  const [baseUrl, setBaseUrl] = useState("");
+  const [savedBase, setSavedBase] = useState("");
+  const [savingBase, setSavingBase] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const loadBase = async () => {
+    const { data } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", DOMAIN_KEY)
+      .maybeSingle();
+    const v = (data?.value as string) ?? "";
+    setBaseUrl(v);
+    setSavedBase(v);
+    return v;
+  };
 
   const load = async () => {
     setLoading(true);
     try {
+      const base = await loadBase();
       const { data, error } = await supabase.storage.from(BUCKET).list("", {
         limit: 500,
         sortBy: { column: "updated_at", order: "desc" },
@@ -64,7 +95,7 @@ function MediaPage() {
           size: (f.metadata as any)?.size ?? 0,
           updated_at: f.updated_at ?? null,
           mime: (f.metadata as any)?.mimetype ?? null,
-          url: urlMap.get(f.name) ?? "",
+          url: rewriteHost(urlMap.get(f.name) ?? "", base),
         })),
       );
     } catch (e: any) {
@@ -77,6 +108,33 @@ function MediaPage() {
   useEffect(() => {
     if (ready) load();
   }, [ready]);
+
+  const saveBase = async () => {
+    const trimmed = baseUrl.trim().replace(/\/+$/, "");
+    if (trimmed && !/^https?:\/\//i.test(trimmed)) {
+      toast.error("URL harus diawali http:// atau https://");
+      return;
+    }
+    setSavingBase(true);
+    try {
+      const { error } = await supabase.rpc("admin_set_setting", {
+        p_key: DOMAIN_KEY,
+        p_value: trimmed,
+      });
+      if (error) throw error;
+      setSavedBase(trimmed);
+      setBaseUrl(trimmed);
+      toast.success("Domain disimpan");
+      // Rewrite existing URLs in place
+      setItems((prev) =>
+        prev.map((i) => ({ ...i, url: rewriteHost(i.url, trimmed) })),
+      );
+    } catch (e: any) {
+      toast.error(e.message ?? "Gagal menyimpan");
+    } finally {
+      setSavingBase(false);
+    }
+  };
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -124,12 +182,39 @@ function MediaPage() {
 
   if (!ready) return <AdminLoading />;
 
+  const dirty = baseUrl.trim().replace(/\/+$/, "") !== savedBase;
+
   return (
     <AdminShell title="Media Library">
       <p className="text-sm text-muted-foreground -mt-3">
         Unggah gambar, dokumen, atau file lain. Setiap file mendapat link URL yang bisa
         disalin dan digunakan di mana saja (link berlaku 10 tahun).
       </p>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-2">
+        <label className="text-sm font-medium">Domain Storage (VPS)</label>
+        <p className="text-xs text-muted-foreground">
+          Isi dengan domain VPS/self-host Anda (mis. <code>https://storage.domain-anda.com</code>).
+          Kosongkan untuk memakai domain default. Domain wajib melayani path yang sama
+          (<code>/storage/v1/object/...</code>).
+        </p>
+        <div className="flex flex-wrap gap-2 items-center">
+          <input
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            placeholder="https://storage.domain-anda.com"
+            className="flex-1 min-w-[260px] h-10 px-3 rounded-lg border border-border bg-background text-sm"
+          />
+          <button
+            onClick={saveBase}
+            disabled={savingBase || !dirty}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 h-10 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-60"
+          >
+            {savingBase ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            Simpan
+          </button>
+        </div>
+      </div>
 
       <div className="bg-card border border-border rounded-2xl p-5">
         <div className="flex flex-wrap items-center gap-3">
