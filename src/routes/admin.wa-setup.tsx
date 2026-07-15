@@ -182,6 +182,7 @@ function WaSetupPage() {
   const generateQr = async () => {
     if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu, lalu Simpan"); return; }
     setQrLoading(true); setQr(null);
+    try { sessionStorage.removeItem(`wa_skip_auto_check:${sender}`); } catch { /* noop */ }
     try {
       const { mpwaProxy } = await import("@/lib/api");
       const json: any = await mpwaProxy("generate-qr", { device: sender, api_key: apiKey, force: true });
