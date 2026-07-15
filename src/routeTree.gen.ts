@@ -54,6 +54,7 @@ import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengat
 import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
 import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
 import { Route as AdminPengaturanApresiasiRouteImport } from './routes/admin.pengaturan.apresiasi'
+import { Route as AdminPengaturanAnalyticsRouteImport } from './routes/admin.pengaturan.analytics'
 import { Route as AdminPengaturanAiProviderRouteImport } from './routes/admin.pengaturan.ai-provider'
 import { Route as AdminPengaturanAffiliateRouteImport } from './routes/admin.pengaturan.affiliate'
 import { Route as AdminAlurTahapanSeleksiRouteImport } from './routes/admin.alur.tahapan-seleksi'
@@ -296,6 +297,12 @@ const AdminPengaturanApresiasiRoute =
     path: '/admin/pengaturan/apresiasi',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanAnalyticsRoute =
+  AdminPengaturanAnalyticsRouteImport.update({
+    id: '/admin/pengaturan/analytics',
+    path: '/admin/pengaturan/analytics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanAiProviderRoute =
   AdminPengaturanAiProviderRouteImport.update({
     id: '/admin/pengaturan/ai-provider',
@@ -377,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
+  '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
@@ -433,6 +441,7 @@ export interface FileRoutesByTo {
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
+  '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
@@ -488,6 +497,7 @@ export interface FileRoutesById {
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
+  '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
@@ -546,6 +556,7 @@ export interface FileRouteTypes {
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
     | '/admin/pengaturan/ai-provider'
+    | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
@@ -602,6 +613,7 @@ export interface FileRouteTypes {
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
     | '/admin/pengaturan/ai-provider'
+    | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
@@ -656,6 +668,7 @@ export interface FileRouteTypes {
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
     | '/admin/pengaturan/ai-provider'
+    | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
@@ -713,6 +726,7 @@ export interface RootRouteChildren {
   AdminAlurTahapanSeleksiRoute: typeof AdminAlurTahapanSeleksiRoute
   AdminPengaturanAffiliateRoute: typeof AdminPengaturanAffiliateRoute
   AdminPengaturanAiProviderRoute: typeof AdminPengaturanAiProviderRoute
+  AdminPengaturanAnalyticsRoute: typeof AdminPengaturanAnalyticsRoute
   AdminPengaturanApresiasiRoute: typeof AdminPengaturanApresiasiRoute
   AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
   AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
@@ -1054,6 +1068,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanApresiasiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/analytics': {
+      id: '/admin/pengaturan/analytics'
+      path: '/admin/pengaturan/analytics'
+      fullPath: '/admin/pengaturan/analytics'
+      preLoaderRoute: typeof AdminPengaturanAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/ai-provider': {
       id: '/admin/pengaturan/ai-provider'
       path: '/admin/pengaturan/ai-provider'
@@ -1180,6 +1201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAlurTahapanSeleksiRoute: AdminAlurTahapanSeleksiRoute,
   AdminPengaturanAffiliateRoute: AdminPengaturanAffiliateRoute,
   AdminPengaturanAiProviderRoute: AdminPengaturanAiProviderRoute,
+  AdminPengaturanAnalyticsRoute: AdminPengaturanAnalyticsRoute,
   AdminPengaturanApresiasiRoute: AdminPengaturanApresiasiRoute,
   AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
   AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
