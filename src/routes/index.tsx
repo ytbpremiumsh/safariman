@@ -270,8 +270,7 @@ function Hero() {
                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </AffiliateLink>
               <a
-                href={panduanUrl}
-                {...(panduanUrl.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                href="/panduan"
                 className="inline-flex items-center justify-center border border-white/20 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/5 transition-colors"
               >
                 Panduan Link
