@@ -56,6 +56,15 @@ export async function loadDocSettings(): Promise<DocSettings> {
     const v = map.get(DOC_KEYS[k]);
     if (v) (out as any)[k] = v;
   });
+  // Bucket is private — swap sig/stamp URLs for short-lived signed URLs.
+  try {
+    const { data: signed } = await supabase.functions.invoke("doc-assets-urls", { body: {} });
+    const urls = (signed as any)?.urls ?? {};
+    if (urls[DOC_KEYS.signatureUrl]) out.signatureUrl = urls[DOC_KEYS.signatureUrl];
+    if (urls[DOC_KEYS.stampUrl]) out.stampUrl = urls[DOC_KEYS.stampUrl];
+  } catch {
+    // fall back to stored URLs
+  }
   return out;
 }
 
