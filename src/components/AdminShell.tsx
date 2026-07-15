@@ -4,7 +4,7 @@ import {
   ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
   Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
   Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
-  Search, MessageSquareText, FolderOpen,
+  Search, MessageSquareText, FolderOpen, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
