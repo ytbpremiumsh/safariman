@@ -497,7 +497,7 @@ WhatsApp : ${CP_WHATSAPP}`;
           {/* STEP 3 — Poster */}
           <StepSection n={3} title="Poster — Bagikan ke 5 Grup WhatsApp" icon={<Sparkles className="size-5" />}>
             <p className="text-sm text-muted-foreground mb-4">
-              Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong>.
+              Download poster di bawah, lalu <strong className="text-foreground">bagikan ke minimal 5 grup WhatsApp</strong>. Wajib <strong className="text-foreground">tag 5 teman</strong> untuk ikutan ibadah bersama di poster Instagram <strong className="text-foreground">@safariman.id</strong>.
             </p>
 
             <div className="flex justify-center">
