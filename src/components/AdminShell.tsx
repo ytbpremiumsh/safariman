@@ -4,7 +4,7 @@ import {
   ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
   Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
   Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
-  Search, MessageSquareText, FolderOpen,
+  Search, MessageSquareText, FolderOpen, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -67,6 +67,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/apresiasi", label: "Apresiasi Peserta", keywords: "apresiasi testimoni peserta" },
           { to: "/admin/pengaturan/wa-quick-reply", label: "WA Quick Reply", keywords: "wa whatsapp quick reply balasan cepat template" },
           { to: "/admin/pengaturan/media", label: "Media Library", keywords: "media file upload download url link gambar foto dokumen pdf image" },
+          { to: "/admin/pengaturan/analytics", label: "Google Analytics", keywords: "google analytics ga ga4 tracking pelacakan measurement id statistik pengunjung" },
         ],
       },
     ],
