@@ -137,7 +137,7 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
   const replyToRaw = (cfg.email_reply_to || "").trim();
   const replyTo = replyToRaw && isValidEmail(replyToRaw) ? replyToRaw : undefined;
 
-  const { error } = await admin.functions.invoke("send-transactional-email", {
+  const { data, error } = await admin.functions.invoke("send-transactional-email", {
     body: {
       templateName: "custom-event",
       recipientEmail: p.email,
@@ -155,6 +155,15 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
       },
     },
   });
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
+  if (error) {
+    let details = error.message;
+    try {
+      // deno-lint-ignore no-explicit-any
+      const ctx = (error as any).context;
+      if (ctx && typeof ctx.text === "function") details = await ctx.text();
+    } catch (_) { /* ignore */ }
+    console.error("send-transactional-email failed", { details, event, to: p.email });
+    return { ok: false, error: details };
+  }
+  return { ok: true, data };
 }
