@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles } from "lucide-react";
+import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -79,6 +79,12 @@ const ITEMS = [
     icon: MessageSquareText,
     title: "Balas Cepat WhatsApp",
     desc: "Kumpulan template pesan siap-kirim (keyword + isi) untuk membalas peserta di WhatsApp. Tinggal klik Salin lalu tempel.",
+  },
+  {
+    to: "/admin/pengaturan/media",
+    icon: FolderOpen,
+    title: "Media Library",
+    desc: "Upload gambar, dokumen, atau file lain. Dapatkan URL link yang bisa dipakai di mana saja & tombol download langsung.",
   },
   {
     to: "/admin/pengaturan/faq",
