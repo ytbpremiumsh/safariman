@@ -87,6 +87,8 @@ function WaSetupPage() {
   const [connected, setConnected] = useState<boolean | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [notifEnabled, setNotifEnabled] = useState(true);
+  const [savingNotif, setSavingNotif] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
