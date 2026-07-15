@@ -87,6 +87,12 @@ const ITEMS = [
     desc: "Upload gambar, dokumen, atau file lain. Dapatkan URL link yang bisa dipakai di mana saja & tombol download langsung.",
   },
   {
+    to: "/admin/pengaturan/analytics",
+    icon: BarChart3,
+    title: "Google Analytics",
+    desc: "Masukkan Measurement ID GA4 (G-XXXXXXXXXX). Skrip pelacakan otomatis terpasang di seluruh halaman publik.",
+  },
+  {
     to: "/admin/pengaturan/faq",
     icon: HelpCircle,
     title: "Halaman FAQ",
