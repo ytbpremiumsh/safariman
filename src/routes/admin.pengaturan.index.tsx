@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
