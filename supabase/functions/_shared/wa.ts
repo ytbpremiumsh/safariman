@@ -54,11 +54,15 @@ export async function sendWaForEvent(event: WaEvent, code: string) {
   const { data: settings } = await supabaseAdmin
     .from("app_settings")
     .select("key,value")
-    .in("key", ["mpwa_api_key", "mpwa_sender", tplKey, TPL_KEY[event]]);
+    .in("key", ["mpwa_api_key", "mpwa_sender", "wa_notif_enabled", tplKey, TPL_KEY[event]]);
 
   const cfg = Object.fromEntries(
     (settings ?? []).map((r: any) => [r.key, r.value ?? ""]),
   ) as Record<string, string>;
+  // Notifikasi WA bisa dimatikan admin lewat toggle di dashboard.
+  if ((cfg.wa_notif_enabled ?? "true") === "false") {
+    return { ok: true, skipped: true, reason: "wa_notif_disabled" };
+  }
   const apiKey = cfg.mpwa_api_key;
   const sender = cfg.mpwa_sender;
   const tpl = cfg[tplKey] || cfg[TPL_KEY[event]];

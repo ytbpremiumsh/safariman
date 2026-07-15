@@ -87,6 +87,8 @@ function WaSetupPage() {
   const [connected, setConnected] = useState<boolean | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [notifEnabled, setNotifEnabled] = useState(true);
+  const [savingNotif, setSavingNotif] = useState(false);
 
   // AI auto-reply
   const [aiEnabled, setAiEnabled] = useState(false);
@@ -103,7 +105,7 @@ function WaSetupPage() {
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
       const { data } = await supabase.from("app_settings")
         .select("key,value")
-        .in("key", ["mpwa_api_key", "mpwa_sender", "wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", ...TEMPLATE_KEYS]);
+        .in("key", ["mpwa_api_key", "mpwa_sender", "wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", "wa_notif_enabled", ...TEMPLATE_KEYS]);
       const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
       setApiKey(map.mpwa_api_key ?? "");
       setSender(map.mpwa_sender ?? "");
@@ -116,16 +118,22 @@ function WaSetupPage() {
         wa_template_custom: map.wa_template_custom ?? "",
       });
       setAiEnabled(map.wa_ai_enabled === "true");
+      setNotifEnabled((map.wa_notif_enabled ?? "true") !== "false");
       if (map.wa_ai_behavior) setAiBehavior(map.wa_ai_behavior);
       if (map.wa_ai_knowledge) setAiKnowledge(map.wa_ai_knowledge);
       const { edgeFunctionUrl } = await import("@/lib/api");
       setWebhookUrl(edgeFunctionUrl("mpwa-webhook"));
       setLoading(false);
 
-      // Auto-check connection status (silent, no QR display, no force)
+      // Auto-check connection status (silent). Skip if admin baru saja
+      // memutuskan device — jangan panggil generate-qr karena beberapa
+      // build MPWA otomatis meregistrasi ulang sesi hanya karena endpoint
+      // ini dihit. Admin bisa cek manual via tombol.
       const key = map.mpwa_api_key ?? "";
       const snd = map.mpwa_sender ?? "";
-      if (key && snd) {
+      const skipKey = `wa_skip_auto_check:${snd}`;
+      const skipAuto = typeof window !== "undefined" && sessionStorage.getItem(skipKey) === "1";
+      if (key && snd && !skipAuto) {
         try {
           const { mpwaProxy } = await import("@/lib/api");
           const json: any = await mpwaProxy("generate-qr", { device: snd, api_key: key });
@@ -133,6 +141,8 @@ function WaSetupPage() {
         } catch {
           setConnected(false);
         }
+      } else if (skipAuto) {
+        setConnected(false);
       }
     })();
   }, [navigate]);
@@ -172,6 +182,7 @@ function WaSetupPage() {
   const generateQr = async () => {
     if (!apiKey || !sender) { toast.error("Isi API Key & Sender dulu, lalu Simpan"); return; }
     setQrLoading(true); setQr(null);
+    try { sessionStorage.removeItem(`wa_skip_auto_check:${sender}`); } catch { /* noop */ }
     try {
       const { mpwaProxy } = await import("@/lib/api");
       const json: any = await mpwaProxy("generate-qr", { device: sender, api_key: apiKey, force: true });
@@ -193,19 +204,41 @@ function WaSetupPage() {
 
   const disconnectDevice = async () => {
     if (!apiKey || !sender) { toast.error("Lengkapi API Key & Sender"); return; }
-    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?")) return;
+    if (!confirm("Putuskan koneksi WhatsApp untuk device ini?\n\nSetelah diputus, admin harus scan QR ulang untuk mengaktifkan kembali.")) return;
     setDisconnecting(true);
     try {
       const { mpwaProxy } = await import("@/lib/api");
+      // Panggil delete-device 2x untuk memastikan sesi benar-benar dihapus
+      // di sisi MPWA (kadang butuh 2 request supaya session store bersih).
+      await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
+      await new Promise((r) => setTimeout(r, 400));
       const json: any = await mpwaProxy("delete-device", { device: sender, api_key: apiKey });
       setConnected(false);
       setQr(null);
-      toast.success(json?.msg || "Device diputuskan");
+      // Cegah useEffect / re-render memanggil generate-qr yang bisa
+      // memicu MPWA meregistrasi ulang sesi.
+      try { sessionStorage.setItem(`wa_skip_auto_check:${sender}`, "1"); } catch { /* noop */ }
+      toast.success(json?.msg || "Device diputuskan. Scan QR ulang untuk konek kembali.");
     } catch (e: any) {
       toast.error(e.message || "Gagal memutuskan device");
     } finally {
       setDisconnecting(false);
     }
+  };
+
+  const toggleNotif = async (next: boolean) => {
+    setSavingNotif(true);
+    setNotifEnabled(next);
+    const { error } = await supabase.from("app_settings").upsert([
+      { key: "wa_notif_enabled", value: next ? "true" : "false", updated_at: new Date().toISOString() },
+    ]);
+    setSavingNotif(false);
+    if (error) {
+      setNotifEnabled(!next);
+      toast.error(error.message);
+      return;
+    }
+    toast.success(next ? "Notifikasi WA diaktifkan" : "Notifikasi WA dinonaktifkan");
   };
 
   const sendTest = async () => {
@@ -308,6 +341,20 @@ function WaSetupPage() {
             </div>
           </div>
 
+          {/* Toggle notifikasi WhatsApp */}
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 px-4 py-3">
+            <Switch checked={notifEnabled} onCheckedChange={toggleNotif} disabled={savingNotif} className="mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Kirim Notifikasi WhatsApp Otomatis</div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Kalau dimatikan, sistem tidak akan mengirim pesan WA otomatis (pendaftaran, berkas, essay) walaupun perangkat terhubung. Berguna saat masa maintenance atau saat kredit MPWA habis.
+              </p>
+            </div>
+            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded shrink-0 ${notifEnabled ? "bg-emerald text-white" : "bg-muted text-muted-foreground"}`}>
+              {notifEnabled ? "ON" : "OFF"}
+            </span>
+          </div>
+
           <div className="flex flex-wrap gap-2 pt-2">
             <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald disabled:opacity-60">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Pengaturan
@@ -315,9 +362,9 @@ function WaSetupPage() {
             <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-2 rounded-full bg-accent/15 text-accent px-5 py-2.5 text-sm font-semibold hover:bg-accent/25 disabled:opacity-60">
               {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} {connected ? "Cek / Refresh QR" : "Generate QR"}
             </button>
-            {connected && (
-              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60 animate-fade-in">
-                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek
+            {apiKey && sender && (
+              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60">
+                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek Paksa
               </button>
             )}
           </div>
