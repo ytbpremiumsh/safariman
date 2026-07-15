@@ -292,11 +292,11 @@ function Hero() {
               {/* gold frame glow */}
               <div className="absolute -inset-3 rounded-[2rem] bg-gradient-gold opacity-20 blur-2xl" />
 
-              {/* main card — Madinah */}
+              {/* main card — Masjidil Haram */}
               <div className="absolute inset-0 rounded-[1.75rem] overflow-hidden border border-accent/30 shadow-gold">
                 <img
-                  src={galMadinahPayung.url}
-                  alt="Masjid Nabawi - Payung Madinah"
+                  src={galKabahGrup.url}
+                  alt="Jamaah di Masjidil Haram"
                   className="size-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/80 via-transparent to-transparent" />
@@ -304,8 +304,8 @@ function Hero() {
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 text-emerald-deep px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
                     ✦ Destinasi
                   </span>
-                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Masjid Nabawi</p>
-                  <p className="text-xs text-white/80">Payung Raksasa · Madinah, Saudi Arabia</p>
+                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Masjidil Haram</p>
+                  <p className="text-xs text-white/80">Ka'bah · Makkah, Saudi Arabia</p>
                 </div>
               </div>
 
@@ -314,12 +314,12 @@ function Hero() {
                 <img src={logoSafarImanBadge} alt="Safar Iman" className="size-full object-contain" />
               </div>
 
-              {/* floating mini card — Eskalator Masjidil Haram */}
+              {/* floating mini card — Masjid Nabawi */}
               <div className="absolute -bottom-6 -right-6 size-32 rounded-2xl overflow-hidden border border-accent/40 shadow-emerald rotate-[6deg] hover:rotate-0 transition-transform">
-                <img src={galKabahGrup.url} alt="Jamaah di Masjidil Haram" className="size-full object-cover" />
+                <img src={galMadinahPayung.url} alt="Masjid Nabawi - Payung Madinah" className="size-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/70 to-transparent" />
                 <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Masjidil Haram
+                  Masjid Nabawi
                 </span>
               </div>
             </div>
