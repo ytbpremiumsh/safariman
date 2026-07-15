@@ -362,9 +362,9 @@ function WaSetupPage() {
             <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-2 rounded-full bg-accent/15 text-accent px-5 py-2.5 text-sm font-semibold hover:bg-accent/25 disabled:opacity-60">
               {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} {connected ? "Cek / Refresh QR" : "Generate QR"}
             </button>
-            {apiKey && sender && (
-              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60">
-                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek Paksa
+            {connected === true && (
+              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60 animate-fade-in">
+                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek
               </button>
             )}
           </div>
