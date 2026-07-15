@@ -341,6 +341,20 @@ function WaSetupPage() {
             </div>
           </div>
 
+          {/* Toggle notifikasi WhatsApp */}
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 px-4 py-3">
+            <Switch checked={notifEnabled} onCheckedChange={toggleNotif} disabled={savingNotif} className="mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Kirim Notifikasi WhatsApp Otomatis</div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Kalau dimatikan, sistem tidak akan mengirim pesan WA otomatis (pendaftaran, berkas, essay) walaupun perangkat terhubung. Berguna saat masa maintenance atau saat kredit MPWA habis.
+              </p>
+            </div>
+            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded shrink-0 ${notifEnabled ? "bg-emerald text-white" : "bg-muted text-muted-foreground"}`}>
+              {notifEnabled ? "ON" : "OFF"}
+            </span>
+          </div>
+
           <div className="flex flex-wrap gap-2 pt-2">
             <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-2.5 text-sm font-semibold shadow-emerald disabled:opacity-60">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Pengaturan
@@ -348,9 +362,9 @@ function WaSetupPage() {
             <button onClick={generateQr} disabled={qrLoading} className="inline-flex items-center gap-2 rounded-full bg-accent/15 text-accent px-5 py-2.5 text-sm font-semibold hover:bg-accent/25 disabled:opacity-60">
               {qrLoading ? <Loader2 className="size-4 animate-spin" /> : <QrCode className="size-4" />} {connected ? "Cek / Refresh QR" : "Generate QR"}
             </button>
-            {connected && (
-              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60 animate-fade-in">
-                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek
+            {apiKey && sender && (
+              <button onClick={disconnectDevice} disabled={disconnecting} className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-5 py-2.5 text-sm font-semibold hover:bg-destructive/20 disabled:opacity-60">
+                {disconnecting ? <Loader2 className="size-4 animate-spin" /> : <PowerOff className="size-4" />} Diskonek Paksa
               </button>
             )}
           </div>
