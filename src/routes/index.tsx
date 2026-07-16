@@ -101,12 +101,6 @@ function Nav() {
             )}
           </nav>
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              to="/panduan"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-deep/20 text-emerald-deep px-4 py-2.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
-            >
-              Panduan
-            </Link>
             <AffiliateLink
               selectorId="nav_daftar"
               to="/pendaftaran"
@@ -136,9 +130,6 @@ function Nav() {
                 <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
               )
             )}
-            <Link to="/panduan" onClick={() => setOpen(false)} className="mt-3 block text-center rounded-full border border-emerald-deep/20 text-emerald-deep px-5 py-3 font-semibold">
-              Panduan
-            </Link>
             <AffiliateLink selectorId="nav_daftar" to="/pendaftaran" onNavigate={() => setOpen(false)} className="mt-2 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
             </AffiliateLink>
