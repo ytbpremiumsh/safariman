@@ -46,6 +46,7 @@ const galJabalRahmah = { url: galJabalRahmahUrl };
 const galUmrohNovember = { url: galUmrohNovemberUrl };
 const galTurkiyeHagia = { url: galTurkiyeHagiaUrl };
 const galMasjidQuba = { url: galMasjidQubaUrl };
+import makkahVectorBg from "@/assets/makkah-vector-bg.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () =>
