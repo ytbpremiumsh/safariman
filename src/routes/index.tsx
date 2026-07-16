@@ -281,7 +281,7 @@ function Hero() {
                 </AffiliateLink>
                 <Link
                   to="/panduan"
-                  className="inline-flex items-center gap-2 rounded-full border border-emerald-deep/20 text-emerald-deep px-6 py-3.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald-deep/20 text-emerald-deep px-7 py-3.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
                 >
                   Panduan
                 </Link>
