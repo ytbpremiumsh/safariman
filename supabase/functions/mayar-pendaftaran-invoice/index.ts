@@ -77,6 +77,12 @@ Deno.serve(async (req) => {
     if (p.payment_status === "pending" && p.payment_invoice_id) {
       const synced = await syncInvoiceStatus(supabaseAdmin, apiKey, p.payment_invoice_id);
       if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
+      // Reuse invoice pending yang sudah ada — JANGAN buat baru,
+      // supaya Mayar tidak trigger 429 "Duplicate request" dan
+      // tidak muncul banyak invoice/notif untuk peserta yang sama.
+      if (p.payment_url) {
+        return json({ ok: true, url: p.payment_url, reused: true });
+      }
     }
 
     if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
