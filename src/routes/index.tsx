@@ -198,13 +198,14 @@ function Hero() {
       {/* subtle premium background — warm cream wash */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-[#fbf7ee] to-white" />
 
-      {/* Makkah skyline vector — anchored to bottom */}
+      {/* Makkah skyline vector — anchored to bottom, min-width so it stays readable on mobile */}
       <img
         src={makkahVectorBg.url}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none select-none absolute inset-x-0 bottom-0 w-full h-auto opacity-40"
+        className="pointer-events-none select-none absolute inset-x-0 bottom-0 left-1/2 -translate-x-1/2 w-[220%] sm:w-[140%] md:w-full max-w-none h-auto opacity-30 sm:opacity-40"
       />
+
 
       {/* floating ornaments — soft, premium */}
       <div className="absolute top-32 left-10 size-40 rounded-full bg-accent/25 blur-3xl animate-float" />
@@ -290,8 +291,8 @@ function Hero() {
           </div>
 
           {/* RIGHT: premium image collage from gallery */}
-          <div className="lg:col-span-6 animate-fade-up" style={{ animationDelay: "0.25s" }}>
-            <div className="relative w-full max-w-xl ml-auto aspect-square">
+          <div className="lg:col-span-6 animate-fade-up order-first lg:order-last" style={{ animationDelay: "0.25s" }}>
+            <div className="relative w-full max-w-[280px] sm:max-w-sm md:max-w-md lg:max-w-xl mx-auto lg:ml-auto lg:mr-0 aspect-square">
               {/* soft pink blob behind — Masjidil Haram card */}
               <div className="absolute top-4 right-8 size-[62%] rounded-full bg-[#f6d9df]/70 blur-sm" />
               {/* soft mint blob behind — Nabawi card */}
@@ -303,9 +304,9 @@ function Hero() {
               </div>
 
               {/* Chat bubble — Masjidil Haram label */}
-              <div className="absolute top-6 left-2 sm:left-6 flex items-center gap-2 bg-white rounded-full pl-1 pr-4 py-1 shadow-lg ring-1 ring-black/5">
-                <img src={galKabahMalam.url} alt="" className="size-7 rounded-full object-cover" />
-                <span className="text-xs font-semibold text-emerald-deep">Masjidil Haram 🕋</span>
+              <div className="absolute top-4 sm:top-6 left-0 sm:left-2 md:left-6 flex items-center gap-1.5 sm:gap-2 bg-white rounded-full pl-1 pr-2.5 sm:pr-4 py-1 shadow-lg ring-1 ring-black/5">
+                <img src={galKabahMalam.url} alt="" className="size-5 sm:size-7 rounded-full object-cover" />
+                <span className="text-[10px] sm:text-xs font-semibold text-emerald-deep whitespace-nowrap">Masjidil Haram 🕋</span>
               </div>
 
               {/* Masjid Nabawi — bottom-left card */}
@@ -314,13 +315,13 @@ function Hero() {
               </div>
 
               {/* Chat bubble — Nabawi */}
-              <div className="absolute bottom-6 right-2 sm:right-6 flex items-center gap-2 bg-white rounded-full pl-4 pr-1 py-1 shadow-lg ring-1 ring-black/5">
-                <span className="text-xs font-semibold text-emerald-deep">Masjid Nabawi ✨</span>
-                <img src={galMadinahPayung.url} alt="" className="size-7 rounded-full object-cover" />
+              <div className="absolute bottom-4 sm:bottom-6 right-0 sm:right-2 md:right-6 flex items-center gap-1.5 sm:gap-2 bg-white rounded-full pl-2.5 sm:pl-4 pr-1 py-1 shadow-lg ring-1 ring-black/5">
+                <span className="text-[10px] sm:text-xs font-semibold text-emerald-deep whitespace-nowrap">Masjid Nabawi ✨</span>
+                <img src={galMadinahPayung.url} alt="" className="size-5 sm:size-7 rounded-full object-cover" />
               </div>
 
               {/* Floating logo badge */}
-              <div className="absolute top-1/2 left-2 -translate-y-1/2 size-20 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 flex items-center justify-center p-2 rotate-[-8deg] hover:rotate-0 transition-transform">
+              <div className="absolute top-1/2 left-1 sm:left-2 -translate-y-1/2 size-12 sm:size-16 md:size-20 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 flex items-center justify-center p-1.5 sm:p-2 rotate-[-8deg] hover:rotate-0 transition-transform">
                 <img src={logoSafarImanBadge} alt="Safar Iman" className="size-full object-contain" />
               </div>
 
@@ -329,6 +330,7 @@ function Hero() {
               <div className="absolute bottom-10 left-1/2 size-1.5 rounded-full bg-emerald-deep/40" />
             </div>
           </div>
+
         </div>
       </div>
     </section>
