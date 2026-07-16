@@ -130,6 +130,7 @@ Deno.serve(async (req) => {
         return json({ ok: true, url: p.donation_url, reused: true });
       }
     }
+    if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
 
     // Mode sinkron saja — jangan buat invoice baru.
     if (syncOnly) return json({ ok: true, alreadyPaid: false, synced: false });
