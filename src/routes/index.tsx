@@ -272,7 +272,7 @@ function Hero() {
                 </AffiliateLink>
                 <Link
                   to="/panduan"
-                  className="inline-flex items-center gap-2 rounded-full border border-emerald-deep/20 text-emerald-deep px-7 py-3.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full bg-gold text-emerald-deep px-7 py-3.5 text-sm font-semibold shadow-[0_20px_40px_-15px_rgba(180,140,40,0.5)] hover:bg-gold-soft transition-colors"
                 >
                   Panduan
                 </Link>
