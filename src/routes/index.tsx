@@ -278,15 +278,6 @@ function Hero() {
               </div>
             </div>
 
-            {/* Social proof strip */}
-            <div className="mt-8 flex items-center justify-center lg:justify-start gap-3 animate-fade-up" style={{ animationDelay: "0.4s" }}>
-              <div className="flex -space-x-2">
-                {[galKabahGrup.url, galUmrohNovember.url, galJabalRahmah.url, galMasjidQuba.url].map((src, i) => (
-                  <img key={i} src={src} alt="" className="size-8 rounded-full ring-2 ring-white object-cover" />
-                ))}
-              </div>
-              <span className="text-sm text-foreground/70"><strong className="text-emerald-deep">500+ Alumni</strong> Safar Iman</span>
-            </div>
           </div>
 
           {/* RIGHT: premium image collage from gallery */}
