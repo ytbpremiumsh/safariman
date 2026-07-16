@@ -46,6 +46,7 @@ const galJabalRahmah = { url: galJabalRahmahUrl };
 const galUmrohNovember = { url: galUmrohNovemberUrl };
 const galTurkiyeHagia = { url: galTurkiyeHagiaUrl };
 const galMasjidQuba = { url: galMasjidQubaUrl };
+import makkahVectorBg from "@/assets/makkah-vector-bg.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () =>
@@ -194,13 +195,21 @@ function Hero() {
   }, []);
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
-      {/* subtle premium background — warm cream wash + faint pattern */}
+      {/* subtle premium background — warm cream wash */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-[#fbf7ee] to-white" />
-      <IslamicPattern className="absolute inset-0 size-full text-emerald-deep/[0.035]" />
+
+      {/* Makkah skyline vector — anchored to bottom */}
+      <img
+        src={makkahVectorBg.url}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute inset-x-0 bottom-0 w-full h-auto opacity-40"
+      />
 
       {/* floating ornaments — soft, premium */}
       <div className="absolute top-32 left-10 size-40 rounded-full bg-accent/25 blur-3xl animate-float" />
       <div className="absolute bottom-24 right-20 size-56 rounded-full bg-emerald/15 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-32 pb-16 w-full">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
