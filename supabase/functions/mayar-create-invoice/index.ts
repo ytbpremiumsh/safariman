@@ -125,8 +125,11 @@ Deno.serve(async (req) => {
     if (p.donation_status === "pending" && p.donation_invoice_id) {
       const synced = await syncDonationStatus(supabaseAdmin, apiKey, p.donation_invoice_id);
       if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
+      // Reuse invoice pending — jangan buat baru (hindari 429 duplicate & notif berulang).
+      if (p.donation_url && !syncOnly) {
+        return json({ ok: true, url: p.donation_url, reused: true });
+      }
     }
-    if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
 
     // Mode sinkron saja — jangan buat invoice baru.
     if (syncOnly) return json({ ok: true, alreadyPaid: false, synced: false });
