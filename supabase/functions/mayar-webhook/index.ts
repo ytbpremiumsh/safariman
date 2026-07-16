@@ -121,10 +121,28 @@ Deno.serve(async (req) => {
       req.headers.get("mayar-signature") ||
       req.headers.get("x-hub-signature-256");
 
-    // Verifikasi signature kalau secret dikonfigurasi & header dikirim.
-    // Webhook secret WAJIB dikonfigurasi. Tanpa secret, siapa pun bisa
-    // memalsukan payload "paid" dan menandai peserta lunas. Tolak request
-    // kalau secret atau signature belum ada.
+    // Deteksi request TEST/PING dari dashboard Mayar (tombol "Testing URL").
+    // Mayar mengirim payload kosong / event bertipe test tanpa signature.
+    // Balas 200 supaya URL webhook diterima Mayar, tanpa proses apa pun.
+    let previewPayload: any = null;
+    try { previewPayload = JSON.parse(rawBody || "{}"); } catch { previewPayload = null; }
+    const previewEvent = String(
+      previewPayload?.event ||
+      previewPayload?.type ||
+      previewPayload?.eventType ||
+      "",
+    ).toLowerCase();
+    const looksLikeTest =
+      !rawBody ||
+      rawBody.trim() === "" ||
+      rawBody.trim() === "{}" ||
+      /test|ping|verify|verification/.test(previewEvent);
+    if (looksLikeTest) {
+      console.log("Mayar webhook: test/ping request, balas 200", { previewEvent, hasSignature: !!signature });
+      return json({ ok: true, test: true, message: "Webhook endpoint is reachable" });
+    }
+
+    // Untuk event pembayaran betulan: WAJIB secret + signature.
     if (!secret) {
       console.error("Mayar webhook: mayar_webhook_secret belum diisi");
       return json(
@@ -141,6 +159,7 @@ Deno.serve(async (req) => {
       console.error("Mayar webhook: invalid signature");
       return json({ ok: false, error: "Invalid signature" }, { status: 401 });
     }
+
 
 
     const payload: any = JSON.parse(rawBody || "{}");
