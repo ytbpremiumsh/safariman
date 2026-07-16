@@ -198,13 +198,14 @@ function Hero() {
       {/* subtle premium background — warm cream wash */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-[#fbf7ee] to-white" />
 
-      {/* Makkah skyline vector — anchored to bottom */}
+      {/* Makkah skyline vector — anchored to bottom, min-width so it stays readable on mobile */}
       <img
         src={makkahVectorBg.url}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none select-none absolute inset-x-0 bottom-0 w-full h-auto opacity-40"
+        className="pointer-events-none select-none absolute inset-x-0 bottom-0 left-1/2 -translate-x-1/2 w-[220%] sm:w-[140%] md:w-full max-w-none h-auto opacity-30 sm:opacity-40"
       />
+
 
       {/* floating ornaments — soft, premium */}
       <div className="absolute top-32 left-10 size-40 rounded-full bg-accent/25 blur-3xl animate-float" />
