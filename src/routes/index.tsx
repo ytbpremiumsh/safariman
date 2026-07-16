@@ -935,7 +935,7 @@ function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
                 <Phone className="size-4 text-emerald shrink-0 mt-0.5" />
-                <a href="https://wa.me/6285927443433" target="_blank" rel="noopener noreferrer" className="hover:text-emerald transition-colors">+62 859-2744-3433</a>
+                <a href="https://wa.me/6287777834426" target="_blank" rel="noopener noreferrer" className="hover:text-emerald transition-colors">+62 877-7783-4426</a>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail className="size-4 text-emerald shrink-0 mt-0.5" />
