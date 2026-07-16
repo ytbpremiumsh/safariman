@@ -251,16 +251,16 @@ function Hero() {
 
             {/* Search-style CTA bar (premium white pill) */}
             <div className="mt-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-              <div className="hidden sm:flex items-center gap-2 bg-white rounded-full p-2 pl-6 shadow-[0_20px_60px_-20px_rgba(0,60,40,0.25)] ring-1 ring-black/5 max-w-md mx-auto lg:mx-0">
-                <span className="text-sm text-foreground/60">Anywhere, anytime. Daftar sekarang</span>
+              <div className="hidden sm:flex max-w-md mx-auto lg:mx-0">
                 <AffiliateLink
                   selectorId="hero_daftar"
                   to="/pendaftaran"
-                  className="ml-auto inline-flex items-center gap-2 rounded-full bg-emerald-deep text-white px-5 py-2.5 text-sm font-semibold hover:bg-emerald transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full bg-emerald-deep text-white px-7 py-3.5 text-sm font-semibold shadow-[0_20px_40px_-15px_rgba(0,60,40,0.4)] hover:bg-emerald transition-colors"
                 >
-                  Get Started <ArrowRight className="size-4" />
+                  Daftar Sekarang <ArrowRight className="size-4" />
                 </AffiliateLink>
               </div>
+
               <div className="sm:hidden flex flex-col gap-3 max-w-sm mx-auto">
                 <AffiliateLink
                   selectorId="hero_daftar"
