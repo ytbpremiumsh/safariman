@@ -193,151 +193,148 @@ function Hero() {
     })();
   }, []);
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      <img
-        src={heroImg}
-        alt="Jamaah Umrah Safar Iman di Madinah"
-        width={1920}
-        height={1080}
-        fetchPriority="high"
-        loading="eager"
-        decoding="async"
-        className="absolute inset-0 size-full object-cover object-center"
-      />
-      <div className="absolute inset-0 bg-gradient-hero" />
-      <div className="absolute inset-0 bg-gradient-glow" />
-      <IslamicPattern className="absolute inset-0 size-full text-accent/10 mix-blend-overlay" />
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
+      {/* subtle premium background — warm cream wash + faint pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-[#fbf7ee] to-white" />
+      <IslamicPattern className="absolute inset-0 size-full text-emerald-deep/[0.035]" />
 
-      {/* floating ornaments */}
-      <div className="absolute top-32 left-10 size-24 rounded-full bg-accent/20 blur-3xl animate-float" />
-      <div className="absolute bottom-40 right-10 size-40 rounded-full bg-emerald/30 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+      {/* floating ornaments — soft, premium */}
+      <div className="absolute top-32 left-10 size-40 rounded-full bg-accent/25 blur-3xl animate-float" />
+      <div className="absolute bottom-24 right-20 size-56 rounded-full bg-emerald/15 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-32 pb-16 w-full">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* LEFT: copy */}
-          <div className="lg:col-span-7 text-center lg:text-left">
-            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3 mb-8 sm:mb-10 animate-fade-up">
-              <span className="hidden sm:block h-px w-8 bg-accent/60" />
-              <span className="text-accent text-[11px] sm:text-xs uppercase tracking-[0.4em] sm:tracking-[0.5em] font-bold opacity-100 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
+          <div className="lg:col-span-6 text-center lg:text-left">
+            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3 mb-6 animate-fade-up">
+              <span className="hidden sm:block h-px w-8 bg-emerald-deep/40" />
+              <span className="text-emerald-deep text-[11px] sm:text-xs uppercase tracking-[0.4em] sm:tracking-[0.5em] font-bold">
                 Safar Iman · Exclusive Edition
               </span>
-
-              <span className="hidden sm:block h-px w-8 bg-accent/60" />
+              <span className="hidden sm:block h-px w-8 bg-emerald-deep/40" />
             </div>
 
             <h1
-              className="font-display text-white animate-fade-up"
+              className="font-display animate-fade-up"
               style={{ animationDelay: "0.1s" }}
             >
-              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-[5.5rem] font-semibold leading-[0.95] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)] text-white break-words">
-                Safar Iman
+              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-semibold leading-[0.95] tracking-tight text-emerald-deep break-words">
+                <span className="relative inline-block">
+                  <span className="relative z-10">Safar</span>
+                  <svg viewBox="0 0 220 60" className="absolute -inset-x-2 -inset-y-1 w-[calc(100%+1rem)] h-[calc(100%+0.5rem)] text-accent" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M20 30 Q 10 8, 110 6 Q 210 8, 200 30 Q 210 54, 110 54 Q 10 52, 20 30 Z" />
+                  </svg>
+                </span>{" "}
+                Iman.
               </span>
-              <span className="block mt-2 sm:mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-[4.5rem] italic font-semibold text-gradient-gold min-h-[1.2em] break-words tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
-                <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua", "Makkah & Madinah"]} />
+              <span className="block mt-3 text-3xl sm:text-5xl md:text-6xl lg:text-[3.75rem] italic font-semibold text-emerald-deep/90 min-h-[1.2em] break-words tracking-tight">
+                <Typewriter words={["Umrah Gratis", "Fully Funded", "Tanpa Biaya", "Untuk Semua"]} />
+                <span className="not-italic"> ✦</span>
               </span>
             </h1>
 
-
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start items-center gap-2.5 animate-fade-up" style={{ animationDelay: "0.15s" }}>
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-accent bg-accent shadow-md">
-                <span className="w-1 h-1 bg-accent-foreground rounded-full mr-2" />
-                <span className="text-accent-foreground text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase">100% Fully Funded</span>
-              </span>
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-600 bg-emerald-600 shadow-md">
-                <span className="w-1 h-1 bg-white rounded-full mr-2" />
-                <span className="text-white text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] uppercase">Gratis Biaya Pendaftaran</span>
-              </span>
-
-            </div>
-
             <p
-              className="mt-8 sm:mt-10 text-base sm:text-lg text-white/90 font-normal leading-relaxed tracking-normal max-w-[320px] sm:max-w-xl mx-auto lg:mx-0 animate-fade-up drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]"
+              className="mt-8 text-base sm:text-lg text-foreground/70 leading-relaxed max-w-xl mx-auto lg:mx-0 animate-fade-up"
               style={{ animationDelay: "0.2s" }}
             >
-              Program <strong className="text-white font-semibold">Safar Iman</strong> membuka jalan menuju Baitullah
-              bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour
-              yang sepenuhnya dibiayai.
+              Program <strong className="text-emerald-deep font-semibold">Safar Iman</strong> membuka jalan menuju Baitullah bagi anak muda Indonesia — pengalaman Umrah, Ibadah, dan City Tour yang sepenuhnya dibiayai.
             </p>
 
-
-            <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 animate-fade-up max-w-sm sm:max-w-none mx-auto lg:mx-0" style={{ animationDelay: "0.3s" }}>
-              <AffiliateLink
-                selectorId="hero_daftar"
-                to="/pendaftaran"
-                className="group inline-flex items-center justify-center gap-3 bg-accent text-emerald-deep px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase shadow-gold hover:bg-accent/90 transition-colors"
-              >
-                Daftar Sekarang
-                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-              </AffiliateLink>
-              <a
-                href="/panduan"
-                className="inline-flex items-center justify-center border border-white/20 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/5 transition-colors"
-              >
-                Panduan Link
-              </a>
+            <div className="mt-6 flex flex-wrap justify-center lg:justify-start items-center gap-2.5 animate-fade-up" style={{ animationDelay: "0.25s" }}>
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-deep text-white text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] uppercase">
+                <span className="size-1.5 rounded-full bg-accent" /> 100% Fully Funded
+              </span>
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/20 text-emerald-deep border border-accent/40 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] uppercase">
+                <span className="size-1.5 rounded-full bg-emerald-deep" /> Gratis Pendaftaran
+              </span>
             </div>
 
-            {/* Scroll cue — mobile only */}
-            <div className="lg:hidden mt-12 flex flex-col items-center gap-2 animate-fade-up" style={{ animationDelay: "0.4s" }}>
-              <div className="w-px h-10 bg-gradient-to-b from-accent to-transparent" />
-              <span className="text-[8px] tracking-[0.5em] text-accent/60 uppercase pl-[0.5em]">Scroll</span>
+            {/* Search-style CTA bar (premium white pill) */}
+            <div className="mt-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+              <div className="hidden sm:flex items-center gap-2 bg-white rounded-full p-2 pl-6 shadow-[0_20px_60px_-20px_rgba(0,60,40,0.25)] ring-1 ring-black/5 max-w-md mx-auto lg:mx-0">
+                <span className="text-sm text-foreground/60">Anywhere, anytime. Daftar sekarang</span>
+                <AffiliateLink
+                  selectorId="hero_daftar"
+                  to="/pendaftaran"
+                  className="ml-auto inline-flex items-center gap-2 rounded-full bg-emerald-deep text-white px-5 py-2.5 text-sm font-semibold hover:bg-emerald transition-colors"
+                >
+                  Get Started <ArrowRight className="size-4" />
+                </AffiliateLink>
+              </div>
+              <div className="sm:hidden flex flex-col gap-3 max-w-sm mx-auto">
+                <AffiliateLink
+                  selectorId="hero_daftar"
+                  to="/pendaftaran"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-deep text-white px-6 py-3.5 text-sm font-bold tracking-wide shadow-emerald"
+                >
+                  Daftar Sekarang <ArrowRight className="size-4" />
+                </AffiliateLink>
+                <a
+                  href="/panduan"
+                  className="inline-flex items-center justify-center rounded-full border border-emerald-deep/20 text-emerald-deep px-6 py-3.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
+                >
+                  Baca Panduan
+                </a>
+              </div>
+            </div>
+
+            {/* Social proof strip */}
+            <div className="mt-8 flex items-center justify-center lg:justify-start gap-3 animate-fade-up" style={{ animationDelay: "0.4s" }}>
+              <div className="flex -space-x-2">
+                {[galKabahGrup.url, galUmrohNovember.url, galJabalRahmah.url, galMasjidQuba.url].map((src, i) => (
+                  <img key={i} src={src} alt="" className="size-8 rounded-full ring-2 ring-white object-cover" />
+                ))}
+              </div>
+              <span className="text-sm text-foreground/70"><strong className="text-emerald-deep">500+ Alumni</strong> Safar Iman</span>
             </div>
           </div>
 
+          {/* RIGHT: premium image collage from gallery */}
+          <div className="lg:col-span-6 animate-fade-up" style={{ animationDelay: "0.25s" }}>
+            <div className="relative w-full max-w-xl ml-auto aspect-square">
+              {/* soft pink blob behind — Masjidil Haram card */}
+              <div className="absolute top-4 right-8 size-[62%] rounded-full bg-[#f6d9df]/70 blur-sm" />
+              {/* soft mint blob behind — Nabawi card */}
+              <div className="absolute bottom-4 left-4 size-[50%] rounded-full bg-emerald/15 blur-sm" />
 
-
-          {/* RIGHT: stacked image collage */}
-          <div className="lg:col-span-5 hidden lg:block animate-fade-up" style={{ animationDelay: "0.25s" }}>
-            <div className="relative aspect-[4/5] w-full max-w-md ml-auto">
-              {/* gold frame glow */}
-              <div className="absolute -inset-3 rounded-[2rem] bg-gradient-gold opacity-20 blur-2xl" />
-
-              {/* main card — Masjidil Haram */}
-              <div className="absolute inset-0 rounded-[1.75rem] overflow-hidden border border-accent/30 shadow-gold">
-                <img
-                  src={galKabahGrup.url}
-                  alt="Jamaah di Masjidil Haram"
-                  className="size-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/80 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 text-emerald-deep px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
-                    ✦ Destinasi
-                  </span>
-                  <p className="mt-2 font-display text-2xl text-white drop-shadow">Masjidil Haram</p>
-                  <p className="text-xs text-white/80">Ka'bah · Makkah, Saudi Arabia</p>
-                </div>
+              {/* Masjidil Haram — tall card, top-right */}
+              <div className="absolute top-0 right-0 w-[62%] aspect-[3/4] rounded-full overflow-hidden shadow-[0_30px_60px_-20px_rgba(0,60,40,0.35)] ring-1 ring-black/5">
+                <img src={galKabahGrup.url} alt="Masjidil Haram" className="size-full object-cover" />
               </div>
 
-              {/* floating logo badge */}
-              <div className="absolute -top-6 -left-6 size-28 rounded-2xl bg-white border border-accent/40 shadow-gold flex items-center justify-center p-3 rotate-[-6deg] hover:rotate-0 transition-transform">
+              {/* Chat bubble — Masjidil Haram label */}
+              <div className="absolute top-6 left-2 sm:left-6 flex items-center gap-2 bg-white rounded-full pl-1 pr-4 py-1 shadow-lg ring-1 ring-black/5">
+                <img src={galKabahMalam.url} alt="" className="size-7 rounded-full object-cover" />
+                <span className="text-xs font-semibold text-emerald-deep">Masjidil Haram 🕋</span>
+              </div>
+
+              {/* Masjid Nabawi — bottom-left card */}
+              <div className="absolute bottom-0 left-0 w-[46%] aspect-square rounded-full overflow-hidden shadow-[0_25px_50px_-15px_rgba(0,60,40,0.3)] ring-1 ring-black/5">
+                <img src={galMadinahPayung.url} alt="Masjid Nabawi" className="size-full object-cover" />
+              </div>
+
+              {/* Chat bubble — Nabawi */}
+              <div className="absolute bottom-6 right-2 sm:right-6 flex items-center gap-2 bg-white rounded-full pl-4 pr-1 py-1 shadow-lg ring-1 ring-black/5">
+                <span className="text-xs font-semibold text-emerald-deep">Masjid Nabawi ✨</span>
+                <img src={galMadinahPayung.url} alt="" className="size-7 rounded-full object-cover" />
+              </div>
+
+              {/* Floating logo badge */}
+              <div className="absolute top-1/2 left-2 -translate-y-1/2 size-20 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 flex items-center justify-center p-2 rotate-[-8deg] hover:rotate-0 transition-transform">
                 <img src={logoSafarImanBadge} alt="Safar Iman" className="size-full object-contain" />
               </div>
 
-              {/* floating mini card — Masjid Nabawi */}
-              <div className="absolute -bottom-6 -right-6 size-32 rounded-2xl overflow-hidden border border-accent/40 shadow-emerald rotate-[6deg] hover:rotate-0 transition-transform">
-                <img src={galMadinahPayung.url} alt="Masjid Nabawi - Payung Madinah" className="size-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-emerald-deep/70 to-transparent" />
-                <span className="absolute bottom-2 left-2 right-2 text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Masjid Nabawi
-                </span>
-              </div>
+              {/* small accent dots */}
+              <div className="absolute top-2 right-1/2 size-2 rounded-full bg-accent" />
+              <div className="absolute bottom-10 left-1/2 size-1.5 rounded-full bg-emerald-deep/40" />
             </div>
           </div>
         </div>
       </div>
-
-
-      <div className="hidden lg:flex absolute bottom-6 inset-x-0 justify-center text-white/50 text-xs animate-float">
-        ↓ Scroll
-      </div>
-
-      {/* subtle vignette frame */}
-      <div className="pointer-events-none absolute inset-0 border-[10px] sm:border-[14px] border-emerald-deep/25 mix-blend-multiply" />
-
     </section>
   );
 }
+
 
 function CountdownSection() {
   const [enabled, setEnabled] = useState<boolean>(true);
