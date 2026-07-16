@@ -173,7 +173,12 @@ function isPaidEvent(event: string | undefined, label: string): boolean {
 }
 
 function isNonPaymentEvent(event: string | undefined, status: string | undefined, label: string): boolean {
-  const haystack = `${event ?? ""} ${status ?? ""} ${label}`.toLowerCase();
+  const eventLabel = `${event ?? ""} ${label}`.toLowerCase();
+  // Event yang jelas menandakan pembayaran diterima (mis. payment.received /
+  // invoice.paid) TIDAK boleh dianggap non-payment walau field `status` masih
+  // "created" — Mayar memakai "created" untuk transaksi baru yang sukses.
+  if (isPaidEvent(event, label)) return false;
+  const haystack = `${eventLabel} ${status ?? ""}`;
   return /pengingat|reminder|remind|pending|created|create|unpaid|expired|expire|cancel|failed|refund|void/.test(haystack);
 }
 
