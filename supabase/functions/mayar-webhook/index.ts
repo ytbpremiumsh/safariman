@@ -166,11 +166,6 @@ Deno.serve(async (req) => {
       payload?.transactionStatus ||
       payload?.transaction_status ||
       payload?.status;
-    if (invoiceCandidates.length === 0 && codeCandidates.length === 0) {
-      console.error("Mayar webhook: invoice id tidak ditemukan", { event, status });
-      return json({ ok: false, error: "Missing invoice id" }, { status: 400 });
-    }
-
     const normalizedStatus = (status || "").trim().toLowerCase();
     const statusIsPaid =
       !!normalizedStatus &&
@@ -180,10 +175,22 @@ Deno.serve(async (req) => {
     const paidLike =
       statusIsPaid ||
       (event && /payment\.(received|success|paid)|invoice\.paid|transaction\.(paid|success)/i.test(event));
+
+    // Log setiap request masuk supaya delivery Mayar bisa ditelusuri.
+    console.log("Mayar webhook: incoming", { event, status, paidLike, invoiceCandidates, codeCandidates });
+
+    // Event non-pembayaran (mis. "Pengingat Pembayaran" / reminder) SELALU
+    // dibalas 200 supaya Mayar tidak retry & tidak menandai delivery FAILED.
     if (!paidLike) {
-      console.log("Mayar webhook: event diabaikan", { event, status, invoiceCandidates, codeCandidates });
-      return json({ ok: true, ignored: true });
+      return json({ ok: true, ignored: true, reason: "non_payment_event", event: event ?? null });
     }
+
+    // Baru setelah event dipastikan paid-like, kita butuh invoice/kode.
+    if (invoiceCandidates.length === 0 && codeCandidates.length === 0) {
+      console.error("Mayar webhook: paid event tapi invoice id tidak ditemukan", { event, status });
+      return json({ ok: true, ignored: true, reason: "missing_invoice_id" });
+    }
+
 
     let updatedReg = false;
     let updatedDonation = false;
