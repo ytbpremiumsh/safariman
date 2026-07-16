@@ -81,7 +81,6 @@ function Nav() {
   const links = [
     { href: "#program", label: "Program" },
     { href: "#timeline", label: "Timeline" },
-    { href: "/panduan", label: "Panduan" },
     { href: "/cek-tahapan", label: "Cek Tahapan" },
     { href: "/tentang", label: "Tentang" },
   ];
@@ -101,13 +100,21 @@ function Nav() {
               )
             )}
           </nav>
-          <AffiliateLink
-            selectorId="nav_daftar"
-            to="/pendaftaran"
-            className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
-          >
-            Daftar Sekarang <ArrowRight className="size-4" />
-          </AffiliateLink>
+          <div className="hidden md:flex items-center gap-3">
+            <Link
+              to="/panduan"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-deep/20 text-emerald-deep px-4 py-2.5 text-sm font-semibold hover:bg-emerald-deep/5 transition-colors"
+            >
+              Panduan
+            </Link>
+            <AffiliateLink
+              selectorId="nav_daftar"
+              to="/pendaftaran"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-semibold shadow-gold hover-lift"
+            >
+              Daftar Sekarang <ArrowRight className="size-4" />
+            </AffiliateLink>
+          </div>
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-foreground p-2"
@@ -129,7 +136,10 @@ function Nav() {
                 <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-foreground/90 font-medium">{l.label}</a>
               )
             )}
-            <AffiliateLink selectorId="nav_daftar" to="/pendaftaran" onNavigate={() => setOpen(false)} className="mt-3 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
+            <Link to="/panduan" onClick={() => setOpen(false)} className="mt-3 block text-center rounded-full border border-emerald-deep/20 text-emerald-deep px-5 py-3 font-semibold">
+              Panduan
+            </Link>
+            <AffiliateLink selectorId="nav_daftar" to="/pendaftaran" onNavigate={() => setOpen(false)} className="mt-2 block text-center rounded-full bg-gradient-gold text-emerald-deep px-5 py-3 font-semibold">
               Daftar Sekarang
             </AffiliateLink>
           </div>
