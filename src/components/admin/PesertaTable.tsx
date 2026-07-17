@@ -127,6 +127,11 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
   const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
 
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<50 | 100>(50);
+
+
+
 
   useEffect(() => {
     if (!ready) return;
@@ -239,6 +244,16 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
   }), [rows]);
 
+  // Reset ke halaman 1 saat filter/pencarian berubah
+  useEffect(() => { setPage(1); }, [q, status, docFilter, catFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const paged = filtered.slice(pageStart, pageStart + pageSize);
+
+
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -308,7 +323,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   };
 
   // Bulk operations
-  const visibleIds = useMemo(() => filtered.map((r) => r.id), [filtered]);
+  const visibleIds = useMemo(() => paged.map((r) => r.id), [paged]);
   const allChecked = selected.size > 0 && visibleIds.every((id) => selected.has(id));
   const toggleOne = (id: string) => {
     setSelected((prev) => {
@@ -590,7 +605,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             <tbody>
               {filtered.length === 0 ? (
                 <tr><td colSpan={isSelf ? 6 : 10} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
-              ) : filtered.map((r) => {
+              ) : paged.map((r) => {
                 const gel = isGelombang(r.category);
                 const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
                 return (
@@ -701,7 +716,45 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             </tbody>
           </table>
         </div>
+        {filtered.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm">
+            <div className="text-muted-foreground text-xs">
+              Menampilkan <strong className="text-foreground">{pageStart + 1}</strong>–
+              <strong className="text-foreground">{Math.min(pageStart + pageSize, filtered.length)}</strong>{" "}
+              dari <strong className="text-foreground">{filtered.length}</strong> peserta
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground">Per halaman</label>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value) as 50 | 100)}
+                className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              >
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="px-3 h-8 rounded-md border border-border bg-background text-xs disabled:opacity-40 hover:bg-secondary"
+              >
+                ← Sebelumnya
+              </button>
+              <span className="text-xs text-muted-foreground px-1">
+                Hal <strong className="text-foreground">{currentPage}</strong> / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="px-3 h-8 rounded-md border border-border bg-background text-xs disabled:opacity-40 hover:bg-secondary"
+              >
+                Berikutnya →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
 
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
