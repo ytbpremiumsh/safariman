@@ -339,21 +339,18 @@ function BodyByStatus({
           <ClipboardList className="size-5 text-accent" /> Studi Kasus
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Bagian terpisah dari essay. Jawab kedua studi kasus berikut dengan jelas dan reflektif.
+          Bagian terpisah dari essay. Jawab <strong>ketujuh</strong> studi kasus berikut dengan jelas dan reflektif.
         </p>
         <div className="grid gap-5">
-          <EssayField
-            label="Studi Kasus 1: Saat di Tanah Suci, kamu kehilangan rombongan dan tidak membawa ponsel. Apa langkah pertama yang akan kamu lakukan?"
-            value={d.case_study_1}
-            onChange={(v) => set("case_study_1", v)}
-            min={MIN_CASE_WORDS}
-          />
-          <EssayField
-            label="Studi Kasus 2: Seorang jamaah lansia dalam rombongan terlihat kelelahan dan enggan melanjutkan ibadah. Bagaimana sikap dan tindakanmu?"
-            value={d.case_study_2}
-            onChange={(v) => set("case_study_2", v)}
-            min={MIN_CASE_WORDS}
-          />
+          {CASE_STUDIES.map((cs) => (
+            <EssayField
+              key={cs.key}
+              label={cs.label}
+              value={d[cs.key]}
+              onChange={(v) => set(cs.key, v)}
+              min={MIN_CASE_WORDS}
+            />
+          ))}
         </div>
       </div>
 
