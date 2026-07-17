@@ -153,13 +153,17 @@ export function RegisterPage({ kind }: { kind: Kind }) {
           window.location.href = json.url;
           return;
         }
-        // Fallback terakhir: kirim ke halaman status yang akan auto-retry
-        // "Buat Ulang Link Pembayaran" berkala.
+        if (json?.alreadyPaid) {
+          window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+          return;
+        }
+        // Jangan lempar ke /pendaftaran-sukses tanpa link — user WAJIB bayar dulu.
+        // Simpan kode sementara di form dan tampilkan tombol "Coba Buat Link Pembayaran Lagi".
+        setPendingPaymentCode(row.registration_code);
         toast.error(
           lastErr ||
-            "Link pembayaran belum siap. Buka halaman status untuk mencoba lagi.",
+            "Mayar sedang sibuk membuat link pembayaran. Klik tombol untuk coba lagi.",
         );
-        window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
         return;
       }
 
