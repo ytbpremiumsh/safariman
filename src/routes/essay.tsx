@@ -419,7 +419,7 @@ export function FastTrackPaymentRequired({ code }: { code: string }) {
     <>
       <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
         <div className="font-semibold mb-1 flex items-center gap-1.5">
-          <Wallet className="size-4 text-amber-600" /> Biaya pendaftaran belum lunas
+          <Wallet className="size-4 text-amber-600" /> Biaya Fast Track&nbsp; belum lunas
         </div>
         <p className="text-muted-foreground">
           Untuk jalur <strong className="text-foreground">Gelombang / Fast Track</strong>, kamu wajib menyelesaikan
