@@ -42,11 +42,10 @@ export async function notifyEmail(event: EmailEvent, code: string) {
 }
 
 export async function mayarPendaftaranInvoice(code: string) {
-  const { data, error } = await supabase.functions.invoke("mayar-pendaftaran-invoice", {
-    body: { code },
-  });
-  if (error) throw error;
-  return data as { ok: boolean; url?: string; alreadyPaid?: boolean; synced?: boolean; reused?: boolean; error?: string };
+  return invokeSoft<{ ok: boolean; url?: string; alreadyPaid?: boolean; synced?: boolean; reused?: boolean; error?: string; transient?: boolean }>(
+    "mayar-pendaftaran-invoice",
+    { code },
+  );
 }
 
 export async function mayarCreateInvoice(code: string, force = false, syncOnly = false) {
