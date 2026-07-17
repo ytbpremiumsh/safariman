@@ -323,7 +323,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   };
 
   // Bulk operations
-  const visibleIds = useMemo(() => filtered.map((r) => r.id), [filtered]);
+  const visibleIds = useMemo(() => paged.map((r) => r.id), [paged]);
   const allChecked = selected.size > 0 && visibleIds.every((id) => selected.has(id));
   const toggleOne = (id: string) => {
     setSelected((prev) => {
