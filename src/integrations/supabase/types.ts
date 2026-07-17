@@ -146,6 +146,11 @@ export type Database = {
           birth_date: string
           case_study_1: string | null
           case_study_2: string | null
+          case_study_3: string | null
+          case_study_4: string | null
+          case_study_5: string | null
+          case_study_6: string | null
+          case_study_7: string | null
           category: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at: string
@@ -196,6 +201,11 @@ export type Database = {
           birth_date: string
           case_study_1?: string | null
           case_study_2?: string | null
+          case_study_3?: string | null
+          case_study_4?: string | null
+          case_study_5?: string | null
+          case_study_6?: string | null
+          case_study_7?: string | null
           category?: Database["public"]["Enums"]["program_category"] | null
           city: string
           created_at?: string
@@ -246,6 +256,11 @@ export type Database = {
           birth_date?: string
           case_study_1?: string | null
           case_study_2?: string | null
+          case_study_3?: string | null
+          case_study_4?: string | null
+          case_study_5?: string | null
+          case_study_6?: string | null
+          case_study_7?: string | null
           category?: Database["public"]["Enums"]["program_category"] | null
           city?: string
           created_at?: string
@@ -427,6 +442,11 @@ export type Database = {
           birth_date: string
           case_study_1: string
           case_study_2: string
+          case_study_3: string
+          case_study_4: string
+          case_study_5: string
+          case_study_6: string
+          case_study_7: string
           category: Database["public"]["Enums"]["program_category"]
           city: string
           created_at: string
@@ -476,6 +496,11 @@ export type Database = {
           gender: string
           has_case_study_1: boolean
           has_case_study_2: boolean
+          has_case_study_3: boolean
+          has_case_study_4: boolean
+          has_case_study_5: boolean
+          has_case_study_6: boolean
+          has_case_study_7: boolean
           has_essay_contribution: boolean
           has_essay_dream: boolean
           has_essay_worthy: boolean
@@ -729,6 +754,11 @@ export type Database = {
             Args: {
               p_case_study_1?: string
               p_case_study_2?: string
+              p_case_study_3?: string
+              p_case_study_4?: string
+              p_case_study_5?: string
+              p_case_study_6?: string
+              p_case_study_7?: string
               p_code: string
               p_essay_contribution: string
               p_essay_dream: string
