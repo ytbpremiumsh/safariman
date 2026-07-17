@@ -698,54 +698,6 @@ function getTimelineSelectorId(step: TimelineStep, idx: number) {
   return `timeline_${idx + 1}`;
 }
 
-function Testimonials() {
-  const items = [
-    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Pengalaman spiritual dan profesional yang berubah hidup. Networking-nya luar biasa.", rating: 5 },
-    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Seleksi yang adil, fasilitas premium. Saya pulang dengan motivasi baru.", rating: 5 },
-    { n: "Jamaah Hasanah", r: "Jamaah Hasanah", q: "Konsep program-nya brilian. Memadukan ibadah, ilmu, dan kontribusi.", rating: 5 },
-    { n: "Rizky A.", r: "Pelajar SMA", q: "Awalnya tidak percaya gratis, ternyata benar fully funded. Alhamdulillah.", rating: 5 },
-  ];
-  return (
-    <section className="relative py-24 sm:py-32">
-      <IslamicPattern className="absolute inset-0 size-full text-accent/[0.03]" />
-      {/* Decorative floating shapes */}
-      <div className="absolute top-12 left-10 size-28 rounded-full bg-gradient-emerald opacity-[0.05] blur-2xl animate-float" />
-      <div className="absolute bottom-16 right-16 size-20 rounded-full bg-gradient-gold opacity-[0.06] blur-2xl animate-float" style={{ animationDelay: "1.5s" }} />
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeading
-          eyebrow="Testimoni"
-          title={<>Cerita dari para <span className="text-gradient-gold">alumni</span></>}
-          subtitle="Kesaksian peserta yang telah merasakan transformasi Safar Iman."
-        />
-        <Carousel className="mt-16" opts={{ align: "start", loop: true }}>
-          <CarouselContent>
-            {items.map((it, idx) => (
-              <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/3">
-                <div className="bg-card rounded-3xl p-7 border border-border/50 shadow-soft h-full hover-lift">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(it.rating)].map((_, i) => (
-                      <Star key={i} className="size-4 fill-accent text-accent" />
-                    ))}
-                  </div>
-                  <p className="font-display text-lg leading-relaxed text-foreground">&ldquo;{it.q}&rdquo;</p>
-                  <div className="mt-6 flex items-center gap-3 pt-5 border-t border-border">
-                    <div className="size-11 rounded-full bg-gradient-emerald grid place-items-center text-accent font-semibold">
-                      {it.n.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">{it.n}</div>
-                      <div className="text-xs text-muted-foreground">{it.r}</div>
-                    </div>
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </div>
-    </section>
-  );
-}
 
 function Gallery() {
   const imgs = [
@@ -1018,7 +970,7 @@ function Landing() {
         <Persyaratan />
         <Quota />
         <Timeline />
-        <Testimonials />
+        
         <Gallery />
         <FAQ />
         <FinalCTA />
