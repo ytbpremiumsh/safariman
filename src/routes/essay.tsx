@@ -232,6 +232,18 @@ function BodyByStatus({
     </div>
   ) : null;
 
+  // Fast Track (Gelombang): biaya pendaftaran WAJIB lunas dulu sebelum berkas
+  // dianggap otomatis lolos. Kalau belum lunas, arahkan ke pembayaran Mayar.
+  if (fastTrack && participant.payment_status !== "paid") {
+    return (
+      <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
+        {header}
+        <FastTrackPaymentRequired code={code} />
+        <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">Cek kode lain</button>
+      </div>
+    );
+  }
+
   if (!fastTrack && !participant.has_berkas) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
