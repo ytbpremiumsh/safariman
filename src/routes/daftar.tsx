@@ -123,21 +123,32 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       // Untuk gelombang berbayar: buat invoice Mayar dulu, langsung redirect ke pembayaran.
       // Kode pendaftaran baru ditampilkan setelah pembayaran sukses (via halaman /pendaftaran-sukses).
       if (KIND_META.paid) {
-        try {
-          const { mayarPendaftaranInvoice } = await import("@/lib/api");
-          const json = await mayarPendaftaranInvoice(row.registration_code);
-          if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
-          if (json.url) {
-            toast.success("Mengarahkan ke halaman pembayaran…");
-            window.location.href = json.url;
-            return;
+        const { mayarPendaftaranInvoice } = await import("@/lib/api");
+        // Retry beberapa kali kalau Mayar sedang rate-limit / transient — supaya
+        // user langsung ke halaman pembayaran, bukan mendarat di halaman
+        // "Menunggu Pembayaran" tanpa link.
+        let json: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
+        let lastErr = "";
+        for (let i = 0; i < 3; i++) {
+          if (i > 0) await new Promise((r) => setTimeout(r, 1500 * i));
+          try {
+            json = await mayarPendaftaranInvoice(row.registration_code);
+            if (json?.url) break;
+            if (json?.alreadyPaid) break;
+            lastErr = json?.error || "Link pembayaran belum siap";
+            if (!json?.transient) break; // hanya retry untuk transient error
+          } catch (e: any) {
+            lastErr = e?.message || "Gagal menghubungi server pembayaran";
           }
-          throw new Error("URL pembayaran tidak tersedia");
-        } catch (e: any) {
-          toast.error(e?.message || "Gagal membuat invoice — silakan coba lagi di halaman cek status");
-          window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+        }
+        if (json?.url) {
+          toast.success("Mengarahkan ke halaman pembayaran…");
+          window.location.href = json.url;
           return;
         }
+        toast.error(lastErr || "Belum bisa membuat link pembayaran — coba lagi dari halaman status");
+        window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+        return;
       }
 
       setCode(row.registration_code);
