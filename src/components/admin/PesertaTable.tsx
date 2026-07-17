@@ -605,7 +605,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             <tbody>
               {filtered.length === 0 ? (
                 <tr><td colSpan={isSelf ? 6 : 10} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
-              ) : filtered.map((r) => {
+              ) : paged.map((r) => {
                 const gel = isGelombang(r.category);
                 const payLabel = gel ? "Bayar Pendaftaran" : "Donasi";
                 return (
