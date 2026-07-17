@@ -71,6 +71,11 @@ type PendingRow = {
   has_essay_contribution: boolean;
   has_case_study_1: boolean;
   has_case_study_2: boolean;
+  has_case_study_3: boolean;
+  has_case_study_4: boolean;
+  has_case_study_5: boolean;
+  has_case_study_6: boolean;
+  has_case_study_7: boolean;
   updated_at: string;
 };
 
