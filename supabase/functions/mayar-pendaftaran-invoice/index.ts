@@ -118,7 +118,10 @@ Deno.serve(async (req) => {
 
     const description = `Biaya Pendaftaran ${slotName} — Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code}`;
     const itemDescription = `Pendaftaran ${slotName} a/n ${p.full_name} — Kode ${p.registration_code}`;
-    const origin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
+    const rawOrigin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
+    // Fallback ke domain publik jika origin/referer tidak ada (mis. panggilan server-to-server).
+    // Mayar mewajibkan `redirectUrl` berupa URL absolut valid.
+    const origin = /^https?:\/\//i.test(rawOrigin) ? rawOrigin : "https://safariman.my.id";
     const redirectUrl = `${origin}/pendaftaran-sukses?code=${encodeURIComponent(p.registration_code)}`;
 
     // Pastikan nama "Kepada" di invoice Mayar sesuai nama peserta.
@@ -148,18 +151,38 @@ Deno.serve(async (req) => {
         participant_email: p.email,
       },
     };
-    const res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
-    const j: any = await res.json().catch(() => ({}));
-    if (!res.ok || j?.statusCode >= 400)
+    // Retry-with-backoff untuk mengatasi 429 "Too many requests" dari Mayar
+    // (rate-limit per API key). Tanpa retry, user stuck karena payment_url
+    // tidak pernah tersimpan.
+    let res!: Response;
+    let j: any = {};
+    const delays = [0, 800, 1800, 3500];
+    for (let i = 0; i < delays.length; i++) {
+      if (delays[i]) await new Promise((r) => setTimeout(r, delays[i]));
+      res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+      });
+      j = await res.json().catch(() => ({}));
+      const status = res.status || j?.statusCode || 0;
+      if (status !== 429) break;
+    }
+    if (!res.ok || j?.statusCode >= 400) {
+      const isRate = res.status === 429 || j?.statusCode === 429 ||
+        /too many requests/i.test(String(j?.messages || j?.message || ""));
+      if (isRate) {
+        return json(
+          { ok: false, error: "Mayar sedang membatasi permintaan (rate limit). Coba lagi 10-30 detik.", transient: true },
+          { status: 503 },
+        );
+      }
       return json({ ok: false, error: j?.messages || j?.message || "Gagal membuat invoice", raw: j }, { status: 502 });
+    }
     const url: string | undefined = j?.data?.link || j?.data?.url || j?.link;
     const invoiceId: string | undefined = j?.data?.id || j?.data?.transactionId || j?.id;
     if (!url || !invoiceId) return json({ ok: false, error: "Respon Mayar tidak lengkap", raw: j }, { status: 502 });
