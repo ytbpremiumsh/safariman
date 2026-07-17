@@ -41,6 +41,7 @@ type Participant = {
   photo_url: string | null;
   payment_status: string;
   payment_url: string | null;
+  payment_invoice_id?: string | null;
   paid_at: string | null;
   donation_status: string;
   donation_paid_at: string | null;
