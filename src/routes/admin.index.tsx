@@ -39,8 +39,25 @@ function AdminOverview() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const { data } = await supabase.from("participants").select(COLS);
-      setRows((data ?? []) as Row[]);
+      const pageSize = 1000;
+      let from = 0;
+      const all: Row[] = [];
+      // Paginate to bypass PostgREST default 1000-row cap
+      // and load semua peserta tanpa batasan.
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { data, error } = await supabase
+          .from("participants")
+          .select(COLS)
+          .order("created_at", { ascending: false })
+          .range(from, from + pageSize - 1);
+        if (error) break;
+        const batch = (data ?? []) as Row[];
+        all.push(...batch);
+        if (batch.length < pageSize) break;
+        from += pageSize;
+      }
+      setRows(all);
       setLoading(false);
     })();
 
