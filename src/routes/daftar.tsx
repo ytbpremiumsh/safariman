@@ -82,6 +82,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
   const [code, setCode] = useState<string | null>(null);
+  const [pendingPaymentCode, setPendingPaymentCode] = useState<string | null>(null);
+  const [retryingPayment, setRetryingPayment] = useState(false);
 
   const set = <K extends keyof FormData>(k: K, v: FormData[K]) =>
     setData((d) => ({ ...d, [k]: v }));
@@ -153,13 +155,17 @@ export function RegisterPage({ kind }: { kind: Kind }) {
           window.location.href = json.url;
           return;
         }
-        // Fallback terakhir: kirim ke halaman status yang akan auto-retry
-        // "Buat Ulang Link Pembayaran" berkala.
+        if (json?.alreadyPaid) {
+          window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
+          return;
+        }
+        // Jangan lempar ke /pendaftaran-sukses tanpa link — user WAJIB bayar dulu.
+        // Simpan kode sementara di form dan tampilkan tombol "Coba Buat Link Pembayaran Lagi".
+        setPendingPaymentCode(row.registration_code);
         toast.error(
           lastErr ||
-            "Link pembayaran belum siap. Buka halaman status untuk mencoba lagi.",
+            "Mayar sedang sibuk membuat link pembayaran. Klik tombol untuk coba lagi.",
         );
-        window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(row.registration_code)}`;
         return;
       }
 
@@ -217,8 +223,56 @@ export function RegisterPage({ kind }: { kind: Kind }) {
                 <ArrowLeft className="size-4" /> Lihat Jalur Lain
               </Link>
             </div>
+          ) : pendingPaymentCode ? (
+            <PendingPaymentCard
+              code={pendingPaymentCode}
+              name={data.full_name}
+              retrying={retryingPayment}
+              onRetry={async () => {
+                setRetryingPayment(true);
+                const loadingId = toast.loading("Menghubungi Mayar…");
+                try {
+                  const { mayarPendaftaranInvoice } = await import("@/lib/api");
+                  const backoffMs = [0, 2000, 4000, 6000, 8000, 10000];
+                  let j: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
+                  let lastErr = "";
+                  for (let i = 0; i < backoffMs.length; i++) {
+                    if (backoffMs[i] > 0) {
+                      toast.loading(
+                        `Mayar sedang sibuk, mencoba ulang (${i}/${backoffMs.length - 1})…`,
+                        { id: loadingId },
+                      );
+                      await new Promise((r) => setTimeout(r, backoffMs[i]));
+                    }
+                    try {
+                      j = await mayarPendaftaranInvoice(pendingPaymentCode);
+                      if (j?.url || j?.alreadyPaid) break;
+                      lastErr = j?.error || "Link pembayaran belum siap";
+                      if (!j?.transient) break;
+                    } catch (e: any) {
+                      lastErr = e?.message || "Gagal menghubungi server pembayaran";
+                    }
+                  }
+                  toast.dismiss(loadingId);
+                  if (j?.url) {
+                    toast.success("Mengarahkan ke halaman pembayaran…");
+                    window.location.href = j.url;
+                    return;
+                  }
+                  if (j?.alreadyPaid) {
+                    window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(pendingPaymentCode)}`;
+                    return;
+                  }
+                  toast.error(lastErr || "Masih belum bisa. Coba lagi sebentar.");
+                } finally {
+                  setRetryingPayment(false);
+                }
+              }}
+            />
           ) : code ? (
             <SuccessCard code={code} name={data.full_name} kind={kind} />
+
+
 
           ) : (
             <>
@@ -309,7 +363,43 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   );
 }
 
+function PendingPaymentCard({
+  code, name, retrying, onRetry,
+}: { code: string; name: string; retrying: boolean; onRetry: () => void }) {
+  return (
+    <div className="max-w-2xl mx-auto rounded-3xl border border-accent/30 bg-card/70 backdrop-blur p-8 md:p-10 shadow-emerald text-center">
+      <div className="mx-auto mb-5 flex items-center justify-center size-14 rounded-full bg-accent/15 text-accent">
+        <Loader2 className={retrying ? "size-6 animate-spin" : "size-6"} />
+      </div>
+      <h2 className="font-serif text-2xl md:text-3xl font-bold text-emerald-deep mb-3">
+        Selesaikan Pembayaran Dulu
+      </h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Halo <span className="font-semibold text-foreground">{name}</span>, data pendaftaranmu sudah tersimpan.
+        Klik tombol di bawah untuk melanjutkan ke halaman pembayaran Mayar.
+        <br />
+        <span className="text-xs">Kode sementara: <code className="font-mono">{code}</code> — kode resmi keluar setelah pembayaran sukses.</span>
+      </p>
+      <button
+        onClick={onRetry}
+        disabled={retrying}
+        className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-8 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
+      >
+        {retrying ? (
+          <><Loader2 className="size-5 animate-spin" /> Menghubungi Mayar…</>
+        ) : (
+          <>Lanjut ke Pembayaran Mayar <ArrowRight className="size-5" /></>
+        )}
+      </button>
+      <p className="mt-4 text-xs text-muted-foreground">
+        Jika Mayar sedang sibuk, silakan coba lagi beberapa detik kemudian.
+      </p>
+    </div>
+  );
+}
+
 function SuccessCard({ code, name, kind }: { code: string; name: string; kind: Kind }) {
+
   const isSelf = kind === "self_funded";
   const copy = () => {
     navigator.clipboard.writeText(code);
