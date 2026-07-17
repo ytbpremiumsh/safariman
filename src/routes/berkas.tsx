@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import { FastTrackPaymentRequired } from "@/routes/essay";
 
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
 const optionalUrlSchema = z
