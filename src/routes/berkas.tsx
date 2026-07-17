@@ -102,8 +102,8 @@ function BerkasPage() {
       const cvPayload = JSON.stringify({
         pengalaman_sosial: parsedTexts.data.pengalaman_sosial,
         skill: parsedTexts.data.skill,
-        sertifikat: parsedLinks.data.sertifikat,
-        portofolio: parsedLinks.data.portofolio,
+        sertifikat: parsedLinks.data.sertifikat ?? "",
+        portofolio: parsedLinks.data.portofolio ?? "",
       });
 
       const { data: ok, error } = await supabase.rpc("submit_berkas_by_code", {
