@@ -203,8 +203,8 @@ function BerkasPage() {
                   <LinkField label="Identitas Diri" hint="KTP / KTM / Kartu Pelajar" value={links.identitas} onChange={(v) => setLink("identitas", v)} required />
                   <TextAreaField label="Pengalaman Sosial" hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu" value={texts.pengalaman_sosial} onChange={(v) => setText("pengalaman_sosial", v)} rows={4} required />
                   <TextAreaField label="Skill" hint="Sebutkan skill / kemampuan yang kamu kuasai" value={texts.skill} onChange={(v) => setText("skill", v)} rows={3} required />
-                  <LinkField label="Sertifikat Pendukung" hint="Folder Google Drive berisi sertifikat-sertifikat kamu" value={links.sertifikat} onChange={(v) => setLink("sertifikat", v)} required />
-                  <LinkField label="Portofolio Kegiatan" hint="Folder Google Drive berisi dokumentasi kegiatan kamu" value={links.portofolio} onChange={(v) => setLink("portofolio", v)} required />
+                  <LinkField label="Sertifikat Pendukung (Opsional)" hint="Folder Google Drive berisi sertifikat-sertifikat kamu" value={links.sertifikat} onChange={(v) => setLink("sertifikat", v)} />
+                  <LinkField label="Portofolio Kegiatan (Opsional)" hint="Folder Google Drive berisi dokumentasi kegiatan kamu" value={links.portofolio} onChange={(v) => setLink("portofolio", v)} />
                 </div>
               </Section>
 
