@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, KeyRound, CheckCircle2, HeartHandshake, FileText, ClipboardList, Sparkles, Wallet } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -232,6 +232,18 @@ function BodyByStatus({
     </div>
   ) : null;
 
+  // Fast Track (Gelombang): biaya pendaftaran WAJIB lunas dulu sebelum berkas
+  // dianggap otomatis lolos. Kalau belum lunas, arahkan ke pembayaran Mayar.
+  if (fastTrack && participant.payment_status !== "paid") {
+    return (
+      <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
+        {header}
+        <FastTrackPaymentRequired code={code} />
+        <button onClick={onReset} className="w-full text-xs text-muted-foreground hover:text-foreground underline">Cek kode lain</button>
+      </div>
+    );
+  }
+
   if (!fastTrack && !participant.has_berkas) {
     return (
       <div className="bg-card border border-border rounded-3xl p-6 sm:p-10 shadow-soft animate-fade-up max-w-xl mx-auto space-y-6">
@@ -365,6 +377,62 @@ function CodeForm({ code, setCode, checking, verify }: { code: string; setCode: 
     </div>
   );
 }
+
+export function FastTrackPaymentRequired({ code }: { code: string }) {
+  const [loading, setLoading] = useState(false);
+  const [payUrl, setPayUrl] = useState<string | null>(null);
+
+  const go = async () => {
+    setLoading(true);
+    try {
+      const { mayarPendaftaranInvoice } = await import("@/lib/api");
+      const r = await mayarPendaftaranInvoice(code);
+      if (r?.alreadyPaid) { window.location.reload(); return; }
+      if (r?.url) { setPayUrl(r.url); window.location.href = r.url; return; }
+      toast.error(r?.error || "Gagal memuat link pembayaran");
+    } catch (e: any) {
+      const msg = e?.context ? await e.context.text?.().catch(() => e?.message) : e?.message;
+      toast.error(msg || "Gagal memuat link pembayaran");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
+        <div className="font-semibold mb-1 flex items-center gap-1.5">
+          <Wallet className="size-4 text-amber-600" /> Biaya pendaftaran belum lunas
+        </div>
+        <p className="text-muted-foreground">
+          Untuk jalur <strong className="text-foreground">Gelombang / Fast Track</strong>, kamu wajib menyelesaikan
+          <strong className="text-foreground"> biaya pendaftaran</strong> terlebih dahulu sebelum berkas dianggap otomatis lolos
+          dan bisa lanjut ke tahap Essay.
+        </p>
+      </div>
+      <button
+        onClick={go}
+        disabled={loading}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-7 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
+      >
+        {loading ? <><Loader2 className="size-4 animate-spin" /> Memuat link…</> : <><Wallet className="size-5" /> Bayar Pendaftaran Sekarang <ArrowRight className="size-4" /></>}
+      </button>
+      {payUrl && (
+        <a href={payUrl} className="block text-center text-xs text-accent underline">
+          Buka halaman pembayaran secara manual
+        </a>
+      )}
+      <Link
+        to="/pendaftaran-sukses"
+        search={{ code } as any}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/40 px-7 py-3 text-sm font-semibold hover:bg-secondary"
+      >
+        Cek Status Pembayaran
+      </Link>
+    </>
+  );
+}
+
 
 function EssayField({ label, value, onChange, min = MIN_ESSAY_WORDS }: { label: string; value: string; onChange: (v: string) => void; min?: number }) {
   const words = countWords(value);
