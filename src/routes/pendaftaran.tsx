@@ -33,13 +33,28 @@ const ROUTES: Record<SlotKey, string> = {
 };
 
 function PendaftaranHub() {
-  const [cfg, setCfg] = useState<GelombangConfig | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selfPrice, setSelfPrice] = useState<number>(50000);
-  const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
-  // Default OFF — jangan tampilkan kartu Self Funded sampai backend eksplisit
-  // mengembalikan enabled=true. Ini mencegah kartu "muncul" saat RPC lambat / gagal.
-  const [selfEnabled, setSelfEnabled] = useState<boolean>(false);
+  // Hidrasi awal dari cache localStorage. Ini menghilangkan "kedip" ke default
+  // hard-coded saat RPC belum balas / lambat, dan mencegah kartu Self Funded
+  // muncul saat backend eksplisit menonaktifkannya.
+  const LS_KEY = "pendaftaran_cfg_v1";
+  const cached = (() => {
+    try {
+      const raw = typeof localStorage !== "undefined" ? localStorage.getItem(LS_KEY) : null;
+      return raw ? JSON.parse(raw) as {
+        cfg?: GelombangConfig;
+        selfPrice?: number;
+        selfPaidEnabled?: boolean;
+        selfEnabled?: boolean;
+      } : null;
+    } catch { return null; }
+  })();
+
+  const [cfg, setCfg] = useState<GelombangConfig | null>(cached?.cfg ?? null);
+  const [loading, setLoading] = useState(!cached?.cfg);
+  const [selfPrice, setSelfPrice] = useState<number>(cached?.selfPrice ?? 50000);
+  const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(cached?.selfPaidEnabled ?? true);
+  // Default OFF — jangan tampilkan kartu Self Funded sampai backend eksplisit true.
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(cached?.selfEnabled === true);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,23 +65,50 @@ function PendaftaranHub() {
       ]);
       if (cancelled) return;
 
-      const gelData = gelRes.status === "fulfilled" ? (gelRes.value as any)?.data : null;
-      setCfg(parseGelombangConfig(typeof gelData === "string" ? gelData : null));
+      let nextCfg: GelombangConfig | null = cfg;
+      let nextPrice = selfPrice;
+      let nextPaidEnabled = selfPaidEnabled;
+      let nextEnabled = selfEnabled;
+
+      if (gelRes.status === "fulfilled") {
+        const gelData = (gelRes.value as any)?.data;
+        // Hanya update kalau server balas string valid; kalau tidak, pertahankan cache.
+        if (typeof gelData === "string" && gelData.trim()) {
+          nextCfg = parseGelombangConfig(gelData);
+          setCfg(nextCfg);
+        } else if (!cfg) {
+          nextCfg = parseGelombangConfig(null);
+          setCfg(nextCfg);
+        }
+      } else if (!cfg) {
+        nextCfg = parseGelombangConfig(null);
+        setCfg(nextCfg);
+      }
 
       if (selfRes.status === "fulfilled") {
         const selfCfg = (selfRes.value as any)?.data;
         if (selfCfg && typeof selfCfg === "object") {
           const v = Number(selfCfg.price);
-          if (v && v > 0) setSelfPrice(v);
-          setSelfPaidEnabled(selfCfg.paid_enabled !== false);
-          // Hanya aktif kalau backend eksplisit true
-          setSelfEnabled(selfCfg.enabled === true);
+          if (v && v > 0) { nextPrice = v; setSelfPrice(v); }
+          nextPaidEnabled = selfCfg.paid_enabled !== false;
+          setSelfPaidEnabled(nextPaidEnabled);
+          nextEnabled = selfCfg.enabled === true;
+          setSelfEnabled(nextEnabled);
         }
       }
+
+      // Simpan snapshot terakhir yang berasal dari server (atau parse default sebagai fallback).
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify({
+          cfg: nextCfg, selfPrice: nextPrice,
+          selfPaidEnabled: nextPaidEnabled, selfEnabled: nextEnabled,
+        }));
+      } catch { /* ignore */ }
 
       setLoading(false);
     })();
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
