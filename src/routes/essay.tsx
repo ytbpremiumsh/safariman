@@ -79,7 +79,7 @@ function EssayPage() {
   const [checking, setChecking] = useState(false);
   const [participant, setParticipant] = useState<Participant | null>(null);
 
-  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "", case_study_1: "", case_study_2: "" });
+  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "", case_study_1: "", case_study_2: "", case_study_3: "", case_study_4: "", case_study_5: "", case_study_6: "", case_study_7: "" });
   const [submitting, setSubmitting] = useState(false);
   const set = <K extends keyof typeof d,>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
 
