@@ -82,6 +82,8 @@ export function RegisterPage({ kind }: { kind: Kind }) {
   const [data, setData] = useState<FormData>(initial);
   const [submitting, setSubmitting] = useState(false);
   const [code, setCode] = useState<string | null>(null);
+  const [pendingPaymentCode, setPendingPaymentCode] = useState<string | null>(null);
+  const [retryingPayment, setRetryingPayment] = useState(false);
 
   const set = <K extends keyof FormData>(k: K, v: FormData[K]) =>
     setData((d) => ({ ...d, [k]: v }));
