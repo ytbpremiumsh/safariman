@@ -146,6 +146,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
           isGelombang(p.category) &&
           p.payment_status === "pending" &&
           !!p.payment_url &&
+          !!p.payment_invoice_id &&
           now - (paymentSyncRef.current[p.registration_code] ?? 0) > 60000
         )
         .slice(0, 5);
