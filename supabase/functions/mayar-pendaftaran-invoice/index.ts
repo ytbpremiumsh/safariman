@@ -118,7 +118,10 @@ Deno.serve(async (req) => {
 
     const description = `Biaya Pendaftaran ${slotName} — Safar Iman | Peserta: ${p.full_name} (${p.email}) | Kode: ${p.registration_code}`;
     const itemDescription = `Pendaftaran ${slotName} a/n ${p.full_name} — Kode ${p.registration_code}`;
-    const origin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
+    const rawOrigin = (req.headers.get("origin") || req.headers.get("referer") || "").replace(/\/$/, "");
+    // Fallback ke domain publik jika origin/referer tidak ada (mis. panggilan server-to-server).
+    // Mayar mewajibkan `redirectUrl` berupa URL absolut valid.
+    const origin = /^https?:\/\//i.test(rawOrigin) ? rawOrigin : "https://safariman.my.id";
     const redirectUrl = `${origin}/pendaftaran-sukses?code=${encodeURIComponent(p.registration_code)}`;
 
     // Pastikan nama "Kepada" di invoice Mayar sesuai nama peserta.
