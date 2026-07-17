@@ -11,10 +11,17 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
+const optionalUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .optional()
+  .or(z.literal(""))
+  .refine((v) => !v || /^https?:\/\/.+/i.test(v), "Harus berupa link valid (https://...)");
 const linksSchema = z.object({
   identitas: urlSchema,
-  sertifikat: urlSchema,
-  portofolio: urlSchema,
+  sertifikat: optionalUrlSchema,
+  portofolio: optionalUrlSchema,
 });
 const textsSchema = z.object({
   pengalaman_sosial: z.string().trim().min(30, "Pengalaman Sosial minimal 30 karakter").max(3000),
