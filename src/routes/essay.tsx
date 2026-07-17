@@ -125,6 +125,11 @@ function EssayPage() {
         p_essay_contribution: parsed.data.essay_contribution,
         p_case_study_1: parsed.data.case_study_1,
         p_case_study_2: parsed.data.case_study_2,
+        p_case_study_3: parsed.data.case_study_3,
+        p_case_study_4: parsed.data.case_study_4,
+        p_case_study_5: parsed.data.case_study_5,
+        p_case_study_6: parsed.data.case_study_6,
+        p_case_study_7: parsed.data.case_study_7,
       });
 
       if (error) throw error;
