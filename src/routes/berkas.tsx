@@ -11,10 +11,17 @@ import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
+const optionalUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .optional()
+  .or(z.literal(""))
+  .refine((v) => !v || /^https?:\/\/.+/i.test(v), "Harus berupa link valid (https://...)");
 const linksSchema = z.object({
   identitas: urlSchema,
-  sertifikat: urlSchema,
-  portofolio: urlSchema,
+  sertifikat: optionalUrlSchema,
+  portofolio: optionalUrlSchema,
 });
 const textsSchema = z.object({
   pengalaman_sosial: z.string().trim().min(30, "Pengalaman Sosial minimal 30 karakter").max(3000),
@@ -88,15 +95,15 @@ function BerkasPage() {
     const parsedTexts = textsSchema.safeParse(texts);
     if (!parsedTexts.success) { toast.error(parsedTexts.error.issues[0].message); return; }
     const parsedLinks = linksSchema.safeParse(links);
-    if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
+    if (!parsedLinks.success) { toast.error(parsedLinks.error.issues[0].message); return; }
 
     setSubmitting(true);
     try {
       const cvPayload = JSON.stringify({
         pengalaman_sosial: parsedTexts.data.pengalaman_sosial,
         skill: parsedTexts.data.skill,
-        sertifikat: parsedLinks.data.sertifikat,
-        portofolio: parsedLinks.data.portofolio,
+        sertifikat: parsedLinks.data.sertifikat ?? "",
+        portofolio: parsedLinks.data.portofolio ?? "",
       });
 
       const { data: ok, error } = await supabase.rpc("submit_berkas_by_code", {
@@ -196,8 +203,8 @@ function BerkasPage() {
                   <LinkField label="Identitas Diri" hint="KTP / KTM / Kartu Pelajar" value={links.identitas} onChange={(v) => setLink("identitas", v)} required />
                   <TextAreaField label="Pengalaman Sosial" hint="Ceritakan pengalaman organisasi / kegiatan sosial kamu" value={texts.pengalaman_sosial} onChange={(v) => setText("pengalaman_sosial", v)} rows={4} required />
                   <TextAreaField label="Skill" hint="Sebutkan skill / kemampuan yang kamu kuasai" value={texts.skill} onChange={(v) => setText("skill", v)} rows={3} required />
-                  <LinkField label="Sertifikat Pendukung" hint="Folder Google Drive berisi sertifikat-sertifikat kamu" value={links.sertifikat} onChange={(v) => setLink("sertifikat", v)} required />
-                  <LinkField label="Portofolio Kegiatan" hint="Folder Google Drive berisi dokumentasi kegiatan kamu" value={links.portofolio} onChange={(v) => setLink("portofolio", v)} required />
+                  <LinkField label="Sertifikat Pendukung (Opsional)" hint="Folder Google Drive berisi sertifikat-sertifikat kamu" value={links.sertifikat} onChange={(v) => setLink("sertifikat", v)} />
+                  <LinkField label="Portofolio Kegiatan (Opsional)" hint="Folder Google Drive berisi dokumentasi kegiatan kamu" value={links.portofolio} onChange={(v) => setLink("portofolio", v)} />
                 </div>
               </Section>
 
