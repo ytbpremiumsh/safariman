@@ -487,6 +487,11 @@ function PesertaEssayPage() {
                 <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
                 <Essay title="Studi Kasus 1" body={detail.case_study_1 ?? ""} />
                 <Essay title="Studi Kasus 2" body={detail.case_study_2 ?? ""} />
+                <Essay title="Studi Kasus 3" body={detail.case_study_3 ?? ""} />
+                <Essay title="Studi Kasus 4" body={detail.case_study_4 ?? ""} />
+                <Essay title="Studi Kasus 5" body={detail.case_study_5 ?? ""} />
+                <Essay title="Studi Kasus 6" body={detail.case_study_6 ?? ""} />
+                <Essay title="Studi Kasus 7" body={detail.case_study_7 ?? ""} />
               </div>
 
 
