@@ -37,37 +37,36 @@ function PendaftaranHub() {
   const [loading, setLoading] = useState(true);
   const [selfPrice, setSelfPrice] = useState<number>(50000);
   const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
-  const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
+  // Default OFF — jangan tampilkan kartu Self Funded sampai backend eksplisit
+  // mengembalikan enabled=true. Ini mencegah kartu "muncul" saat RPC lambat / gagal.
+  const [selfEnabled, setSelfEnabled] = useState<boolean>(false);
 
   useEffect(() => {
-    let done = false;
-    const timeout = new Promise<void>((resolve) => setTimeout(() => resolve(), 6000));
+    let cancelled = false;
     (async () => {
-      const gelPromise = supabase.rpc("get_gelombang_config");
-      const selfPromise = supabase.rpc("get_self_funded_public_config");
+      const [gelRes, selfRes] = await Promise.allSettled([
+        supabase.rpc("get_gelombang_config"),
+        supabase.rpc("get_self_funded_public_config"),
+      ]);
+      if (cancelled) return;
 
-      // Fallback: kalau backend lambat, tetap render dengan konfigurasi default.
-      await Promise.race([Promise.all([gelPromise, selfPromise]), timeout]);
-      if (done) return;
+      const gelData = gelRes.status === "fulfilled" ? (gelRes.value as any)?.data : null;
+      setCfg(parseGelombangConfig(typeof gelData === "string" ? gelData : null));
 
-      try {
-        const { data } = await Promise.race([gelPromise, new Promise<any>((r) => setTimeout(() => r({ data: null }), 100))]);
-        setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
-      } catch { setCfg(parseGelombangConfig(null)); }
-
-      try {
-        const { data: selfCfg } = await Promise.race([selfPromise, new Promise<any>((r) => setTimeout(() => r({ data: null }), 100))]);
-        if (selfCfg) {
-          const v = Number((selfCfg as any)?.price);
+      if (selfRes.status === "fulfilled") {
+        const selfCfg = (selfRes.value as any)?.data;
+        if (selfCfg && typeof selfCfg === "object") {
+          const v = Number(selfCfg.price);
           if (v && v > 0) setSelfPrice(v);
-          setSelfPaidEnabled((selfCfg as any)?.paid_enabled !== false);
-          setSelfEnabled((selfCfg as any)?.enabled !== false);
+          setSelfPaidEnabled(selfCfg.paid_enabled !== false);
+          // Hanya aktif kalau backend eksplisit true
+          setSelfEnabled(selfCfg.enabled === true);
         }
-      } catch { /* keep defaults */ }
+      }
 
       setLoading(false);
     })();
-    return () => { done = true; };
+    return () => { cancelled = true; };
   }, []);
 
   return (
