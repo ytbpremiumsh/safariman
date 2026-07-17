@@ -810,7 +810,7 @@ function PendingEssaySection({
                           : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
                       }`}>
                         {filled}/3 Essay
-                        {(r.has_case_study_1 || r.has_case_study_2) && " · Studi Kasus dimulai"}
+                        {(r.has_case_study_1 || r.has_case_study_2 || r.has_case_study_3 || r.has_case_study_4 || r.has_case_study_5 || r.has_case_study_6 || r.has_case_study_7) && " · Studi Kasus dimulai"}
                       </span>
                     </td>
                     <td className="px-3 py-3">
