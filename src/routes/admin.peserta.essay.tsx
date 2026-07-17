@@ -40,6 +40,11 @@ type Row = {
   essay_contribution: string;
   case_study_1: string | null;
   case_study_2: string | null;
+  case_study_3: string | null;
+  case_study_4: string | null;
+  case_study_5: string | null;
+  case_study_6: string | null;
+  case_study_7: string | null;
   cv_url: string | null;
   photo_url: string | null;
   donation_status: string;
