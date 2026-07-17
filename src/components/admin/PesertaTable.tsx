@@ -806,6 +806,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                   <Row k="Pendidikan" v={detail.education} />
                   <Row k="Pekerjaan" v={detail.occupation} />
                   <Row k="Kategori" v={detail.category ? CAT_LABEL[detail.category] : "—"} />
+                  <Row k="Passport" v={detail.has_passport || "—"} />
                 </div>
               </div>
 
