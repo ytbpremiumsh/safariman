@@ -142,14 +142,14 @@ function AdminSearch() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground px-3 h-9 text-xs sm:text-sm transition-colors min-w-[180px] sm:min-w-[260px] justify-between"
+        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground h-9 px-2 sm:px-3 text-xs sm:text-sm transition-colors sm:min-w-[260px] justify-center sm:justify-between"
         title="Cari menu (Ctrl/Cmd + K)"
       >
         <span className="inline-flex items-center gap-2">
           <Search className="size-3.5" />
-          <span>Cari menu…</span>
+          <span className="hidden sm:inline">Cari menu…</span>
         </span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+        <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
           ⌘K
         </kbd>
       </button>
