@@ -565,7 +565,8 @@ function Quota() {
 }
 
 function Timeline() {
-  const [steps, setSteps] = useState<TimelineStep[]>(DEFAULT_TIMELINE);
+  // Hidrasi awal dari cache localStorage → tidak flash tanggal default lama.
+  const [steps, setSteps] = useState<TimelineStep[]>(() => getCachedTimeline() ?? DEFAULT_TIMELINE);
   useEffect(() => {
     fetchTimeline().then((arr) => {
       if (arr.length > 0) setSteps(arr);
