@@ -25,9 +25,11 @@ type Row = {
   essay_contribution: string | null;
   payment_status: string;
   paid_at: string | null;
+  donation_status: string | null;
+  donation_paid_at: string | null;
 };
 
-const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at";
+const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at,donation_status,donation_paid_at";
 
 function AdminOverview() {
   const ready = useAdminGuard();
@@ -107,7 +109,7 @@ function AdminOverview() {
       g1Paid: g1.filter((r) => r.payment_status === "paid").length,
       g2Paid: g2.filter((r) => r.payment_status === "paid").length,
       submitted: rows.filter(submitted).length,
-      donasi: reguler.filter((r) => r.payment_status === "paid").length,
+      donasi: rows.filter((r) => r.donation_status === "paid").length,
       pendaftaranPaid: rows.filter((r) => isGelombang(r) && r.payment_status === "paid").length,
     };
   }, [rows]);
@@ -123,7 +125,7 @@ function AdminOverview() {
     return {
       daftar: rows.filter((r) => inToday(r.created_at)).length,
       berkas: rows.filter((r) => submitted(r) && inToday(r.updated_at)).length,
-      donasi: rows.filter((r) => isReguler(r) && r.payment_status === "paid" && inToday(r.paid_at)).length,
+      donasi: rows.filter((r) => r.donation_status === "paid" && inToday(r.donation_paid_at)).length,
       pendaftaranPaid: rows.filter((r) => isGelombang(r) && r.payment_status === "paid" && inToday(r.paid_at)).length,
     };
   }, [rows]);
