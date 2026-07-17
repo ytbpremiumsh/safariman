@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: p, error: pErr } = await admin
       .from("participants")
-      .select("id, full_name, essay_worthy, essay_dream, essay_contribution, case_study_1, case_study_2")
+      .select("id, full_name, essay_worthy, essay_dream, essay_contribution, case_study_1, case_study_2, case_study_3, case_study_4, case_study_5, case_study_6, case_study_7")
       .eq("id", participantId)
       .maybeSingle();
     if (pErr || !p) return json({ error: "participant not found" }, { status: 404 });
@@ -70,6 +70,21 @@ ${(p as any).case_study_1 ?? "(kosong)"}
 
 [STUDI KASUS 2]
 ${(p as any).case_study_2 ?? "(kosong)"}
+
+[STUDI KASUS 3]
+${(p as any).case_study_3 ?? "(kosong)"}
+
+[STUDI KASUS 4]
+${(p as any).case_study_4 ?? "(kosong)"}
+
+[STUDI KASUS 5]
+${(p as any).case_study_5 ?? "(kosong)"}
+
+[STUDI KASUS 6]
+${(p as any).case_study_6 ?? "(kosong)"}
+
+[STUDI KASUS 7]
+${(p as any).case_study_7 ?? "(kosong)"}
 
 Berikan penilaianmu sebagai JSON sesuai instruksi.`;
 

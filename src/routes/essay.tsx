@@ -23,7 +23,22 @@ const essaySchema = z.object({
   essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
   case_study_1: essayField("Studi Kasus 1", MIN_CASE_WORDS),
   case_study_2: essayField("Studi Kasus 2", MIN_CASE_WORDS),
+  case_study_3: essayField("Studi Kasus 3", MIN_CASE_WORDS),
+  case_study_4: essayField("Studi Kasus 4", MIN_CASE_WORDS),
+  case_study_5: essayField("Studi Kasus 5", MIN_CASE_WORDS),
+  case_study_6: essayField("Studi Kasus 6", MIN_CASE_WORDS),
+  case_study_7: essayField("Studi Kasus 7", MIN_CASE_WORDS),
 });
+
+const CASE_STUDIES: { key: "case_study_1"|"case_study_2"|"case_study_3"|"case_study_4"|"case_study_5"|"case_study_6"|"case_study_7"; label: string }[] = [
+  { key: "case_study_1", label: "Studi Kasus 1: Saat di Tanah Suci, kamu kehilangan rombongan dan tidak membawa ponsel. Apa langkah pertama yang akan kamu lakukan?" },
+  { key: "case_study_2", label: "Studi Kasus 2: Seorang jamaah lansia dalam rombongan terlihat kelelahan dan enggan melanjutkan ibadah. Bagaimana sikap dan tindakanmu?" },
+  { key: "case_study_3", label: "Studi Kasus 3: Kamu berada di Masjidil Haram menjelang shalat wajib, kondisi sangat padat, dan salah satu anggota rombongan tiba-tiba sakit serta butuh tempat duduk. Apa yang kamu lakukan?" },
+  { key: "case_study_4", label: "Studi Kasus 4: Terjadi perbedaan pendapat antar teman rombongan mengenai jadwal ziarah — sebagian ingin ke Jabal Uhud, sebagian ingin istirahat. Bagaimana sikapmu sebagai peserta yang menjaga ukhuwah?" },
+  { key: "case_study_5", label: "Studi Kasus 5: Di area Masjid Nabawi kamu menemukan dompet berisi uang, paspor, dan kartu identitas milik jamaah lain. Langkah apa yang kamu ambil?" },
+  { key: "case_study_6", label: "Studi Kasus 6: Saat sedang tawaf, kamu terpisah dari pendamping/mahram dan kondisi Mataf sangat padat. Bagaimana cara kamu tetap tenang dan menyelesaikan tawaf dengan aman?" },
+  { key: "case_study_7", label: "Studi Kasus 7: Cuaca ekstrem (45°C) membuat sebagian rombongan mulai dehidrasi, namun mereka menolak minum karena takut sering ke toilet saat ibadah. Bagaimana kamu menasihati dan menangani situasi ini?" },
+];
 
 
 const searchSchema = z.object({ code: z.string().optional() });
@@ -64,7 +79,7 @@ function EssayPage() {
   const [checking, setChecking] = useState(false);
   const [participant, setParticipant] = useState<Participant | null>(null);
 
-  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "", case_study_1: "", case_study_2: "" });
+  const [d, setD] = useState({ essay_worthy: "", essay_dream: "", essay_contribution: "", case_study_1: "", case_study_2: "", case_study_3: "", case_study_4: "", case_study_5: "", case_study_6: "", case_study_7: "" });
   const [submitting, setSubmitting] = useState(false);
   const set = <K extends keyof typeof d,>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
 
@@ -110,6 +125,11 @@ function EssayPage() {
         p_essay_contribution: parsed.data.essay_contribution,
         p_case_study_1: parsed.data.case_study_1,
         p_case_study_2: parsed.data.case_study_2,
+        p_case_study_3: parsed.data.case_study_3,
+        p_case_study_4: parsed.data.case_study_4,
+        p_case_study_5: parsed.data.case_study_5,
+        p_case_study_6: parsed.data.case_study_6,
+        p_case_study_7: parsed.data.case_study_7,
       });
 
       if (error) throw error;
@@ -192,7 +212,7 @@ function BodyByStatus({
 }: {
   participant: Participant;
   code: string;
-  d: { essay_worthy: string; essay_dream: string; essay_contribution: string; case_study_1: string; case_study_2: string };
+  d: { essay_worthy: string; essay_dream: string; essay_contribution: string; case_study_1: string; case_study_2: string; case_study_3: string; case_study_4: string; case_study_5: string; case_study_6: string; case_study_7: string };
   set: <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => void;
 
   submit: () => void;
@@ -319,21 +339,18 @@ function BodyByStatus({
           <ClipboardList className="size-5 text-accent" /> Studi Kasus
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Bagian terpisah dari essay. Jawab kedua studi kasus berikut dengan jelas dan reflektif.
+          Bagian terpisah dari essay. Jawab <strong>ketujuh</strong> studi kasus berikut dengan jelas dan reflektif.
         </p>
         <div className="grid gap-5">
-          <EssayField
-            label="Studi Kasus 1: Saat di Tanah Suci, kamu kehilangan rombongan dan tidak membawa ponsel. Apa langkah pertama yang akan kamu lakukan?"
-            value={d.case_study_1}
-            onChange={(v) => set("case_study_1", v)}
-            min={MIN_CASE_WORDS}
-          />
-          <EssayField
-            label="Studi Kasus 2: Seorang jamaah lansia dalam rombongan terlihat kelelahan dan enggan melanjutkan ibadah. Bagaimana sikap dan tindakanmu?"
-            value={d.case_study_2}
-            onChange={(v) => set("case_study_2", v)}
-            min={MIN_CASE_WORDS}
-          />
+          {CASE_STUDIES.map((cs) => (
+            <EssayField
+              key={cs.key}
+              label={cs.label}
+              value={d[cs.key]}
+              onChange={(v) => set(cs.key, v)}
+              min={MIN_CASE_WORDS}
+            />
+          ))}
         </div>
       </div>
 

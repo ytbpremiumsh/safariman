@@ -40,6 +40,11 @@ type Row = {
   essay_contribution: string;
   case_study_1: string | null;
   case_study_2: string | null;
+  case_study_3: string | null;
+  case_study_4: string | null;
+  case_study_5: string | null;
+  case_study_6: string | null;
+  case_study_7: string | null;
   cv_url: string | null;
   photo_url: string | null;
   donation_status: string;
@@ -66,6 +71,11 @@ type PendingRow = {
   has_essay_contribution: boolean;
   has_case_study_1: boolean;
   has_case_study_2: boolean;
+  has_case_study_3: boolean;
+  has_case_study_4: boolean;
+  has_case_study_5: boolean;
+  has_case_study_6: boolean;
+  has_case_study_7: boolean;
   updated_at: string;
 };
 
@@ -477,6 +487,11 @@ function PesertaEssayPage() {
                 <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
                 <Essay title="Studi Kasus 1" body={detail.case_study_1 ?? ""} />
                 <Essay title="Studi Kasus 2" body={detail.case_study_2 ?? ""} />
+                <Essay title="Studi Kasus 3" body={detail.case_study_3 ?? ""} />
+                <Essay title="Studi Kasus 4" body={detail.case_study_4 ?? ""} />
+                <Essay title="Studi Kasus 5" body={detail.case_study_5 ?? ""} />
+                <Essay title="Studi Kasus 6" body={detail.case_study_6 ?? ""} />
+                <Essay title="Studi Kasus 7" body={detail.case_study_7 ?? ""} />
               </div>
 
 
@@ -795,7 +810,7 @@ function PendingEssaySection({
                           : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
                       }`}>
                         {filled}/3 Essay
-                        {(r.has_case_study_1 || r.has_case_study_2) && " · Studi Kasus dimulai"}
+                        {(r.has_case_study_1 || r.has_case_study_2 || r.has_case_study_3 || r.has_case_study_4 || r.has_case_study_5 || r.has_case_study_6 || r.has_case_study_7) && " · Studi Kasus dimulai"}
                       </span>
                     </td>
                     <td className="px-3 py-3">
