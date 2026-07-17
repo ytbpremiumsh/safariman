@@ -212,7 +212,7 @@ function BodyByStatus({
 }: {
   participant: Participant;
   code: string;
-  d: { essay_worthy: string; essay_dream: string; essay_contribution: string; case_study_1: string; case_study_2: string };
+  d: { essay_worthy: string; essay_dream: string; essay_contribution: string; case_study_1: string; case_study_2: string; case_study_3: string; case_study_4: string; case_study_5: string; case_study_6: string; case_study_7: string };
   set: <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => void;
 
   submit: () => void;
