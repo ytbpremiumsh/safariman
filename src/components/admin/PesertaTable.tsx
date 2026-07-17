@@ -244,6 +244,16 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
   }), [rows]);
 
+  // Reset ke halaman 1 saat filter/pencarian berubah
+  useEffect(() => { setPage(1); }, [q, status, docFilter, catFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const paged = filtered.slice(pageStart, pageStart + pageSize);
+
+
+
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
