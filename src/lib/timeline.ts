@@ -59,11 +59,42 @@ export function parseTimeline(raw: unknown): TimelineStep[] {
   }
 }
 
-// Module-level cache to prevent every landing render/nav from re-hitting
-// the RPC. Timeline changes infrequently (admin edits) so a 5 min stale
-// window is safe.
-let _timelineCache: { at: number; data: TimelineStep[] } | null = null;
+// Module-level cache + localStorage persistence.
+// Timeline jarang berubah (edit admin), jadi 5 menit stale window aman.
+// localStorage dipakai supaya kunjungan pertama pun tidak "kedip" ke
+// DEFAULT_TIMELINE — kita render versi terakhir yang pernah diambil.
 const TIMELINE_TTL_MS = 5 * 60_000;
+const LS_KEY = "timeline_cache_v1";
+
+let _timelineCache: { at: number; data: TimelineStep[] } | null = null;
+
+function loadLS(): { at: number; data: TimelineStep[] } | null {
+  try {
+    const raw = typeof localStorage !== "undefined" ? localStorage.getItem(LS_KEY) : null;
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || !Array.isArray(obj.data)) return null;
+    return { at: Number(obj.at) || 0, data: obj.data as TimelineStep[] };
+  } catch { return null; }
+}
+
+function saveLS(data: TimelineStep[]) {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ at: Date.now(), data }));
+  } catch { /* ignore quota */ }
+}
+
+// Snapshot sinkron untuk initial state komponen, supaya tidak flash
+// DEFAULT_TIMELINE saat RPC belum balas.
+export function getCachedTimeline(): TimelineStep[] | null {
+  if (_timelineCache) return _timelineCache.data;
+  const ls = loadLS();
+  if (ls) {
+    _timelineCache = ls;
+    return ls.data;
+  }
+  return null;
+}
 
 export async function fetchTimeline(): Promise<TimelineStep[]> {
   const now = Date.now();
@@ -72,15 +103,23 @@ export async function fetchTimeline(): Promise<TimelineStep[]> {
   }
   try {
     const { data } = await supabase.rpc("get_timeline_config");
+    if (typeof data !== "string" || !data.trim()) {
+      // Server tidak balas config valid — jangan timpa cache yang benar.
+      const cached = getCachedTimeline();
+      return cached ?? DEFAULT_TIMELINE;
+    }
     const parsed = parseTimeline(data);
     _timelineCache = { at: now, data: parsed };
+    saveLS(parsed);
     return parsed;
   } catch {
-    return DEFAULT_TIMELINE;
+    const cached = getCachedTimeline();
+    return cached ?? DEFAULT_TIMELINE;
   }
 }
 
 export function invalidateTimelineCache() {
   _timelineCache = null;
+  try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
 }
 
