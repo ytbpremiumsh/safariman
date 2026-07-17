@@ -40,16 +40,34 @@ function PendaftaranHub() {
   const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
 
   useEffect(() => {
+    let done = false;
+    const timeout = new Promise<void>((resolve) => setTimeout(() => resolve(), 6000));
     (async () => {
-      const { data } = await supabase.rpc("get_gelombang_config");
-      setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
-      const { data: selfCfg } = await supabase.rpc("get_self_funded_public_config");
-      const v = Number((selfCfg as any)?.price);
-      if (v && v > 0) setSelfPrice(v);
-      setSelfPaidEnabled((selfCfg as any)?.paid_enabled !== false);
-      setSelfEnabled((selfCfg as any)?.enabled !== false);
+      const gelPromise = supabase.rpc("get_gelombang_config");
+      const selfPromise = supabase.rpc("get_self_funded_public_config");
+
+      // Fallback: kalau backend lambat, tetap render dengan konfigurasi default.
+      await Promise.race([Promise.all([gelPromise, selfPromise]), timeout]);
+      if (done) return;
+
+      try {
+        const { data } = await Promise.race([gelPromise, new Promise<any>((r) => setTimeout(() => r({ data: null }), 100))]);
+        setCfg(parseGelombangConfig(typeof data === "string" ? data : null));
+      } catch { setCfg(parseGelombangConfig(null)); }
+
+      try {
+        const { data: selfCfg } = await Promise.race([selfPromise, new Promise<any>((r) => setTimeout(() => r({ data: null }), 100))]);
+        if (selfCfg) {
+          const v = Number((selfCfg as any)?.price);
+          if (v && v > 0) setSelfPrice(v);
+          setSelfPaidEnabled((selfCfg as any)?.paid_enabled !== false);
+          setSelfEnabled((selfCfg as any)?.enabled !== false);
+        }
+      } catch { /* keep defaults */ }
+
       setLoading(false);
     })();
+    return () => { done = true; };
   }, []);
 
   return (
