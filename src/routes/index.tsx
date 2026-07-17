@@ -7,7 +7,7 @@ import {
   Briefcase, UtensilsCrossed, Bus, BadgeCheck, UserCheck, Compass, Luggage, ShoppingBag, ShieldCheck,
   Instagram, Mail, Phone, MapPinned,
 } from "lucide-react";
-import { fetchTimeline, getIcon, DEFAULT_TIMELINE, type TimelineStep } from "@/lib/timeline";
+import { fetchTimeline, getIcon, DEFAULT_TIMELINE, getCachedTimeline, type TimelineStep } from "@/lib/timeline";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Countdown } from "@/components/Countdown";
