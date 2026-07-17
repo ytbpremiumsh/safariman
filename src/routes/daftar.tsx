@@ -223,8 +223,56 @@ export function RegisterPage({ kind }: { kind: Kind }) {
                 <ArrowLeft className="size-4" /> Lihat Jalur Lain
               </Link>
             </div>
+          ) : pendingPaymentCode ? (
+            <PendingPaymentCard
+              code={pendingPaymentCode}
+              name={data.full_name}
+              retrying={retryingPayment}
+              onRetry={async () => {
+                setRetryingPayment(true);
+                const loadingId = toast.loading("Menghubungi Mayar…");
+                try {
+                  const { mayarPendaftaranInvoice } = await import("@/lib/api");
+                  const backoffMs = [0, 2000, 4000, 6000, 8000, 10000];
+                  let j: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
+                  let lastErr = "";
+                  for (let i = 0; i < backoffMs.length; i++) {
+                    if (backoffMs[i] > 0) {
+                      toast.loading(
+                        `Mayar sedang sibuk, mencoba ulang (${i}/${backoffMs.length - 1})…`,
+                        { id: loadingId },
+                      );
+                      await new Promise((r) => setTimeout(r, backoffMs[i]));
+                    }
+                    try {
+                      j = await mayarPendaftaranInvoice(pendingPaymentCode);
+                      if (j?.url || j?.alreadyPaid) break;
+                      lastErr = j?.error || "Link pembayaran belum siap";
+                      if (!j?.transient) break;
+                    } catch (e: any) {
+                      lastErr = e?.message || "Gagal menghubungi server pembayaran";
+                    }
+                  }
+                  toast.dismiss(loadingId);
+                  if (j?.url) {
+                    toast.success("Mengarahkan ke halaman pembayaran…");
+                    window.location.href = j.url;
+                    return;
+                  }
+                  if (j?.alreadyPaid) {
+                    window.location.href = `/pendaftaran-sukses?code=${encodeURIComponent(pendingPaymentCode)}`;
+                    return;
+                  }
+                  toast.error(lastErr || "Masih belum bisa. Coba lagi sebentar.");
+                } finally {
+                  setRetryingPayment(false);
+                }
+              }}
+            />
           ) : code ? (
             <SuccessCard code={code} name={data.full_name} kind={kind} />
+
+
 
           ) : (
             <>
