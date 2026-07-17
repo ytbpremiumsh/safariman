@@ -55,24 +55,32 @@ Deno.serve(async (req) => {
     const { code } = (await req.json()) as { code?: string };
     if (!code || code.length < 4) return json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
 
-    const { data: p } = await supabaseAdmin
+    const { data: p, error: pErr } = await supabaseAdmin
       .from("participants")
       .select("full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, registration_code, category")
       .ilike("registration_code", code)
       .maybeSingle();
+    if (pErr) {
+      // DB unavailable (Cloud timeout) — return 200 soft-fail so background sync doesn't spam error monitors.
+      return json({ ok: false, error: "Database sementara tidak tersedia, coba lagi", transient: true });
+    }
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
     const paidCategories = ["gelombang_1", "gelombang_2", "self_funded"];
     if (!paidCategories.includes(p.category as string))
       return json({ ok: false, error: "Kategori ini tidak memerlukan biaya pendaftaran" }, { status: 400 });
     if (p.payment_status === "paid") return json({ ok: true, alreadyPaid: true });
 
-    const { data: settings } = await supabaseAdmin
+    const { data: settings, error: sErr } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
       .in("key", ["mayar_api_key", "gelombang_config", "self_funded_price", "self_funded_paid_enabled"]);
+    if (sErr) {
+      return json({ ok: false, error: "Konfigurasi tidak dapat dimuat, coba lagi", transient: true });
+    }
     const cfg = Object.fromEntries((settings ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
     const apiKey = cfg.mayar_api_key;
     if (!apiKey) return json({ ok: false, error: "Pembayaran belum dikonfigurasi admin" }, { status: 503 });
+
 
     if (p.payment_status === "pending" && p.payment_invoice_id) {
       const synced = await syncInvoiceStatus(supabaseAdmin, apiKey, p.payment_invoice_id);
