@@ -23,7 +23,22 @@ const essaySchema = z.object({
   essay_contribution: essayField("Essay 'Bagaimana kontribusimu untuk umat'"),
   case_study_1: essayField("Studi Kasus 1", MIN_CASE_WORDS),
   case_study_2: essayField("Studi Kasus 2", MIN_CASE_WORDS),
+  case_study_3: essayField("Studi Kasus 3", MIN_CASE_WORDS),
+  case_study_4: essayField("Studi Kasus 4", MIN_CASE_WORDS),
+  case_study_5: essayField("Studi Kasus 5", MIN_CASE_WORDS),
+  case_study_6: essayField("Studi Kasus 6", MIN_CASE_WORDS),
+  case_study_7: essayField("Studi Kasus 7", MIN_CASE_WORDS),
 });
+
+const CASE_STUDIES: { key: "case_study_1"|"case_study_2"|"case_study_3"|"case_study_4"|"case_study_5"|"case_study_6"|"case_study_7"; label: string }[] = [
+  { key: "case_study_1", label: "Studi Kasus 1: Saat di Tanah Suci, kamu kehilangan rombongan dan tidak membawa ponsel. Apa langkah pertama yang akan kamu lakukan?" },
+  { key: "case_study_2", label: "Studi Kasus 2: Seorang jamaah lansia dalam rombongan terlihat kelelahan dan enggan melanjutkan ibadah. Bagaimana sikap dan tindakanmu?" },
+  { key: "case_study_3", label: "Studi Kasus 3: Kamu berada di Masjidil Haram menjelang shalat wajib, kondisi sangat padat, dan salah satu anggota rombongan tiba-tiba sakit serta butuh tempat duduk. Apa yang kamu lakukan?" },
+  { key: "case_study_4", label: "Studi Kasus 4: Terjadi perbedaan pendapat antar teman rombongan mengenai jadwal ziarah — sebagian ingin ke Jabal Uhud, sebagian ingin istirahat. Bagaimana sikapmu sebagai peserta yang menjaga ukhuwah?" },
+  { key: "case_study_5", label: "Studi Kasus 5: Di area Masjid Nabawi kamu menemukan dompet berisi uang, paspor, dan kartu identitas milik jamaah lain. Langkah apa yang kamu ambil?" },
+  { key: "case_study_6", label: "Studi Kasus 6: Saat sedang tawaf, kamu terpisah dari pendamping/mahram dan kondisi Mataf sangat padat. Bagaimana cara kamu tetap tenang dan menyelesaikan tawaf dengan aman?" },
+  { key: "case_study_7", label: "Studi Kasus 7: Cuaca ekstrem (45°C) membuat sebagian rombongan mulai dehidrasi, namun mereka menolak minum karena takut sering ke toilet saat ibadah. Bagaimana kamu menasihati dan menangani situasi ini?" },
+];
 
 
 const searchSchema = z.object({ code: z.string().optional() });
