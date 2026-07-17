@@ -95,7 +95,7 @@ function BerkasPage() {
     const parsedTexts = textsSchema.safeParse(texts);
     if (!parsedTexts.success) { toast.error(parsedTexts.error.issues[0].message); return; }
     const parsedLinks = linksSchema.safeParse(links);
-    if (!parsedLinks.success) { toast.error("Semua link Google Drive wajib diisi dengan link valid"); return; }
+    if (!parsedLinks.success) { toast.error(parsedLinks.error.issues[0].message); return; }
 
     setSubmitting(true);
     try {
