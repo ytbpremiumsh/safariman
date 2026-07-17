@@ -31,6 +31,7 @@ type Participant = {
   education: string;
   occupation: string;
   religion: string | null;
+  has_passport: string | null;
   category: Category | null;
   status: Status;
   essay_worthy: string;
