@@ -25,9 +25,11 @@ type Row = {
   essay_contribution: string | null;
   payment_status: string;
   paid_at: string | null;
+  donation_status: string | null;
+  donation_paid_at: string | null;
 };
 
-const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at";
+const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at,donation_status,donation_paid_at";
 
 function AdminOverview() {
   const ready = useAdminGuard();
