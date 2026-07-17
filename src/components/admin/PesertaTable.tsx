@@ -127,6 +127,11 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
   const [catFilter, setCatFilter] = useState<"all" | "fully_partial" | "gelombang_1" | "gelombang_2">("all");
 
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<50 | 100>(50);
+
+
+
 
   useEffect(() => {
     if (!ready) return;
