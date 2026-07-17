@@ -171,15 +171,39 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
     const loadData = async (silent = false) => {
       if (!silent) setLoading(true);
-      const query = supabase.from("participants").select("*").order("created_at", { ascending: false });
-      const [{ data: list, error }, { data: cfg }] = await Promise.all([
-        isSelf
-          ? query.eq("category", "self_funded")
-          : query.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2"),
+      const pageSize = 1000;
+      const buildQuery = (from: number, to: number) => {
+        const q = supabase
+          .from("participants")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, to);
+        return isSelf
+          ? q.eq("category", "self_funded")
+          : q.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2");
+      };
+
+      const [firstRes, { data: cfg }] = await Promise.all([
+        buildQuery(0, pageSize - 1),
         supabase.from("app_settings").select("key,value"),
       ]);
       if (cancelled) return;
-      const loadedRows = (list ?? []) as Participant[];
+      let error = firstRes.error;
+      const loadedRows: Participant[] = ((firstRes.data ?? []) as Participant[]).slice();
+      // Paginate lanjutan bila hasil menyentuh batas 1000 (bypass PostgREST default cap)
+      if (!error && loadedRows.length === pageSize) {
+        let from = pageSize;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { data, error: err } = await buildQuery(from, from + pageSize - 1);
+          if (cancelled) return;
+          if (err) { error = err; break; }
+          const batch = (data ?? []) as Participant[];
+          loadedRows.push(...batch);
+          if (batch.length < pageSize) break;
+          from += pageSize;
+        }
+      }
       if (error) toast.error(error.message);
       else {
         setRows(loadedRows);
