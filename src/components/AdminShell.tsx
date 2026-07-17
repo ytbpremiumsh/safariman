@@ -142,14 +142,14 @@ function AdminSearch() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground px-3 h-9 text-xs sm:text-sm transition-colors min-w-[180px] sm:min-w-[260px] justify-between"
+        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 hover:bg-secondary text-muted-foreground hover:text-foreground h-9 px-2 sm:px-3 text-xs sm:text-sm transition-colors sm:min-w-[260px] justify-center sm:justify-between"
         title="Cari menu (Ctrl/Cmd + K)"
       >
         <span className="inline-flex items-center gap-2">
           <Search className="size-3.5" />
-          <span>Cari menu…</span>
+          <span className="hidden sm:inline">Cari menu…</span>
         </span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+        <kbd className="hidden md:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
           ⌘K
         </kbd>
       </button>
@@ -339,27 +339,27 @@ export function AdminShell({ children, title }: { children: ReactNode; title?: s
       <SidebarProvider style={{ "--sidebar-width": "15rem" } as React.CSSProperties}>
         <div className="min-h-screen flex w-full bg-secondary/30">
           <AdminSidebar />
-          <SidebarInset className="bg-secondary/30">
-            <header className="h-14 flex items-center gap-2 border-b border-border bg-card/60 backdrop-blur sticky top-0 z-10 px-3">
+          <SidebarInset className="bg-secondary/30 min-w-0 w-full">
+            <header className="h-14 flex items-center gap-2 border-b border-border bg-card/80 backdrop-blur sticky top-0 z-10 px-2 sm:px-3">
               <SidebarTrigger />
-              <div className="h-5 w-px bg-border mx-1" />
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Dashboard Admin</div>
+              <div className="hidden sm:block h-5 w-px bg-border mx-1" />
+              <div className="hidden sm:block text-xs font-medium text-muted-foreground uppercase tracking-wider">Dashboard Admin</div>
               {title && (
                 <>
-                  <div className="text-muted-foreground/50">/</div>
-                  <div className="text-sm font-semibold text-foreground truncate">{title}</div>
+                  <div className="hidden sm:block text-muted-foreground/50">/</div>
+                  <div className="text-sm font-semibold text-foreground truncate min-w-0 flex-1 sm:flex-initial">{title}</div>
                 </>
               )}
-              <div className="ml-auto">
+              <div className="ml-auto shrink-0">
                 <AdminSearch />
               </div>
             </header>
 
-            <main className="flex-1 px-4 sm:px-6 py-6 space-y-6">
+            <main className="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-x-hidden">
               {title && (
                 <div className="space-y-1">
-                  <div className="text-xs font-medium text-accent uppercase tracking-[0.2em]">Admin Panel</div>
-                  <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{title}</h1>
+                  <div className="text-[10px] sm:text-xs font-medium text-accent uppercase tracking-[0.2em]">Admin Panel</div>
+                  <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight break-words">{title}</h1>
                 </div>
               )}
               {children}
