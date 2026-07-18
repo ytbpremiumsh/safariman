@@ -308,6 +308,50 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_reminders: {
+        Row: {
+          auto: boolean
+          channel: string
+          created_at: string
+          id: string
+          kind: string
+          note: string | null
+          participant_id: string
+          sent_by: string | null
+          status: string
+        }
+        Insert: {
+          auto?: boolean
+          channel?: string
+          created_at?: string
+          id?: string
+          kind: string
+          note?: string | null
+          participant_id: string
+          sent_by?: string | null
+          status?: string
+        }
+        Update: {
+          auto?: boolean
+          channel?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          participant_id?: string
+          sent_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reminders_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -435,6 +479,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_auto_reminder_candidates: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          kind: string
+          participant_id: string
+          registration_code: string
+        }[]
+      }
       list_essay_complete_participants: {
         Args: never
         Returns: {
@@ -530,6 +584,24 @@ export type Database = {
           status: Database["public"]["Enums"]["participant_status"]
           tka_status: string
           tka_updated_at: string
+          whatsapp: string
+        }[]
+      }
+      list_unpaid_participants_with_reminders: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at: string
+          email: string
+          fast_track_reminder_count: number
+          fast_track_unpaid: boolean
+          full_name: string
+          id: string
+          kontribusi_reminder_count: number
+          kontribusi_unpaid: boolean
+          last_fast_track_reminder_at: string
+          last_kontribusi_reminder_at: string
+          registration_code: string
           whatsapp: string
         }[]
       }
