@@ -66,34 +66,54 @@ async function verifyPaidViaTransactions(
   }
 }
 
-async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
-  if (!invoiceId) return false;
+function invoiceLooksExpired(payload: any): boolean {
+  const data = payload?.data ?? payload;
+  const statusStr = String(
+    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
+  ).toLowerCase();
+  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
+  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
+  if (expiredAt) {
+    const t = new Date(expiredAt).getTime();
+    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
+  }
+  return false;
+}
+
+async function fetchDonationInvoiceState(
+  apiKey: string,
+  invoiceId?: string | null,
+): Promise<{ state: "paid" | "expired" | "active" | "unknown"; payload?: any }> {
+  if (!invoiceId) return { state: "unknown" };
   try {
     const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
       method: "GET",
       headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
     });
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok || !invoiceLooksPaid(payload)) return false;
-    // Verifikasi silang ke endpoint /transactions supaya tidak false-positive
-    // ketika Mayar mengembalikan status "paid" di detail invoice padahal
-    // transaksi belum benar-benar settled.
-    const data = payload?.data ?? payload;
-    const txIds = Array.isArray(data?.transactions)
-      ? data.transactions.map((t: any) => t?.id).filter(Boolean)
-      : [];
-    if (data?.transactionId) txIds.push(data.transactionId);
-    const verified = await verifyPaidViaTransactions(apiKey, invoiceId, txIds);
-    if (!verified) {
-      console.warn("syncDonationStatus: invoice.status paid tapi tidak ada transaksi paid di /transactions", { invoiceId });
-      return false;
-    }
-    const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
-    return Boolean(updated);
+    if (res.status === 404) return { state: "expired", payload };
+    if (!res.ok) return { state: "unknown", payload };
+    if (invoiceLooksPaid(payload)) return { state: "paid", payload };
+    if (invoiceLooksExpired(payload)) return { state: "expired", payload };
+    return { state: "active", payload };
   } catch (e) {
-    console.warn("Gagal sinkron status donasi", e);
-    return false;
+    console.warn("fetchDonationInvoiceState error", e);
+    return { state: "unknown" };
   }
+}
+
+async function syncDonationStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
+  const { state, payload } = await fetchDonationInvoiceState(apiKey, invoiceId);
+  if (state !== "paid" || !invoiceId) return false;
+  const data = payload?.data ?? payload;
+  const txIds = Array.isArray(data?.transactions)
+    ? data.transactions.map((t: any) => t?.id).filter(Boolean)
+    : [];
+  if (data?.transactionId) txIds.push(data.transactionId);
+  const verified = await verifyPaidViaTransactions(apiKey, invoiceId, txIds);
+  if (!verified) return false;
+  const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: invoiceId });
+  return Boolean(updated);
 }
 
 Deno.serve(async (req) => {
