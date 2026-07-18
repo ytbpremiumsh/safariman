@@ -85,6 +85,9 @@ function PengingatPembayaran() {
   if (!ready || loading) return <AdminLoading />;
 
   const filtered = items.filter(i => tab === "fast_track" ? i.fast_track_unpaid : i.kontribusi_unpaid);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <AdminShell title="Pengingat Pembayaran">
