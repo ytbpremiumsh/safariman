@@ -36,13 +36,17 @@ const DEFAULT_FT_SUBJECT = "Pengingat Pembayaran Fast Track — {kode}";
 const DEFAULT_FT_BODY =
   "Assalamualaikum {nama},\n\n" +
   "Ini pengingat bahwa biaya Fast Track pendaftaran Safar Iman untuk kode {kode} belum lunas.\n\n" +
-  "Silakan lanjutkan pembayaran melalui halaman sukses pendaftaran atau tombol Bayar Pendaftaran di aplikasi. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "Silakan klik tombol di bawah untuk menyelesaikan pembayaran. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "{button}\n\n" +
+  "Atau buka link berikut: {payment_url}\n\n" +
   "Barakallah,\nTim Safar Iman";
 const DEFAULT_KT_SUBJECT = "Pengingat Kontribusi — {kode}";
 const DEFAULT_KT_BODY =
   "Assalamualaikum {nama},\n\n" +
   "Ini pengingat bahwa kontribusi kebaikan untuk program Safar Iman (kode {kode}) belum tercatat.\n\n" +
-  "Silakan selesaikan kontribusi melalui link Mayar yang telah dikirim. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "Silakan klik tombol di bawah untuk menyelesaikan kontribusi. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "{button}\n\n" +
+  "Atau buka link berikut: {donation_url}\n\n" +
   "Barakallah,\nTim Safar Iman";
 
 function fill(tpl: string, v: Record<string,string>) {
