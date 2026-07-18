@@ -30,21 +30,44 @@ function invoiceLooksPaid(payload: any): boolean {
   );
 }
 
-async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
-  if (!invoiceId) return false;
+function invoiceLooksExpired(payload: any): boolean {
+  const data = payload?.data ?? payload;
+  const statusStr = String(
+    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
+  ).toLowerCase();
+  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
+  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
+  if (expiredAt) {
+    const t = new Date(expiredAt).getTime();
+    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
+  }
+  return false;
+}
+
+async function fetchInvoiceState(apiKey: string, invoiceId?: string | null): Promise<"paid" | "expired" | "active" | "unknown"> {
+  if (!invoiceId) return "unknown";
   try {
     const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
       method: "GET",
       headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
     });
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok || !invoiceLooksPaid(payload)) return false;
-    const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
-    return Boolean(updated);
+    if (res.status === 404) return "expired";
+    if (!res.ok) return "unknown";
+    if (invoiceLooksPaid(payload)) return "paid";
+    if (invoiceLooksExpired(payload)) return "expired";
+    return "active";
   } catch (e) {
-    console.warn("Gagal sinkron status invoice pendaftaran", e);
-    return false;
+    console.warn("fetchInvoiceState error", e);
+    return "unknown";
   }
+}
+
+async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
+  const state = await fetchInvoiceState(apiKey, invoiceId);
+  if (state !== "paid" || !invoiceId) return false;
+  const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
+  return Boolean(updated);
 }
 
 Deno.serve(async (req) => {
