@@ -102,6 +102,11 @@ function PesertaKontribusiPage() {
     });
   }, [activeRows, q, catFilter]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const pageRows = filtered.slice(pageStart, pageStart + pageSize);
+
   const stats = useMemo(() => {
     const byCat = (c: Category) => paidRows.filter((r) => r.category === c).length;
     return {
