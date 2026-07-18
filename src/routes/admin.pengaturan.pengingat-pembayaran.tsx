@@ -113,8 +113,8 @@ function PengingatPembayaran() {
           <Mail className="size-5 text-accent" />
           <div className="font-display text-lg font-semibold">Template Email</div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Placeholder: <code>{"{nama}"}</code>, <code>{"{kode}"}</code>. Body mendukung <strong>HTML</strong> (mis. <code>&lt;p&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;br/&gt;</code>). Jika tidak ada tag HTML, baris baru otomatis dikonversi jadi <code>&lt;br/&gt;</code>.
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Placeholder aktif per peserta: <code>{"{nama}"}</code>, <code>{"{kode}"}</code>, <code>{"{payment_url}"}</code> (Fast Track), <code>{"{donation_url}"}</code> (Kontribusi), <code>{"{url}"}</code> (otomatis sesuai jenis), <code>{"{button}"}</code> (tombol siap-klik hijau). Body mendukung <strong>HTML</strong>. Jika kamu tidak menaruh salah satu placeholder link/tombol, tombol otomatis ditambahkan di akhir email.
         </p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ function PengingatPembayaran() {
           {previewKind === "fast_track" && (
             <div className="rounded-xl border border-border bg-background p-4 text-sm">
               <div className="text-xs text-muted-foreground mb-2">Preview (contoh: nama = Ahmad, kode = HXP-DEMO1234)</div>
-              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.ft_body) }} />
+              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.ft_body, "fast_track") }} />
             </div>
           )}
         </div>
@@ -144,7 +144,7 @@ function PengingatPembayaran() {
           {previewKind === "kontribusi" && (
             <div className="rounded-xl border border-border bg-background p-4 text-sm">
               <div className="text-xs text-muted-foreground mb-2">Preview (contoh: nama = Ahmad, kode = HXP-DEMO1234)</div>
-              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.kt_body) }} />
+              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.kt_body, "kontribusi") }} />
             </div>
           )}
         </div>
@@ -245,7 +245,23 @@ function PengingatPembayaran() {
 
 function looksLikeHtml(s: string) { return /<\/?[a-z][\s\S]*>/i.test(s || ""); }
 function escHtml(s: string) { return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function renderPreview(tpl: string) {
-  const filled = (tpl || "").replace(/\{nama\}/g, "Ahmad").replace(/\{kode\}/g, "HXP-DEMO1234");
-  return looksLikeHtml(filled) ? filled : escHtml(filled).replace(/\n/g, "<br/>");
+function renderPreview(tpl: string, kind: "fast_track" | "kontribusi") {
+  const demoUrl = "https://mayar.link/payment/demo-1234";
+  const label = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
+  const button = `<div style="margin:20px 0;text-align:center"><a href="${demoUrl}" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${label}</a></div>`;
+  const filled = (tpl || "")
+    .replace(/\{nama\}/g, "Ahmad")
+    .replace(/\{kode\}/g, "HXP-DEMO1234")
+    .replace(/\{payment_url\}/g, demoUrl)
+    .replace(/\{donation_url\}/g, demoUrl)
+    .replace(/\{url\}/g, demoUrl)
+    .replace(/\{button\}/g, button);
+  let html = looksLikeHtml(filled) ? filled : escHtml(filled).replace(/\n/g, "<br/>");
+  // Unescape the button when template was plain text (button contains raw HTML we need to keep).
+  if (!looksLikeHtml(tpl || "")) {
+    html = html.replace(/&lt;div style=&quot;margin:20px[\s\S]*?&lt;\/div&gt;/g, button);
+  }
+  const mentionsAction = /\{(button|url|payment_url|donation_url)\}/.test(tpl || "");
+  if (!mentionsAction) html += button;
+  return html;
 }

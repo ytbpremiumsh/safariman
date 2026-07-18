@@ -36,13 +36,17 @@ const DEFAULT_FT_SUBJECT = "Pengingat Pembayaran Fast Track — {kode}";
 const DEFAULT_FT_BODY =
   "Assalamualaikum {nama},\n\n" +
   "Ini pengingat bahwa biaya Fast Track pendaftaran Safar Iman untuk kode {kode} belum lunas.\n\n" +
-  "Silakan lanjutkan pembayaran melalui halaman sukses pendaftaran atau tombol Bayar Pendaftaran di aplikasi. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "Silakan klik tombol di bawah untuk menyelesaikan pembayaran. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "{button}\n\n" +
+  "Atau buka link berikut: {payment_url}\n\n" +
   "Barakallah,\nTim Safar Iman";
 const DEFAULT_KT_SUBJECT = "Pengingat Kontribusi — {kode}";
 const DEFAULT_KT_BODY =
   "Assalamualaikum {nama},\n\n" +
   "Ini pengingat bahwa kontribusi kebaikan untuk program Safar Iman (kode {kode}) belum tercatat.\n\n" +
-  "Silakan selesaikan kontribusi melalui link Mayar yang telah dikirim. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "Silakan klik tombol di bawah untuk menyelesaikan kontribusi. Jika sudah membayar, mohon abaikan email ini.\n\n" +
+  "{button}\n\n" +
+  "Atau buka link berikut: {donation_url}\n\n" +
   "Barakallah,\nTim Safar Iman";
 
 function fill(tpl: string, v: Record<string,string>) {
@@ -57,14 +61,38 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
     ? (cfg.payment_reminder_ft_body || DEFAULT_FT_BODY)
     : (cfg.payment_reminder_kt_body || DEFAULT_KT_BODY);
 
-  const vars = {
+  // Ensure we have payment/donation URLs — fetch if not present on the passed object.
+  let payUrl = participant.payment_url ?? null;
+  let donUrl = participant.donation_url ?? null;
+  if (payUrl === undefined || donUrl === undefined || payUrl === null || donUrl === null) {
+    const { data: full } = await admin.from("participants")
+      .select("payment_url, donation_url")
+      .eq("id", participant.participant_id ?? participant.id)
+      .maybeSingle();
+    payUrl = payUrl || full?.payment_url || "";
+    donUrl = donUrl || full?.donation_url || "";
+  }
+  const activeUrl = kind === "fast_track" ? (payUrl || "") : (donUrl || "");
+  const buttonLabel = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
+  const button = activeUrl
+    ? `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`
+    : "";
+
+  const vars: Record<string,string> = {
     nama: participant.full_name ?? "",
     kode: participant.registration_code ?? "",
+    payment_url: payUrl || "",
+    donation_url: donUrl || "",
+    url: activeUrl,
+    button,
   };
   const subject = fill(subjectTpl, vars);
   const body = fill(bodyTpl, vars);
   const looksHtml = /<\/?[a-z][\s\S]*>/i.test(body);
-  const bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
+  let bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
+  // Auto-append button if user didn't include {button}/{url}/{payment_url}/{donation_url} in template.
+  const mentionsAction = /\{(button|url|payment_url|donation_url)\}/.test(bodyTpl);
+  if (!mentionsAction && button) bodyHtml += button;
 
   const senderName = sanitizeName(cfg.email_sender_name);
   const senderLocal = sanitizeLocal(cfg.email_sender_local);
@@ -161,7 +189,7 @@ Deno.serve(async (req) => {
         return json({ ok: false, error: "invalid params" }, { status: 400 });
       }
       const { data: p } = await admin.from("participants")
-        .select("id, full_name, email, registration_code, category, payment_status, donation_status")
+        .select("id, full_name, email, registration_code, category, payment_status, donation_status, payment_url, donation_url")
         .eq("id", pid).maybeSingle();
       if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
       if (!p.email) return json({ ok: false, error: "Email peserta kosong" }, { status: 400 });
