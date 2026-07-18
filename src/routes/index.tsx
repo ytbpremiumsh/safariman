@@ -881,7 +881,7 @@ function Footer() {
             <h4 className="text-foreground font-semibold mb-4 text-sm uppercase tracking-wider">Navigasi</h4>
             <ul className="space-y-2.5 text-sm">
               <li><a href="#program" className="hover:text-emerald transition-colors">Program</a></li>
-              <li><a href="#kuota" className="hover:text-emerald transition-colors">Kuota</a></li>
+              
               <li><a href="#timeline" className="hover:text-emerald transition-colors">Timeline</a></li>
               <li><Link to="/cek-tahapan" className="hover:text-emerald transition-colors">Cek Tahapan</Link></li>
               <li><Link to="/faq" className="hover:text-emerald transition-colors">FAQ</Link></li>
