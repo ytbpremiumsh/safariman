@@ -39,6 +39,9 @@ function PengingatPembayaran() {
   const [sendingId, setSendingId] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState<"fast_track" | "kontribusi">("fast_track");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [previewKind, setPreviewKind] = useState<"fast_track" | "kontribusi" | null>(null);
 
   async function load() {
     setLoading(true);
