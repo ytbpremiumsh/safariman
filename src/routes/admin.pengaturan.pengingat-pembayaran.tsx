@@ -245,7 +245,23 @@ function PengingatPembayaran() {
 
 function looksLikeHtml(s: string) { return /<\/?[a-z][\s\S]*>/i.test(s || ""); }
 function escHtml(s: string) { return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function renderPreview(tpl: string) {
-  const filled = (tpl || "").replace(/\{nama\}/g, "Ahmad").replace(/\{kode\}/g, "HXP-DEMO1234");
-  return looksLikeHtml(filled) ? filled : escHtml(filled).replace(/\n/g, "<br/>");
+function renderPreview(tpl: string, kind: "fast_track" | "kontribusi") {
+  const demoUrl = "https://mayar.link/payment/demo-1234";
+  const label = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
+  const button = `<div style="margin:20px 0;text-align:center"><a href="${demoUrl}" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${label}</a></div>`;
+  const filled = (tpl || "")
+    .replace(/\{nama\}/g, "Ahmad")
+    .replace(/\{kode\}/g, "HXP-DEMO1234")
+    .replace(/\{payment_url\}/g, demoUrl)
+    .replace(/\{donation_url\}/g, demoUrl)
+    .replace(/\{url\}/g, demoUrl)
+    .replace(/\{button\}/g, button);
+  let html = looksLikeHtml(filled) ? filled : escHtml(filled).replace(/\n/g, "<br/>");
+  // Unescape the button when template was plain text (button contains raw HTML we need to keep).
+  if (!looksLikeHtml(tpl || "")) {
+    html = html.replace(/&lt;div style=&quot;margin:20px[\s\S]*?&lt;\/div&gt;/g, button);
+  }
+  const mentionsAction = /\{(button|url|payment_url|donation_url)\}/.test(tpl || "");
+  if (!mentionsAction) html += button;
+  return html;
 }
