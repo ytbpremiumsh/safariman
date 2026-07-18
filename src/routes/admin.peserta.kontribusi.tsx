@@ -54,23 +54,34 @@ function PesertaKontribusiPage() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const [paidRes, unpaidRes] = await Promise.all([
-        supabase
+      const PAGE = 1000;
+      const fetchAll = async (build: () => any) => {
+        const all: Row[] = [];
+        for (let from = 0; ; from += PAGE) {
+          const { data, error } = await build().range(from, from + PAGE - 1);
+          if (error) { toast.error(error.message); return all; }
+          const rows = (data ?? []) as Row[];
+          all.push(...rows);
+          if (rows.length < PAGE) break;
+          if (from > 100000) break; // safety
+        }
+        return all;
+      };
+      const [paid, unpaid] = await Promise.all([
+        fetchAll(() => supabase
           .from("participants")
           .select(COLS)
           .eq("donation_status", "paid")
-          .order("donation_paid_at", { ascending: false }),
-        supabase
+          .order("donation_paid_at", { ascending: false })),
+        fetchAll(() => supabase
           .from("participants")
           .select(COLS)
           .in("category", DONATION_CATS)
           .or("donation_status.is.null,donation_status.neq.paid")
-          .order("created_at", { ascending: false }),
+          .order("created_at", { ascending: false })),
       ]);
-      if (paidRes.error) toast.error(paidRes.error.message);
-      else setPaidRows((paidRes.data ?? []) as Row[]);
-      if (unpaidRes.error) toast.error(unpaidRes.error.message);
-      else setUnpaidRows((unpaidRes.data ?? []) as Row[]);
+      setPaidRows(paid);
+      setUnpaidRows(unpaid);
       setLoading(false);
     })();
   }, [ready]);
