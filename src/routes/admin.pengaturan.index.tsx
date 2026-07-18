@@ -45,6 +45,11 @@ const ITEMS = [
     desc: "API Key Mayar, nominal & deskripsi invoice, webhook URL, dan webhook secrets.",
   },
   {
+    to: "/admin/pengaturan/pengingat-pembayaran",
+    icon: Mail,
+    title: "Pengingat Pembayaran",
+    desc: "Kirim reminder email manual/otomatis untuk Fast Track & Kontribusi yang belum lunas (H+1, H+3, H+7).",
+  {
     to: "/admin/pengaturan/apresiasi",
     icon: Sparkles,
     title: "Apresiasi Peserta",
