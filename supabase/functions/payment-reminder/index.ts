@@ -63,7 +63,8 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
   };
   const subject = fill(subjectTpl, vars);
   const body = fill(bodyTpl, vars);
-  const bodyHtml = esc(body).replace(/\n/g, "<br/>");
+  const looksHtml = /<\/?[a-z][\s\S]*>/i.test(body);
+  const bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
 
   const senderName = sanitizeName(cfg.email_sender_name);
   const senderLocal = sanitizeLocal(cfg.email_sender_local);
