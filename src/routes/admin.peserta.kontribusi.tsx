@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle } from "lucide-react";
+import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle, CheckCircle2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
