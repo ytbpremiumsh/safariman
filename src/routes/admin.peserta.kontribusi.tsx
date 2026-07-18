@@ -298,7 +298,7 @@ function PesertaKontribusiPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((r) => (
+                pageRows.map((r) => (
                   <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                     <td className="px-3 py-3">
                       <button
