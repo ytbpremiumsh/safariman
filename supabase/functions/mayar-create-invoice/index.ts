@@ -143,11 +143,25 @@ Deno.serve(async (req) => {
 
     // Sinkronisasi otomatis: kalau sudah ada invoice pending, cek ke Mayar dulu.
     if (p.donation_status === "pending" && p.donation_invoice_id) {
-      const synced = await syncDonationStatus(supabaseAdmin, apiKey, p.donation_invoice_id);
-      if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
-      // Reuse invoice pending — jangan buat baru (hindari 429 duplicate & notif berulang).
-      if (p.donation_url && !syncOnly) {
+      const { state, payload } = await fetchDonationInvoiceState(apiKey, p.donation_invoice_id);
+      if (state === "paid") {
+        const data = payload?.data ?? payload;
+        const txIds = Array.isArray(data?.transactions)
+          ? data.transactions.map((t: any) => t?.id).filter(Boolean)
+          : [];
+        if (data?.transactionId) txIds.push(data.transactionId);
+        const verified = await verifyPaidViaTransactions(apiKey, p.donation_invoice_id, txIds);
+        if (verified) {
+          const { data: updated } = await supabaseAdmin.rpc("mark_donation_paid", { p_invoice_id: p.donation_invoice_id });
+          if (updated) return json({ ok: true, alreadyPaid: true, synced: true });
+        }
+      }
+      // Reuse hanya kalau invoice masih aktif; expired/closed → buat baru otomatis.
+      if ((state === "active" || state === "unknown") && p.donation_url && !syncOnly) {
         return json({ ok: true, url: p.donation_url, reused: true });
+      }
+      if (state === "expired") {
+        console.log("Invoice donasi expired/closed, membuat invoice baru", { invoiceId: p.donation_invoice_id, code });
       }
     }
     if (p.donation_status === "paid") return json({ ok: true, alreadyPaid: true });
