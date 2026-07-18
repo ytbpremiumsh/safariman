@@ -166,12 +166,25 @@ Deno.serve(async (req) => {
     if (guard) return guard;
 
     if (action === "list") {
-      const { data, error } = await admin.rpc("list_unpaid_participants_with_reminders");
-      if (error) return json({ ok: false, error: error.message }, { status: 500 });
+      // Paginate to bypass PostgREST default 1000 row cap
+      const pageSize = 1000;
+      let from = 0;
+      const all: any[] = [];
+      for (;;) {
+        const { data, error } = await admin
+          .rpc("list_unpaid_participants_with_reminders")
+          .range(from, from + pageSize - 1);
+        if (error) return json({ ok: false, error: error.message }, { status: 500 });
+        const rows = data ?? [];
+        all.push(...rows);
+        if (rows.length < pageSize) break;
+        from += pageSize;
+        if (from > 50000) break; // safety
+      }
       const cfg = await loadSettings(admin);
       return json({
         ok: true,
-        items: data ?? [],
+        items: all,
         auto_enabled: (cfg.payment_reminder_auto_enabled ?? "false") === "true",
         templates: {
           ft_subject: cfg.payment_reminder_ft_subject || DEFAULT_FT_SUBJECT,
