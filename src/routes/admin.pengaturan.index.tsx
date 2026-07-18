@@ -49,6 +49,7 @@ const ITEMS = [
     icon: Mail,
     title: "Pengingat Pembayaran",
     desc: "Kirim reminder email manual/otomatis untuk Fast Track & Kontribusi yang belum lunas (H+1, H+3, H+7).",
+  },
   {
     to: "/admin/pengaturan/apresiasi",
     icon: Sparkles,
