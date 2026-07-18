@@ -106,15 +106,24 @@ Deno.serve(async (req) => {
 
 
     if (p.payment_status === "pending" && p.payment_invoice_id) {
-      const synced = await syncInvoiceStatus(supabaseAdmin, apiKey, p.payment_invoice_id);
-      if (synced) return json({ ok: true, alreadyPaid: true, synced: true });
-      // Reuse invoice pending yang sudah ada — JANGAN buat baru,
-      // supaya Mayar tidak trigger 429 "Duplicate request" dan
-      // tidak muncul banyak invoice/notif untuk peserta yang sama.
-      if (p.payment_url) {
+      const state = await fetchInvoiceState(apiKey, p.payment_invoice_id);
+      if (state === "paid") {
+        const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: p.payment_invoice_id });
+        if (updated) return json({ ok: true, alreadyPaid: true, synced: true });
+      }
+      // Kalau invoice masih aktif → reuse URL lama supaya tidak trigger 429 duplicate.
+      // Kalau expired/closed/cancel → fall-through untuk buat invoice BARU otomatis.
+      if (state === "active" && p.payment_url) {
         return json({ ok: true, url: p.payment_url, reused: true });
       }
+      if (state === "unknown" && p.payment_url) {
+        // Belum bisa diverifikasi (mis. Mayar down) — tetap reuse supaya user tidak stuck.
+        return json({ ok: true, url: p.payment_url, reused: true });
+      }
+      // state === "expired" → lanjut buat invoice baru
+      console.log("Invoice pendaftaran expired/closed, membuat invoice baru", { invoiceId: p.payment_invoice_id, code: p.registration_code });
     }
+
 
     if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
       return json({ ok: false, error: "Pendaftaran Self Funded saat ini GRATIS — tidak perlu pembayaran" }, { status: 400 });
