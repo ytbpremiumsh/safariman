@@ -189,7 +189,7 @@ Deno.serve(async (req) => {
         return json({ ok: false, error: "invalid params" }, { status: 400 });
       }
       const { data: p } = await admin.from("participants")
-        .select("id, full_name, email, registration_code, category, payment_status, donation_status")
+        .select("id, full_name, email, registration_code, category, payment_status, donation_status, payment_url, donation_url")
         .eq("id", pid).maybeSingle();
       if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
       if (!p.email) return json({ ok: false, error: "Email peserta kosong" }, { status: 400 });
