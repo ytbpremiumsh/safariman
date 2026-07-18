@@ -136,6 +136,21 @@ function PesertaKontribusiPage() {
     return `https://wa.me/${num}?text=${msg}`;
   };
 
+  const markPaidManual = async (r: Row) => {
+    if (!confirm(`Tandai kontribusi LUNAS untuk ${r.full_name} (${r.registration_code})?\n\nAksi ini akan menandai donasi sebagai valid secara manual.`)) return;
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("participants")
+      .update({ donation_status: "paid", donation_paid_at: now })
+      .eq("id", r.id);
+    if (error) { toast.error(error.message); return; }
+    setUnpaidRows((rows) => rows.filter((x) => x.id !== r.id));
+    setPaidRows((rows) => [{ ...r, donation_status: "paid", donation_paid_at: now }, ...rows]);
+    toast.success(`Kontribusi ${r.registration_code} ditandai lunas`);
+    // Fire-and-forget email notification
+    supabase.functions.invoke("email-notify", { body: { event: "kontribusi", code: r.registration_code } }).catch(() => {});
+  };
+
   if (!ready || loading) return <AdminLoading />;
 
   return (
