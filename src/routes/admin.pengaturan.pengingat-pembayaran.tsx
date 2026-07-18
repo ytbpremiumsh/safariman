@@ -113,8 +113,8 @@ function PengingatPembayaran() {
           <Mail className="size-5 text-accent" />
           <div className="font-display text-lg font-semibold">Template Email</div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Placeholder: <code>{"{nama}"}</code>, <code>{"{kode}"}</code>. Body mendukung <strong>HTML</strong> (mis. <code>&lt;p&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;br/&gt;</code>). Jika tidak ada tag HTML, baris baru otomatis dikonversi jadi <code>&lt;br/&gt;</code>.
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Placeholder aktif per peserta: <code>{"{nama}"}</code>, <code>{"{kode}"}</code>, <code>{"{payment_url}"}</code> (Fast Track), <code>{"{donation_url}"}</code> (Kontribusi), <code>{"{url}"}</code> (otomatis sesuai jenis), <code>{"{button}"}</code> (tombol siap-klik hijau). Body mendukung <strong>HTML</strong>. Jika kamu tidak menaruh salah satu placeholder link/tombol, tombol otomatis ditambahkan di akhir email.
         </p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
