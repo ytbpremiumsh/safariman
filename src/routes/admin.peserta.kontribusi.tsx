@@ -304,15 +304,24 @@ function PesertaKontribusiPage() {
                     </td>
                     {tab === "unpaid" && (
                       <td className="px-3 py-3">
-                        <a
-                          href={waLink(r.whatsapp, r.full_name, r.registration_code)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
-                          title="Ingatkan via WhatsApp"
-                        >
-                          <MessageCircle className="size-3.5" /> Ingatkan
-                        </a>
+                        <div className="flex flex-wrap gap-1.5">
+                          <a
+                            href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                            title="Ingatkan via WhatsApp"
+                          >
+                            <MessageCircle className="size-3.5" /> Ingatkan
+                          </a>
+                          <button
+                            onClick={() => markPaidManual(r)}
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-accent/15 text-accent hover:bg-accent/25"
+                            title="Tandai kontribusi lunas secara manual"
+                          >
+                            <CheckCircle2 className="size-3.5" /> Tandai Lunas
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
