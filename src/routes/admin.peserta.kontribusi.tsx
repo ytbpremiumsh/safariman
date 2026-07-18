@@ -50,6 +50,10 @@ function PesertaKontribusiPage() {
   const [tab, setTab] = useState<"paid" | "unpaid">("paid");
   const [q, setQ] = useState("");
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+
+  useEffect(() => { setPage(1); }, [tab, q, catFilter, pageSize]);
 
   useEffect(() => {
     if (!ready) return;
@@ -97,6 +101,11 @@ function PesertaKontribusiPage() {
         .some((v) => v?.toLowerCase().includes(term));
     });
   }, [activeRows, q, catFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const pageRows = filtered.slice(pageStart, pageStart + pageSize);
 
   const stats = useMemo(() => {
     const byCat = (c: Category) => paidRows.filter((r) => r.category === c).length;
@@ -289,7 +298,7 @@ function PesertaKontribusiPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((r) => (
+                pageRows.map((r) => (
                   <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                     <td className="px-3 py-3">
                       <button
@@ -355,6 +364,40 @@ function PesertaKontribusiPage() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-border text-sm">
+          <div className="text-muted-foreground">
+            {filtered.length === 0
+              ? "0 data"
+              : `Menampilkan ${pageStart + 1}–${Math.min(pageStart + pageSize, filtered.length)} dari ${filtered.length}`}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted-foreground">Per halaman</label>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+            >
+              {[25, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              className="h-8 px-3 rounded-md border border-input bg-background disabled:opacity-40"
+            >
+              Prev
+            </button>
+            <span className="text-xs">
+              Hal {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+              className="h-8 px-3 rounded-md border border-input bg-background disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </AdminShell>
