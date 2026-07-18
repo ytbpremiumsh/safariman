@@ -128,7 +128,7 @@ function PengingatPembayaran() {
           {previewKind === "fast_track" && (
             <div className="rounded-xl border border-border bg-background p-4 text-sm">
               <div className="text-xs text-muted-foreground mb-2">Preview (contoh: nama = Ahmad, kode = HXP-DEMO1234)</div>
-              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.ft_body) }} />
+              <div dangerouslySetInnerHTML={{ __html: renderPreview(templates.ft_body, "fast_track") }} />
             </div>
           )}
         </div>
