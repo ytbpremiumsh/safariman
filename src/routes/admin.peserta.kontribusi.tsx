@@ -50,6 +50,10 @@ function PesertaKontribusiPage() {
   const [tab, setTab] = useState<"paid" | "unpaid">("paid");
   const [q, setQ] = useState("");
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+
+  useEffect(() => { setPage(1); }, [tab, q, catFilter, pageSize]);
 
   useEffect(() => {
     if (!ready) return;
