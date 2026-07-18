@@ -57,14 +57,38 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
     ? (cfg.payment_reminder_ft_body || DEFAULT_FT_BODY)
     : (cfg.payment_reminder_kt_body || DEFAULT_KT_BODY);
 
-  const vars = {
+  // Ensure we have payment/donation URLs — fetch if not present on the passed object.
+  let payUrl = participant.payment_url ?? null;
+  let donUrl = participant.donation_url ?? null;
+  if (payUrl === undefined || donUrl === undefined || payUrl === null || donUrl === null) {
+    const { data: full } = await admin.from("participants")
+      .select("payment_url, donation_url")
+      .eq("id", participant.participant_id ?? participant.id)
+      .maybeSingle();
+    payUrl = payUrl || full?.payment_url || "";
+    donUrl = donUrl || full?.donation_url || "";
+  }
+  const activeUrl = kind === "fast_track" ? (payUrl || "") : (donUrl || "");
+  const buttonLabel = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
+  const button = activeUrl
+    ? `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`
+    : "";
+
+  const vars: Record<string,string> = {
     nama: participant.full_name ?? "",
     kode: participant.registration_code ?? "",
+    payment_url: payUrl || "",
+    donation_url: donUrl || "",
+    url: activeUrl,
+    button,
   };
   const subject = fill(subjectTpl, vars);
   const body = fill(bodyTpl, vars);
   const looksHtml = /<\/?[a-z][\s\S]*>/i.test(body);
-  const bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
+  let bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
+  // Auto-append button if user didn't include {button}/{url}/{payment_url}/{donation_url} in template.
+  const mentionsAction = /\{(button|url|payment_url|donation_url)\}/.test(bodyTpl);
+  if (!mentionsAction && button) bodyHtml += button;
 
   const senderName = sanitizeName(cfg.email_sender_name);
   const senderLocal = sanitizeLocal(cfg.email_sender_local);
