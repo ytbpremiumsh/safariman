@@ -57,6 +57,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/timeline", label: "Timeline Program", keywords: "timeline jadwal urutan tahap program" },
           { to: "/admin/pengaturan/panduan", label: "Panduan Link", keywords: "panduan guide link tutorial dokumen" },
           { to: "/admin/pengaturan/donasi", label: "Pembayaran & Donasi", keywords: "donasi pembayaran mayar invoice kontribusi" },
+          { to: "/admin/pengaturan/pengingat-pembayaran", label: "Pengingat Pembayaran", keywords: "reminder pengingat email otomatis fast track kontribusi belum bayar" },
           { to: "/admin/pengaturan/hasil-seleksi", label: "Hasil Seleksi", keywords: "hasil pengumuman lolos seleksi publish" },
           { to: "/admin/pengaturan/dokumen-self-funded", label: "Dokumen Self Funded", keywords: "dokumen self funded mandiri persyaratan berkas" },
           { to: "/admin/pengaturan/email", label: "Template Email", keywords: "email template transactional smtp kirim notifikasi" },
