@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle } from "lucide-react";
+import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle, CheckCircle2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -134,6 +134,21 @@ function PesertaKontribusiPage() {
       `Assalamu'alaikum ${nama},\n\nKami dari panitia Safar Iman ingin mengingatkan bahwa kontribusi/donasi kamu belum tercatat.\n\nKode: ${kode}\n\nMohon segera diselesaikan agar bisa lanjut ke tahap berikutnya. Jazakumullah khairan.`,
     );
     return `https://wa.me/${num}?text=${msg}`;
+  };
+
+  const markPaidManual = async (r: Row) => {
+    if (!confirm(`Tandai kontribusi LUNAS untuk ${r.full_name} (${r.registration_code})?\n\nAksi ini akan menandai donasi sebagai valid secara manual.`)) return;
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("participants")
+      .update({ donation_status: "paid", donation_paid_at: now })
+      .eq("id", r.id);
+    if (error) { toast.error(error.message); return; }
+    setUnpaidRows((rows) => rows.filter((x) => x.id !== r.id));
+    setPaidRows((rows) => [{ ...r, donation_status: "paid", donation_paid_at: now }, ...rows]);
+    toast.success(`Kontribusi ${r.registration_code} ditandai lunas`);
+    // Fire-and-forget email notification
+    supabase.functions.invoke("email-notify", { body: { event: "kontribusi", code: r.registration_code } }).catch(() => {});
   };
 
   if (!ready || loading) return <AdminLoading />;
@@ -304,15 +319,24 @@ function PesertaKontribusiPage() {
                     </td>
                     {tab === "unpaid" && (
                       <td className="px-3 py-3">
-                        <a
-                          href={waLink(r.whatsapp, r.full_name, r.registration_code)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
-                          title="Ingatkan via WhatsApp"
-                        >
-                          <MessageCircle className="size-3.5" /> Ingatkan
-                        </a>
+                        <div className="flex flex-wrap gap-1.5">
+                          <a
+                            href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                            title="Ingatkan via WhatsApp"
+                          >
+                            <MessageCircle className="size-3.5" /> Ingatkan
+                          </a>
+                          <button
+                            onClick={() => markPaidManual(r)}
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-accent/15 text-accent hover:bg-accent/25"
+                            title="Tandai kontribusi lunas secara manual"
+                          >
+                            <CheckCircle2 className="size-3.5" /> Tandai Lunas
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>

@@ -786,6 +786,12 @@ function PendingEssaySection({
                 </td></tr>
               ) : filtered.map((r) => {
                 const filled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
+                const csFilled = [
+                  r.has_case_study_1, r.has_case_study_2, r.has_case_study_3, r.has_case_study_4,
+                  r.has_case_study_5, r.has_case_study_6, r.has_case_study_7,
+                ].filter(Boolean).length;
+                const totalFilled = filled + csFilled;
+                const totalAll = 3 + 7;
                 return (
                   <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                     <td className="px-3 py-3">
@@ -804,14 +810,27 @@ function PendingEssaySection({
                     </td>
                     <td className="px-3 py-3 text-xs">{r.city}</td>
                     <td className="px-3 py-3">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                        filled === 0
-                          ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
-                          : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
-                      }`}>
-                        {filled}/3 Essay
-                        {(r.has_case_study_1 || r.has_case_study_2 || r.has_case_study_3 || r.has_case_study_4 || r.has_case_study_5 || r.has_case_study_6 || r.has_case_study_7) && " · Studi Kasus dimulai"}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                          filled === 0
+                            ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                            : filled < 3
+                              ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                              : "bg-emerald/15 text-emerald border-emerald/30"
+                        }`}>
+                          {filled}/3 Essay
+                        </span>
+                        <span className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                          csFilled === 0
+                            ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                            : csFilled < 7
+                              ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                              : "bg-emerald/15 text-emerald border-emerald/30"
+                        }`}>
+                          {csFilled}/7 Studi Kasus
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">Total {totalFilled}/{totalAll}</span>
+                      </div>
                     </td>
                     <td className="px-3 py-3">
                       <a
