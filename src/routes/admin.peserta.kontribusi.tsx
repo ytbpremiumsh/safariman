@@ -365,6 +365,40 @@ function PesertaKontribusiPage() {
             </tbody>
           </table>
         </div>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-border text-sm">
+          <div className="text-muted-foreground">
+            {filtered.length === 0
+              ? "0 data"
+              : `Menampilkan ${pageStart + 1}–${Math.min(pageStart + pageSize, filtered.length)} dari ${filtered.length}`}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted-foreground">Per halaman</label>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+            >
+              {[25, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              className="h-8 px-3 rounded-md border border-input bg-background disabled:opacity-40"
+            >
+              Prev
+            </button>
+            <span className="text-xs">
+              Hal {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+              className="h-8 px-3 rounded-md border border-input bg-background disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </AdminShell>
   );
