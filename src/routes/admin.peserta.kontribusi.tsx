@@ -23,7 +23,7 @@ const CAT_LABEL: Record<Category, string> = {
 };
 
 // Kategori yang wajib berkontribusi/donasi
-const DONATION_CATS: Category[] = ["fully_funded", "partial_funded"];
+const DONATION_CATS: Category[] = ["fully_funded", "partial_funded", "gelombang_1", "gelombang_2"];
 
 type Row = {
   id: string;
