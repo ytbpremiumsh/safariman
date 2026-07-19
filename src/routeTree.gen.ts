@@ -54,6 +54,7 @@ import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengatu
 import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
 import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
 import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
+import { Route as AdminPengaturanBackupRouteImport } from './routes/admin.pengaturan.backup'
 import { Route as AdminPengaturanApresiasiRouteImport } from './routes/admin.pengaturan.apresiasi'
 import { Route as AdminPengaturanAnalyticsRouteImport } from './routes/admin.pengaturan.analytics'
 import { Route as AdminPengaturanAiProviderRouteImport } from './routes/admin.pengaturan.ai-provider'
@@ -298,6 +299,11 @@ const AdminPengaturanCountdownRoute =
     path: '/admin/pengaturan/countdown',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanBackupRoute = AdminPengaturanBackupRouteImport.update({
+  id: '/admin/pengaturan/backup',
+  path: '/admin/pengaturan/backup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanApresiasiRoute =
   AdminPengaturanApresiasiRouteImport.update({
     id: '/admin/pengaturan/apresiasi',
@@ -393,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
   '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
+  '/admin/pengaturan/backup': typeof AdminPengaturanBackupRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
@@ -451,6 +458,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
   '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
+  '/admin/pengaturan/backup': typeof AdminPengaturanBackupRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
@@ -508,6 +516,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/ai-provider': typeof AdminPengaturanAiProviderRoute
   '/admin/pengaturan/analytics': typeof AdminPengaturanAnalyticsRoute
   '/admin/pengaturan/apresiasi': typeof AdminPengaturanApresiasiRoute
+  '/admin/pengaturan/backup': typeof AdminPengaturanBackupRoute
   '/admin/pengaturan/countdown': typeof AdminPengaturanCountdownRoute
   '/admin/pengaturan/dokumen-self-funded': typeof AdminPengaturanDokumenSelfFundedRoute
   '/admin/pengaturan/donasi': typeof AdminPengaturanDonasiRoute
@@ -568,6 +577,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/ai-provider'
     | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
+    | '/admin/pengaturan/backup'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
@@ -626,6 +636,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/ai-provider'
     | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
+    | '/admin/pengaturan/backup'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
@@ -682,6 +693,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/ai-provider'
     | '/admin/pengaturan/analytics'
     | '/admin/pengaturan/apresiasi'
+    | '/admin/pengaturan/backup'
     | '/admin/pengaturan/countdown'
     | '/admin/pengaturan/dokumen-self-funded'
     | '/admin/pengaturan/donasi'
@@ -741,6 +753,7 @@ export interface RootRouteChildren {
   AdminPengaturanAiProviderRoute: typeof AdminPengaturanAiProviderRoute
   AdminPengaturanAnalyticsRoute: typeof AdminPengaturanAnalyticsRoute
   AdminPengaturanApresiasiRoute: typeof AdminPengaturanApresiasiRoute
+  AdminPengaturanBackupRoute: typeof AdminPengaturanBackupRoute
   AdminPengaturanCountdownRoute: typeof AdminPengaturanCountdownRoute
   AdminPengaturanDokumenSelfFundedRoute: typeof AdminPengaturanDokumenSelfFundedRoute
   AdminPengaturanDonasiRoute: typeof AdminPengaturanDonasiRoute
@@ -1082,6 +1095,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanCountdownRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/backup': {
+      id: '/admin/pengaturan/backup'
+      path: '/admin/pengaturan/backup'
+      fullPath: '/admin/pengaturan/backup'
+      preLoaderRoute: typeof AdminPengaturanBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/apresiasi': {
       id: '/admin/pengaturan/apresiasi'
       path: '/admin/pengaturan/apresiasi'
@@ -1224,6 +1244,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanAiProviderRoute: AdminPengaturanAiProviderRoute,
   AdminPengaturanAnalyticsRoute: AdminPengaturanAnalyticsRoute,
   AdminPengaturanApresiasiRoute: AdminPengaturanApresiasiRoute,
+  AdminPengaturanBackupRoute: AdminPengaturanBackupRoute,
   AdminPengaturanCountdownRoute: AdminPengaturanCountdownRoute,
   AdminPengaturanDokumenSelfFundedRoute: AdminPengaturanDokumenSelfFundedRoute,
   AdminPengaturanDonasiRoute: AdminPengaturanDonasiRoute,
