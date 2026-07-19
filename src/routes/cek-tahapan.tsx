@@ -245,7 +245,7 @@ function buildStages(row: LookupRow): Stage[] {
 }
 
 function stageHref(key: string, code: string): string | null {
-  const q = `?kode=${encodeURIComponent(code)}`;
+  const q = `?code=${encodeURIComponent(code)}`;
   switch (key) {
     case "berkas": return `/berkas${q}`;
     case "kontribusi": return `/kontribusi${q}`;
