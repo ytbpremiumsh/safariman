@@ -209,17 +209,34 @@ Deno.serve(async (req) => {
       },
     };
 
-    const res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
-    const j: any = await res.json().catch(() => ({}));
+    // Retry-with-backoff untuk mengatasi 429 "Too many requests" dari Mayar.
+    let res!: Response;
+    let j: any = {};
+    const delays = [0, 800, 1800, 3500, 6000];
+    for (let i = 0; i < delays.length; i++) {
+      if (delays[i]) await new Promise((r) => setTimeout(r, delays[i] + Math.floor(Math.random() * 250)));
+      res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+      });
+      j = await res.json().catch(() => ({}));
+      const status = res.status || j?.statusCode || 0;
+      if (status !== 429) break;
+    }
     if (!res.ok || j?.statusCode >= 400) {
+      const isRate = res.status === 429 || j?.statusCode === 429 ||
+        /too many requests/i.test(String(j?.messages || j?.message || ""));
+      if (isRate) {
+        return json(
+          { ok: false, error: "Mayar sedang membatasi permintaan (rate limit). Coba lagi 10-30 detik.", transient: true },
+          { status: 503 },
+        );
+      }
       return json(
         { ok: false, error: j?.messages || j?.message || "Gagal membuat invoice", raw: j },
         { status: 502 },
