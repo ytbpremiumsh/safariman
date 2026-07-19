@@ -188,9 +188,9 @@ Deno.serve(async (req) => {
     // tidak pernah tersimpan.
     let res!: Response;
     let j: any = {};
-    const delays = [0, 800, 1800, 3500];
+    const delays = [0, 800, 1800, 3500, 6000, 9000];
     for (let i = 0; i < delays.length; i++) {
-      if (delays[i]) await new Promise((r) => setTimeout(r, delays[i]));
+      if (delays[i]) await new Promise((r) => setTimeout(r, delays[i] + Math.floor(Math.random() * 250)));
       res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
         method: "POST",
         headers: {
