@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen, DatabaseBackup } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -103,6 +103,12 @@ const ITEMS = [
     icon: HelpCircle,
     title: "Halaman FAQ",
     desc: "Aktif/nonaktifkan halaman /faq, tambah/edit pertanyaan & jawaban (pendaftaran, berkas, essay, timeline, benefit, kontribusi).",
+  },
+  {
+    to: "/admin/pengaturan/backup",
+    icon: DatabaseBackup,
+    title: "Backup Database",
+    desc: "Ekspor semua data (peserta, pengaturan, log) ke file JSON. Atur pengingat backup otomatis di dashboard.",
   },
 ] as const;
 

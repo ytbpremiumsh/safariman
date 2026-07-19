@@ -69,6 +69,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/wa-quick-reply", label: "WA Quick Reply", keywords: "wa whatsapp quick reply balasan cepat template" },
           { to: "/admin/pengaturan/media", label: "Media Library", keywords: "media file upload download url link gambar foto dokumen pdf image" },
           { to: "/admin/pengaturan/analytics", label: "Google Analytics", keywords: "google analytics ga ga4 tracking pelacakan measurement id statistik pengunjung" },
+          { to: "/admin/pengaturan/backup", label: "Backup Database", keywords: "backup database cadangan ekspor json data peserta pengingat reminder" },
         ],
       },
     ],
