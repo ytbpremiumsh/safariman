@@ -123,7 +123,8 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
   } else {
     // Escape the plain-text template first, convert newlines, then substitute
     // placeholders so button/URLs retain their raw HTML.
-    const escapedTpl = esc(bodyTpl).replace(/\n/g, "<br/>");
+    const normalizedTpl = bodyTpl.replace(/\\n/g, "\n");
+    const escapedTpl = esc(normalizedTpl).replace(/\n/g, "<br/>");
     bodyHtml = fill(escapedTpl, vars);
   }
   // Auto-append button if user didn't include {button}/{url}/{payment_url}/{donation_url} in template.
