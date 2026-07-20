@@ -102,16 +102,21 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
   // If the URL required for this reminder kind is empty, call the invoice edge function
   // (which reuses valid URLs or regenerates if expired) so the button always points
   // to a live Mayar invoice for that specific participant code.
+  let invoiceError = "";
   if (kind === "fast_track" && !payUrl) {
-    payUrl = await ensureInvoiceUrl(admin, code, "fast_track");
+    const r = await ensureInvoiceUrl(admin, code, "fast_track");
+    payUrl = r.url; invoiceError = r.error ?? "";
   }
   if (kind === "kontribusi" && !donUrl) {
-    donUrl = await ensureInvoiceUrl(admin, code, "kontribusi");
+    const r = await ensureInvoiceUrl(admin, code, "kontribusi");
+    donUrl = r.url; invoiceError = r.error ?? "";
   }
 
   const activeUrl = kind === "fast_track" ? (payUrl || "") : (donUrl || "");
   if (!activeUrl) {
-    return { ok: false, error: `Link pembayaran ${kind === "fast_track" ? "Fast Track" : "Kontribusi"} belum tersedia untuk ${code}. Silakan generate invoice terlebih dahulu.` };
+    const label = kind === "fast_track" ? "Fast Track" : "Kontribusi";
+    const detail = invoiceError ? ` (${invoiceError})` : "";
+    return { ok: false, error: `Link pembayaran ${label} belum tersedia untuk ${code}${detail}. Silakan generate invoice terlebih dahulu.` };
   }
   const buttonLabel = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
   const button = `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`;
