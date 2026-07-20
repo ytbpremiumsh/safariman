@@ -114,9 +114,19 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
     button,
   };
   const subject = fill(subjectTpl, vars);
-  const body = fill(bodyTpl, vars);
-  const looksHtml = /<\/?[a-z][\s\S]*>/i.test(body);
-  let bodyHtml = looksHtml ? body : esc(body).replace(/\n/g, "<br/>");
+  // Detect HTML-ness on the RAW template (before {button} substitution injects HTML),
+  // otherwise newlines in plain-text templates are silently dropped.
+  const looksHtml = /<\/?[a-z][\s\S]*>/i.test(bodyTpl);
+  let bodyHtml: string;
+  if (looksHtml) {
+    bodyHtml = fill(bodyTpl, vars);
+  } else {
+    // Escape the plain-text template first, convert newlines, then substitute
+    // placeholders so button/URLs retain their raw HTML.
+    const normalizedTpl = bodyTpl.replace(/\\n/g, "\n");
+    const escapedTpl = esc(normalizedTpl).replace(/\n/g, "<br/>");
+    bodyHtml = fill(escapedTpl, vars);
+  }
   // Auto-append button if user didn't include {button}/{url}/{payment_url}/{donation_url} in template.
   const mentionsAction = /\{(button|url|payment_url|donation_url)\}/.test(bodyTpl);
   if (!mentionsAction && button) bodyHtml += button;
