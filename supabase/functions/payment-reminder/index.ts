@@ -53,6 +53,20 @@ function fill(tpl: string, v: Record<string,string>) {
   return tpl.replace(/\\n/g,"\n").replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 }
 
+async function ensureInvoiceUrl(admin: any, code: string, kind: "fast_track"|"kontribusi"): Promise<string> {
+  if (!code) return "";
+  const fnName = kind === "fast_track" ? "mayar-pendaftaran-invoice" : "mayar-create-invoice";
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  try {
+    const { data } = await admin.functions.invoke(fnName, {
+      headers: { Authorization: `Bearer ${serviceKey}` },
+      body: { code },
+    });
+    if (data?.url) return String(data.url);
+  } catch (_) { /* ignore, fallback below */ }
+  return "";
+}
+
 async function sendReminder(admin: any, cfg: Record<string,string>, participant: any, kind: "fast_track"|"kontribusi") {
   const subjectTpl = kind === "fast_track"
     ? (cfg.payment_reminder_ft_subject || DEFAULT_FT_SUBJECT)
@@ -61,7 +75,9 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
     ? (cfg.payment_reminder_ft_body || DEFAULT_FT_BODY)
     : (cfg.payment_reminder_kt_body || DEFAULT_KT_BODY);
 
-  // Ensure we have payment/donation URLs — fetch if not present on the passed object.
+  const code = participant.registration_code ?? "";
+
+  // Ensure we have payment/donation URLs — fetch stored URL first, then regenerate via Mayar if empty/expired.
   let payUrl = participant.payment_url ?? null;
   let donUrl = participant.donation_url ?? null;
   if (payUrl === undefined || donUrl === undefined || payUrl === null || donUrl === null) {
@@ -72,11 +88,22 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
     payUrl = payUrl || full?.payment_url || "";
     donUrl = donUrl || full?.donation_url || "";
   }
+  // If the URL required for this reminder kind is empty, call the invoice edge function
+  // (which reuses valid URLs or regenerates if expired) so the button always points
+  // to a live Mayar invoice for that specific participant code.
+  if (kind === "fast_track" && !payUrl) {
+    payUrl = await ensureInvoiceUrl(admin, code, "fast_track");
+  }
+  if (kind === "kontribusi" && !donUrl) {
+    donUrl = await ensureInvoiceUrl(admin, code, "kontribusi");
+  }
+
   const activeUrl = kind === "fast_track" ? (payUrl || "") : (donUrl || "");
+  if (!activeUrl) {
+    return { ok: false, error: `Link pembayaran ${kind === "fast_track" ? "Fast Track" : "Kontribusi"} belum tersedia untuk ${code}. Silakan generate invoice terlebih dahulu.` };
+  }
   const buttonLabel = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
-  const button = activeUrl
-    ? `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`
-    : "";
+  const button = `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`;
 
   const vars: Record<string,string> = {
     nama: participant.full_name ?? "",
