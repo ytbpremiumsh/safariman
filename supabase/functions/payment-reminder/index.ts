@@ -53,18 +53,29 @@ function fill(tpl: string, v: Record<string,string>) {
   return tpl.replace(/\\n/g,"\n").replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 }
 
-async function ensureInvoiceUrl(admin: any, code: string, kind: "fast_track"|"kontribusi"): Promise<string> {
-  if (!code) return "";
+async function ensureInvoiceUrl(_admin: any, code: string, kind: "fast_track"|"kontribusi"): Promise<{ url: string; error?: string }> {
+  if (!code) return { url: "", error: "kode kosong" };
   const fnName = kind === "fast_track" ? "mayar-pendaftaran-invoice" : "mayar-create-invoice";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supaUrl = Deno.env.get("SUPABASE_URL")!;
   try {
-    const { data } = await admin.functions.invoke(fnName, {
-      headers: { Authorization: `Bearer ${serviceKey}` },
-      body: { code },
+    const res = await fetch(`${supaUrl}/functions/v1/${fnName}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+        apikey: serviceKey,
+      },
+      body: JSON.stringify({ code }),
     });
-    if (data?.url) return String(data.url);
-  } catch (_) { /* ignore, fallback below */ }
-  return "";
+    const text = await res.text();
+    let parsed: any = {};
+    try { parsed = JSON.parse(text); } catch { /* ignore */ }
+    if (parsed?.url) return { url: String(parsed.url) };
+    return { url: "", error: parsed?.error || `HTTP ${res.status}: ${text.slice(0, 200)}` };
+  } catch (e) {
+    return { url: "", error: (e as Error).message };
+  }
 }
 
 async function sendReminder(admin: any, cfg: Record<string,string>, participant: any, kind: "fast_track"|"kontribusi") {
