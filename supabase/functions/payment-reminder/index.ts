@@ -53,18 +53,29 @@ function fill(tpl: string, v: Record<string,string>) {
   return tpl.replace(/\\n/g,"\n").replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 }
 
-async function ensureInvoiceUrl(admin: any, code: string, kind: "fast_track"|"kontribusi"): Promise<string> {
-  if (!code) return "";
+async function ensureInvoiceUrl(_admin: any, code: string, kind: "fast_track"|"kontribusi"): Promise<{ url: string; error?: string }> {
+  if (!code) return { url: "", error: "kode kosong" };
   const fnName = kind === "fast_track" ? "mayar-pendaftaran-invoice" : "mayar-create-invoice";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supaUrl = Deno.env.get("SUPABASE_URL")!;
   try {
-    const { data } = await admin.functions.invoke(fnName, {
-      headers: { Authorization: `Bearer ${serviceKey}` },
-      body: { code },
+    const res = await fetch(`${supaUrl}/functions/v1/${fnName}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+        apikey: serviceKey,
+      },
+      body: JSON.stringify({ code }),
     });
-    if (data?.url) return String(data.url);
-  } catch (_) { /* ignore, fallback below */ }
-  return "";
+    const text = await res.text();
+    let parsed: any = {};
+    try { parsed = JSON.parse(text); } catch { /* ignore */ }
+    if (parsed?.url) return { url: String(parsed.url) };
+    return { url: "", error: parsed?.error || `HTTP ${res.status}: ${text.slice(0, 200)}` };
+  } catch (e) {
+    return { url: "", error: (e as Error).message };
+  }
 }
 
 async function sendReminder(admin: any, cfg: Record<string,string>, participant: any, kind: "fast_track"|"kontribusi") {
@@ -91,16 +102,21 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
   // If the URL required for this reminder kind is empty, call the invoice edge function
   // (which reuses valid URLs or regenerates if expired) so the button always points
   // to a live Mayar invoice for that specific participant code.
+  let invoiceError = "";
   if (kind === "fast_track" && !payUrl) {
-    payUrl = await ensureInvoiceUrl(admin, code, "fast_track");
+    const r = await ensureInvoiceUrl(admin, code, "fast_track");
+    payUrl = r.url; invoiceError = r.error ?? "";
   }
   if (kind === "kontribusi" && !donUrl) {
-    donUrl = await ensureInvoiceUrl(admin, code, "kontribusi");
+    const r = await ensureInvoiceUrl(admin, code, "kontribusi");
+    donUrl = r.url; invoiceError = r.error ?? "";
   }
 
   const activeUrl = kind === "fast_track" ? (payUrl || "") : (donUrl || "");
   if (!activeUrl) {
-    return { ok: false, error: `Link pembayaran ${kind === "fast_track" ? "Fast Track" : "Kontribusi"} belum tersedia untuk ${code}. Silakan generate invoice terlebih dahulu.` };
+    const label = kind === "fast_track" ? "Fast Track" : "Kontribusi";
+    const detail = invoiceError ? ` (${invoiceError})` : "";
+    return { ok: false, error: `Link pembayaran ${label} belum tersedia untuk ${code}${detail}. Silakan generate invoice terlebih dahulu.` };
   }
   const buttonLabel = kind === "fast_track" ? "Bayar Fast Track Sekarang" : "Kontribusi Sekarang";
   const button = `<div style="margin:20px 0;text-align:center"><a href="${activeUrl}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 28px;background:#059669;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-family:Arial,sans-serif">${buttonLabel}</a></div>`;
