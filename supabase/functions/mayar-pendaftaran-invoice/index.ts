@@ -183,41 +183,76 @@ Deno.serve(async (req) => {
         participant_email: p.email,
       },
     };
-    // Retry-with-backoff untuk mengatasi 429 "Too many requests" dari Mayar
-    // (rate-limit per API key). Tanpa retry, user stuck karena payment_url
-    // tidak pernah tersimpan.
+    // Retry-with-backoff untuk 429 (rate limit) DAN 5xx (Mayar upstream error)
+    // supaya user tidak stuck. 4xx selain 429 tidak diretry karena selalu deterministic.
     let res!: Response;
     let j: any = {};
+    let fetchErr: unknown = null;
     const delays = [0, 800, 1800, 3500, 6000, 9000];
     for (let i = 0; i < delays.length; i++) {
       if (delays[i]) await new Promise((r) => setTimeout(r, delays[i] + Math.floor(Math.random() * 250)));
-      res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(body),
-      });
-      j = await res.json().catch(() => ({}));
+      try {
+        res = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(body),
+        });
+        j = await res.json().catch(() => ({}));
+        fetchErr = null;
+      } catch (e) {
+        fetchErr = e;
+        continue;
+      }
       const status = res.status || j?.statusCode || 0;
-      if (status !== 429) break;
+      // Retry on rate limit + upstream 5xx (transient Mayar-side failures).
+      if (status !== 429 && !(status >= 500 && status < 600)) break;
+    }
+    if (fetchErr) {
+      console.error("mayar invoice fetch failed", fetchErr);
+      return json(
+        { ok: false, error: "Mayar tidak dapat dihubungi sementara. Coba lagi.", transient: true },
+        { status: 503 },
+      );
     }
     if (!res.ok || j?.statusCode >= 400) {
-      const isRate = res.status === 429 || j?.statusCode === 429 ||
-        /too many requests/i.test(String(j?.messages || j?.message || ""));
+      const status = res.status || j?.statusCode || 0;
+      const msg = String(j?.messages || j?.message || "");
+      const isRate = status === 429 || /too many requests/i.test(msg);
       if (isRate) {
         return json(
           { ok: false, error: "Mayar sedang membatasi permintaan (rate limit). Coba lagi 10-30 detik.", transient: true },
           { status: 503 },
         );
       }
-      return json({ ok: false, error: j?.messages || j?.message || "Gagal membuat invoice", raw: j }, { status: 502 });
+      // 5xx after retries → still transient from user PoV; surface as 503 so client can retry-loop.
+      if (status >= 500 && status < 600) {
+        console.error("Mayar 5xx after retries", { status, raw: j, code: p.registration_code });
+        return json(
+          { ok: false, error: "Mayar sedang bermasalah. Coba lagi beberapa saat.", transient: true },
+          { status: 503 },
+        );
+      }
+      // Auth failures — actionable for admin.
+      if (status === 401 || status === 403) {
+        console.error("Mayar auth rejected", { status, raw: j });
+        return json(
+          { ok: false, error: "API key Mayar ditolak. Admin perlu memperbarui kredensial." },
+          { status: 502 },
+        );
+      }
+      console.error("Mayar invoice create failed", { status, raw: j, code: p.registration_code });
+      return json({ ok: false, error: msg || "Gagal membuat invoice", raw: j }, { status: 502 });
     }
     const url: string | undefined = j?.data?.link || j?.data?.url || j?.link;
     const invoiceId: string | undefined = j?.data?.id || j?.data?.transactionId || j?.id;
-    if (!url || !invoiceId) return json({ ok: false, error: "Respon Mayar tidak lengkap", raw: j }, { status: 502 });
+    if (!url || !invoiceId) {
+      console.error("Mayar OK but missing url/invoiceId", { raw: j, code: p.registration_code });
+      return json({ ok: false, error: "Respon Mayar tidak lengkap", raw: j }, { status: 502 });
+    }
 
     await supabaseAdmin.rpc("save_payment_invoice", {
       p_code: p.registration_code,
