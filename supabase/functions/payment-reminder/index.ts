@@ -154,26 +154,40 @@ async function sendReminder(admin: any, cfg: Record<string,string>, participant:
   const replyTo = replyToRaw && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(replyToRaw) ? replyToRaw : undefined;
 
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const { data, error } = await admin.functions.invoke("send-transactional-email", {
-    headers: { Authorization: `Bearer ${serviceKey}` },
-    body: {
-      templateName: "custom-event",
-      recipientEmail: participant.email,
-      idempotencyKey: `reminder-${kind}-${participant.registration_code}-${Date.now()}`,
-      from: fromHeader,
-      replyTo,
-      templateData: {
-        subject, nama: vars.nama, kode: vars.kode,
-        bodyHtml, preview: subject, senderName,
+  const supaUrl = Deno.env.get("SUPABASE_URL")!;
+  try {
+    const resp = await fetch(`${supaUrl}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+        apikey: serviceKey,
       },
-    },
-  });
-  if (error) {
-    let details = error.message;
-    try { const ctx = (error as any).context; if (ctx?.text) details = await ctx.text(); } catch(_) {}
-    return { ok: false, error: details };
+      body: JSON.stringify({
+        templateName: "custom-event",
+        recipientEmail: participant.email,
+        idempotencyKey: `reminder-${kind}-${participant.registration_code}-${Date.now()}`,
+        from: fromHeader,
+        replyTo,
+        templateData: {
+          subject, nama: vars.nama, kode: vars.kode,
+          bodyHtml, preview: subject, senderName,
+        },
+      }),
+    });
+    const text = await resp.text();
+    let parsed: any = {};
+    try { parsed = JSON.parse(text); } catch { /* ignore */ }
+    if (!resp.ok) {
+      return { ok: false, error: parsed?.error || `HTTP ${resp.status}: ${text.slice(0, 200)}` };
+    }
+    if (parsed?.success === false) {
+      return { ok: false, error: parsed?.reason || parsed?.error || "email tidak terkirim" };
+    }
+    return { ok: true, data: parsed };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
   }
-  return { ok: true, data };
 }
 
 Deno.serve(async (req) => {
