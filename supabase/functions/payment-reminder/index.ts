@@ -283,7 +283,7 @@ Deno.serve(async (req) => {
         status: res.ok ? "sent" : "failed",
         note: res.ok ? null : String(res.error ?? "").slice(0, 500),
       });
-      if (!res.ok) return json({ ok: false, error: res.error }, { status: 502 });
+      if (!res.ok) return json({ ok: false, error: res.error });
       return json({ ok: true });
     }
 
