@@ -173,14 +173,28 @@ function PengingatPembayaran() {
             Fast Track ({items.filter(i => i.fast_track_unpaid).length})
           </button>
           <button onClick={() => { setTab("kontribusi"); setPage(1); }} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${tab === "kontribusi" ? "bg-accent text-white" : "bg-secondary text-foreground"}`}>
-            Kontribusi ({items.filter(i => i.kontribusi_unpaid).length})
+            Kontribusi ({items.filter(i => i.kontribusi_unpaid && i.has_berkas).length})
           </button>
           <button onClick={load} className="ml-auto text-xs text-muted-foreground hover:text-foreground">Refresh</button>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Cari nama, email, atau kode pendaftaran…"
+            className="max-w-sm"
+          />
+          {search && (
+            <button onClick={() => { setSearch(""); setPage(1); }} className="text-xs text-muted-foreground hover:text-foreground">
+              Reset
+            </button>
+          )}
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <div>
-            Total <strong className="text-foreground">{filtered.length}</strong> peserta belum {tab === "fast_track" ? "bayar Fast Track" : "kontribusi"}.
+            Total <strong className="text-foreground">{filtered.length}</strong> peserta {tab === "fast_track" ? "belum bayar Fast Track" : "sudah kirim berkas & belum kontribusi"}.
           </div>
           <div className="flex items-center gap-2">
             <span>Per halaman:</span>
