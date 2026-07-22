@@ -86,7 +86,19 @@ function PengingatPembayaran() {
 
   if (!ready || loading) return <AdminLoading />;
 
-  const filtered = items.filter(i => tab === "fast_track" ? i.fast_track_unpaid : i.kontribusi_unpaid);
+  const baseFiltered = items.filter(i => {
+    if (tab === "fast_track") return i.fast_track_unpaid;
+    // Kontribusi: hanya peserta yang sudah kirim berkas (masuk tahap kontribusi)
+    return i.kontribusi_unpaid && i.has_berkas;
+  });
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? baseFiltered.filter(i =>
+        (i.full_name ?? "").toLowerCase().includes(q) ||
+        (i.email ?? "").toLowerCase().includes(q) ||
+        (i.registration_code ?? "").toLowerCase().includes(q)
+      )
+    : baseFiltered;
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
