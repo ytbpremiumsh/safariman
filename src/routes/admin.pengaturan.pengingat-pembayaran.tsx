@@ -26,6 +26,7 @@ type Item = {
   kontribusi_reminder_count: number;
   last_fast_track_reminder_at: string | null;
   last_kontribusi_reminder_at: string | null;
+  has_berkas?: boolean;
 };
 
 type Templates = { ft_subject: string; ft_body: string; kt_subject: string; kt_body: string };
