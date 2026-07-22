@@ -26,6 +26,7 @@ type Item = {
   kontribusi_reminder_count: number;
   last_fast_track_reminder_at: string | null;
   last_kontribusi_reminder_at: string | null;
+  has_berkas?: boolean;
 };
 
 type Templates = { ft_subject: string; ft_body: string; kt_subject: string; kt_body: string };
@@ -42,6 +43,7 @@ function PengingatPembayaran() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [previewKind, setPreviewKind] = useState<"fast_track" | "kontribusi" | null>(null);
+  const [search, setSearch] = useState("");
 
   async function load() {
     setLoading(true);
@@ -84,7 +86,19 @@ function PengingatPembayaran() {
 
   if (!ready || loading) return <AdminLoading />;
 
-  const filtered = items.filter(i => tab === "fast_track" ? i.fast_track_unpaid : i.kontribusi_unpaid);
+  const baseFiltered = items.filter(i => {
+    if (tab === "fast_track") return i.fast_track_unpaid;
+    // Kontribusi: hanya peserta yang sudah kirim berkas (masuk tahap kontribusi)
+    return i.kontribusi_unpaid && i.has_berkas;
+  });
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? baseFiltered.filter(i =>
+        (i.full_name ?? "").toLowerCase().includes(q) ||
+        (i.email ?? "").toLowerCase().includes(q) ||
+        (i.registration_code ?? "").toLowerCase().includes(q)
+      )
+    : baseFiltered;
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -159,14 +173,28 @@ function PengingatPembayaran() {
             Fast Track ({items.filter(i => i.fast_track_unpaid).length})
           </button>
           <button onClick={() => { setTab("kontribusi"); setPage(1); }} className={`px-4 py-1.5 rounded-full text-sm font-semibold ${tab === "kontribusi" ? "bg-accent text-white" : "bg-secondary text-foreground"}`}>
-            Kontribusi ({items.filter(i => i.kontribusi_unpaid).length})
+            Kontribusi ({items.filter(i => i.kontribusi_unpaid && i.has_berkas).length})
           </button>
           <button onClick={load} className="ml-auto text-xs text-muted-foreground hover:text-foreground">Refresh</button>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Cari nama, email, atau kode pendaftaran…"
+            className="max-w-sm"
+          />
+          {search && (
+            <button onClick={() => { setSearch(""); setPage(1); }} className="text-xs text-muted-foreground hover:text-foreground">
+              Reset
+            </button>
+          )}
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <div>
-            Total <strong className="text-foreground">{filtered.length}</strong> peserta belum {tab === "fast_track" ? "bayar Fast Track" : "kontribusi"}.
+            Total <strong className="text-foreground">{filtered.length}</strong> peserta {tab === "fast_track" ? "belum bayar Fast Track" : "sudah kirim berkas & belum kontribusi"}.
           </div>
           <div className="flex items-center gap-2">
             <span>Per halaman:</span>
