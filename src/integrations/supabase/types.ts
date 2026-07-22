@@ -596,6 +596,7 @@ export type Database = {
           fast_track_reminder_count: number
           fast_track_unpaid: boolean
           full_name: string
+          has_berkas: boolean
           id: string
           kontribusi_reminder_count: number
           kontribusi_unpaid: boolean
