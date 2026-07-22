@@ -725,9 +725,13 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                                 <HeartHandshake className="size-3.5" /> Valid
                               </span>
                             ) : paymentState(r) === "pending" ? (
-                              <span className="text-[11px] text-amber-600 font-medium">Pending</span>
+                              <span className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border bg-amber-500/10 text-amber-600 border-amber-500/30">
+                                <HeartHandshake className="size-3" /> Pending
+                              </span>
                             ) : (
-                              <span className="text-[11px] text-muted-foreground">Belum</span>
+                              <span className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border bg-muted text-muted-foreground border-border">
+                                <XCircle className="size-3" /> Belum
+                              </span>
                             )}
                           </div>
                         )}
