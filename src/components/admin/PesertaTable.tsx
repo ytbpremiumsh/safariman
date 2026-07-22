@@ -268,7 +268,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     g2Count: rows.filter((r) => r.category === "gelombang_2").length,
     g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
     g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
-    donasiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
+    kontribusiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
   }), [rows]);
 
   // Reset ke halaman 1 saat filter/pencarian berubah
@@ -294,7 +294,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       "Pendidikan": r.education, "Pekerjaan": r.occupation,
       "Kategori": r.category ? CAT_LABEL[r.category] : "-",
       "Status": STATUS_LABEL[effectiveStatus(r)],
-      "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Donasi",
+      "Jenis Pembayaran": isGelombang(r.category) ? "Biaya Pendaftaran" : "Kontribusi",
       "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
       "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
@@ -323,7 +323,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   const markPaidManual = async (id: string) => {
     const row = rows.find((r) => r.id === id);
     const gel = row ? isGelombang(row.category) : false;
-    const label = gel ? "biaya pendaftaran" : "donasi";
+    const label = gel ? "biaya pendaftaran" : "kontribusi";
     if (!confirm(`Tandai ${label} sebagai VALID secara manual?`)) return;
     const now = new Date().toISOString();
     const shouldAutoLolos = !gel && autoLolos;
@@ -335,7 +335,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     if (error) { toast.error(error.message); return; }
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     if (detail?.id === id) setDetail({ ...detail, ...patch });
-    toast.success(gel ? "Pendaftaran valid · Status otomatis Lolos" : (shouldAutoLolos ? "Donasi valid · Status otomatis Lolos" : "Donasi ditandai valid"));
+    toast.success(gel ? "Pendaftaran valid · Status otomatis Lolos" : (shouldAutoLolos ? "Kontribusi valid · Status otomatis Lolos" : "Kontribusi ditandai valid"));
 
     // Auto kirim WA notif untuk jalur Fast Track setelah konfirmasi manual.
     if (gel && row?.registration_code) {
@@ -412,7 +412,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
 
   const unmarkPaidManual = async (id: string) => {
-    if (!confirm("Batalkan status donasi valid peserta ini?")) return;
+    if (!confirm("Batalkan status kontribusi valid peserta ini?")) return;
     const row = rows.find((r) => r.id === id);
     const gel = row ? isGelombang(row.category) : false;
     const patch: any = gel
@@ -422,7 +422,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     if (error) { toast.error(error.message); return; }
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     if (detail?.id === id) setDetail({ ...detail, ...patch });
-    toast.success("Status donasi dibatalkan");
+    toast.success("Status kontribusi dibatalkan");
   };
 
   const downloadCv = async (path: string, name: string) => {
@@ -545,7 +545,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             <option value="pending">Menunggu</option>
             {!isSelf && <option value="accepted">Lolos</option>}
             {!isSelf && <option value="rejected">Belum Lolos</option>}
-            {!isSelf && <option value="paid">Sudah Bayar / Donasi</option>}
+            {!isSelf && <option value="paid">Sudah Bayar / Kontribusi</option>}
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
             <Download className="size-4" /> Export
@@ -634,7 +634,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                 <tr><td colSpan={isSelf ? 6 : 10} className="text-center py-10 text-muted-foreground">Tidak ada data.</td></tr>
               ) : paged.map((r) => {
                 const gel = isGelombang(r.category);
-                const payLabel = gel ? "Valid Fast Track" : "Donasi";
+                const payLabel = gel ? "Valid Fast Track" : "Kontribusi";
                 return (
                 <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
                   {!isSelf && (
@@ -853,7 +853,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                           : "bg-gradient-gold text-emerald-deep border-accent/40"
                       }`}>
                         {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                          {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleDateString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Biaya Pendaftaran Lunas" : "Kontribusi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleDateString("id-ID") : ""}
                       </span>
                     )}
 
@@ -864,7 +864,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                      {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Donasi Peserta"}
+                      {isGelombang(detail.category) ? "Biaya Pendaftaran Gelombang" : "Kontribusi Peserta"}
                     </div>
                     {isPaymentValid(detail) ? (
                       <div className="flex flex-wrap items-center gap-3">
@@ -874,7 +874,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                             : "bg-gradient-gold text-emerald-deep border-accent/40"
                         }`}>
                           {isGelombang(detail.category) ? <Wallet className="size-4" /> : <HeartHandshake className="size-4" />}
-                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Donasi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleString("id-ID") : ""}
+                          {isGelombang(detail.category) ? "Pendaftaran Lunas" : "Kontribusi Valid"} · {paymentDate(detail) ? new Date(paymentDate(detail)!).toLocaleString("id-ID") : ""}
                         </span>
                         <button onClick={() => unmarkPaidManual(detail.id)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border border-red-500/40 text-red-600 hover:bg-red-500/10">
                           <XCircle className="size-3.5" /> Batalkan
@@ -889,13 +889,13 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                       </div>
                     ) : hasSubmittedDocs(detail) ? (
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Peserta sudah mengirim berkas. Jika sudah membayar donasi di luar sistem, tandai manual di sini agar keputusan kelulusan dapat ditentukan.</p>
+                        <p className="text-sm text-muted-foreground">Peserta sudah mengirim berkas. Jika sudah membayar kontribusi di luar sistem, tandai manual di sini agar keputusan kelulusan dapat ditentukan.</p>
                         <button onClick={() => markPaidManual(detail.id)} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-5 py-2.5 text-sm font-bold border border-accent/40 shadow-gold hover-lift">
-                          <HeartHandshake className="size-4" /> Tandai Donasi Valid (Manual)
+                          <HeartHandshake className="size-4" /> Tandai Kontribusi Valid (Manual)
                         </button>
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground">Donasi dapat ditandai setelah peserta mengirim berkas.</p>
+                      <p className="text-sm text-muted-foreground">Kontribusi dapat ditandai setelah peserta mengirim berkas.</p>
                     )}
                   </div>
 
@@ -904,7 +904,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Keputusan Kelulusan</div>
                       {!isPaymentValid(detail) ? (
                         <p className="text-sm text-muted-foreground">
-                          Status <strong>Lolos / Belum Lolos</strong> dapat dipilih setelah donasi peserta ditandai valid.
+                          Status <strong>Lolos / Belum Lolos</strong> dapat dipilih setelah kontribusi peserta ditandai valid.
                         </p>
                       ) : (
                         <div className="space-y-3">
@@ -951,7 +951,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
               {isSelf && (
                 <div className="mt-5 p-4 rounded-xl bg-accent/10 border border-accent/30 text-sm">
-                  Jalur <strong>Self Funded</strong> tidak memerlukan pengiriman berkas, essay, maupun donasi. Cukup gunakan kode pendaftaran untuk cek status.
+                  Jalur <strong>Self Funded</strong> tidak memerlukan pengiriman berkas, essay, maupun kontribusi. Cukup gunakan kode pendaftaran untuk cek status.
                 </div>
               )}
 
