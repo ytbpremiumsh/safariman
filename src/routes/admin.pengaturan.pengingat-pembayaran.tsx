@@ -43,6 +43,7 @@ function PengingatPembayaran() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [previewKind, setPreviewKind] = useState<"fast_track" | "kontribusi" | null>(null);
+  const [search, setSearch] = useState("");
 
   async function load() {
     setLoading(true);
