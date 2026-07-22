@@ -717,7 +717,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                   {!isSelf && (
                     <Td>
                       <div className="flex flex-col gap-1">
-                        {!gel && (
+                        {(!gel || lockDocFilter === "registered") && (
                           <div className="flex flex-col gap-0.5">
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
                             {isPaymentValid(r) ? (
