@@ -717,22 +717,22 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                   {!isSelf && (
                     <Td>
                       <div className="flex flex-col gap-1">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
-                        {isPaymentValid(r) ? (
-                            <span className={`inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
-                              gel ? "bg-accent/15 text-accent border-accent/40" : "bg-gradient-gold text-emerald-deep border-accent/40"
-                            }`}>
-                              {gel ? <Wallet className="size-3.5" /> : <HeartHandshake className="size-3.5" />} Valid
-                            </span>
-                          ) : paymentState(r) === "pending" ? (
-                            <span className="text-[11px] text-amber-600 font-medium">Pending</span>
-                          ) : (
-                            <span className="text-[11px] text-muted-foreground">Belum</span>
-                          )}
-                        </div>
+                        {!gel && (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{payLabel}</span>
+                            {isPaymentValid(r) ? (
+                              <span className="inline-flex w-fit items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border bg-gradient-gold text-emerald-deep border-accent/40">
+                                <HeartHandshake className="size-3.5" /> Valid
+                              </span>
+                            ) : paymentState(r) === "pending" ? (
+                              <span className="text-[11px] text-amber-600 font-medium">Pending</span>
+                            ) : (
+                              <span className="text-[11px] text-muted-foreground">Belum</span>
+                            )}
+                          </div>
+                        )}
                         {gel && (
-                          <div className="flex flex-col gap-0.5 pt-1 border-t border-dashed border-border/60">
+                          <div className="flex flex-col gap-0.5">
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Kontribusi</span>
                             {r.donation_status === "paid" ? (
                               <span className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald/15 text-emerald border-emerald/30" title={r.donation_paid_at ? `Sudah kontribusi · ${new Date(r.donation_paid_at).toLocaleDateString("id-ID")}` : "Sudah kontribusi"}>
