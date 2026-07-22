@@ -223,6 +223,12 @@ Deno.serve(async (req) => {
       const msg = String(j?.messages || j?.message || "");
       const isRate = status === 429 || /too many requests/i.test(msg);
       if (isRate) {
+        // Fallback: reuse existing payment_url if we have one, even if we thought it expired.
+        // Better to let user try old link than get stuck on rate limit.
+        if (p.payment_url) {
+          console.warn("Mayar rate-limited, reusing existing payment_url", { code: p.registration_code });
+          return json({ ok: true, url: p.payment_url, reused: true, rateLimited: true });
+        }
         return json(
           { ok: false, error: "Mayar sedang membatasi permintaan (rate limit). Coba lagi 10-30 detik.", transient: true },
           { status: 503 },
@@ -231,6 +237,9 @@ Deno.serve(async (req) => {
       // 5xx after retries → still transient from user PoV; surface as 503 so client can retry-loop.
       if (status >= 500 && status < 600) {
         console.error("Mayar 5xx after retries", { status, raw: j, code: p.registration_code });
+        if (p.payment_url) {
+          return json({ ok: true, url: p.payment_url, reused: true, upstreamDown: true });
+        }
         return json(
           { ok: false, error: "Mayar sedang bermasalah. Coba lagi beberapa saat.", transient: true },
           { status: 503 },
