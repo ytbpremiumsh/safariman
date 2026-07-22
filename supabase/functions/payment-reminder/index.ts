@@ -248,23 +248,7 @@ Deno.serve(async (req) => {
         from += pageSize;
         if (from > 50000) break; // safety
       }
-      // Enrich with has_berkas (cv_url + photo_url both present) for kontribusi filtering
-      const ids = all.map((r: any) => r.id).filter(Boolean);
-      if (ids.length > 0) {
-        const chunkSize = 500;
-        const berkasMap = new Map<string, boolean>();
-        for (let i = 0; i < ids.length; i += chunkSize) {
-          const slice = ids.slice(i, i + chunkSize);
-          const { data: parts } = await admin
-            .from("participants")
-            .select("id, cv_url, photo_url")
-            .in("id", slice);
-          for (const p of parts ?? []) {
-            berkasMap.set(p.id, !!(p.cv_url && p.photo_url));
-          }
-        }
-        for (const r of all) r.has_berkas = berkasMap.get(r.id) ?? false;
-      }
+      // has_berkas is now returned directly from the RPC.
       const cfg = await loadSettings(admin);
       return json({
         ok: true,
