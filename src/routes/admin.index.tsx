@@ -246,8 +246,10 @@ function AdminOverview() {
                 cursor={{ fill: "var(--secondary)", opacity: 0.5 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
-              <Bar dataKey="daftar" name="Pendaftaran" fill="var(--emerald)" radius={[6, 6, 0, 0]} maxBarSize={28} />
-              <Bar dataKey="berkas" name="Kirim Berkas" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={28} />
+              <Bar dataKey="daftar" name="Pendaftaran" fill="var(--emerald)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="berkas" name="Kirim Berkas" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="fastTrack" name="Bayar Fast Track" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="donasi" name="Donasi Valid" fill="#f43f5e" radius={[6, 6, 0, 0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </div>
