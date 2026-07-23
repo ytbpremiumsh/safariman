@@ -863,6 +863,10 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
                   </div>
 
+                  {(detail.cv_url || detail.photo_url) && (
+                    <BerkasDetailSection cvPayload={detail.cv_url} identitasUrl={detail.photo_url} />
+                  )}
+
                   {/* Pertanyaan essay disembunyikan — review essay dilakukan di menu Berkas Essay. */}
 
 
