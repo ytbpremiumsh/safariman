@@ -111,7 +111,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Participant[]>([]);
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState<Status | "all" | "paid">("all");
+  const [status, setStatus] = useState<Status | "all" | "paid" | "k_paid" | "k_pending" | "k_belum">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
   const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">(lockDocFilter ?? "all");
 
@@ -247,6 +247,9 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
       if (status === "paid") { if (!isPaymentValid(r)) return false; }
+      else if (status === "k_paid") { if (r.donation_status !== "paid") return false; }
+      else if (status === "k_pending") { if (r.donation_status !== "pending") return false; }
+      else if (status === "k_belum") { if (r.donation_status && r.donation_status !== "unpaid") return false; }
       else if (status !== "all" && effectiveStatus(r) !== status) return false;
       if (!isSelf) {
         if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
@@ -547,11 +550,22 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode, email, WA, kota..." className="pl-9" />
           </div>
           <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Menunggu</option>
-            {!isSelf && <option value="accepted">Lolos</option>}
-            {!isSelf && <option value="rejected">Belum Lolos</option>}
-            {!isSelf && <option value="paid">Sudah Bayar / Kontribusi</option>}
+            {lockDocFilter === "submitted" ? (
+              <>
+                <option value="all">Semua Kontribusi</option>
+                <option value="k_paid">Sudah / Valid</option>
+                <option value="k_pending">Pending</option>
+                <option value="k_belum">Belum</option>
+              </>
+            ) : (
+              <>
+                <option value="all">Semua Status</option>
+                <option value="pending">Menunggu</option>
+                {!isSelf && <option value="accepted">Lolos</option>}
+                {!isSelf && <option value="rejected">Belum Lolos</option>}
+                {!isSelf && <option value="paid">Sudah Bayar / Kontribusi</option>}
+              </>
+            )}
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
             <Download className="size-4" /> Export
