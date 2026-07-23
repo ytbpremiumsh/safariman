@@ -247,6 +247,9 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
       if (status === "paid") { if (!isPaymentValid(r)) return false; }
+      else if (status === "k_paid") { if (r.donation_status !== "paid") return false; }
+      else if (status === "k_pending") { if (r.donation_status !== "pending") return false; }
+      else if (status === "k_belum") { if (r.donation_status && r.donation_status !== "unpaid") return false; }
       else if (status !== "all" && effectiveStatus(r) !== status) return false;
       if (!isSelf) {
         if (catFilter === "fully_partial" && (r.category !== "fully_funded" && r.category !== "partial_funded" && r.category !== null)) return false;
