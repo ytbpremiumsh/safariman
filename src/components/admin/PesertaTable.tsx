@@ -863,6 +863,10 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
                   </div>
 
+                  {(detail.cv_url || detail.photo_url) && (
+                    <BerkasDetailSection cvPayload={detail.cv_url} identitasUrl={detail.photo_url} />
+                  )}
+
                   {/* Pertanyaan essay disembunyikan — review essay dilakukan di menu Berkas Essay. */}
 
 
@@ -1007,6 +1011,94 @@ function Row({ k, v }: { k: string; v: string }) {
     <div className="flex gap-2">
       <span className="text-muted-foreground w-24 shrink-0">{k}</span>
       <span className="font-medium break-all">{v || "—"}</span>
+    </div>
+  );
+}
+
+function BerkasDetailSection({ cvPayload, identitasUrl }: { cvPayload: string | null; identitasUrl: string | null }) {
+  let parsed: { pengalaman_sosial?: string; skill?: string; sertifikat?: string; portofolio?: string } | null = null;
+  let rawText: string | null = null;
+  if (cvPayload) {
+    const trimmed = cvPayload.trim();
+    if (trimmed.startsWith("{")) {
+      try { parsed = JSON.parse(trimmed); } catch { rawText = cvPayload; }
+    } else if (/^https?:\/\//i.test(trimmed)) {
+      // Legacy: cv_url berisi link langsung
+      parsed = null;
+    } else {
+      rawText = cvPayload;
+    }
+  }
+  const isLink = (v?: string) => !!v && /^https?:\/\//i.test(v.trim());
+  const legacyCvLink = cvPayload && /^https?:\/\//i.test(cvPayload.trim()) ? cvPayload.trim() : null;
+
+  return (
+    <div className="mt-6 pt-4 border-t border-border">
+      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Detail Berkas Pendukung</div>
+      <div className="grid gap-3 text-sm">
+        {identitasUrl && (
+          <BerkasRow label="Identitas Diri" hint="KTP / KTM / Kartu Pelajar">
+            <a href={identitasUrl} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all">
+              {identitasUrl}
+            </a>
+          </BerkasRow>
+        )}
+        {parsed?.pengalaman_sosial && (
+          <BerkasRow label="Pengalaman Sosial">
+            <p className="whitespace-pre-wrap leading-relaxed">{parsed.pengalaman_sosial}</p>
+          </BerkasRow>
+        )}
+        {parsed?.skill && (
+          <BerkasRow label="Skill">
+            <p className="whitespace-pre-wrap leading-relaxed">{parsed.skill}</p>
+          </BerkasRow>
+        )}
+        {parsed?.sertifikat && (
+          <BerkasRow label="Sertifikat Pendukung">
+            {isLink(parsed.sertifikat) ? (
+              <a href={parsed.sertifikat} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all">
+                {parsed.sertifikat}
+              </a>
+            ) : <span className="text-muted-foreground">—</span>}
+          </BerkasRow>
+        )}
+        {parsed?.portofolio && (
+          <BerkasRow label="Portofolio Kegiatan">
+            {isLink(parsed.portofolio) ? (
+              <a href={parsed.portofolio} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all">
+                {parsed.portofolio}
+              </a>
+            ) : <span className="text-muted-foreground">—</span>}
+          </BerkasRow>
+        )}
+        {legacyCvLink && (
+          <BerkasRow label="CV (Legacy)">
+            <a href={legacyCvLink} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all">
+              {legacyCvLink}
+            </a>
+          </BerkasRow>
+        )}
+        {rawText && !parsed && (
+          <BerkasRow label="Data Berkas">
+            <p className="whitespace-pre-wrap leading-relaxed text-muted-foreground">{rawText}</p>
+          </BerkasRow>
+        )}
+        {!identitasUrl && !parsed && !legacyCvLink && !rawText && (
+          <p className="text-sm text-muted-foreground">Belum ada berkas yang dikirim.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BerkasRow({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-border bg-background/50 p-3">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex flex-wrap items-baseline gap-x-2">
+        {label}
+        {hint && <span className="text-[10px] normal-case tracking-normal text-muted-foreground/80">— {hint}</span>}
+      </div>
+      <div className="mt-1.5 text-sm">{children}</div>
     </div>
   );
 }
