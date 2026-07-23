@@ -479,7 +479,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Jalur Peserta</div>
               <div className="flex flex-wrap gap-2">
                 {([
-                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "all", label: `Semua (${stats.totalCount})` },
                   { key: "fully_partial", label: `Reguler (${stats.regulerCount})` },
                   { key: "gelombang_1", label: `Gelombang 1 (${stats.g1Count} · ${stats.g1Paid} bayar)` },
                   { key: "gelombang_2", label: `Gelombang 2 (${stats.g2Count} · ${stats.g2Paid} bayar)` },
