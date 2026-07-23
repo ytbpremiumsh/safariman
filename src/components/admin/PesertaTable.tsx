@@ -550,11 +550,22 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode, email, WA, kota..." className="pl-9" />
           </div>
           <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Menunggu</option>
-            {!isSelf && <option value="accepted">Lolos</option>}
-            {!isSelf && <option value="rejected">Belum Lolos</option>}
-            {!isSelf && <option value="paid">Sudah Bayar / Kontribusi</option>}
+            {lockDocFilter === "submitted" ? (
+              <>
+                <option value="all">Semua Kontribusi</option>
+                <option value="k_paid">Sudah / Valid</option>
+                <option value="k_pending">Pending</option>
+                <option value="k_belum">Belum</option>
+              </>
+            ) : (
+              <>
+                <option value="all">Semua Status</option>
+                <option value="pending">Menunggu</option>
+                {!isSelf && <option value="accepted">Lolos</option>}
+                {!isSelf && <option value="rejected">Belum Lolos</option>}
+                {!isSelf && <option value="paid">Sudah Bayar / Kontribusi</option>}
+              </>
+            )}
           </select>
           <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
             <Download className="size-4" /> Export
