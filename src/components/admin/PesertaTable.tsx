@@ -111,7 +111,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Participant[]>([]);
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState<Status | "all" | "paid">("all");
+  const [status, setStatus] = useState<Status | "all" | "paid" | "k_paid" | "k_pending" | "k_belum">("all");
   const [detail, setDetail] = useState<Participant | null>(null);
   const [docFilter, setDocFilter] = useState<"all" | "registered" | "submitted">(lockDocFilter ?? "all");
 
