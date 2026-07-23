@@ -132,12 +132,12 @@ function AdminOverview() {
   }, [rows]);
 
   const chartData = useMemo(() => {
-    const buckets: Record<string, { date: string; daftar: number; berkas: number }> = {};
+    const buckets: Record<string, { date: string; daftar: number; berkas: number; donasi: number; fastTrack: number }> = {};
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(today); d.setDate(today.getDate() - i);
       const key = d.toISOString().slice(0, 10);
-      buckets[key] = { date: key, daftar: 0, berkas: 0 };
+      buckets[key] = { date: key, daftar: 0, berkas: 0, donasi: 0, fastTrack: 0 };
     }
     for (const r of rows) {
       const dKey = r.created_at.slice(0, 10);
@@ -145,6 +145,14 @@ function AdminOverview() {
       if (submitted(r)) {
         const uKey = (r.updated_at || r.created_at).slice(0, 10);
         if (buckets[uKey]) buckets[uKey].berkas += 1;
+      }
+      if (r.donation_status === "paid" && r.donation_paid_at) {
+        const k = r.donation_paid_at.slice(0, 10);
+        if (buckets[k]) buckets[k].donasi += 1;
+      }
+      if (isGelombang(r) && r.payment_status === "paid" && r.paid_at) {
+        const k = r.paid_at.slice(0, 10);
+        if (buckets[k]) buckets[k].fastTrack += 1;
       }
     }
     return Object.values(buckets).map((b) => ({
@@ -238,8 +246,10 @@ function AdminOverview() {
                 cursor={{ fill: "var(--secondary)", opacity: 0.5 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
-              <Bar dataKey="daftar" name="Pendaftaran" fill="var(--emerald)" radius={[6, 6, 0, 0]} maxBarSize={28} />
-              <Bar dataKey="berkas" name="Kirim Berkas" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={28} />
+              <Bar dataKey="daftar" name="Pendaftaran" fill="var(--emerald)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="berkas" name="Kirim Berkas" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="fastTrack" name="Bayar Fast Track" fill="#f59e0b" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              <Bar dataKey="donasi" name="Donasi Valid" fill="#f43f5e" radius={[6, 6, 0, 0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </div>
