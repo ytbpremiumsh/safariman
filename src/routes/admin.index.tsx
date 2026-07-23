@@ -132,12 +132,12 @@ function AdminOverview() {
   }, [rows]);
 
   const chartData = useMemo(() => {
-    const buckets: Record<string, { date: string; daftar: number; berkas: number }> = {};
+    const buckets: Record<string, { date: string; daftar: number; berkas: number; donasi: number; fastTrack: number }> = {};
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(today); d.setDate(today.getDate() - i);
       const key = d.toISOString().slice(0, 10);
-      buckets[key] = { date: key, daftar: 0, berkas: 0 };
+      buckets[key] = { date: key, daftar: 0, berkas: 0, donasi: 0, fastTrack: 0 };
     }
     for (const r of rows) {
       const dKey = r.created_at.slice(0, 10);
@@ -145,6 +145,14 @@ function AdminOverview() {
       if (submitted(r)) {
         const uKey = (r.updated_at || r.created_at).slice(0, 10);
         if (buckets[uKey]) buckets[uKey].berkas += 1;
+      }
+      if (r.donation_status === "paid" && r.donation_paid_at) {
+        const k = r.donation_paid_at.slice(0, 10);
+        if (buckets[k]) buckets[k].donasi += 1;
+      }
+      if (isGelombang(r) && r.payment_status === "paid" && r.paid_at) {
+        const k = r.paid_at.slice(0, 10);
+        if (buckets[k]) buckets[k].fastTrack += 1;
       }
     }
     return Object.values(buckets).map((b) => ({
