@@ -260,16 +260,22 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     });
   }, [rows, q, status, docFilter, catFilter, isSelf]);
 
-  const stats = useMemo(() => ({
-    registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
-    submitted: rows.filter(hasSubmittedDocs).length,
-    regulerCount: rows.filter((r) => !isGelombang(r.category)).length,
-    g1Count: rows.filter((r) => r.category === "gelombang_1").length,
-    g2Count: rows.filter((r) => r.category === "gelombang_2").length,
-    g1Paid: rows.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
-    g2Paid: rows.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
-    kontribusiPaid: rows.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
-  }), [rows]);
+  const stats = useMemo(() => {
+    // Pada halaman "Sudah Kirim Berkas", total per kategori dihitung dari
+    // peserta yang sudah mengirim berkas saja, bukan seluruh peserta.
+    const base = lockDocFilter === "submitted" ? rows.filter(hasSubmittedDocs) : rows;
+    return {
+      registeredOnly: rows.filter((r) => !hasSubmittedDocs(r)).length,
+      submitted: rows.filter(hasSubmittedDocs).length,
+      totalCount: base.length,
+      regulerCount: base.filter((r) => !isGelombang(r.category)).length,
+      g1Count: base.filter((r) => r.category === "gelombang_1").length,
+      g2Count: base.filter((r) => r.category === "gelombang_2").length,
+      g1Paid: base.filter((r) => r.category === "gelombang_1" && r.payment_status === "paid").length,
+      g2Paid: base.filter((r) => r.category === "gelombang_2" && r.payment_status === "paid").length,
+      kontribusiPaid: base.filter((r) => !isGelombang(r.category) && r.donation_status === "paid").length,
+    };
+  }, [rows, lockDocFilter]);
 
   // Reset ke halaman 1 saat filter/pencarian berubah
   useEffect(() => { setPage(1); }, [q, status, docFilter, catFilter, pageSize]);
@@ -473,7 +479,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Jalur Peserta</div>
               <div className="flex flex-wrap gap-2">
                 {([
-                  { key: "all", label: `Semua (${rows.length})` },
+                  { key: "all", label: `Semua (${stats.totalCount})` },
                   { key: "fully_partial", label: `Reguler (${stats.regulerCount})` },
                   { key: "gelombang_1", label: `Gelombang 1 (${stats.g1Count} · ${stats.g1Paid} bayar)` },
                   { key: "gelombang_2", label: `Gelombang 2 (${stats.g2Count} · ${stats.g2Paid} bayar)` },
