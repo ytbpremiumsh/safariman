@@ -27,7 +27,7 @@ export const DEFAULT_TIMELINE: TimelineStep[] = [
   { icon: "ClipboardList", title: "Pengiriman Berkas", desc: "Masukkan Kode Pendaftaran & kirim data berkas pendukung", date: "25 Juni – 31 Agustus 2026", ctaLabel: "Kirim Berkas", ctaTo: "/berkas" },
   { icon: "CheckCircle2", title: "Seleksi Administrasi", desc: "Verifikasi berkas oleh tim kami", date: "25 Juni – 31 Agustus 2026" },
   { icon: "ClipboardList", title: "Pengisian Essay & Studi Kasus", desc: "Tahapan Seleksi Essay dan Studi Kasus", date: "25 Juni – 31 Agustus 2026", ctaLabel: "Kirim Essay & Studi Kasus", ctaTo: "/essay" },
-  { icon: "Megaphone", title: "Pengumuman Lolos Essay", desc: "Pengumuman peserta yang lolos tahap essay & berhak lanjut ke Leadership Discussion Session", date: "5 September 2026" },
+  { icon: "Megaphone", title: "Pengumuman Lolos Essay", desc: "Pengumuman peserta yang lolos tahap essay & berhak lanjut ke Tahap Tes Kesiapa Awal (TKA)", date: "5 September 2026" },
   { icon: "Users2", title: "Tes Kesiapan Awal", desc: "Tes berbasis CBT (Computer-Based Test) untuk menyaring peserta yang akan lolos ke tahapan selanjutnya", date: "10 – 20 September 2026" },
   { icon: "MessageSquare", title: "Interview Peserta", desc: "Sesi wawancara online", date: "Ahad, 27 September & 4 Oktober 2026" },
   { icon: "Megaphone", title: "Pengumuman Final", desc: "Diumumkan via email & web", date: "11 Oktober 2026" },
