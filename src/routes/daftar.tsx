@@ -160,7 +160,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         setPendingPaymentCode(row.registration_code);
         toast.error(
           lastErr ||
-            "Mayar sedang sibuk membuat link pembayaran. Klik tombol untuk coba lagi.",
+            "Link pembayaran belum siap. Klik tombol untuk coba lagi.",
         );
         return;
       }
