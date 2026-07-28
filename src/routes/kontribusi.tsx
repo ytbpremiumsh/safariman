@@ -336,7 +336,7 @@ function DonasiPage() {
                       <Lock className="size-3.5 text-emerald" /> Terenkripsi SSL
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <CheckCircle2 className="size-4 text-emerald" /> Diproses oleh Mayar
+                      <CheckCircle2 className="size-4 text-emerald" /> Pembayaran aman & terenkripsi
                     </span>
                   </div>
                 </>
