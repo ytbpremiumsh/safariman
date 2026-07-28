@@ -369,7 +369,7 @@ function PendingPaymentCard({
       </h2>
       <p className="text-sm text-muted-foreground mb-6">
         Halo <span className="font-semibold text-foreground">{name}</span>, data pendaftaranmu sudah tersimpan.
-        Klik tombol di bawah untuk melanjutkan ke halaman pembayaran Mayar.
+        Klik tombol di bawah untuk melanjutkan ke halaman pembayaran.
         <br />
         <span className="text-xs">Kode sementara: <code className="font-mono">{code}</code> — kode resmi keluar setelah pembayaran sukses.</span>
       </p>
@@ -379,13 +379,13 @@ function PendingPaymentCard({
         className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-8 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
       >
         {retrying ? (
-          <><Loader2 className="size-5 animate-spin" /> Menghubungi Mayar…</>
+          <><Loader2 className="size-5 animate-spin" /> Menuju link pembayaran…</>
         ) : (
-          <>Lanjut ke Pembayaran Mayar <ArrowRight className="size-5" /></>
+          <>Lanjut ke Pembayaran <ArrowRight className="size-5" /></>
         )}
       </button>
       <p className="mt-4 text-xs text-muted-foreground">
-        Jika Mayar sedang sibuk, silakan coba lagi beberapa detik kemudian.
+        Jika link belum terbuka, silakan coba lagi beberapa detik kemudian.
       </p>
     </div>
   );
