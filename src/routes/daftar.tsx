@@ -126,18 +126,14 @@ export function RegisterPage({ kind }: { kind: Kind }) {
       // Kode pendaftaran baru ditampilkan setelah pembayaran sukses (via halaman /pendaftaran-sukses).
       if (KIND_META.paid) {
         const { mayarPendaftaranInvoice } = await import("@/lib/api");
-        // Retry lebih agresif kalau Mayar sedang rate-limit (429) — total ~30 detik.
-        // Backoff: 0, 2, 4, 6, 8, 10 detik. Toast progress supaya user tahu.
-        const backoffMs = [0, 2000, 4000, 6000, 8000, 10000];
+        // Backoff cepat supaya user langsung diarahkan ke halaman pembayaran.
+        const backoffMs = [0, 600, 1200, 2000];
         let json: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
         let lastErr = "";
-        const loadingId = toast.loading("Menyiapkan link pembayaran Mayar…");
+        const loadingId = toast.loading("Menuju link pembayaran…");
         for (let i = 0; i < backoffMs.length; i++) {
           if (backoffMs[i] > 0) {
-            toast.loading(
-              `Mayar sedang sibuk, mencoba ulang (${i}/${backoffMs.length - 1})…`,
-              { id: loadingId },
-            );
+            toast.loading("Menuju link pembayaran…", { id: loadingId });
             await new Promise((r) => setTimeout(r, backoffMs[i]));
           }
           try {
@@ -164,7 +160,7 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         setPendingPaymentCode(row.registration_code);
         toast.error(
           lastErr ||
-            "Mayar sedang sibuk membuat link pembayaran. Klik tombol untuk coba lagi.",
+            "Link pembayaran belum siap. Klik tombol untuk coba lagi.",
         );
         return;
       }
@@ -230,18 +226,15 @@ export function RegisterPage({ kind }: { kind: Kind }) {
               retrying={retryingPayment}
               onRetry={async () => {
                 setRetryingPayment(true);
-                const loadingId = toast.loading("Menghubungi Mayar…");
+                const loadingId = toast.loading("Menuju link pembayaran…");
                 try {
                   const { mayarPendaftaranInvoice } = await import("@/lib/api");
-                  const backoffMs = [0, 2000, 4000, 6000, 8000, 10000];
+                  const backoffMs = [0, 600, 1200, 2000];
                   let j: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
                   let lastErr = "";
                   for (let i = 0; i < backoffMs.length; i++) {
                     if (backoffMs[i] > 0) {
-                      toast.loading(
-                        `Mayar sedang sibuk, mencoba ulang (${i}/${backoffMs.length - 1})…`,
-                        { id: loadingId },
-                      );
+                      toast.loading("Menuju link pembayaran…", { id: loadingId });
                       await new Promise((r) => setTimeout(r, backoffMs[i]));
                     }
                     try {
@@ -376,7 +369,7 @@ function PendingPaymentCard({
       </h2>
       <p className="text-sm text-muted-foreground mb-6">
         Halo <span className="font-semibold text-foreground">{name}</span>, data pendaftaranmu sudah tersimpan.
-        Klik tombol di bawah untuk melanjutkan ke halaman pembayaran Mayar.
+        Klik tombol di bawah untuk melanjutkan ke halaman pembayaran.
         <br />
         <span className="text-xs">Kode sementara: <code className="font-mono">{code}</code> — kode resmi keluar setelah pembayaran sukses.</span>
       </p>
@@ -386,13 +379,13 @@ function PendingPaymentCard({
         className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-8 py-4 text-base font-bold shadow-gold hover-lift disabled:opacity-60"
       >
         {retrying ? (
-          <><Loader2 className="size-5 animate-spin" /> Menghubungi Mayar…</>
+          <><Loader2 className="size-5 animate-spin" /> Menuju link pembayaran…</>
         ) : (
-          <>Lanjut ke Pembayaran Mayar <ArrowRight className="size-5" /></>
+          <>Lanjut ke Pembayaran <ArrowRight className="size-5" /></>
         )}
       </button>
       <p className="mt-4 text-xs text-muted-foreground">
-        Jika Mayar sedang sibuk, silakan coba lagi beberapa detik kemudian.
+        Jika link belum terbuka, silakan coba lagi beberapa detik kemudian.
       </p>
     </div>
   );
