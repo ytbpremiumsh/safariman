@@ -226,18 +226,15 @@ export function RegisterPage({ kind }: { kind: Kind }) {
               retrying={retryingPayment}
               onRetry={async () => {
                 setRetryingPayment(true);
-                const loadingId = toast.loading("Menghubungi Mayar…");
+                const loadingId = toast.loading("Menuju link pembayaran…");
                 try {
                   const { mayarPendaftaranInvoice } = await import("@/lib/api");
-                  const backoffMs = [0, 2000, 4000, 6000, 8000, 10000];
+                  const backoffMs = [0, 600, 1200, 2000];
                   let j: Awaited<ReturnType<typeof mayarPendaftaranInvoice>> | null = null;
                   let lastErr = "";
                   for (let i = 0; i < backoffMs.length; i++) {
                     if (backoffMs[i] > 0) {
-                      toast.loading(
-                        `Mayar sedang sibuk, mencoba ulang (${i}/${backoffMs.length - 1})…`,
-                        { id: loadingId },
-                      );
+                      toast.loading("Menuju link pembayaran…", { id: loadingId });
                       await new Promise((r) => setTimeout(r, backoffMs[i]));
                     }
                     try {
