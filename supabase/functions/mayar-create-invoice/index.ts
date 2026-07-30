@@ -265,7 +265,13 @@ Deno.serve(async (req) => {
     const invoiceId: string | undefined = j?.data?.id || j?.data?.transactionId || j?.id;
     if (!url || !invoiceId) return json({ ok: false, error: "Respon Mayar tidak lengkap", raw: j }, { status: 502 });
 
-    await supabaseAdmin.rpc("save_donation_invoice", { p_code: code, p_invoice_id: invoiceId, p_url: url });
+    await supabaseAdmin.rpc("save_donation_invoice", {
+      p_code: code,
+      p_invoice_id: invoiceId,
+      p_url: url,
+      p_expires_at: (parseInvoiceExpiry(j) ?? fallbackExpiry(24)).toISOString(),
+    });
+
     return json({ ok: true, url, invoiceId });
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, { status: 500 });
