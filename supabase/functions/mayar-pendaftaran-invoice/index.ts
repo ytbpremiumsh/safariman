@@ -55,11 +55,12 @@ async function fetchInvoiceState(
 
 
 async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
-  const state = await fetchInvoiceState(apiKey, invoiceId);
+  const { state } = await fetchInvoiceState(apiKey, invoiceId);
   if (state !== "paid" || !invoiceId) return false;
   const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
   return Boolean(updated);
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
