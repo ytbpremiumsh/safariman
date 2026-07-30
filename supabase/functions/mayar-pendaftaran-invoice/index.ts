@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
   try {
     const supabaseAdmin = getAdmin();
-    const { code } = (await req.json()) as { code?: string };
+    const { code, sync } = (await req.json()) as { code?: string; sync?: boolean };
     if (!code || code.length < 4) return json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
 
     const { data: p, error: pErr } = await supabaseAdmin
