@@ -19,18 +19,27 @@ type Row = {
   created_at: string;
   updated_at: string;
   category: string | null;
-  cv_url: string | null;
-  photo_url: string | null;
-  essay_worthy: string | null;
-  essay_dream: string | null;
-  essay_contribution: string | null;
+  submitted: boolean;
   payment_status: string;
   paid_at: string | null;
   donation_status: string | null;
   donation_paid_at: string | null;
 };
 
-const COLS = "id,created_at,updated_at,category,cv_url,photo_url,essay_worthy,essay_dream,essay_contribution,payment_status,paid_at,donation_status,donation_paid_at";
+// Hitung flag "sudah kirim berkas" dari payload realtime (baris mentah tabel).
+function rawToRow(raw: any): Row {
+  return {
+    id: raw.id,
+    created_at: raw.created_at,
+    updated_at: raw.updated_at,
+    category: raw.category ?? null,
+    submitted: !!(raw.cv_url || raw.photo_url || raw.essay_worthy || raw.essay_dream || raw.essay_contribution),
+    payment_status: raw.payment_status,
+    paid_at: raw.paid_at ?? null,
+    donation_status: raw.donation_status ?? null,
+    donation_paid_at: raw.donation_paid_at ?? null,
+  };
+}
 
 function AdminOverview() {
   const ready = useAdminGuard();
@@ -42,25 +51,10 @@ function AdminOverview() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      const pageSize = 1000;
-      let from = 0;
-      const all: Row[] = [];
-      // Paginate to bypass PostgREST default 1000-row cap
-      // and load semua peserta tanpa batasan.
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { data, error } = await supabase
-          .from("participants")
-          .select(COLS)
-          .order("created_at", { ascending: false })
-          .range(from, from + pageSize - 1);
-        if (error) break;
-        const batch = (data ?? []) as Row[];
-        all.push(...batch);
-        if (batch.length < pageSize) break;
-        from += pageSize;
-      }
-      setRows(all);
+      // Ambil data ringan lewat RPC (tanpa isi essay/berkas) agar payload kecil
+      // dan dashboard cepat terbuka walau jumlah peserta ribuan.
+      const { data } = await supabase.rpc("list_admin_dashboard_rows");
+      setRows((data ?? []) as Row[]);
       setLoading(false);
     })();
 
@@ -69,12 +63,12 @@ function AdminOverview() {
       .on("postgres_changes", { event: "*", schema: "public", table: "participants" }, (payload) => {
         setRows((prev) => {
           if (payload.eventType === "INSERT") {
-            const n = payload.new as Row;
+            const n = rawToRow(payload.new);
             if (prev.some((r) => r.id === n.id)) return prev;
             return [n, ...prev];
           }
           if (payload.eventType === "UPDATE") {
-            const n = payload.new as Row;
+            const n = rawToRow(payload.new);
             return prev.map((r) => (r.id === n.id ? { ...r, ...n } : r));
           }
           if (payload.eventType === "DELETE") {
@@ -89,8 +83,8 @@ function AdminOverview() {
     return () => { supabase.removeChannel(channel); };
   }, [ready]);
 
-  const submitted = (r: Row) =>
-    !!(r.cv_url || r.photo_url || r.essay_worthy || r.essay_dream || r.essay_contribution);
+  const submitted = (r: Row) => r.submitted;
+
 
   const isGelombang = (r: Row) => r.category === "gelombang_1" || r.category === "gelombang_2";
   const isReguler = (r: Row) =>
