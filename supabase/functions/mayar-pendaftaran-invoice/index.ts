@@ -2,16 +2,15 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
+import {
+  cachedInvoiceStillValid,
+  fallbackExpiry,
+  invoiceLooksExpired,
+  isPaidLike,
+  parseInvoiceExpiry,
+} from "../_shared/mayar-invoice.ts";
 
 type GelombangCfg = { name: string; start: string; end: string; price: number; enabled: boolean; description: string };
-
-function isPaidLike(value: unknown): boolean {
-  if (typeof value !== "string") return false;
-  const v = value.trim().toLowerCase();
-  if (!v) return false;
-  if (/^un/.test(v) || /pending|fail|expire|cancel|refund|void|await|process/.test(v)) return false;
-  return /\b(paid|success|successful|settled|completed|capture|captured|success_paid)\b/.test(v);
-}
 
 function invoiceLooksPaid(payload: any): boolean {
   const data = payload?.data ?? payload;
@@ -30,19 +29,6 @@ function invoiceLooksPaid(payload: any): boolean {
   );
 }
 
-function invoiceLooksExpired(payload: any): boolean {
-  const data = payload?.data ?? payload;
-  const statusStr = String(
-    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
-  ).toLowerCase();
-  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
-  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
-  if (expiredAt) {
-    const t = new Date(expiredAt).getTime();
-    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
-  }
-  return false;
-}
 
 async function fetchInvoiceState(apiKey: string, invoiceId?: string | null): Promise<"paid" | "expired" | "active" | "unknown"> {
   if (!invoiceId) return "unknown";
