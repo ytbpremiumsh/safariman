@@ -307,9 +307,11 @@ Deno.serve(async (req) => {
     }
 
     if (!signatureValid && !mayarVerified.verified) {
-      console.error("Mayar webhook: mayar_webhook_secret belum diisi");
+      // Bukan error fatal: Mayar tidak menyediakan webhook secret, jadi kita hanya
+      // melewati event yang belum bisa diverifikasi via API. Selalu balas 200.
+      console.warn("Mayar webhook: event paid belum terverifikasi (tanpa signature & gagal cek API)", { event, status });
       return json(
-        { ok: true, ignored: true, reason: "paid_event_unverified", message: "Webhook secret/signature belum valid dan pembayaran belum terverifikasi dari Mayar" },
+        { ok: true, ignored: true, reason: "paid_event_unverified", message: "Pembayaran belum terverifikasi dari Mayar" },
       );
     }
 
