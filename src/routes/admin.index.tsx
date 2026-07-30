@@ -51,12 +51,25 @@ function AdminOverview() {
   useEffect(() => {
     if (!ready) return;
     (async () => {
-      // Ambil data ringan lewat RPC (tanpa isi essay/berkas) agar payload kecil
-      // dan dashboard cepat terbuka walau jumlah peserta ribuan.
-      const { data } = await supabase.rpc("list_admin_dashboard_rows");
-      setRows((data ?? []) as Row[]);
+      // Ambil data ringan lewat RPC (tanpa isi essay/berkas) agar payload kecil.
+      // PostgREST membatasi 1000 baris per permintaan, jadi ambil bertahap
+      // sampai semua peserta terkumpul (bisa ribuan).
+      const PAGE = 1000;
+      const all: Row[] = [];
+      for (let page = 0; page < 100; page++) {
+        const from = page * PAGE;
+        const { data, error } = await supabase
+          .rpc("list_admin_dashboard_rows")
+          .range(from, from + PAGE - 1);
+        if (error) break;
+        const chunk = (data ?? []) as Row[];
+        all.push(...chunk);
+        if (chunk.length < PAGE) break;
+      }
+      setRows(all);
       setLoading(false);
     })();
+
 
     const channel = supabase
       .channel("admin-participants")
