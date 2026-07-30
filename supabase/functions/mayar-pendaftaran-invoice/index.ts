@@ -72,7 +72,9 @@ Deno.serve(async (req) => {
 
     const { data: p, error: pErr } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, registration_code, category")
+      .select(
+        "full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, payment_invoice_expires_at, registration_code, category",
+      )
       .ilike("registration_code", code)
       .maybeSingle();
     if (pErr) {
@@ -84,6 +86,20 @@ Deno.serve(async (req) => {
     if (!paidCategories.includes(p.category as string))
       return json({ ok: false, error: "Kategori ini tidak memerlukan biaya pendaftaran" }, { status: 400 });
     if (p.payment_status === "paid") return json({ ok: true, alreadyPaid: true });
+
+    // FAST PATH: kalau link lama masih dalam masa berlaku (dari cache DB) dan ini
+    // BUKAN permintaan sinkronisasi status, langsung kembalikan link tanpa
+    // memanggil API Mayar. Mengurangi rate-limit + redirect jadi instan.
+    // Validasi pembayaran tetap berjalan lewat webhook Mayar dan lewat
+    // permintaan `sync: true` dari halaman status.
+    if (
+      !sync &&
+      p.payment_status === "pending" &&
+      p.payment_url &&
+      cachedInvoiceStillValid(p.payment_invoice_expires_at as string | null)
+    ) {
+      return json({ ok: true, url: p.payment_url, reused: true, cached: true });
+    }
 
     const { data: settings, error: sErr } = await supabaseAdmin
       .from("app_settings")
@@ -98,7 +114,7 @@ Deno.serve(async (req) => {
 
 
     if (p.payment_status === "pending" && p.payment_invoice_id) {
-      const state = await fetchInvoiceState(apiKey, p.payment_invoice_id);
+      const { state, expiresAt } = await fetchInvoiceState(apiKey, p.payment_invoice_id);
       if (state === "paid") {
         const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: p.payment_invoice_id });
         if (updated) return json({ ok: true, alreadyPaid: true, synced: true });
@@ -106,6 +122,11 @@ Deno.serve(async (req) => {
       // Kalau invoice masih aktif → reuse URL lama supaya tidak trigger 429 duplicate.
       // Kalau expired/closed/cancel → fall-through untuk buat invoice BARU otomatis.
       if (state === "active" && p.payment_url) {
+        // Simpan masa berlaku hasil verifikasi supaya panggilan berikutnya cukup baca DB.
+        await supabaseAdmin
+          .from("participants")
+          .update({ payment_invoice_expires_at: (expiresAt ?? fallbackExpiry(6)).toISOString() })
+          .eq("registration_code", p.registration_code);
         return json({ ok: true, url: p.payment_url, reused: true });
       }
       if (state === "unknown" && p.payment_url) {
@@ -115,6 +136,7 @@ Deno.serve(async (req) => {
       // state === "expired" → lanjut buat invoice baru
       console.log("Invoice pendaftaran expired/closed, membuat invoice baru", { invoiceId: p.payment_invoice_id, code: p.registration_code });
     }
+
 
 
     if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
