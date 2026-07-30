@@ -34,9 +34,10 @@ type Participant = {
   has_passport: string | null;
   category: Category | null;
   status: Status;
-  essay_worthy: string;
-  essay_dream: string;
-  essay_contribution: string;
+  essay_worthy?: string | null;
+  essay_dream?: string | null;
+  essay_contribution?: string | null;
+
   cv_url: string | null;
   photo_url: string | null;
   payment_status: string;
@@ -46,6 +47,13 @@ type Participant = {
   donation_status: string;
   donation_paid_at: string | null;
 };
+
+// Kolom ringan untuk daftar peserta (tanpa isi essay yang panjang).
+const LIST_COLS =
+  "id,created_at,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,religion,has_passport,category,status,cv_url,photo_url,payment_status,payment_url,payment_invoice_id,paid_at,donation_status,donation_paid_at";
+
+const ESSAY_COLS = "id,essay_worthy,essay_dream,essay_contribution";
+
 
 const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
@@ -178,9 +186,12 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       const buildQuery = (from: number, to: number) => {
         const q = supabase
           .from("participants")
-          .select("*")
+          // Kolom essay/studi kasus sengaja TIDAK diambil di daftar — isinya panjang
+          // dan membuat halaman berat. Diambil belakangan saat detail/ekspor dibuka.
+          .select(LIST_COLS)
           .order("created_at", { ascending: false })
           .range(from, to);
+
         return isSelf
           ? q.eq("category", "self_funded")
           : q.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2");
@@ -228,12 +239,15 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     };
 
     loadData();
-    const id = window.setInterval(() => loadData(true), 8000);
+    // Refresh berkala diperlebar (8s → 45s) supaya tidak terus-menerus
+    // mengunduh ulang seluruh data peserta dan membuat halaman berat.
+    const id = window.setInterval(() => loadData(true), 45000);
 
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
+
   }, [ready, isSelf]);
 
 
@@ -290,8 +304,24 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
 
 
+  // Buka detail: essay diambil saat dibutuhkan saja supaya daftar tetap ringan.
+  const openDetail = async (r: Participant) => {
+    setDetail(r);
+    if (isSelf) return;
+    const { data } = await supabase.from("participants").select(ESSAY_COLS).eq("id", r.id).maybeSingle();
+    if (data) setDetail((prev) => (prev && prev.id === r.id ? { ...prev, ...(data as any) } : prev));
+  };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    // Ambil isi essay hanya untuk baris yang diekspor.
+    const essayMap = new Map<string, any>();
+    if (!isSelf && filtered.length > 0) {
+      const ids = filtered.map((r) => r.id);
+      for (let i = 0; i < ids.length; i += 500) {
+        const { data } = await supabase.from("participants").select(ESSAY_COLS).in("id", ids.slice(i, i + 500));
+        for (const row of (data ?? []) as any[]) essayMap.set(row.id, row);
+      }
+    }
     const data = filtered.map((r) => ({
       "Kode": r.registration_code,
       "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
@@ -307,9 +337,9 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
       "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
-        "Essay Layak": r.essay_worthy,
-        "Essay Impian": r.essay_dream,
-        "Essay Kontribusi": r.essay_contribution,
+        "Essay Layak": essayMap.get(r.id)?.essay_worthy ?? "",
+        "Essay Impian": essayMap.get(r.id)?.essay_dream ?? "",
+        "Essay Kontribusi": essayMap.get(r.id)?.essay_contribution ?? "",
       }),
 
     }));
@@ -319,6 +349,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     XLSX.writeFile(wb, `safar-iman-${kind}-${Date.now()}.xlsx`);
     toast.success(`${data.length} data diekspor`);
   };
+
 
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
@@ -777,7 +808,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                     </Td>
                   )}
                   <Td>
-                    <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
+                    <button onClick={() => { void openDetail(r); }} className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
                       <Eye className="size-4" /> Detail
                     </button>
                   </Td>

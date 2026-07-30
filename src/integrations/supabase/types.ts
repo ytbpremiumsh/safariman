@@ -485,6 +485,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_admin_dashboard_rows: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["program_category"]
+          created_at: string
+          donation_paid_at: string
+          donation_status: string
+          id: string
+          paid_at: string
+          payment_status: string
+          submitted: boolean
+          updated_at: string
+        }[]
+      }
       list_auto_reminder_candidates: {
         Args: never
         Returns: {
