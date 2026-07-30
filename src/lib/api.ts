@@ -41,10 +41,10 @@ export async function notifyEmail(event: EmailEvent, code: string) {
   return data;
 }
 
-export async function mayarPendaftaranInvoice(code: string) {
+export async function mayarPendaftaranInvoice(code: string, sync = false) {
   return invokeSoft<{ ok: boolean; url?: string; alreadyPaid?: boolean; synced?: boolean; reused?: boolean; error?: string; transient?: boolean }>(
     "mayar-pendaftaran-invoice",
-    { code },
+    { code, sync },
   );
 }
 
