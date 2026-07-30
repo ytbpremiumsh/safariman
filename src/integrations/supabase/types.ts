@@ -784,11 +784,21 @@ export type Database = {
             }[]
           }
       save_donation_invoice: {
-        Args: { p_code: string; p_invoice_id: string; p_url: string }
+        Args: {
+          p_code: string
+          p_expires_at?: string
+          p_invoice_id: string
+          p_url: string
+        }
         Returns: boolean
       }
       save_payment_invoice: {
-        Args: { p_code: string; p_invoice_id: string; p_url: string }
+        Args: {
+          p_code: string
+          p_expires_at?: string
+          p_invoice_id: string
+          p_url: string
+        }
         Returns: boolean
       }
       submit_berkas_by_code:
