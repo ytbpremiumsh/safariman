@@ -211,7 +211,13 @@ Deno.serve(async (req) => {
         return json({ ok: true, skipped: true, reason: "auto disabled" });
       }
       const { data: candidates } = await admin.rpc("list_auto_reminder_candidates");
-      const list = candidates ?? [];
+      // Throttle: batasi jumlah per run dan beri jeda antar kirim supaya
+      // pembuatan invoice massal tidak menghabiskan kuota rate limit Mayar
+      // (yang membuat user biasa ikut kena error 429 saat mendaftar/bayar).
+      const MAX_PER_RUN = 60;
+      const DELAY_MS = 1500;
+      const all = candidates ?? [];
+      const list = all.slice(0, MAX_PER_RUN);
       let sent = 0, failed = 0;
       for (const c of list) {
         const res = await sendReminder(admin, cfg, c, c.kind);
@@ -224,8 +230,10 @@ Deno.serve(async (req) => {
           note: res.ok ? null : String(res.error ?? "").slice(0, 500),
         });
         if (res.ok) sent++; else failed++;
+        await new Promise((r) => setTimeout(r, DELAY_MS));
       }
-      return json({ ok: true, processed: list.length, sent, failed });
+      return json({ ok: true, processed: list.length, pending: all.length - list.length, sent, failed });
+
     }
 
     // Admin-only actions
