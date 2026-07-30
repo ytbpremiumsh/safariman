@@ -179,9 +179,12 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       const buildQuery = (from: number, to: number) => {
         const q = supabase
           .from("participants")
-          .select("*")
+          // Kolom essay/studi kasus sengaja TIDAK diambil di daftar — isinya panjang
+          // dan membuat halaman berat. Diambil belakangan saat detail/ekspor dibuka.
+          .select(LIST_COLS)
           .order("created_at", { ascending: false })
           .range(from, to);
+
         return isSelf
           ? q.eq("category", "self_funded")
           : q.or("category.is.null,category.eq.fully_funded,category.eq.partial_funded,category.eq.gelombang_1,category.eq.gelombang_2");
