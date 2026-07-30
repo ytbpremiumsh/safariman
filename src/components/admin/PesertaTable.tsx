@@ -808,7 +808,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
                     </Td>
                   )}
                   <Td>
-                    <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
+                    <button onClick={() => { void openDetail(r); }} className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline">
                       <Eye className="size-4" /> Detail
                     </button>
                   </Td>
