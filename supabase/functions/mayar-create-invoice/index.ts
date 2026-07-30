@@ -73,19 +73,8 @@ async function verifyPaidViaTransactions(
   }
 }
 
-function invoiceLooksExpired(payload: any): boolean {
-  const data = payload?.data ?? payload;
-  const statusStr = String(
-    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
-  ).toLowerCase();
-  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
-  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
-  if (expiredAt) {
-    const t = new Date(expiredAt).getTime();
-    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
-  }
-  return false;
-}
+
+
 
 async function fetchDonationInvoiceState(
   apiKey: string,
