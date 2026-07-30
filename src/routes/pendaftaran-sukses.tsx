@@ -54,7 +54,7 @@ function PendaftaranSukses() {
     lastSyncRef.current = now;
     try {
       const { mayarPendaftaranInvoice } = await import("@/lib/api");
-      const result = await mayarPendaftaranInvoice(code);
+      const result = await mayarPendaftaranInvoice(code, true);
       if (result?.alreadyPaid || result?.synced) await fetchStatus();
     } catch {
       // Sinkronisasi cadangan tidak boleh mengganggu tampilan status utama.

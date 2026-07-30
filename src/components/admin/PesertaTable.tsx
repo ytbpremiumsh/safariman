@@ -167,7 +167,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
         for (const p of pending) {
           paymentSyncRef.current[p.registration_code] = now;
           try {
-            const result = await mayarPendaftaranInvoice(p.registration_code);
+            const result = await mayarPendaftaranInvoice(p.registration_code, true);
             if (result?.alreadyPaid || result?.synced) changed = true;
           } catch {
             // Sinkronisasi cadangan tidak boleh mengganggu dashboard admin.
