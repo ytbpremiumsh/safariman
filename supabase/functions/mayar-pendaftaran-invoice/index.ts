@@ -281,7 +281,9 @@ Deno.serve(async (req) => {
       p_code: p.registration_code,
       p_invoice_id: invoiceId,
       p_url: url,
+      p_expires_at: (parseInvoiceExpiry(j) ?? fallbackExpiry(24)).toISOString(),
     });
+
     return json({ ok: true, url, invoiceId });
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, { status: 500 });
