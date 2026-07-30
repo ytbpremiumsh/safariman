@@ -132,10 +132,24 @@ Deno.serve(async (req) => {
 
     const { data: p } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, status, donation_status, donation_url, donation_invoice_id, registration_code, category")
+      .select(
+        "full_name, email, whatsapp, status, donation_status, donation_url, donation_invoice_id, donation_invoice_expires_at, registration_code, category",
+      )
       .ilike("registration_code", code)
       .maybeSingle();
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
+
+    // FAST PATH: link kontribusi lama masih berlaku (cache DB) & bukan permintaan sync
+    // → langsung pakai, tanpa memanggil API Mayar. Validasi lunas tetap jalan lewat
+    // webhook dan lewat pemanggilan syncOnly dari halaman status.
+    if (
+      !syncOnly &&
+      p.donation_status === "pending" &&
+      p.donation_url &&
+      cachedInvoiceStillValid(p.donation_invoice_expires_at as string | null)
+    ) {
+      return json({ ok: true, url: p.donation_url, reused: true, cached: true });
+    }
 
     // Sinkronisasi otomatis: kalau sudah ada invoice pending, cek ke Mayar dulu.
     if (p.donation_status === "pending" && p.donation_invoice_id) {
@@ -154,8 +168,17 @@ Deno.serve(async (req) => {
       }
       // Reuse hanya kalau invoice masih aktif; expired/closed → buat baru otomatis.
       if ((state === "active" || state === "unknown") && p.donation_url && !syncOnly) {
+        if (state === "active") {
+          await supabaseAdmin
+            .from("participants")
+            .update({
+              donation_invoice_expires_at: (parseInvoiceExpiry(payload) ?? fallbackExpiry(6)).toISOString(),
+            })
+            .eq("registration_code", p.registration_code);
+        }
         return json({ ok: true, url: p.donation_url, reused: true });
       }
+
       if (state === "expired") {
         console.log("Invoice donasi expired/closed, membuat invoice baru", { invoiceId: p.donation_invoice_id, code });
       }
