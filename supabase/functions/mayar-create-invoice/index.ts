@@ -2,6 +2,13 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
+import {
+  cachedInvoiceStillValid,
+  fallbackExpiry,
+  invoiceLooksExpired,
+  parseInvoiceExpiry,
+} from "../_shared/mayar-invoice.ts";
+
 
 function isPaidLike(value: unknown): boolean {
   if (typeof value !== "string") return false;
