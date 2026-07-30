@@ -34,9 +34,10 @@ type Participant = {
   has_passport: string | null;
   category: Category | null;
   status: Status;
-  essay_worthy: string;
-  essay_dream: string;
-  essay_contribution: string;
+  essay_worthy?: string | null;
+  essay_dream?: string | null;
+  essay_contribution?: string | null;
+
   cv_url: string | null;
   photo_url: string | null;
   payment_status: string;
