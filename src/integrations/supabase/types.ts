@@ -155,6 +155,7 @@ export type Database = {
           city: string
           created_at: string
           cv_url: string | null
+          donation_invoice_expires_at: string | null
           donation_invoice_id: string | null
           donation_paid_at: string | null
           donation_status: string
@@ -181,6 +182,7 @@ export type Database = {
           occupation: string
           organization_experience: string | null
           paid_at: string | null
+          payment_invoice_expires_at: string | null
           payment_invoice_id: string | null
           payment_status: string
           payment_url: string | null
@@ -210,6 +212,7 @@ export type Database = {
           city: string
           created_at?: string
           cv_url?: string | null
+          donation_invoice_expires_at?: string | null
           donation_invoice_id?: string | null
           donation_paid_at?: string | null
           donation_status?: string
@@ -236,6 +239,7 @@ export type Database = {
           occupation: string
           organization_experience?: string | null
           paid_at?: string | null
+          payment_invoice_expires_at?: string | null
           payment_invoice_id?: string | null
           payment_status?: string
           payment_url?: string | null
@@ -265,6 +269,7 @@ export type Database = {
           city?: string
           created_at?: string
           cv_url?: string | null
+          donation_invoice_expires_at?: string | null
           donation_invoice_id?: string | null
           donation_paid_at?: string | null
           donation_status?: string
@@ -291,6 +296,7 @@ export type Database = {
           occupation?: string
           organization_experience?: string | null
           paid_at?: string | null
+          payment_invoice_expires_at?: string | null
           payment_invoice_id?: string | null
           payment_status?: string
           payment_url?: string | null
