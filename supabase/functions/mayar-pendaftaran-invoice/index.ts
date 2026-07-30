@@ -2,16 +2,15 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
+import {
+  cachedInvoiceStillValid,
+  fallbackExpiry,
+  invoiceLooksExpired,
+  isPaidLike,
+  parseInvoiceExpiry,
+} from "../_shared/mayar-invoice.ts";
 
 type GelombangCfg = { name: string; start: string; end: string; price: number; enabled: boolean; description: string };
-
-function isPaidLike(value: unknown): boolean {
-  if (typeof value !== "string") return false;
-  const v = value.trim().toLowerCase();
-  if (!v) return false;
-  if (/^un/.test(v) || /pending|fail|expire|cancel|refund|void|await|process/.test(v)) return false;
-  return /\b(paid|success|successful|settled|completed|capture|captured|success_paid)\b/.test(v);
-}
 
 function invoiceLooksPaid(payload: any): boolean {
   const data = payload?.data ?? payload;
@@ -30,57 +29,52 @@ function invoiceLooksPaid(payload: any): boolean {
   );
 }
 
-function invoiceLooksExpired(payload: any): boolean {
-  const data = payload?.data ?? payload;
-  const statusStr = String(
-    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
-  ).toLowerCase();
-  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
-  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
-  if (expiredAt) {
-    const t = new Date(expiredAt).getTime();
-    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
-  }
-  return false;
-}
 
-async function fetchInvoiceState(apiKey: string, invoiceId?: string | null): Promise<"paid" | "expired" | "active" | "unknown"> {
-  if (!invoiceId) return "unknown";
+async function fetchInvoiceState(
+  apiKey: string,
+  invoiceId?: string | null,
+): Promise<{ state: "paid" | "expired" | "active" | "unknown"; expiresAt: Date | null }> {
+  if (!invoiceId) return { state: "unknown", expiresAt: null };
   try {
     const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
       method: "GET",
       headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
     });
     const payload = await res.json().catch(() => ({}));
-    if (res.status === 404) return "expired";
-    if (!res.ok) return "unknown";
-    if (invoiceLooksPaid(payload)) return "paid";
-    if (invoiceLooksExpired(payload)) return "expired";
-    return "active";
+    if (res.status === 404) return { state: "expired", expiresAt: null };
+    if (!res.ok) return { state: "unknown", expiresAt: null };
+    const expiresAt = parseInvoiceExpiry(payload);
+    if (invoiceLooksPaid(payload)) return { state: "paid", expiresAt };
+    if (invoiceLooksExpired(payload)) return { state: "expired", expiresAt };
+    return { state: "active", expiresAt };
   } catch (e) {
     console.warn("fetchInvoiceState error", e);
-    return "unknown";
+    return { state: "unknown", expiresAt: null };
   }
 }
 
+
 async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
-  const state = await fetchInvoiceState(apiKey, invoiceId);
+  const { state } = await fetchInvoiceState(apiKey, invoiceId);
   if (state !== "paid" || !invoiceId) return false;
   const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: invoiceId });
   return Boolean(updated);
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
   try {
     const supabaseAdmin = getAdmin();
-    const { code } = (await req.json()) as { code?: string };
+    const { code, sync } = (await req.json()) as { code?: string; sync?: boolean };
     if (!code || code.length < 4) return json({ ok: false, error: "Kode tidak valid" }, { status: 400 });
 
     const { data: p, error: pErr } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, registration_code, category")
+      .select(
+        "full_name, email, whatsapp, payment_status, payment_url, payment_invoice_id, payment_invoice_expires_at, registration_code, category",
+      )
       .ilike("registration_code", code)
       .maybeSingle();
     if (pErr) {
@@ -92,6 +86,20 @@ Deno.serve(async (req) => {
     if (!paidCategories.includes(p.category as string))
       return json({ ok: false, error: "Kategori ini tidak memerlukan biaya pendaftaran" }, { status: 400 });
     if (p.payment_status === "paid") return json({ ok: true, alreadyPaid: true });
+
+    // FAST PATH: kalau link lama masih dalam masa berlaku (dari cache DB) dan ini
+    // BUKAN permintaan sinkronisasi status, langsung kembalikan link tanpa
+    // memanggil API Mayar. Mengurangi rate-limit + redirect jadi instan.
+    // Validasi pembayaran tetap berjalan lewat webhook Mayar dan lewat
+    // permintaan `sync: true` dari halaman status.
+    if (
+      !sync &&
+      p.payment_status === "pending" &&
+      p.payment_url &&
+      cachedInvoiceStillValid(p.payment_invoice_expires_at as string | null)
+    ) {
+      return json({ ok: true, url: p.payment_url, reused: true, cached: true });
+    }
 
     const { data: settings, error: sErr } = await supabaseAdmin
       .from("app_settings")
@@ -106,7 +114,7 @@ Deno.serve(async (req) => {
 
 
     if (p.payment_status === "pending" && p.payment_invoice_id) {
-      const state = await fetchInvoiceState(apiKey, p.payment_invoice_id);
+      const { state, expiresAt } = await fetchInvoiceState(apiKey, p.payment_invoice_id);
       if (state === "paid") {
         const { data: updated } = await supabaseAdmin.rpc("mark_payment_paid", { p_invoice_id: p.payment_invoice_id });
         if (updated) return json({ ok: true, alreadyPaid: true, synced: true });
@@ -114,6 +122,11 @@ Deno.serve(async (req) => {
       // Kalau invoice masih aktif → reuse URL lama supaya tidak trigger 429 duplicate.
       // Kalau expired/closed/cancel → fall-through untuk buat invoice BARU otomatis.
       if (state === "active" && p.payment_url) {
+        // Simpan masa berlaku hasil verifikasi supaya panggilan berikutnya cukup baca DB.
+        await supabaseAdmin
+          .from("participants")
+          .update({ payment_invoice_expires_at: (expiresAt ?? fallbackExpiry(6)).toISOString() })
+          .eq("registration_code", p.registration_code);
         return json({ ok: true, url: p.payment_url, reused: true });
       }
       if (state === "unknown" && p.payment_url) {
@@ -123,6 +136,7 @@ Deno.serve(async (req) => {
       // state === "expired" → lanjut buat invoice baru
       console.log("Invoice pendaftaran expired/closed, membuat invoice baru", { invoiceId: p.payment_invoice_id, code: p.registration_code });
     }
+
 
 
     if (p.category === "self_funded" && cfg.self_funded_paid_enabled === "false") {
@@ -267,7 +281,9 @@ Deno.serve(async (req) => {
       p_code: p.registration_code,
       p_invoice_id: invoiceId,
       p_url: url,
+      p_expires_at: (parseInvoiceExpiry(j) ?? fallbackExpiry(24)).toISOString(),
     });
+
     return json({ ok: true, url, invoiceId });
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, { status: 500 });

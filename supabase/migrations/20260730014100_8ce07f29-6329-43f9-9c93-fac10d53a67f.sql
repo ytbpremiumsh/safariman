@@ -1,0 +1,1 @@
+ALTER TABLE public.participants ADD COLUMN IF NOT EXISTS payment_invoice_expires_at timestamptz, ADD COLUMN IF NOT EXISTS donation_invoice_expires_at timestamptz;

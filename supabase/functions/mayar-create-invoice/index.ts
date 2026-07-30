@@ -2,6 +2,13 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { resolveMayarEmail, upsertMayarCustomer } from "../_shared/mayar-customer.ts";
+import {
+  cachedInvoiceStillValid,
+  fallbackExpiry,
+  invoiceLooksExpired,
+  parseInvoiceExpiry,
+} from "../_shared/mayar-invoice.ts";
+
 
 function isPaidLike(value: unknown): boolean {
   if (typeof value !== "string") return false;
@@ -66,19 +73,8 @@ async function verifyPaidViaTransactions(
   }
 }
 
-function invoiceLooksExpired(payload: any): boolean {
-  const data = payload?.data ?? payload;
-  const statusStr = String(
-    data?.status || data?.invoice?.status || data?.transactionStatus || data?.transaction_status || "",
-  ).toLowerCase();
-  if (/expire|expired|closed|cancel|canceled|cancelled|void/.test(statusStr)) return true;
-  const expiredAt = data?.expiredAt || data?.expired_at || data?.expiryDate || data?.expiry_date || data?.dueDate;
-  if (expiredAt) {
-    const t = new Date(expiredAt).getTime();
-    if (!Number.isNaN(t) && t > 0 && t < Date.now()) return true;
-  }
-  return false;
-}
+
+
 
 async function fetchDonationInvoiceState(
   apiKey: string,
@@ -136,10 +132,24 @@ Deno.serve(async (req) => {
 
     const { data: p } = await supabaseAdmin
       .from("participants")
-      .select("full_name, email, whatsapp, status, donation_status, donation_url, donation_invoice_id, registration_code, category")
+      .select(
+        "full_name, email, whatsapp, status, donation_status, donation_url, donation_invoice_id, donation_invoice_expires_at, registration_code, category",
+      )
       .ilike("registration_code", code)
       .maybeSingle();
     if (!p) return json({ ok: false, error: "Peserta tidak ditemukan" }, { status: 404 });
+
+    // FAST PATH: link kontribusi lama masih berlaku (cache DB) & bukan permintaan sync
+    // → langsung pakai, tanpa memanggil API Mayar. Validasi lunas tetap jalan lewat
+    // webhook dan lewat pemanggilan syncOnly dari halaman status.
+    if (
+      !syncOnly &&
+      p.donation_status === "pending" &&
+      p.donation_url &&
+      cachedInvoiceStillValid(p.donation_invoice_expires_at as string | null)
+    ) {
+      return json({ ok: true, url: p.donation_url, reused: true, cached: true });
+    }
 
     // Sinkronisasi otomatis: kalau sudah ada invoice pending, cek ke Mayar dulu.
     if (p.donation_status === "pending" && p.donation_invoice_id) {
@@ -158,8 +168,17 @@ Deno.serve(async (req) => {
       }
       // Reuse hanya kalau invoice masih aktif; expired/closed → buat baru otomatis.
       if ((state === "active" || state === "unknown") && p.donation_url && !syncOnly) {
+        if (state === "active") {
+          await supabaseAdmin
+            .from("participants")
+            .update({
+              donation_invoice_expires_at: (parseInvoiceExpiry(payload) ?? fallbackExpiry(6)).toISOString(),
+            })
+            .eq("registration_code", p.registration_code);
+        }
         return json({ ok: true, url: p.donation_url, reused: true });
       }
+
       if (state === "expired") {
         console.log("Invoice donasi expired/closed, membuat invoice baru", { invoiceId: p.donation_invoice_id, code });
       }
@@ -246,7 +265,13 @@ Deno.serve(async (req) => {
     const invoiceId: string | undefined = j?.data?.id || j?.data?.transactionId || j?.id;
     if (!url || !invoiceId) return json({ ok: false, error: "Respon Mayar tidak lengkap", raw: j }, { status: 502 });
 
-    await supabaseAdmin.rpc("save_donation_invoice", { p_code: code, p_invoice_id: invoiceId, p_url: url });
+    await supabaseAdmin.rpc("save_donation_invoice", {
+      p_code: code,
+      p_invoice_id: invoiceId,
+      p_url: url,
+      p_expires_at: (parseInvoiceExpiry(j) ?? fallbackExpiry(24)).toISOString(),
+    });
+
     return json({ ok: true, url, invoiceId });
   } catch (e) {
     return json({ ok: false, error: (e as Error).message }, { status: 500 });
