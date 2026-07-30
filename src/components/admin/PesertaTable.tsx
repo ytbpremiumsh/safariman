@@ -239,12 +239,15 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     };
 
     loadData();
-    const id = window.setInterval(() => loadData(true), 8000);
+    // Refresh berkala diperlebar (8s → 45s) supaya tidak terus-menerus
+    // mengunduh ulang seluruh data peserta dan membuat halaman berat.
+    const id = window.setInterval(() => loadData(true), 45000);
 
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
+
   }, [ready, isSelf]);
 
 
