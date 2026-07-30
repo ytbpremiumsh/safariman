@@ -48,6 +48,13 @@ type Participant = {
   donation_paid_at: string | null;
 };
 
+// Kolom ringan untuk daftar peserta (tanpa isi essay yang panjang).
+const LIST_COLS =
+  "id,created_at,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,religion,has_passport,category,status,cv_url,photo_url,payment_status,payment_url,payment_invoice_id,paid_at,donation_status,donation_paid_at";
+
+const ESSAY_COLS = "id,essay_worthy,essay_dream,essay_contribution";
+
+
 const CAT_LABEL: Record<Category, string> = {
   fully_funded: "Fully Funded",
   partial_funded: "Partial Funded",
