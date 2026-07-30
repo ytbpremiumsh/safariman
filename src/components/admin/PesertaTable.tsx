@@ -304,8 +304,24 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
 
 
 
+  // Buka detail: essay diambil saat dibutuhkan saja supaya daftar tetap ringan.
+  const openDetail = async (r: Participant) => {
+    setDetail(r);
+    if (isSelf) return;
+    const { data } = await supabase.from("participants").select(ESSAY_COLS).eq("id", r.id).maybeSingle();
+    if (data) setDetail((prev) => (prev && prev.id === r.id ? { ...prev, ...(data as any) } : prev));
+  };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    // Ambil isi essay hanya untuk baris yang diekspor.
+    const essayMap = new Map<string, any>();
+    if (!isSelf && filtered.length > 0) {
+      const ids = filtered.map((r) => r.id);
+      for (let i = 0; i < ids.length; i += 500) {
+        const { data } = await supabase.from("participants").select(ESSAY_COLS).in("id", ids.slice(i, i + 500));
+        for (const row of (data ?? []) as any[]) essayMap.set(row.id, row);
+      }
+    }
     const data = filtered.map((r) => ({
       "Kode": r.registration_code,
       "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
@@ -321,9 +337,9 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
       "Status Pembayaran": isPaymentValid(r) ? "Valid" : (paymentState(r) === "pending" ? "Pending" : "Belum"),
       "Tanggal Pembayaran": paymentDate(r) ? new Date(paymentDate(r)!).toLocaleString("id-ID") : "-",
       ...(isSelf ? {} : {
-        "Essay Layak": r.essay_worthy,
-        "Essay Impian": r.essay_dream,
-        "Essay Kontribusi": r.essay_contribution,
+        "Essay Layak": essayMap.get(r.id)?.essay_worthy ?? "",
+        "Essay Impian": essayMap.get(r.id)?.essay_dream ?? "",
+        "Essay Kontribusi": essayMap.get(r.id)?.essay_contribution ?? "",
       }),
 
     }));
@@ -333,6 +349,7 @@ export function PesertaTable({ kind, lockDocFilter }: { kind: PesertaKind; lockD
     XLSX.writeFile(wb, `safar-iman-${kind}-${Date.now()}.xlsx`);
     toast.success(`${data.length} data diekspor`);
   };
+
 
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
