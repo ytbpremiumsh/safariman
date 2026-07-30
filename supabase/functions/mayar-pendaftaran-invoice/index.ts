@@ -30,24 +30,29 @@ function invoiceLooksPaid(payload: any): boolean {
 }
 
 
-async function fetchInvoiceState(apiKey: string, invoiceId?: string | null): Promise<"paid" | "expired" | "active" | "unknown"> {
-  if (!invoiceId) return "unknown";
+async function fetchInvoiceState(
+  apiKey: string,
+  invoiceId?: string | null,
+): Promise<{ state: "paid" | "expired" | "active" | "unknown"; expiresAt: Date | null }> {
+  if (!invoiceId) return { state: "unknown", expiresAt: null };
   try {
     const res = await fetch(`https://api.mayar.id/hl/v1/invoice/${encodeURIComponent(invoiceId)}`, {
       method: "GET",
       headers: { Accept: "application/json", Authorization: `Bearer ${apiKey}` },
     });
     const payload = await res.json().catch(() => ({}));
-    if (res.status === 404) return "expired";
-    if (!res.ok) return "unknown";
-    if (invoiceLooksPaid(payload)) return "paid";
-    if (invoiceLooksExpired(payload)) return "expired";
-    return "active";
+    if (res.status === 404) return { state: "expired", expiresAt: null };
+    if (!res.ok) return { state: "unknown", expiresAt: null };
+    const expiresAt = parseInvoiceExpiry(payload);
+    if (invoiceLooksPaid(payload)) return { state: "paid", expiresAt };
+    if (invoiceLooksExpired(payload)) return { state: "expired", expiresAt };
+    return { state: "active", expiresAt };
   } catch (e) {
     console.warn("fetchInvoiceState error", e);
-    return "unknown";
+    return { state: "unknown", expiresAt: null };
   }
 }
+
 
 async function syncInvoiceStatus(supabaseAdmin: any, apiKey: string, invoiceId?: string | null) {
   const state = await fetchInvoiceState(apiKey, invoiceId);
