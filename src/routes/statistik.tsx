@@ -151,7 +151,7 @@ function StatistikPage() {
     );
   }
 
-  const s = stats ?? {};
+  const s: Stats = stats ?? { ok: true };
   return (
     <main className="min-h-screen bg-secondary/30 px-4 py-10">
       <div className="max-w-5xl mx-auto space-y-6">
