@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Lock, Loader2, RefreshCw, ShieldCheck } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { HeartHandshake, Loader2, Lock, RefreshCw, ShieldCheck, Users } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 
@@ -14,24 +17,18 @@ export const Route = createFileRoute("/statistik")({
   component: StatistikPage,
 });
 
+type DayRow = { day: string; daftar: number; kontribusi: number };
+
 type Stats = {
   ok: boolean;
   error?: string;
   generated_at?: string;
   total?: number;
-  reguler?: number;
-  self_funded?: number;
-  gelombang_1?: number;
-  gelombang_2?: number;
-  fast_track_paid?: number;
-  fast_track_unpaid?: number;
-  berkas_submitted?: number;
-  essay_submitted?: number;
   kontribusi_paid?: number;
   kontribusi_unpaid?: number;
   today_daftar?: number;
   today_kontribusi?: number;
-  today_fast_track?: number;
+  by_day?: DayRow[];
 };
 
 const LS_KEY = "safar_stats_pw";
@@ -43,6 +40,8 @@ function StatistikPage() {
   const [checking, setChecking] = useState(false);
   const [err, setErr] = useState("");
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [days, setDays] = useState<7 | 14 | 30>(14);
+  const [live, setLive] = useState(false);
   const pwRef = useRef("");
 
   const fetchStats = useCallback(async (password: string): Promise<Stats | null> => {
@@ -82,14 +81,13 @@ function StatistikPage() {
     setErr("");
   };
 
-  // Auto-unlock kalau password sudah pernah benar di perangkat ini.
   useEffect(() => {
     const saved = localStorage.getItem(LS_KEY);
     if (saved) unlock(saved, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Realtime: refresh tiap 5 detik + langsung refresh saat tabel peserta berubah.
+  // Realtime: refresh berkala + langsung saat tabel peserta berubah.
   useEffect(() => {
     if (!unlocked) return;
     let alive = true;
@@ -103,13 +101,22 @@ function StatistikPage() {
     const channel = supabase
       .channel("public-stats")
       .on("postgres_changes", { event: "*", schema: "public", table: "participants" }, refresh)
-      .subscribe();
+      .subscribe((status) => setLive(status === "SUBSCRIBED"));
     return () => {
       alive = false;
       clearInterval(timer);
       supabase.removeChannel(channel);
     };
   }, [unlocked, fetchStats]);
+
+  const chartData = useMemo(() => {
+    const rows = stats?.by_day ?? [];
+    return rows.slice(-days).map((r) => ({
+      daftar: Number(r.daftar) || 0,
+      kontribusi: Number(r.kontribusi) || 0,
+      label: new Date(r.day).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
+    }));
+  }, [stats, days]);
 
   if (!unlocked) {
     return (
@@ -152,20 +159,17 @@ function StatistikPage() {
   }
 
   const s: Stats = stats ?? { ok: true };
+
   return (
     <main className="min-h-screen bg-secondary/30 px-4 py-10">
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-5">
         <header className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">
               Statistik Pendaftaran
             </h1>
-            <p className="text-sm text-muted-foreground mt-1 inline-flex items-center gap-2">
-              <span className="relative inline-flex size-1.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald animate-ping opacity-75" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-emerald" />
-              </span>
-              Realtime · diperbarui{" "}
+            <p className="text-sm text-muted-foreground mt-1">
+              Ringkasan pendaftaran & kontribusi · diperbarui{" "}
               {updatedAt ? updatedAt.toLocaleTimeString("id-ID") : "—"}
             </p>
           </div>
@@ -177,55 +181,160 @@ function StatistikPage() {
           </button>
         </header>
 
-        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          <Stat label="Total Pendaftar" value={s.total} big />
-          <Stat label="Reguler" value={s.reguler} />
-          <Stat label="Gelombang 1" value={s.gelombang_1} />
-          <Stat label="Gelombang 2" value={s.gelombang_2} />
-          <Stat label="Self Funded" value={s.self_funded} />
-          <Stat label="Sudah Kirim Berkas" value={s.berkas_submitted} />
-          <Stat label="Sudah Kirim Essay" value={s.essay_submitted} />
-          <Stat label="Fast Track Lunas" value={s.fast_track_paid} />
+        {/* Ringkasan */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <SummaryCard
+            title="Total Peserta"
+            desc="Seluruh peserta yang sudah terdaftar."
+            value={s.total}
+            icon={<Users className="size-5" />}
+            tone="emerald"
+          />
+          <SummaryCard
+            title="Donasi Valid (Kontribusi)"
+            desc="Kontribusi peserta yang sudah terverifikasi lunas."
+            value={s.kontribusi_paid}
+            icon={<HeartHandshake className="size-5" />}
+            tone="accent"
+          />
         </section>
 
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Stat label="Kontribusi Valid" value={s.kontribusi_paid} accent big />
-          <Stat label="Belum Kontribusi" value={s.kontribusi_unpaid} />
-          <Stat label="Fast Track Belum Lunas" value={s.fast_track_unpaid} />
-          <Stat label="Pendaftar Hari Ini" value={s.today_daftar} />
+        {/* Aktivitas hari ini */}
+        <section className="bg-card border border-border rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                Aktivitas Hari Ini
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-normal px-2 py-0.5 rounded-full bg-emerald/10 text-emerald">
+                  <span className="relative inline-flex size-1.5">
+                    {live && (
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-emerald animate-ping opacity-75" />
+                    )}
+                    <span className="relative inline-flex size-1.5 rounded-full bg-emerald" />
+                  </span>
+                  {live ? "Live" : "Menghubungkan…"}
+                </span>
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {new Date().toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <TodayCard label="Pendaftaran" value={s.today_daftar} icon={<Users className="size-4" />} tone="emerald" />
+            <TodayCard label="Kontribusi Valid" value={s.today_kontribusi} icon={<HeartHandshake className="size-4" />} tone="accent" />
+          </div>
         </section>
 
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Stat label="Kontribusi Hari Ini" value={s.today_kontribusi} />
-          <Stat label="Fast Track Hari Ini" value={s.today_fast_track} />
+        {/* Aktivitas harian */}
+        <section className="bg-card border border-border rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <h2 className="font-display text-lg font-semibold">Aktivitas Harian</h2>
+              <p className="text-xs text-muted-foreground">Pendaftaran & kontribusi valid per hari</p>
+            </div>
+            <div className="flex gap-1 rounded-full bg-secondary p-1">
+              {([7, 14, 30] as const).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDays(d)}
+                  className={`px-3 py-1 text-xs rounded-full transition ${
+                    days === d ? "bg-background shadow-sm font-medium" : "text-muted-foreground"
+                  }`}
+                >
+                  {d}h
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="h-72 -mx-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: "var(--foreground)",
+                  }}
+                  labelStyle={{ fontWeight: 600 }}
+                  cursor={{ fill: "var(--secondary)", opacity: 0.5 }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
+                <Bar dataKey="daftar" name="Pendaftaran" fill="var(--emerald)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+                <Bar dataKey="kontribusi" name="Kontribusi Valid" fill="var(--accent)" radius={[6, 6, 0, 0]} maxBarSize={22} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </section>
       </div>
     </main>
   );
 }
 
-function Stat({
+function SummaryCard({
+  title,
+  desc,
+  value,
+  icon,
+  tone,
+}: {
+  title: string;
+  desc: string;
+  value?: number;
+  icon: React.ReactNode;
+  tone: "emerald" | "accent";
+}) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald border-emerald/30",
+    accent: "bg-accent/15 text-accent border-accent/40",
+  } as const;
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5 flex items-start gap-4">
+      <div className={`size-12 rounded-xl grid place-items-center border ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0 flex-1">
+        <div className="font-display text-base font-semibold">{title}</div>
+        <div className="text-xs text-muted-foreground mt-0.5">{desc}</div>
+      </div>
+      <div className="font-display text-3xl font-semibold tracking-tight tabular-nums">
+        {(value ?? 0).toLocaleString("id-ID")}
+      </div>
+    </div>
+  );
+}
+
+function TodayCard({
   label,
   value,
-  accent,
-  big,
+  icon,
+  tone,
 }: {
   label: string;
   value?: number;
-  accent?: boolean;
-  big?: boolean;
+  icon: React.ReactNode;
+  tone: "emerald" | "accent";
 }) {
+  const toneMap = {
+    emerald: "bg-emerald/10 text-emerald",
+    accent: "bg-accent/10 text-accent",
+  } as const;
   return (
-    <div
-      className={`bg-card border rounded-2xl p-5 ${accent ? "border-accent/40" : "border-border"}`}
-    >
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div
-        className={`mt-2 font-display font-semibold tracking-tight tabular-nums ${
-          big ? "text-4xl" : "text-3xl"
-        } ${accent ? "text-accent" : ""}`}
-      >
-        {(value ?? 0).toLocaleString("id-ID")}
+    <div className="rounded-xl border border-border bg-secondary/40 p-4 flex items-center gap-3">
+      <div className={`size-10 rounded-xl grid place-items-center ${toneMap[tone]}`}>{icon}</div>
+      <div className="min-w-0">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="font-display text-2xl font-semibold tracking-tight leading-tight tabular-nums">
+          {(value ?? 0).toLocaleString("id-ID")}
+        </div>
       </div>
     </div>
   );
