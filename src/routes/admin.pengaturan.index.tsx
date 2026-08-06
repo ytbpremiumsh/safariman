@@ -105,6 +105,12 @@ const ITEMS = [
     desc: "Aktif/nonaktifkan halaman /faq, tambah/edit pertanyaan & jawaban (pendaftaran, berkas, essay, timeline, benefit, kontribusi).",
   },
   {
+    to: "/admin/pengaturan/statistik",
+    icon: BarChart3,
+    title: "Halaman Statistik (Berpassword)",
+    desc: "Atur password halaman /statistik yang menampilkan angka pendaftaran & kontribusi secara realtime.",
+  },
+  {
     to: "/admin/pengaturan/backup",
     icon: DatabaseBackup,
     title: "Backup Database",

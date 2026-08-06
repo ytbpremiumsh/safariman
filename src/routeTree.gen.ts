@@ -13,6 +13,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TwibbonRouteImport } from './routes/twibbon'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as StatistikRouteImport } from './routes/statistik'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
 import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
 import { Route as PanduanRouteImport } from './routes/panduan'
@@ -44,6 +45,7 @@ import { Route as AdminPengaturanWaQuickReplyRouteImport } from './routes/admin.
 import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
+import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
@@ -85,6 +87,11 @@ const TentangRoute = TentangRouteImport.update({
 const SuksesRoute = SuksesRouteImport.update({
   id: '/sukses',
   path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatistikRoute = StatistikRouteImport.update({
+  id: '/statistik',
+  path: '/statistik',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
@@ -244,6 +251,12 @@ const AdminPengaturanTimelineRoute = AdminPengaturanTimelineRouteImport.update({
   path: '/admin/pengaturan/timeline',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanStatistikRoute =
+  AdminPengaturanStatistikRouteImport.update({
+    id: '/admin/pengaturan/statistik',
+    path: '/admin/pengaturan/statistik',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanPengingatPembayaranRoute =
   AdminPengaturanPengingatPembayaranRouteImport.update({
     id: '/admin/pengaturan/pengingat-pembayaran',
@@ -386,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -410,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
@@ -445,6 +460,7 @@ export interface FileRoutesByTo {
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -469,6 +485,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
@@ -503,6 +520,7 @@ export interface FileRoutesById {
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
   '/twibbon': typeof TwibbonRoute
@@ -527,6 +545,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
   '/admin/pengaturan/wa-channel': typeof AdminPengaturanWaChannelRoute
@@ -564,6 +583,7 @@ export interface FileRouteTypes {
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/statistik'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -588,6 +608,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
@@ -623,6 +644,7 @@ export interface FileRouteTypes {
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/statistik'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -647,6 +669,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
@@ -680,6 +703,7 @@ export interface FileRouteTypes {
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/statistik'
     | '/sukses'
     | '/tentang'
     | '/twibbon'
@@ -704,6 +728,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
     | '/admin/pengaturan/wa-channel'
@@ -740,6 +765,7 @@ export interface RootRouteChildren {
   PanduanRoute: typeof PanduanRoute
   PendaftaranRoute: typeof PendaftaranRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
+  StatistikRoute: typeof StatistikRoute
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
   TwibbonRoute: typeof TwibbonRoute
@@ -764,6 +790,7 @@ export interface RootRouteChildren {
   AdminPengaturanMediaRoute: typeof AdminPengaturanMediaRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
+  AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
   AdminPengaturanWaChannelRoute: typeof AdminPengaturanWaChannelRoute
@@ -806,6 +833,13 @@ declare module '@tanstack/react-router' {
       path: '/sukses'
       fullPath: '/sukses'
       preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/statistik': {
+      id: '/statistik'
+      path: '/statistik'
+      fullPath: '/statistik'
+      preLoaderRoute: typeof StatistikRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pendaftaran-sukses': {
@@ -1025,6 +1059,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanTimelineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/statistik': {
+      id: '/admin/pengaturan/statistik'
+      path: '/admin/pengaturan/statistik'
+      fullPath: '/admin/pengaturan/statistik'
+      preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/pengingat-pembayaran': {
       id: '/admin/pengaturan/pengingat-pembayaran'
       path: '/admin/pengaturan/pengingat-pembayaran'
@@ -1231,6 +1272,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanduanRoute: PanduanRoute,
   PendaftaranRoute: PendaftaranRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
+  StatistikRoute: StatistikRoute,
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
   TwibbonRoute: TwibbonRoute,
@@ -1256,6 +1298,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanPengingatPembayaranRoute:
     AdminPengaturanPengingatPembayaranRoute,
+  AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
   AdminPengaturanWaChannelRoute: AdminPengaturanWaChannelRoute,
