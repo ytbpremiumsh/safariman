@@ -116,6 +116,12 @@ const ITEMS = [
     title: "Backup Database",
     desc: "Ekspor semua data (peserta, pengaturan, log) ke file JSON. Atur pengingat backup otomatis di dashboard.",
   },
+  {
+    to: "/admin/pengaturan/seleksi-private",
+    icon: ShieldCheck,
+    title: "Akses Seleksi Private",
+    desc: "Generate token akses untuk halaman seleksi private Essai & Studi Kasus yang tidak membutuhkan login admin.",
+  },
 ] as const;
 
 
