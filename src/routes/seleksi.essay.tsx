@@ -153,19 +153,24 @@ function SeleksiEssayPrivatePage() {
     // but the token gives access to the UI.
     
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      toast.error("Anda harus login admin untuk melakukan pembaruan status");
-      return;
-    }
-
+    const isAdmin = session ? await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }) : { data: false };
+    
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
     if (error) { toast.error(error.message); return; }
     
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
     
-    const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
-    if (e2) { toast.error(e2.message); return; }
+    // Use token-based update via edge function if not admin
+    if (!isAdmin.data) {
+      const { data: efData, error: efError } = await supabase.functions.invoke("seleksi-token-update", {
+        body: { token, participant_id: id, status: s, stage_value: stageValue }
+      });
+      if (efError) { toast.error(efError.message); return; }
+    } else {
+      const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
+      if (e2) { toast.error(e2.message); return; }
+    }
     
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
     if (detail?.id === id) setDetail({ ...detail, status: s });
