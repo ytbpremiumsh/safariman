@@ -47,6 +47,7 @@ import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pen
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
 import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
+import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
@@ -263,6 +264,12 @@ const AdminPengaturanStatistikRoute =
     path: '/admin/pengaturan/statistik',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanSeleksiPrivateRoute =
+  AdminPengaturanSeleksiPrivateRouteImport.update({
+    id: '/admin/pengaturan/seleksi-private',
+    path: '/admin/pengaturan/seleksi-private',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanPengingatPembayaranRoute =
   AdminPengaturanPengingatPembayaranRouteImport.update({
     id: '/admin/pengaturan/pengingat-pembayaran',
@@ -431,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -493,6 +501,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -554,6 +563,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -618,6 +628,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -680,6 +691,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -740,6 +752,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -803,6 +816,7 @@ export interface RootRouteChildren {
   AdminPengaturanMediaRoute: typeof AdminPengaturanMediaRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
+  AdminPengaturanSeleksiPrivateRoute: typeof AdminPengaturanSeleksiPrivateRoute
   AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
@@ -1086,6 +1100,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/seleksi-private': {
+      id: '/admin/pengaturan/seleksi-private'
+      path: '/admin/pengaturan/seleksi-private'
+      fullPath: '/admin/pengaturan/seleksi-private'
+      preLoaderRoute: typeof AdminPengaturanSeleksiPrivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/pengingat-pembayaran': {
       id: '/admin/pengaturan/pengingat-pembayaran'
       path: '/admin/pengaturan/pengingat-pembayaran'
@@ -1319,6 +1340,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanPengingatPembayaranRoute:
     AdminPengaturanPengingatPembayaranRoute,
+  AdminPengaturanSeleksiPrivateRoute: AdminPengaturanSeleksiPrivateRoute,
   AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,

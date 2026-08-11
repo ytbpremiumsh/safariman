@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/pengaturan/seleksi-private")({
 type Token = {
   id: string;
   token: string;
-  created_at: string;
+  created_at: string | null;
   expires_at: string;
 };
 
