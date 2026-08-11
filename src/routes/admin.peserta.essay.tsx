@@ -432,10 +432,7 @@ function PesertaEssayPage() {
               </DialogHeader>
 
               {/* Identitas */}
-              <div className="grid sm:grid-cols-[120px,1fr] gap-4 mt-2">
-                {detail.photo_url && (
-                  <img src={detail.photo_url} alt={detail.full_name} className="size-28 rounded-xl object-cover border border-border" />
-                )}
+              <div className="mt-2">
                 <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                   <KV k="Email" v={detail.email} />
                   <KV k="WhatsApp" v={detail.whatsapp} />
@@ -450,25 +447,6 @@ function PesertaEssayPage() {
 
               {/* Berkas + donasi */}
               <div className="mt-5 flex flex-wrap gap-2">
-                {detail.cv_url && (
-                  <button
-                    onClick={async () => {
-                      const { data, error } = await supabase.storage.from("participant-cv").createSignedUrl(detail.cv_url!, 60);
-                      if (error || !data) { toast.error("Gagal generate link"); return; }
-                      const a = document.createElement("a");
-                      a.href = data.signedUrl; a.download = `${detail.full_name}-CV.pdf`; a.target = "_blank";
-                      document.body.appendChild(a); a.click(); a.remove();
-                    }}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-emerald/10 text-emerald px-4 py-2 text-sm font-medium hover:bg-emerald/20"
-                  >
-                    <FileDown className="size-4" /> Download CV
-                  </button>
-                )}
-                {detail.photo_url && (
-                  <a href={detail.photo_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 text-accent px-4 py-2 text-sm font-medium hover:bg-accent/25">
-                    <ImageIcon className="size-4" /> Lihat Foto
-                  </a>
-                )}
                 {detail.donation_status === "paid" && (
                   <span className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border bg-gradient-gold text-emerald-deep border-accent/40">
                     <HeartHandshake className="size-4" /> Donasi Valid
