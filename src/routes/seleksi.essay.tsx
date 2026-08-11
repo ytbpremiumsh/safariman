@@ -356,13 +356,6 @@ function SeleksiEssayPrivatePage() {
                 </div>
 
                 <div className="space-y-6">
-                   {detail.photo_url && (
-                    <div className="space-y-2">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Pas Foto</div>
-                      <img src={detail.photo_url} alt={detail.full_name} className="w-full aspect-[3/4] object-cover rounded-xl border border-border shadow-sm" />
-                    </div>
-                  )}
-
                   <div className="bg-secondary/40 rounded-xl p-4 space-y-4">
                     <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Detail Peserta</div>
                     <div className="grid gap-3 text-xs">
@@ -371,17 +364,6 @@ function SeleksiEssayPrivatePage() {
                       <KV k="Pekerjaan" v={detail.occupation} />
                       <KV k="Kategori" v={detail.category ? CAT_LABEL[detail.category] : "—"} />
                     </div>
-                    {detail.cv_url && (
-                      <button 
-                        onClick={async () => {
-                          const { data } = await supabase.storage.from("participant-cv").createSignedUrl(detail.cv_url!, 60);
-                          if (data) window.open(data.signedUrl, "_blank");
-                        }}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-accent/30 bg-accent/5 text-accent font-semibold hover:bg-accent/10 transition-colors"
-                      >
-                        <FileDown className="size-4" /> Download CV
-                      </button>
-                    )}
                   </div>
 
                   <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-4 space-y-3">
