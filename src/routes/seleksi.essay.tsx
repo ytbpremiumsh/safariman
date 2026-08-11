@@ -147,16 +147,16 @@ function SeleksiEssayPrivatePage() {
     // Note: This requires the token-based bypass or valid admin session. 
     // Since we are using Supabase JS client, we need a valid session.
     // However, if the user isn't logged in, they can only READ if we granted it.
-    // For now, assume the person accessing this is an admin who has the token,
-    // or we'd need a special edge function for token-authorized updates.
-    // Let's assume standard Supabase auth is still required for updates, 
-    // but the token gives access to the UI.
-    
     const { data: { session } } = await supabase.auth.getSession();
     const isAdmin = session ? await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }) : { data: false };
     
-    const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    // We only try direct DB update if we are an admin.
+    // If not admin, the Edge Function will handle the service-role update.
+    if (isAdmin.data) {
+      const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
+      if (error) { toast.error(error.message); return; }
+    }
+
     
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
