@@ -110,7 +110,9 @@ function PendaftaranSukses() {
     setRetrying(true);
     try {
       const { mayarPendaftaranInvoice } = await import("@/lib/api");
-      const json = await mayarPendaftaranInvoice(code);
+      // sync: true -> paksa verifikasi ke penyedia pembayaran dulu, supaya pembayaran
+      // yang sudah lunas (webhook tidak masuk) langsung terdeteksi, bukan buka link lama.
+      const json = await mayarPendaftaranInvoice(code, true);
       if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
       if (json.alreadyPaid) {
         await fetchStatus();
