@@ -4,7 +4,7 @@ import {
   ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
   Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
   Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
-  Search, MessageSquareText, FolderOpen, BarChart3,
+  Search, MessageSquareText, FolderOpen, BarChart3, ShieldCheck
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -70,6 +70,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/media", label: "Media Library", keywords: "media file upload download url link gambar foto dokumen pdf image" },
           { to: "/admin/pengaturan/analytics", label: "Google Analytics", keywords: "google analytics ga ga4 tracking pelacakan measurement id statistik pengunjung" },
           { to: "/admin/pengaturan/backup", label: "Backup Database", keywords: "backup database cadangan ekspor json data peserta pengingat reminder" },
+          { to: "/admin/pengaturan/seleksi-private", label: "Akses Seleksi Private", keywords: "seleksi private token akses essay studi kasus grading eksternal" },
         ],
       },
     ],

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen, DatabaseBackup } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen, DatabaseBackup, ShieldCheck } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -115,6 +115,12 @@ const ITEMS = [
     icon: DatabaseBackup,
     title: "Backup Database",
     desc: "Ekspor semua data (peserta, pengaturan, log) ke file JSON. Atur pengingat backup otomatis di dashboard.",
+  },
+  {
+    to: "/admin/pengaturan/seleksi-private",
+    icon: ShieldCheck,
+    title: "Akses Seleksi Private",
+    desc: "Generate token akses untuk halaman seleksi private Essai & Studi Kasus yang tidak membutuhkan login admin.",
   },
 ] as const;
 

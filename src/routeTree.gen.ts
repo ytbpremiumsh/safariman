@@ -31,6 +31,7 @@ import { Route as CekHasilRouteImport } from './routes/cek-hasil'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SeleksiEssayRouteImport } from './routes/seleksi.essay'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
@@ -46,6 +47,7 @@ import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pen
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
 import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
+import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
@@ -179,6 +181,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeleksiEssayRoute = SeleksiEssayRouteImport.update({
+  id: '/seleksi/essay',
+  path: '/seleksi/essay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
   id: '/admin/wa-setup',
   path: '/admin/wa-setup',
@@ -255,6 +262,12 @@ const AdminPengaturanStatistikRoute =
   AdminPengaturanStatistikRouteImport.update({
     id: '/admin/pengaturan/statistik',
     path: '/admin/pengaturan/statistik',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanSeleksiPrivateRoute =
+  AdminPengaturanSeleksiPrivateRouteImport.update({
+    id: '/admin/pengaturan/seleksi-private',
+    path: '/admin/pengaturan/seleksi-private',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AdminPengaturanPengingatPembayaranRoute =
@@ -406,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -424,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -467,6 +482,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -485,6 +501,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -527,6 +544,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -545,6 +563,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -590,6 +609,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -608,6 +628,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -651,6 +672,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -669,6 +691,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -710,6 +733,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -728,6 +752,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -772,6 +797,7 @@ export interface RootRouteChildren {
   UnsubscribeRoute: typeof UnsubscribeRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
+  SeleksiEssayRoute: typeof SeleksiEssayRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAlurFullyFundedRoute: typeof AdminAlurFullyFundedRoute
   AdminAlurTahapanSeleksiRoute: typeof AdminAlurTahapanSeleksiRoute
@@ -790,6 +816,7 @@ export interface RootRouteChildren {
   AdminPengaturanMediaRoute: typeof AdminPengaturanMediaRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
+  AdminPengaturanSeleksiPrivateRoute: typeof AdminPengaturanSeleksiPrivateRoute
   AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
@@ -961,6 +988,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seleksi/essay': {
+      id: '/seleksi/essay'
+      path: '/seleksi/essay'
+      fullPath: '/seleksi/essay'
+      preLoaderRoute: typeof SeleksiEssayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/wa-setup': {
       id: '/admin/wa-setup'
       path: '/admin/wa-setup'
@@ -1064,6 +1098,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/pengaturan/statistik'
       fullPath: '/admin/pengaturan/statistik'
       preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/seleksi-private': {
+      id: '/admin/pengaturan/seleksi-private'
+      path: '/admin/pengaturan/seleksi-private'
+      fullPath: '/admin/pengaturan/seleksi-private'
+      preLoaderRoute: typeof AdminPengaturanSeleksiPrivateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pengaturan/pengingat-pembayaran': {
@@ -1279,6 +1320,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnsubscribeRoute: UnsubscribeRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
+  SeleksiEssayRoute: SeleksiEssayRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAlurFullyFundedRoute: AdminAlurFullyFundedRoute,
   AdminAlurTahapanSeleksiRoute: AdminAlurTahapanSeleksiRoute,
@@ -1298,6 +1340,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanPengingatPembayaranRoute:
     AdminPengaturanPengingatPembayaranRoute,
+  AdminPengaturanSeleksiPrivateRoute: AdminPengaturanSeleksiPrivateRoute,
   AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
