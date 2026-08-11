@@ -173,7 +173,7 @@ function SeleksiPrivateSettings() {
                     </div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
-                        <Clock className="size-3" /> Dibuat: {format(new Date(t.created_at), "d MMM yyyy HH:mm", { locale: id })}
+                        <Clock className="size-3" /> Dibuat: {t.created_at ? format(new Date(t.created_at), "d MMM yyyy HH:mm", { locale: id }) : "—"}
                       </span>
                       <span className="flex items-center gap-1">
                         <AlertCircle className="size-3" /> Berakhir: {format(new Date(t.expires_at), "d MMM yyyy HH:mm", { locale: id })}
