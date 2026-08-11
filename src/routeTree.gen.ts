@@ -31,6 +31,7 @@ import { Route as CekHasilRouteImport } from './routes/cek-hasil'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SeleksiEssayRouteImport } from './routes/seleksi.essay'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
@@ -177,6 +178,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeleksiEssayRoute = SeleksiEssayRouteImport.update({
+  id: '/seleksi/essay',
+  path: '/seleksi/essay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
@@ -406,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -467,6 +474,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -527,6 +535,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
+  '/seleksi/essay': typeof SeleksiEssayRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
@@ -590,6 +599,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -651,6 +661,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/login'
     | '/admin/wa-setup'
+    | '/seleksi/essay'
     | '/admin/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
@@ -772,6 +784,7 @@ export interface RootRouteChildren {
   UnsubscribeRoute: typeof UnsubscribeRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
+  SeleksiEssayRoute: typeof SeleksiEssayRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAlurFullyFundedRoute: typeof AdminAlurFullyFundedRoute
   AdminAlurTahapanSeleksiRoute: typeof AdminAlurTahapanSeleksiRoute
@@ -959,6 +972,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seleksi/essay': {
+      id: '/seleksi/essay'
+      path: '/seleksi/essay'
+      fullPath: '/seleksi/essay'
+      preLoaderRoute: typeof SeleksiEssayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/wa-setup': {
@@ -1279,6 +1299,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnsubscribeRoute: UnsubscribeRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
+  SeleksiEssayRoute: SeleksiEssayRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAlurFullyFundedRoute: AdminAlurFullyFundedRoute,
   AdminAlurTahapanSeleksiRoute: AdminAlurTahapanSeleksiRoute,
