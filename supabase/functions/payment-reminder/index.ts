@@ -243,6 +243,12 @@ Deno.serve(async (req) => {
     const guard = await requireAdmin(req);
     if (guard) return guard;
 
+    const cfg = await loadSettings(admin);
+    if ((cfg.payment_reminders_enabled ?? "false") !== "true") {
+      return json({ ok: false, error: "Fitur pengingat pembayaran sedang dinonaktifkan secara global melalui Dashboard Admin." }, { status: 403 });
+    }
+
+
     if (action === "list") {
       // Paginate to bypass PostgREST default 1000 row cap
       const pageSize = 1000;

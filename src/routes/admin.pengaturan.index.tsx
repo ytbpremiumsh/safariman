@@ -9,6 +9,13 @@ export const Route = createFileRoute("/admin/pengaturan/")({
 
 const ITEMS = [
   {
+    to: "/admin/pengaturan/kredit",
+    icon: Sparkles,
+    title: "Kontrol Kredit",
+    desc: "Nonaktifkan fitur yang mengonsumsi kredit AI & Edge Functions untuk menghemat kuota.",
+  },
+
+  {
     to: "/admin/pengaturan/gelombang",
     icon: Layers,
     title: "Gelombang Pendaftaran",

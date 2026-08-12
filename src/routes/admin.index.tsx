@@ -174,7 +174,7 @@ function AdminOverview() {
 
   return (
     <AdminShell title="Ringkasan">
-      <FeatureToggles />
+
       <BackupReminderBanner />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -269,8 +269,10 @@ function AdminOverview() {
       <section className="grid sm:grid-cols-2 gap-3">
         <QuickLink to="/admin/peserta/reguler" title="Peserta Reguler" desc="Kelola pendaftar Fully / Partial Funded" />
         <QuickLink to="/admin/peserta/self-funded" title="Peserta Self Funded" desc="Daftar peserta jalur mandiri" />
+        <QuickLink to="/admin/pengaturan/kredit" title="Kontrol Kredit" desc="Hemat kredit AI & Edge Functions" />
         <QuickLink to="/admin/pengaturan" title="Pengaturan" desc="Countdown, Twibbon, Panduan, Donasi" />
         <QuickLink to="/admin/wa-setup" title="WhatsApp & AI" desc="Template pesan & integrasi MPWA" />
+
       </section>
     </AdminShell>
   );
