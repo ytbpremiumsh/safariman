@@ -174,6 +174,9 @@ function AdminOverview() {
 
   return (
     <AdminShell title="Ringkasan">
+      <div className="mb-6">
+        <FeatureToggles />
+      </div>
 
       <BackupReminderBanner />
 
