@@ -26,8 +26,10 @@ async function loadSettings(admin: any) {
     "email_sender_name",
     "email_sender_local",
     "email_reply_to",
+    "payment_reminders_enabled",
   ];
   const { data } = await admin.from("app_settings").select("key,value").in("key", keys);
+
   const map: Record<string,string> = Object.fromEntries((data ?? []).map((r: any) => [r.key, r.value ?? ""]));
   return map;
 }
@@ -207,9 +209,10 @@ Deno.serve(async (req) => {
         return json({ ok: false, error: "Unauthorized" }, { status: 401 });
       }
       const cfg = await loadSettings(admin);
-      if ((cfg.payment_reminder_auto_enabled ?? "false") !== "true") {
-        return json({ ok: true, skipped: true, reason: "auto disabled" });
+      if ((cfg.payment_reminder_auto_enabled ?? "false") !== "true" || (cfg.payment_reminders_enabled ?? "false") !== "true") {
+        return json({ ok: true, skipped: true, reason: "auto disabled or global toggle off" });
       }
+
       const { data: candidates } = await admin.rpc("list_auto_reminder_candidates");
       // Throttle: batasi jumlah per run dan beri jeda antar kirim supaya
       // pembuatan invoice massal tidak menghabiskan kuota rate limit Mayar
