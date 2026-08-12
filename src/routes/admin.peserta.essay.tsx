@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { isFeatureEnabled } from "@/lib/features";
+
 import {
   Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
   ShieldCheck, ArrowRight, HeartHandshake, Sparkles, Loader2, Megaphone, EyeOff, Bot,
@@ -185,7 +187,13 @@ function PesertaEssayPage() {
   };
 
   const runAiGrade = async (row: Row) => {
+    const enabled = await isFeatureEnabled("ai_grading_enabled");
+    if (!enabled) {
+      toast.error("Fitur AI Grading sedang dinonaktifkan di Dashboard Admin.");
+      return;
+    }
     setAiBusy(true);
+
     const { data, error } = await supabase.functions.invoke("essay-ai-grade", {
       body: { participant_id: row.id },
     });

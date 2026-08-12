@@ -68,10 +68,11 @@ Deno.serve(async (req) => {
     const { data: rows } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
-      .in("key", ["wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", "mpwa_api_key", "mpwa_sender"]);
+      .in("key", ["wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", "mpwa_api_key", "mpwa_sender", "wa_ai_reply_enabled"]);
     const cfg = Object.fromEntries((rows ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
 
-    if (cfg.wa_ai_enabled !== "true") return json({ ok: true, skipped: "AI disabled" });
+    if (cfg.wa_ai_reply_enabled !== "true") return json({ ok: true, skipped: "AI Reply disabled by global toggle" });
+
     if (!cfg.mpwa_api_key || !cfg.mpwa_sender)
       return json({ ok: false, error: "MPWA belum dikonfigurasi" }, { status: 400 });
 

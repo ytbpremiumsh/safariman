@@ -11,8 +11,10 @@ export async function isFeatureEnabled(key: "ai_grading_enabled" | "wa_ai_reply_
     .eq("key", key)
     .maybeSingle();
   
+  // Default to false if not set
   return data?.value === "true";
 }
+
 
 export async function toggleFeature(key: string, enabled: boolean) {
   const { error } = await supabase.rpc("admin_set_setting", {

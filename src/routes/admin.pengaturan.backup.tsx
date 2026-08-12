@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
+import { isFeatureEnabled } from "@/lib/features";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +40,13 @@ function BackupPage() {
   }, [ready]);
 
   async function downloadBackup() {
+    const enabled = await isFeatureEnabled("db_backup_reminder_enabled");
+    if (!enabled) {
+      toast.error("Fitur Backup sedang dinonaktifkan di Dashboard Admin.");
+      return;
+    }
     setBusy(true);
+
     try {
       const { data: session } = await supabase.auth.getSession();
       const token = session.session?.access_token;
