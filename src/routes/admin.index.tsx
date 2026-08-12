@@ -7,6 +7,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 import { BackupReminderBanner } from "@/components/admin/BackupReminderBanner";
+import { FeatureToggles } from "@/components/admin/FeatureToggles";
+
 
 
 export const Route = createFileRoute("/admin/")({
@@ -172,7 +174,9 @@ function AdminOverview() {
 
   return (
     <AdminShell title="Ringkasan">
+      <FeatureToggles />
       <BackupReminderBanner />
+
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <MiniStat label="Total Peserta" value={stats.total} />
         <MiniStat label="Reguler" value={stats.reguler} to="/admin/peserta/reguler" icon={<Users className="size-4" />} />
