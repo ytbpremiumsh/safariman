@@ -51,6 +51,7 @@ import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admi
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
 import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
+import { Route as AdminPengaturanKreditRouteImport } from './routes/admin.pengaturan.kredit'
 import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
 import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
 import { Route as AdminPengaturanFaqRouteImport } from './routes/admin.pengaturan.faq'
@@ -286,6 +287,11 @@ const AdminPengaturanMediaRoute = AdminPengaturanMediaRouteImport.update({
   path: '/admin/pengaturan/media',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanKreditRoute = AdminPengaturanKreditRouteImport.update({
+  id: '/admin/pengaturan/kredit',
+  path: '/admin/pengaturan/kredit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanHasilSeleksiRoute =
   AdminPengaturanHasilSeleksiRouteImport.update({
     id: '/admin/pengaturan/hasil-seleksi',
@@ -435,6 +441,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
+  '/admin/pengaturan/kredit': typeof AdminPengaturanKreditRoute
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
@@ -498,6 +505,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
+  '/admin/pengaturan/kredit': typeof AdminPengaturanKreditRoute
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
@@ -560,6 +568,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/faq': typeof AdminPengaturanFaqRoute
   '/admin/pengaturan/gelombang': typeof AdminPengaturanGelombangRoute
   '/admin/pengaturan/hasil-seleksi': typeof AdminPengaturanHasilSeleksiRoute
+  '/admin/pengaturan/kredit': typeof AdminPengaturanKreditRoute
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
@@ -625,6 +634,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
+    | '/admin/pengaturan/kredit'
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
@@ -688,6 +698,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
+    | '/admin/pengaturan/kredit'
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
@@ -749,6 +760,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/faq'
     | '/admin/pengaturan/gelombang'
     | '/admin/pengaturan/hasil-seleksi'
+    | '/admin/pengaturan/kredit'
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
@@ -813,6 +825,7 @@ export interface RootRouteChildren {
   AdminPengaturanFaqRoute: typeof AdminPengaturanFaqRoute
   AdminPengaturanGelombangRoute: typeof AdminPengaturanGelombangRoute
   AdminPengaturanHasilSeleksiRoute: typeof AdminPengaturanHasilSeleksiRoute
+  AdminPengaturanKreditRoute: typeof AdminPengaturanKreditRoute
   AdminPengaturanMediaRoute: typeof AdminPengaturanMediaRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
@@ -1128,6 +1141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanMediaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/kredit': {
+      id: '/admin/pengaturan/kredit'
+      path: '/admin/pengaturan/kredit'
+      fullPath: '/admin/pengaturan/kredit'
+      preLoaderRoute: typeof AdminPengaturanKreditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/hasil-seleksi': {
       id: '/admin/pengaturan/hasil-seleksi'
       path: '/admin/pengaturan/hasil-seleksi'
@@ -1336,6 +1356,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanFaqRoute: AdminPengaturanFaqRoute,
   AdminPengaturanGelombangRoute: AdminPengaturanGelombangRoute,
   AdminPengaturanHasilSeleksiRoute: AdminPengaturanHasilSeleksiRoute,
+  AdminPengaturanKreditRoute: AdminPengaturanKreditRoute,
   AdminPengaturanMediaRoute: AdminPengaturanMediaRoute,
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanPengingatPembayaranRoute:
