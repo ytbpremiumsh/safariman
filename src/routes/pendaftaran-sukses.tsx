@@ -49,7 +49,7 @@ function PendaftaranSukses() {
 
   const syncPendingPayment = async (row: Status) => {
     const now = Date.now();
-    if (syncingRef.current || row.payment_status === "paid" || !row.payment_url || now - lastSyncRef.current < 15000) return;
+    if (syncingRef.current || row.payment_status === "paid" || now - lastSyncRef.current < 15000) return;
     syncingRef.current = true;
     lastSyncRef.current = now;
     try {
@@ -113,7 +113,7 @@ function PendaftaranSukses() {
       // sync: true -> paksa verifikasi ke penyedia pembayaran dulu, supaya pembayaran
       // yang sudah lunas (webhook tidak masuk) langsung terdeteksi, bukan buka link lama.
       const json = await mayarPendaftaranInvoice(code, true);
-      if (!json.ok) throw new Error(json.error || "Gagal membuat invoice");
+      if (json && !json.ok) throw new Error(json.error || "Gagal membuat invoice");
       if (json.alreadyPaid) {
         await fetchStatus();
         return;
