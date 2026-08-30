@@ -3,7 +3,7 @@ import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { requireAdmin } from "../_shared/admin-auth.ts";
 
-const FROM_DOMAIN = "mailing.safariman.id";
+const FROM_DOMAIN = "kirim.safariman.id";
 
 function esc(s: string) {
   return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
