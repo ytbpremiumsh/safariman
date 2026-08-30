@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Brain, MessageSquare, Bell, Database, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { isFeatureEnabled, toggleFeature } from "@/lib/features";
+import { isFeatureEnabled, toggleFeature, AI_PAUSED, AI_PAUSED_MESSAGE, isAiFeature } from "@/lib/features";
 import { toast } from "sonner";
 
 const FEATURES = [
@@ -49,6 +49,7 @@ export function FeatureToggles() {
         <h2 className="font-display text-lg font-semibold">Kontrol Fitur Kredit</h2>
         <p className="text-xs text-muted-foreground">Nonaktifkan fitur yang mengonsumsi kredit Lovable saat tidak diperlukan.</p>
       </div>
+      {AI_PAUSED && <p className="text-sm text-amber-700 mb-4">{AI_PAUSED_MESSAGE}</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {FEATURES.map((f) => {
           const Icon = f.icon;
@@ -68,6 +69,7 @@ export function FeatureToggles() {
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
               ) : (
                 <Switch 
+                  disabled={AI_PAUSED && isAiFeature(f.key)}
                   checked={isEnabled} 
                   onCheckedChange={(val) => handleToggle(f.key, val)} 
                 />

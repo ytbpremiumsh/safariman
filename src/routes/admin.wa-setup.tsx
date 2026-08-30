@@ -1,3 +1,4 @@
+import { AI_PAUSED, AI_PAUSED_MESSAGE } from "@/lib/features";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2, QrCode, Save, MessageCircle, Phone, Bot, Webhook, Copy, BookOpen, Sparkles, CheckCircle2, PowerOff, CircleDashed, Eye, EyeOff } from "lucide-react";
@@ -105,7 +106,7 @@ function WaSetupPage() {
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
       const { data } = await supabase.from("app_settings")
         .select("key,value")
-        .in("key", ["mpwa_api_key", "mpwa_sender", "wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", "wa_notif_enabled", ...TEMPLATE_KEYS]);
+        .in("key", ["mpwa_api_key", "mpwa_sender", "wa_ai_reply_enabled", "wa_ai_behavior", "wa_ai_knowledge", "wa_notif_enabled", ...TEMPLATE_KEYS]);
       const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
       setApiKey(map.mpwa_api_key ?? "");
       setSender(map.mpwa_sender ?? "");
@@ -117,7 +118,7 @@ function WaSetupPage() {
         wa_template_ditolak: map.wa_template_ditolak ?? "",
         wa_template_custom: map.wa_template_custom ?? "",
       });
-      setAiEnabled(map.wa_ai_enabled === "true");
+      setAiEnabled(!AI_PAUSED && map.wa_ai_reply_enabled === "true");
       setNotifEnabled((map.wa_notif_enabled ?? "true") !== "false");
       if (map.wa_ai_behavior) setAiBehavior(map.wa_ai_behavior);
       if (map.wa_ai_knowledge) setAiKnowledge(map.wa_ai_knowledge);
@@ -164,7 +165,7 @@ function WaSetupPage() {
     setSavingAi(true);
     const now = new Date().toISOString();
     const { error } = await supabase.from("app_settings").upsert([
-      { key: "wa_ai_enabled", value: aiEnabled ? "true" : "false", updated_at: now },
+      { key: "wa_ai_reply_enabled", value: !AI_PAUSED && aiEnabled ? "true" : "false", updated_at: now },
       { key: "wa_ai_behavior", value: aiBehavior, updated_at: now },
       { key: "wa_ai_knowledge", value: aiKnowledge, updated_at: now },
     ]);
@@ -437,9 +438,11 @@ function WaSetupPage() {
               <Label htmlFor="ai-toggle" className="text-sm font-medium cursor-pointer">
                 {aiEnabled ? "Aktif" : "Nonaktif"}
               </Label>
-              <Switch id="ai-toggle" checked={aiEnabled} onCheckedChange={setAiEnabled} />
+              <Switch id="ai-toggle" disabled={AI_PAUSED} checked={!AI_PAUSED && aiEnabled} onCheckedChange={setAiEnabled} />
             </div>
           </div>
+
+          {AI_PAUSED && <p className="text-sm text-amber-700">{AI_PAUSED_MESSAGE}</p>}
 
           {/* Webhook URL */}
           <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 space-y-2">

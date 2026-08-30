@@ -2,6 +2,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { aiChat } from "../_shared/ai-provider.ts";
+import { AI_PAUSED, AI_PAUSED_MESSAGE } from "../_shared/ai-pause.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -27,6 +28,8 @@ Balas HANYA JSON valid, tanpa markdown.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "method_not_allowed" }, { status: 405 });
+  if (AI_PAUSED) return json({ error: "ai_disabled", message: AI_PAUSED_MESSAGE }, { status: 403 });
   try {
     const auth = req.headers.get("Authorization") ?? "";
     if (!auth.startsWith("Bearer ")) return json({ error: "unauthorized" }, { status: 401 });
@@ -47,6 +50,11 @@ Deno.serve(async (req) => {
     if (!participantId) return json({ error: "participant_id required" }, { status: 400 });
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+    const { data: feature, error: featureError } = await admin.from("app_settings")
+      .select("value").eq("key", "ai_grading_enabled").maybeSingle();
+    if (featureError || feature?.value !== "true") {
+      return json({ error: "ai_disabled", message: AI_PAUSED_MESSAGE }, { status: 403 });
+    }
     const { data: p, error: pErr } = await admin
       .from("participants")
       .select("id, full_name, essay_worthy, essay_dream, essay_contribution, case_study_1, case_study_2, case_study_3, case_study_4, case_study_5, case_study_6, case_study_7")

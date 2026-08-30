@@ -2,6 +2,7 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { aiChat } from "../_shared/ai-provider.ts";
+import { AI_PAUSED, AI_PAUSED_MESSAGE } from "../_shared/ai-pause.ts";
 
 const DEFAULT_BEHAVIOR = `balas chat dan berikan hasil dari semua pembicaraan menggunakan bahasa indonesia`;
 
@@ -44,6 +45,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method === "GET") return json({ ok: true, info: "MPWA webhook for Safar Iman AI auto-reply" });
   if (req.method !== "POST") return json({ ok: false, error: "Method not allowed" }, { status: 405 });
+  // Acknowledge disabled webhooks without provider calls or retries.
+  if (AI_PAUSED) return json({ ok: true, skipped: "ai_disabled", message: AI_PAUSED_MESSAGE });
   try {
     const supabaseAdmin = getAdmin();
     const { data: secretRow } = await supabaseAdmin
@@ -68,7 +71,7 @@ Deno.serve(async (req) => {
     const { data: rows } = await supabaseAdmin
       .from("app_settings")
       .select("key,value")
-      .in("key", ["wa_ai_enabled", "wa_ai_behavior", "wa_ai_knowledge", "mpwa_api_key", "mpwa_sender", "wa_ai_reply_enabled"]);
+      .in("key", ["wa_ai_behavior", "wa_ai_knowledge", "mpwa_api_key", "mpwa_sender", "wa_ai_reply_enabled"]);
     const cfg = Object.fromEntries((rows ?? []).map((r: any) => [r.key, r.value ?? ""])) as Record<string, string>;
 
     if (cfg.wa_ai_reply_enabled !== "true") return json({ ok: true, skipped: "AI Reply disabled by global toggle" });

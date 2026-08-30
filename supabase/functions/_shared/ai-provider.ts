@@ -8,6 +8,8 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { AI_PAUSED, AI_PAUSED_MESSAGE } from "./ai-pause.ts";
+
 export type AiProvider = "lovable" | "openrouter";
 
 export interface AiConfig {
@@ -61,6 +63,9 @@ export interface AiChatResult {
 }
 
 export async function aiChat(opts: AiChatOptions): Promise<AiChatResult> {
+  if (AI_PAUSED) {
+    return { ok: false, status: 403, content: "", provider: opts.config?.provider ?? "lovable", model: "", error: AI_PAUSED_MESSAGE };
+  }
   const cfg = opts.config ?? (await getAiConfig());
   const messages = [
     { role: "system", content: opts.system },
