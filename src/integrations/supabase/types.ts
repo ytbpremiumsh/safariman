@@ -467,15 +467,6 @@ export type Database = {
         Returns: boolean
       }
       claim_admin_if_first: { Args: never; Returns: boolean }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       gen_registration_code: { Args: never; Returns: string }
       get_affiliate_config: { Args: never; Returns: Json }
       get_affiliate_stats: { Args: { p_days?: number }; Returns: Json }
@@ -706,23 +697,6 @@ export type Database = {
       }
       mark_donation_paid: { Args: { p_invoice_id: string }; Returns: boolean }
       mark_payment_paid: { Args: { p_invoice_id: string }; Returns: boolean }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
-        }[]
-      }
       register_participant:
         | {
             Args: {
