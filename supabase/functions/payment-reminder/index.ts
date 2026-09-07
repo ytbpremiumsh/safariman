@@ -2,6 +2,7 @@
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getAdmin } from "../_shared/wa.ts";
 import { requireAdmin } from "../_shared/admin-auth.ts";
+import { sendManagedEmail } from "../_shared/managed-email.ts";
 
 const FROM_DOMAIN = "mail.kejarprestasi.id";
 
