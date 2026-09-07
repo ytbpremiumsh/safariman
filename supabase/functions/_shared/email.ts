@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { getAdmin } from "./wa.ts";
+import { sendManagedEmail } from "./managed-email.ts";
+
 
 export type EmailEvent = "pendaftaran" | "berkas" | "essay" | "kontribusi";
 
