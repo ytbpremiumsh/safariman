@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { getAdmin } from "./wa.ts";
+import { sendManagedEmail } from "./managed-email.ts";
+
 
 export type EmailEvent = "pendaftaran" | "berkas" | "essay" | "kontribusi";
 
@@ -137,35 +139,26 @@ export async function sendEmailForEvent(event: EmailEvent, code: string) {
   const replyToRaw = (cfg.email_reply_to || "").trim();
   const replyTo = replyToRaw && isValidEmail(replyToRaw) ? replyToRaw : undefined;
 
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const { data, error } = await admin.functions.invoke("send-transactional-email", {
-    headers: { Authorization: `Bearer ${serviceKey}` },
-    body: {
-      templateName: "custom-event",
-      recipientEmail: p.email,
-      idempotencyKey: `${event}-${p.registration_code}-${Date.now()}`,
-      from: fromHeader,
-      replyTo,
-      templateData: {
-        subject,
-        nama: vars.nama,
-        kode: vars.kode,
-        kategori: vars.kategori,
-        bodyHtml,
-        preview: subject,
-        senderName,
-      },
+  const result = await sendManagedEmail({
+    admin,
+    templateName: "custom-event",
+    to: p.email,
+    from: fromHeader,
+    replyTo,
+    idempotencyKey: `${event}-${p.registration_code}-${Date.now()}`,
+    templateData: {
+      subject,
+      nama: vars.nama,
+      kode: vars.kode,
+      kategori: vars.kategori,
+      bodyHtml,
+      preview: subject,
+      senderName,
     },
   });
-  if (error) {
-    let details = error.message;
-    try {
-      // deno-lint-ignore no-explicit-any
-      const ctx = (error as any).context;
-      if (ctx && typeof ctx.text === "function") details = await ctx.text();
-    } catch (_) { /* ignore */ }
-    console.error("send-transactional-email failed", { details, event, to: p.email });
-    return { ok: false, error: details };
+  if (!result.ok) {
+    return { ok: false, error: result.suppressed ? "email_suppressed" : result.error };
   }
-  return { ok: true, data };
+  return { ok: true };
 }
+
