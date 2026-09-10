@@ -142,8 +142,13 @@ function buildStages(row: LookupRow): Stage[] {
   let berkas: StageState;
   let berkasNote: string | undefined;
   if (isFastTrack) {
-    berkas = "passed";
-    berkasNote = "Auto Lolos — Fast Track Gelombang";
+    if (row.payment_status === "paid") {
+      berkas = "passed";
+      berkasNote = "Auto Lolos — Fast Track Gelombang";
+    } else {
+      berkas = "pending";
+      berkasNote = "Biaya Fast Track belum lunas — selesaikan pembayaran pendaftaran untuk lanjut ke tahap kontribusi";
+    }
   } else if (isSelfFunded) {
     berkas = "passed";
     berkasNote = "Self Funded — tidak melalui seleksi berkas";
