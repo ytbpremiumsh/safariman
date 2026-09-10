@@ -296,6 +296,20 @@ function DonasiPage() {
                     <FileText className="size-5" /> Lanjut ke Tahap Essay & Studi Kasus <ArrowRight className="size-4" />
                   </Link>
                 </div>
+              ) : (info.category === "gelombang_1" || info.category === "gelombang_2") && info.payment_status !== "paid" ? (
+                <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm space-y-3">
+                  <div className="font-semibold">Biaya Fast Track belum lunas</div>
+                  <p className="text-muted-foreground">
+                    Selesaikan pembayaran Fast Track terlebih dahulu. Tahap kontribusi akan terbuka otomatis setelah pembayaranmu valid.
+                  </p>
+                  <Link
+                    to="/pendaftaran-sukses"
+                    search={{ code: code.trim().toUpperCase() }}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-emerald text-accent px-5 py-3 text-sm font-bold shadow-emerald hover-lift"
+                  >
+                    Selesaikan Pembayaran Fast Track <ArrowRight className="size-4" />
+                  </Link>
+                </div>
               ) : info.category !== "gelombang_1" && info.category !== "gelombang_2" && info.status !== "accepted" ? (
                 <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-5 text-sm">
                   <div className="font-semibold mb-1">Belum dapat melanjutkan</div>
