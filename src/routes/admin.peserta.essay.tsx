@@ -752,12 +752,12 @@ function PendingEssaySection({
   }, [rows, q]);
 
   const exportPendingExcel = () => {
-    if (filtered.length === 0) {
+    if (rows.length === 0) {
       toast.error("Tidak ada data peserta yang dapat diekspor");
       return;
     }
 
-    const data = filtered.map((r, index) => {
+    const data = rows.map((r, index) => {
       const essayFilled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
       const caseStudyFilled = [
         r.has_case_study_1, r.has_case_study_2, r.has_case_study_3, r.has_case_study_4,
@@ -830,10 +830,10 @@ function PendingEssaySection({
         </div>
         <button
           onClick={exportPendingExcel}
-          disabled={filtered.length === 0}
+          disabled={rows.length === 0}
           className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 text-white px-4 py-2 text-sm font-semibold shadow-md hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Download className="size-4" /> Export Belum Kirim
+          <Download className="size-4" /> Export Semua ({rows.length})
         </button>
       </div>
 
