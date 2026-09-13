@@ -106,6 +106,27 @@ const normalizeStatus = (s: string): Status =>
   : s === "rejected" ? "rejected"
   : "reviewed";
 
+const PENDING_PAGE_SIZE = 1000;
+
+async function loadAllPendingEssayParticipants(): Promise<PendingRow[]> {
+  const allRows: PendingRow[] = [];
+
+  for (let from = 0; ; from += PENDING_PAGE_SIZE) {
+    const { data, error } = await (supabase.rpc as any)("list_essay_pending_participants")
+      .order("id", { ascending: true })
+      .range(from, from + PENDING_PAGE_SIZE - 1);
+
+    if (error) throw error;
+
+    const page = (data ?? []) as PendingRow[];
+    allRows.push(...page);
+    if (page.length < PENDING_PAGE_SIZE) break;
+  }
+
+  // Defensive deduplication in case the underlying data changes between pages.
+  return Array.from(new Map(allRows.map((row) => [row.id, row])).values());
+}
+
 function PesertaEssayPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
@@ -121,15 +142,17 @@ function PesertaEssayPage() {
 
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, pendingRes, settingRes] = await Promise.all([
+    const [{ data, error }, pendingResult, settingRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
-      (supabase.rpc as any)("list_essay_pending_participants"),
+      loadAllPendingEssayParticipants()
+        .then((data) => ({ data, error: null as Error | null }))
+        .catch((error: Error) => ({ data: [] as PendingRow[], error })),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
     ]);
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
-    if (pendingRes.error) toast.error(pendingRes.error.message);
-    else setPendingRows((pendingRes.data ?? []) as PendingRow[]);
+    if (pendingResult.error) toast.error(pendingResult.error.message);
+    else setPendingRows(pendingResult.data);
     setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
