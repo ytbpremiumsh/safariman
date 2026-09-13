@@ -728,6 +728,56 @@ function PendingEssaySection({
     );
   }, [rows, q]);
 
+  const exportPendingExcel = () => {
+    if (filtered.length === 0) {
+      toast.error("Tidak ada data peserta yang dapat diekspor");
+      return;
+    }
+
+    const data = filtered.map((r, index) => {
+      const essayFilled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
+      const caseStudyFilled = [
+        r.has_case_study_1, r.has_case_study_2, r.has_case_study_3, r.has_case_study_4,
+        r.has_case_study_5, r.has_case_study_6, r.has_case_study_7,
+      ].filter(Boolean).length;
+
+      return {
+        No: index + 1,
+        Token: r.registration_code,
+        Nama: r.full_name,
+        Email: r.email,
+        WhatsApp: r.whatsapp,
+        Kota: r.city,
+        Pendidikan: r.education,
+        Kategori: r.category ? CAT_LABEL[r.category] : "-",
+        "Essay 1": r.has_essay_worthy ? "Sudah" : "Belum",
+        "Essay 2": r.has_essay_dream ? "Sudah" : "Belum",
+        "Essay 3": r.has_essay_contribution ? "Sudah" : "Belum",
+        "Studi Kasus 1": r.has_case_study_1 ? "Sudah" : "Belum",
+        "Studi Kasus 2": r.has_case_study_2 ? "Sudah" : "Belum",
+        "Studi Kasus 3": r.has_case_study_3 ? "Sudah" : "Belum",
+        "Studi Kasus 4": r.has_case_study_4 ? "Sudah" : "Belum",
+        "Studi Kasus 5": r.has_case_study_5 ? "Sudah" : "Belum",
+        "Studi Kasus 6": r.has_case_study_6 ? "Sudah" : "Belum",
+        "Studi Kasus 7": r.has_case_study_7 ? "Sudah" : "Belum",
+        "Total Terisi": `${essayFilled + caseStudyFilled}/10`,
+        Status: "Belum Mengirim Lengkap",
+        "Terakhir Diperbarui": r.updated_at
+          ? new Date(r.updated_at).toLocaleString("id-ID")
+          : "-",
+      };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws["!cols"] = Object.keys(data[0]).map((key) => ({
+      wch: Math.min(42, Math.max(key.length + 2, ...data.map((row) => String(row[key as keyof typeof row] ?? "").length + 2))),
+    }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Belum Kirim Essay");
+    XLSX.writeFile(wb, `safar-iman-belum-kirim-essay-${Date.now()}.xlsx`);
+    toast.success(`${data.length} peserta belum kirim berhasil diekspor`);
+  };
+
   const waLink = (wa: string, nama: string, kode: string) => {
     const num = wa.replace(/[^\d]/g, "").replace(/^0/, "62");
     const msg = encodeURIComponent(
@@ -750,11 +800,18 @@ function PendingEssaySection({
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl p-4">
-        <div className="relative">
+      <div className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
         </div>
+        <button
+          onClick={exportPendingExcel}
+          disabled={filtered.length === 0}
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 text-white px-4 py-2 text-sm font-semibold shadow-md hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Download className="size-4" /> Export Belum Kirim
+        </button>
       </div>
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
