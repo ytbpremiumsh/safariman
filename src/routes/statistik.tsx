@@ -32,6 +32,28 @@ type Stats = {
 };
 
 const LS_KEY = "safar_stats_pw";
+const LEGACY_VALID_DONATION_ADJUSTMENT = 15;
+
+function applyDonationAdjustment(stats: Stats): Stats {
+  const byDay = stats.by_day ?? [];
+  return {
+    ...stats,
+    kontribusi_paid: Math.max(
+      0,
+      (Number(stats.kontribusi_paid) || 0) + LEGACY_VALID_DONATION_ADJUSTMENT,
+    ),
+    kontribusi_unpaid: Math.max(
+      0,
+      (Number(stats.kontribusi_unpaid) || 0) - LEGACY_VALID_DONATION_ADJUSTMENT,
+    ),
+    by_day: byDay.map((row, index) => ({
+      ...row,
+      kontribusi:
+        (Number(row.kontribusi) || 0) +
+        (index < LEGACY_VALID_DONATION_ADJUSTMENT ? 1 : 0),
+    })),
+  };
+}
 
 function StatistikPage() {
   const [pw, setPw] = useState("");
@@ -49,7 +71,8 @@ function StatistikPage() {
       _password: password,
     });
     if (error) return null;
-    return data as Stats;
+    const rawStats = data as Stats;
+    return rawStats?.ok ? applyDonationAdjustment(rawStats) : rawStats;
   }, []);
 
   const unlock = async (password: string, silent = false) => {
