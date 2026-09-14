@@ -32,7 +32,7 @@ type Stats = {
 };
 
 const LS_KEY = "safar_stats_pw";
-const LEGACY_VALID_DONATION_ADJUSTMENT = 15;
+const LEGACY_VALID_DONATION_ADJUSTMENT = 17;
 
 function applyDonationAdjustment(stats: Stats): Stats {
   const byDay = stats.by_day ?? [];
