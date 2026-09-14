@@ -179,7 +179,8 @@ function PesertaKontribusiPage() {
     )) return;
 
     setCancelingId(r.id);
-    const nextStatus = r.donation_url ? "pending" : null;
+    // donation_status is NOT NULL in production; use the valid unpaid state.
+    const nextStatus = "pending";
     const { data, error } = await supabase
       .from("participants")
       .update({ donation_status: nextStatus, donation_paid_at: null })
