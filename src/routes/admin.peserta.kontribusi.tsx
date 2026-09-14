@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Search, Download, Copy, HeartHandshake, HandCoins, MessageCircle, AlertCircle, CheckCircle2, RotateCcw, Loader2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,6 +52,7 @@ function PesertaKontribusiPage() {
   const [catFilter, setCatFilter] = useState<Category | "all">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   useEffect(() => { setPage(1); }, [tab, q, catFilter, pageSize]);
 
@@ -171,6 +172,39 @@ function PesertaKontribusiPage() {
     supabase.functions.invoke("email-notify", { body: { event: "kontribusi", code: r.registration_code } }).catch(() => {});
   };
 
+  const cancelContribution = async (r: Row) => {
+    if (!confirm(
+      `Batalkan validasi kontribusi untuk ${r.full_name} (${r.registration_code})?\n\n` +
+      "Status kontribusi akan dikembalikan menjadi belum valid. Data peserta tidak akan dihapus.",
+    )) return;
+
+    setCancelingId(r.id);
+    const nextStatus = r.donation_url ? "pending" : null;
+    const { data, error } = await supabase
+      .from("participants")
+      .update({ donation_status: nextStatus, donation_paid_at: null })
+      .eq("id", r.id)
+      .select("id")
+      .maybeSingle();
+    setCancelingId(null);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (!data) {
+      toast.error("Kontribusi tidak berhasil dibatalkan. Silakan muat ulang dan coba lagi.");
+      return;
+    }
+
+    const canceledRow: Row = { ...r, donation_status: nextStatus, donation_paid_at: null };
+    setPaidRows((rows) => rows.filter((x) => x.id !== r.id));
+    if (r.category && DONATION_CATS.includes(r.category)) {
+      setUnpaidRows((rows) => [canceledRow, ...rows.filter((x) => x.id !== r.id)]);
+    }
+    toast.success(`Validasi kontribusi ${r.registration_code} dibatalkan`);
+  };
+
   if (!ready || loading) return <AdminLoading />;
 
   return (
@@ -285,13 +319,13 @@ function PesertaKontribusiPage() {
                 <Th>Kode</Th><Th>Nama</Th><Th>Kategori</Th>
                 <Th>Kontak</Th><Th>Kota</Th>
                 <Th>{tab === "paid" ? "Tanggal Kontribusi" : "Status Donasi"}</Th>
-                {tab === "unpaid" && <Th>Aksi</Th>}
+                <Th>Aksi</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={tab === "unpaid" ? 7 : 6} className="text-center py-10 text-muted-foreground">
+                  <td colSpan={7} className="text-center py-10 text-muted-foreground">
                     {tab === "paid"
                       ? "Belum ada peserta yang valid berkontribusi."
                       : "🎉 Semua peserta sudah berkontribusi."}
@@ -337,8 +371,8 @@ function PesertaKontribusiPage() {
                         </span>
                       )}
                     </td>
-                    {tab === "unpaid" && (
-                      <td className="px-3 py-3">
+                    <td className="px-3 py-3">
+                      {tab === "unpaid" ? (
                         <div className="flex flex-wrap gap-1.5">
                           <a
                             href={waLink(r.whatsapp, r.full_name, r.registration_code)}
@@ -357,8 +391,20 @@ function PesertaKontribusiPage() {
                             <CheckCircle2 className="size-3.5" /> Tandai Lunas
                           </button>
                         </div>
-                      </td>
-                    )}
+                      ) : (
+                        <button
+                          onClick={() => cancelContribution(r)}
+                          disabled={cancelingId === r.id}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300"
+                          title="Batalkan atau hapus status valid kontribusi"
+                        >
+                          {cancelingId === r.id
+                            ? <Loader2 className="size-3.5 animate-spin" />
+                            : <RotateCcw className="size-3.5" />}
+                          Batalkan Validasi
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))
               )}
