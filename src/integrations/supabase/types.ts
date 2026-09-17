@@ -422,7 +422,7 @@ export type Database = {
           decision: string
           participant_id: string
           reviewed_at: string
-          reviewer_id: string
+          reviewer_id: string | null
           reviewer_name: string
           updated_at: string
         }
@@ -430,7 +430,7 @@ export type Database = {
           decision: string
           participant_id: string
           reviewed_at?: string
-          reviewer_id: string
+          reviewer_id?: string | null
           reviewer_name: string
           updated_at?: string
         }
@@ -438,7 +438,7 @@ export type Database = {
           decision?: string
           participant_id?: string
           reviewed_at?: string
-          reviewer_id?: string
+          reviewer_id?: string | null
           reviewer_name?: string
           updated_at?: string
         }
@@ -645,11 +645,6 @@ export type Database = {
           donation_status: string
           education: string
           email: string
-          essay_ai_graded_at: string
-          essay_ai_percent: number
-          essay_ai_score: number
-          essay_ai_summary: string
-          essay_ai_verdict: string
           essay_contribution: string
           essay_dream: string
           essay_worthy: string
@@ -663,6 +658,9 @@ export type Database = {
           photo_url: string
           reason: string
           registration_code: string
+          review_decision: string
+          reviewed_at: string
+          reviewer_name: string
           social_media: string
           status: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at: string
