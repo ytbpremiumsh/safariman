@@ -14,7 +14,19 @@ type Staff={user_id:string;name:string;email:string;active:boolean;created_at:st
 function StaffSettings(){
   const ready=useAdminGuard(); const [staff,setStaff]=useState<Staff[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false);
   const [name,setName]=useState("");const [email,setEmail]=useState("");const [password,setPassword]=useState("");
-  const invoke=async(body:Record<string,unknown>)=>{const {data,error}=await supabase.functions.invoke("staff-management",{body});if(error)throw error;if(data?.error)throw new Error(data.error);return data;};
+  const invoke=async(body:Record<string,unknown>)=>{
+    const {data:{session}}=await supabase.auth.getSession();
+    if(!session?.access_token)throw new Error("Sesi admin berakhir. Silakan login ulang.");
+    const {data,error}=await supabase.functions.invoke("staff-management",{body,headers:{Authorization:`Bearer ${session.access_token}`}});
+    if(error){
+      let message=error.message;
+      const response=(error as {context?:Response}).context;
+      if(response){const payload=await response.clone().json().catch(()=>null) as {error?:string}|null;message=payload?.error||message;}
+      throw new Error(message);
+    }
+    if(data?.error)throw new Error(data.error);
+    return data;
+  };
   const load=async()=>{setLoading(true);try{const data=await invoke({action:"list"});setStaff(data.staff??[]);}catch(e){toast.error(e instanceof Error?e.message:"Gagal memuat staff");}finally{setLoading(false);}};
   useEffect(()=>{if(ready)void load();},[ready]);
   const create=async(e:FormEvent)=>{e.preventDefault();setBusy(true);try{await invoke({action:"create",name,email,password});toast.success("Akun staff berhasil dibuat");setName("");setEmail("");setPassword("");await load();}catch(e){toast.error(e instanceof Error?e.message:"Gagal membuat akun");}finally{setBusy(false);}};
