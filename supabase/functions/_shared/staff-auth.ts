@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.106.1";
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,4 +27,3 @@ export async function authenticatedUser(req: Request) {
   if (error || !data.user) return { ...c, authUser: null };
   return { ...c, authUser: data.user };
 }
-
