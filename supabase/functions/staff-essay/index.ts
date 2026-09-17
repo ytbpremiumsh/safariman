@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
-    const { admin, authUser } = await authenticatedUser(req);
+    const { user, admin, authUser } = await authenticatedUser(req);
     if (!authUser) return json({ error: "Unauthorized" }, 401);
     const { data: staff } = await admin.from("staff_reviewers")
       .select("active,name").eq("user_id", authUser.id).maybeSingle();
@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "list");
     if (action === "list") {
-      const { data, error } = await admin.rpc("list_essay_complete_participants");
+      const { data, error } = await user.rpc("list_essay_complete_participants");
       if (error) throw error;
       const participants = ((data ?? []) as Participant[]).filter(hasCompleteSubmission);
       const ids = participants.map((participant) => participant.id);
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
-      const { data: participant, error: participantError } = await admin.rpc("list_essay_complete_participants");
+      const { data: participant, error: participantError } = await user.rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
       const eligible = ((participant ?? []) as Participant[])
         .some((row) => row.id === participantId && hasCompleteSubmission(row));
@@ -91,6 +91,11 @@ Deno.serve(async (req) => {
 
     return json({ error: "Aksi tidak dikenal" }, 400);
   } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "Terjadi kesalahan" }, 500);
+    const message = error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "Terjadi kesalahan";
+    return json({ error: message }, 500);
   }
 });
