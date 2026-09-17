@@ -14,5 +14,7 @@ verify_jwt = true
 verify_jwt = true
 [functions.staff-essay]
 verify_jwt = true
+[functions.seleksi-token-update]
+verify_jwt = false
 [functions.doc-assets-urls]
 verify_jwt = false
