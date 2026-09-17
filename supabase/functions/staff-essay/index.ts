@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
     const { admin, authUser } = await authenticatedUser(req);
     if (!authUser) return json({ error: "Unauthorized" }, 401);
     const { data: staff } = await admin.from("staff_reviewers")
-      .select("active").eq("user_id", authUser.id).maybeSingle();
+      .select("active,name").eq("user_id", authUser.id).maybeSingle();
     if (!staff?.active) return json({ error: "Akun staff tidak aktif" }, 403);
 
     const body = await req.json().catch(() => ({}));
@@ -16,7 +16,19 @@ Deno.serve(async (req) => {
     if (action === "list") {
       const { data, error } = await admin.rpc("list_essay_complete_participants");
       if (error) throw error;
-      return json({ participants: data ?? [] });
+      const participants = data ?? [];
+      const ids = participants.map((participant: { id: string }) => participant.id);
+      const { data: reviews, error: reviewError } = ids.length
+        ? await admin.from("staff_essay_reviews")
+          .select("participant_id,reviewer_name,decision,reviewed_at,updated_at")
+          .in("participant_id", ids)
+        : { data: [], error: null };
+      if (reviewError) throw reviewError;
+      const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
+      return json({ participants: participants.map((participant: { id: string }) => ({
+        ...participant,
+        staff_review: reviewMap.get(participant.id) ?? null,
+      })) });
     }
 
     if (action === "update_status") {
@@ -33,7 +45,17 @@ Deno.serve(async (req) => {
         p_id: participantId, p_stage: "essay", p_value: stageValue,
       });
       if (stageError) throw stageError;
-      return json({ ok: true });
+      const review = {
+        participant_id: participantId,
+        reviewer_id: authUser.id,
+        reviewer_name: staff.name,
+        decision: status,
+        reviewed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const { error: auditError } = await admin.from("staff_essay_reviews").upsert(review, { onConflict: "participant_id" });
+      if (auditError) throw auditError;
+      return json({ ok: true, review });
     }
 
     return json({ error: "Aksi tidak dikenal" }, 400);
@@ -41,4 +63,3 @@ Deno.serve(async (req) => {
     return json({ error: error instanceof Error ? error.message : "Terjadi kesalahan" }, 500);
   }
 });
-
