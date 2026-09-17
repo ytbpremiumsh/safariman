@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Search, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
-  ShieldCheck, Loader2, Megaphone, EyeOff, Bot,
-  Inbox, Lock, AlertCircle, Copy, Check, Clock
+  Search, FileText, CheckCircle2, XCircle,
+  ShieldCheck, Loader2, Lock, UserRoundCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,6 +52,12 @@ type Row = {
   essay_ai_summary: string | null;
   essay_ai_graded_at: string | null;
   created_at: string;
+  private_review?: {
+    reviewer_name: string;
+    decision: Status;
+    reviewed_at: string;
+    updated_at: string;
+  } | null;
 };
 
 const CAT_LABEL: Record<Category, string> = {
@@ -85,6 +90,7 @@ function SeleksiEssayPrivatePage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
+  const [activeTab, setActiveTab] = useState<"new" | "reviewed">("new");
   const [detail, setDetail] = useState<Row | null>(null);
   const [aiBusy, setAiBusy] = useState(false);
 
@@ -124,11 +130,17 @@ function SeleksiEssayPrivatePage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("list_essay_complete_participants");
+    const { data, error } = await supabase.functions.invoke("seleksi-token-update", {
+      body: { action: "list", token },
+    });
     if (error) {
-      toast.error(error.message);
+      const response = (error as { context?: Response }).context;
+      const payload = response
+        ? await response.clone().json().catch(() => null) as { error?: string } | null
+        : null;
+      toast.error(payload?.error || error.message);
     } else {
-      setRows((data ?? []) as Row[]);
+      setRows((data?.participants ?? []) as Row[]);
     }
     setLoading(false);
   };
@@ -136,44 +148,36 @@ function SeleksiEssayPrivatePage() {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     return rows.filter((r) => {
+      const hasDecision = r.status === "interview" || r.status === "rejected";
+      if (activeTab === "new" && hasDecision) return false;
+      if (activeTab === "reviewed" && !hasDecision) return false;
       if (statusFilter !== "all" && r.status !== statusFilter) return false;
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
     });
-  }, [rows, q, statusFilter]);
+  }, [rows, q, statusFilter, activeTab]);
 
   const updateStatus = async (id: string, s: Status) => {
-    // Note: This requires the token-based bypass or valid admin session. 
-    // Since we are using Supabase JS client, we need a valid session.
-    // However, if the user isn't logged in, they can only READ if we granted it.
-    const { data: { session } } = await supabase.auth.getSession();
-    const isAdmin = session ? await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }) : { data: false };
-    
-    // We only try direct DB update if we are an admin.
-    // If not admin, the Edge Function will handle the service-role update.
-    if (isAdmin.data) {
-      const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
-      if (error) { toast.error(error.message); return; }
-    }
-
-    
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
-    
-    // Use token-based update via edge function if not admin
-    if (!isAdmin.data) {
-      const { data: efData, error: efError } = await supabase.functions.invoke("seleksi-token-update", {
-        body: { token, participant_id: id, status: s, stage_value: stageValue }
-      });
-      if (efError) { toast.error(efError.message); return; }
-    } else {
-      const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
-      if (e2) { toast.error(e2.message); return; }
+
+    const { data, error } = await supabase.functions.invoke("seleksi-token-update", {
+      body: { token, participant_id: id, status: s, stage_value: stageValue },
+    });
+    if (error) {
+      const response = (error as { context?: Response }).context;
+      const payload = response
+        ? await response.clone().json().catch(() => null) as { error?: string } | null
+        : null;
+      toast.error(payload?.error || error.message);
+      return;
     }
-    
-    setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
-    if (detail?.id === id) setDetail({ ...detail, status: s });
+    const privateReview = data?.review ?? null;
+    setRows((previous) => previous.map((row) => row.id === id
+      ? { ...row, status: s, private_review: privateReview }
+      : row));
+    if (detail?.id === id) setDetail({ ...detail, status: s, private_review: privateReview });
     toast.success(`Status peserta berhasil diperbarui ke ${STATUS_LABEL[s]}`);
   };
 
@@ -266,11 +270,29 @@ function SeleksiEssayPrivatePage() {
             </div>
           </div>
 
+          <div className="mt-5 flex flex-wrap gap-2 border-b border-border">
+            <button
+              type="button"
+              onClick={() => { setActiveTab("new"); setStatusFilter("all"); }}
+              className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === "new" ? "border-accent text-accent" : "border-transparent text-muted-foreground"}`}
+            >
+              Berkas Baru ({rows.filter((row) => row.status === "reviewed").length})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setActiveTab("reviewed"); setStatusFilter("all"); }}
+              className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === "reviewed" ? "border-accent text-accent" : "border-transparent text-muted-foreground"}`}
+            >
+              Sudah Dikoreksi ({rows.filter((row) => row.status === "interview" || row.status === "rejected").length})
+            </button>
+          </div>
+
           <div className="mt-6 border border-border rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground font-semibold">
                   <tr>
+                    <th className="px-4 py-3 text-left w-16">No.</th>
                     <th className="px-4 py-3 text-left">Nama & Token</th>
                     <th className="px-4 py-3 text-left">Kontak</th>
                     <th className="px-4 py-3 text-left">Kategori</th>
@@ -281,12 +303,13 @@ function SeleksiEssayPrivatePage() {
                 <tbody className="divide-y divide-border">
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
+                      <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
                         Tidak ada data peserta yang ditemukan.
                       </td>
                     </tr>
-                  ) : filtered.map((r) => (
+                  ) : filtered.map((r, index) => (
                     <tr key={r.id} className="hover:bg-secondary/20 transition-colors">
+                      <td className="px-4 py-4 font-bold text-muted-foreground">{index + 1}</td>
                       <td className="px-4 py-4">
                         <div className="font-semibold text-foreground">{r.full_name}</div>
                         <div className="text-[10px] font-mono text-muted-foreground">{r.registration_code}</div>
@@ -304,6 +327,16 @@ function SeleksiEssayPrivatePage() {
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${STATUS_STYLE[r.status]}`}>
                           {STATUS_LABEL[r.status]}
                         </span>
+                        {r.private_review && (
+                          <div className="mt-2 flex items-start gap-1.5 text-xs text-muted-foreground">
+                            <UserRoundCheck className="size-3.5 shrink-0 mt-0.5" />
+                            <span>
+                              {r.private_review.reviewer_name}
+                              <br />
+                              {new Date(r.private_review.updated_at).toLocaleString("id-ID")}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-4 text-right">
                         <button 
@@ -352,6 +385,8 @@ function SeleksiEssayPrivatePage() {
                     <EssayBlock title="Studi Kasus 3" body={detail.case_study_3 ?? ""} small />
                     <EssayBlock title="Studi Kasus 4" body={detail.case_study_4 ?? ""} small />
                     <EssayBlock title="Studi Kasus 5" body={detail.case_study_5 ?? ""} small />
+                    <EssayBlock title="Studi Kasus 6" body={detail.case_study_6 ?? ""} small />
+                    <EssayBlock title="Studi Kasus 7" body={detail.case_study_7 ?? ""} small />
                   </div>
                 </div>
 
@@ -365,6 +400,19 @@ function SeleksiEssayPrivatePage() {
                       <KV k="Kategori" v={detail.category ? CAT_LABEL[detail.category] : "—"} />
                     </div>
                   </div>
+
+                  {detail.private_review && (
+                    <div className="border border-border rounded-xl p-4 text-xs">
+                      <div className="font-bold text-foreground flex items-center gap-2">
+                        <UserRoundCheck className="size-4 text-accent" />
+                        Pengoreksi
+                      </div>
+                      <p className="mt-2 font-semibold">{detail.private_review.reviewer_name}</p>
+                      <p className="text-muted-foreground">
+                        {new Date(detail.private_review.updated_at).toLocaleString("id-ID")}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-4 space-y-3">
                     <div className="text-[10px] font-bold uppercase tracking-widest text-emerald/70">Update Status Kelulusan</div>

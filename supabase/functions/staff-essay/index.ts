@@ -76,13 +76,6 @@ Deno.serve(async (req) => {
       const eligible = ((participant ?? []) as Participant[])
         .some((row) => row.id === participantId && hasCompleteSubmission(row));
       if (!eligible) return json({ error: "Essay dan Studi Kasus peserta belum lengkap" }, 400);
-      const stageValue = status === "interview" ? "passed" : status === "rejected" ? "failed" : "pending";
-      const { error: statusError } = await admin.from("participants").update({ status }).eq("id", participantId);
-      if (statusError) throw statusError;
-      const { error: stageError } = await admin.rpc("admin_set_tahapan", {
-        p_id: participantId, p_stage: "essay", p_value: stageValue,
-      });
-      if (stageError) throw stageError;
       const review = {
         participant_id: participantId,
         reviewer_id: authUser.id,

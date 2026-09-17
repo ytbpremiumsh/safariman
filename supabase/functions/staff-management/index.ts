@@ -28,17 +28,48 @@ Deno.serve(async (req) => {
       if (!name || !email || password.length < 8) {
         return json({ error: "Nama, email, dan password minimal 8 karakter wajib diisi" }, 400);
       }
-      const { data: created, error: createError } = await admin.auth.admin.createUser({
-        email, password, email_confirm: true,
-        app_metadata: { access_role: "staff_reviewer" },
-        user_metadata: { name },
-      });
-      if (createError || !created.user) return json({ error: createError?.message ?? "Gagal membuat akun" }, 400);
-      const { error: profileError } = await admin.from("staff_reviewers").insert({
-        user_id: created.user.id, name, email, created_by: authUser.id,
-      });
+      const { data: existingStaff, error: existingStaffError } = await admin
+        .from("staff_reviewers")
+        .select("user_id")
+        .eq("email", email)
+        .maybeSingle();
+      if (existingStaffError) throw existingStaffError;
+      if (existingStaff) return json({ error: "Email ini sudah terdaftar sebagai staff" }, 409);
+
+      const { data: usersPage, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (usersError) throw usersError;
+      let staffUser = usersPage.users.find((candidate) => candidate.email?.toLowerCase() === email);
+      let newlyCreated = false;
+      if (staffUser) {
+        const { data: role } = await admin.from("user_roles")
+          .select("role").eq("user_id", staffUser.id).eq("role", "admin").maybeSingle();
+        if (role) return json({ error: "Email admin tidak dapat dijadikan akun staff" });
+        const { data: updated, error: updateError } = await admin.auth.admin.updateUserById(staffUser.id, {
+          password,
+          email_confirm: true,
+          app_metadata: { ...staffUser.app_metadata, access_role: "staff_reviewer" },
+          user_metadata: { ...staffUser.user_metadata, name },
+        });
+        if (updateError || !updated.user) throw updateError ?? new Error("Gagal menyiapkan akun staff");
+        staffUser = updated.user;
+      } else {
+        const { data: created, error: createError } = await admin.auth.admin.createUser({
+          email, password, email_confirm: true,
+          app_metadata: { access_role: "staff_reviewer" },
+          user_metadata: { name },
+        });
+        if (createError || !created.user) throw createError ?? new Error("Gagal membuat akun");
+        staffUser = created.user;
+        newlyCreated = true;
+      }
+      const { error: profileError } = await admin.from("staff_reviewers").upsert({
+        user_id: staffUser.id, name, email, active: true, created_by: authUser.id,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "user_id" });
+      if (profileError && newlyCreated) {
+        await admin.auth.admin.deleteUser(staffUser.id);
+      }
       if (profileError) {
-        await admin.auth.admin.deleteUser(created.user.id);
         throw profileError;
       }
       return json({ ok: true });
