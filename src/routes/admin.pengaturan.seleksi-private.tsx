@@ -33,6 +33,7 @@ function SeleksiPrivateSettings() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [expiryDays, setExpiryDays] = useState("7");
+  const [reviewerName, setReviewerName] = useState("");
   const [copying, setCopying] = useState<string | null>(null);
 
   useEffect(() => {
@@ -64,13 +65,15 @@ function SeleksiPrivateSettings() {
       .from("seleksi_private_tokens")
       .insert({
         token,
-        expires_at: expiresAt.toISOString()
+        expires_at: expiresAt.toISOString(),
+        reviewer_name: reviewerName.trim()
       });
 
     if (error) {
       toast.error(error.message);
     } else {
       toast.success("Token akses berhasil dibuat");
+      setReviewerName("");
       void fetchTokens();
     }
     setCreating(false);
@@ -115,7 +118,17 @@ function SeleksiPrivateSettings() {
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nama Pengoreksi</label>
+                <Input
+                  value={reviewerName}
+                  onChange={(e) => setReviewerName(e.target.value)}
+                  placeholder="Contoh: Ana Rofiqoh"
+                  className="sm:w-52"
+                  required
+                />
+              </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Masa Berlaku (Hari)</label>
                 <Input 
@@ -129,7 +142,7 @@ function SeleksiPrivateSettings() {
               </div>
               <Button 
                 onClick={createToken} 
-                disabled={creating}
+                disabled={creating || !reviewerName.trim()}
                 className="self-end bg-accent hover:bg-accent/90 text-white rounded-xl h-10 px-6 font-bold"
               >
                 {creating ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4 mr-2" />}
@@ -172,6 +185,7 @@ function SeleksiPrivateSettings() {
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <span className="font-semibold text-foreground">Pengoreksi: {t.reviewer_name || "Belum ditentukan"}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="size-3" /> Dibuat: {t.created_at ? format(new Date(t.created_at), "d MMM yyyy HH:mm", { locale: id }) : "—"}
                       </span>

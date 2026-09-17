@@ -28,12 +28,25 @@ Deno.serve(async (req) => {
       if (!name || !email || password.length < 8) {
         return json({ error: "Nama, email, dan password minimal 8 karakter wajib diisi" }, 400);
       }
+      const { data: existingStaff, error: existingStaffError } = await admin
+        .from("staff_reviewers")
+        .select("user_id")
+        .eq("email", email)
+        .maybeSingle();
+      if (existingStaffError) throw existingStaffError;
+      if (existingStaff) return json({ error: "Email ini sudah terdaftar sebagai staff" }, 409);
+
       const { data: created, error: createError } = await admin.auth.admin.createUser({
         email, password, email_confirm: true,
         app_metadata: { access_role: "staff_reviewer" },
         user_metadata: { name },
       });
-      if (createError || !created.user) return json({ error: createError?.message ?? "Gagal membuat akun" }, 400);
+      if (createError || !created.user) {
+        const message = createError?.message?.toLowerCase().includes("already")
+          ? "Email ini sudah terdaftar. Gunakan email lain atau hapus akun lama terlebih dahulu."
+          : createError?.message ?? "Gagal membuat akun";
+        return json({ error: message }, 400);
+      }
       const { error: profileError } = await admin.from("staff_reviewers").insert({
         user_id: created.user.id, name, email, created_by: authUser.id,
       });

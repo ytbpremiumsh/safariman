@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,9 +15,11 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { token, participant_id, status, stage_value } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const token = String(body.token ?? "");
+    const action = String(body.action ?? "update_status");
 
-    if (!token || !participant_id || !status || !stage_value) {
+    if (!token) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -27,7 +29,7 @@ serve(async (req) => {
     // Verify token
     const { data: tokenData, error: tokenError } = await supabaseClient
       .from("seleksi_private_tokens")
-      .select("expires_at")
+      .select("expires_at, reviewer_name")
       .eq("token", token)
       .maybeSingle();
 
@@ -45,23 +47,67 @@ serve(async (req) => {
       });
     }
 
-    // Perform updates
+    if (action === "list") {
+      const { data: participants, error: participantError } = await supabaseClient
+        .rpc("list_essay_complete_participants");
+      if (participantError) throw participantError;
+      const ids = (participants ?? []).map((participant: { id: string }) => participant.id);
+      const { data: reviews, error: reviewError } = ids.length
+        ? await supabaseClient.from("seleksi_private_reviews")
+          .select("participant_id,reviewer_name,decision,reviewed_at,updated_at")
+          .in("participant_id", ids)
+        : { data: [], error: null };
+      if (reviewError) throw reviewError;
+      const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
+      return new Response(JSON.stringify({
+        participants: (participants ?? []).map((participant: { id: string; status: string }) => {
+          const review = reviewMap.get(participant.id) ?? null;
+          return { ...participant, status: review?.decision ?? participant.status, private_review: review };
+        }),
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const participantId = String(body.participant_id ?? "");
+    const status = String(body.status ?? "");
+    const stageValue = String(body.stage_value ?? "");
+    if (!participantId || !["reviewed", "interview", "rejected"].includes(status) ||
+      !["pending", "passed", "failed"].includes(stageValue)) {
+      return new Response(JSON.stringify({ error: "Data keputusan tidak valid" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { error: updateError } = await supabaseClient
       .from("participants")
       .update({ status })
-      .eq("id", participant_id);
+      .eq("id", participantId);
 
     if (updateError) throw updateError;
 
     const { error: tahapanError } = await supabaseClient.rpc("admin_set_tahapan", {
-      p_id: participant_id,
+      p_id: participantId,
       p_stage: "essay",
       p_value: stage_value,
     });
 
     if (tahapanError) throw tahapanError;
 
-    return new Response(JSON.stringify({ ok: true }), {
+    const now = new Date().toISOString();
+    const { data: review, error: reviewError } = await supabaseClient
+      .from("seleksi_private_reviews")
+      .upsert({
+        participant_id: participantId,
+        reviewer_name: tokenData.reviewer_name?.trim() || "Tim Seleksi Private",
+        decision: status,
+        reviewed_at: now,
+        updated_at: now,
+      }, { onConflict: "participant_id" })
+      .select("reviewer_name,decision,reviewed_at,updated_at")
+      .single();
+    if (reviewError) throw reviewError;
+
+    return new Response(JSON.stringify({ ok: true, review }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

@@ -15,8 +15,14 @@ function StaffSettings(){
   const ready=useAdminGuard(); const [staff,setStaff]=useState<Staff[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false);
   const [name,setName]=useState("");const [email,setEmail]=useState("");const [password,setPassword]=useState("");
   const invoke=async(body:Record<string,unknown>)=>{
-    const {data:{session}}=await supabase.auth.getSession();
+    let {data:{session}}=await supabase.auth.getSession();
     if(!session?.access_token)throw new Error("Sesi admin berakhir. Silakan login ulang.");
+    const expiresSoon = (session.expires_at ?? 0) * 1000 < Date.now() + 60_000;
+    if(expiresSoon){
+      const {data,error}=await supabase.auth.refreshSession();
+      if(error||!data.session)throw new Error("Sesi admin berakhir. Silakan login ulang.");
+      session=data.session;
+    }
     const {data,error}=await supabase.functions.invoke("staff-management",{body,headers:{Authorization:`Bearer ${session.access_token}`}});
     if(error){
       let message=error.message;
