@@ -30,7 +30,10 @@ import { Route as CekTahapanRouteImport } from './routes/cek-tahapan'
 import { Route as CekHasilRouteImport } from './routes/cek-hasil'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StaffIndexRouteImport } from './routes/staff.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as StaffLolosRouteImport } from './routes/staff.lolos'
+import { Route as StaffLoginRouteImport } from './routes/staff.login'
 import { Route as SeleksiEssayRouteImport } from './routes/seleksi.essay'
 import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -47,6 +50,7 @@ import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pen
 import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
 import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
+import { Route as AdminPengaturanStaffRouteImport } from './routes/admin.pengaturan.staff'
 import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
@@ -177,9 +181,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffIndexRoute = StaffIndexRouteImport.update({
+  id: '/staff/',
+  path: '/staff/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffLolosRoute = StaffLolosRouteImport.update({
+  id: '/staff/lolos',
+  path: '/staff/lolos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffLoginRoute = StaffLoginRouteImport.update({
+  id: '/staff/login',
+  path: '/staff/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SeleksiEssayRoute = SeleksiEssayRouteImport.update({
@@ -265,6 +284,11 @@ const AdminPengaturanStatistikRoute =
     path: '/admin/pengaturan/statistik',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanStaffRoute = AdminPengaturanStaffRouteImport.update({
+  id: '/admin/pengaturan/staff',
+  path: '/admin/pengaturan/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPengaturanSeleksiPrivateRoute =
   AdminPengaturanSeleksiPrivateRouteImport.update({
     id: '/admin/pengaturan/seleksi-private',
@@ -426,7 +450,10 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/seleksi/essay': typeof SeleksiEssayRoute
+  '/staff/login': typeof StaffLoginRoute
+  '/staff/lolos': typeof StaffLolosRoute
   '/admin/': typeof AdminIndexRoute
+  '/staff/': typeof StaffIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
@@ -446,6 +473,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -490,7 +518,10 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/seleksi/essay': typeof SeleksiEssayRoute
+  '/staff/login': typeof StaffLoginRoute
+  '/staff/lolos': typeof StaffLolosRoute
   '/admin': typeof AdminIndexRoute
+  '/staff': typeof StaffIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
@@ -510,6 +541,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -553,7 +585,10 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/wa-setup': typeof AdminWaSetupRoute
   '/seleksi/essay': typeof SeleksiEssayRoute
+  '/staff/login': typeof StaffLoginRoute
+  '/staff/lolos': typeof StaffLolosRoute
   '/admin/': typeof AdminIndexRoute
+  '/staff/': typeof StaffIndexRoute
   '/admin/alur/fully-funded': typeof AdminAlurFullyFundedRoute
   '/admin/alur/tahapan-seleksi': typeof AdminAlurTahapanSeleksiRoute
   '/admin/pengaturan/affiliate': typeof AdminPengaturanAffiliateRoute
@@ -573,6 +608,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
   '/admin/pengaturan/twibbon': typeof AdminPengaturanTwibbonRoute
@@ -619,7 +655,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/seleksi/essay'
+    | '/staff/login'
+    | '/staff/lolos'
     | '/admin/'
+    | '/staff/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
@@ -639,6 +678,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -683,7 +723,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/seleksi/essay'
+    | '/staff/login'
+    | '/staff/lolos'
     | '/admin'
+    | '/staff'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
@@ -703,6 +746,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -745,7 +789,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/wa-setup'
     | '/seleksi/essay'
+    | '/staff/login'
+    | '/staff/lolos'
     | '/admin/'
+    | '/staff/'
     | '/admin/alur/fully-funded'
     | '/admin/alur/tahapan-seleksi'
     | '/admin/pengaturan/affiliate'
@@ -765,6 +812,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
     | '/admin/pengaturan/twibbon'
@@ -810,7 +858,10 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminWaSetupRoute: typeof AdminWaSetupRoute
   SeleksiEssayRoute: typeof SeleksiEssayRoute
+  StaffLoginRoute: typeof StaffLoginRoute
+  StaffLolosRoute: typeof StaffLolosRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  StaffIndexRoute: typeof StaffIndexRoute
   AdminAlurFullyFundedRoute: typeof AdminAlurFullyFundedRoute
   AdminAlurTahapanSeleksiRoute: typeof AdminAlurTahapanSeleksiRoute
   AdminPengaturanAffiliateRoute: typeof AdminPengaturanAffiliateRoute
@@ -830,6 +881,7 @@ export interface RootRouteChildren {
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
   AdminPengaturanSeleksiPrivateRoute: typeof AdminPengaturanSeleksiPrivateRoute
+  AdminPengaturanStaffRoute: typeof AdminPengaturanStaffRoute
   AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
   AdminPengaturanTwibbonRoute: typeof AdminPengaturanTwibbonRoute
@@ -994,11 +1046,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff/': {
+      id: '/staff/'
+      path: '/staff'
+      fullPath: '/staff/'
+      preLoaderRoute: typeof StaffIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff/lolos': {
+      id: '/staff/lolos'
+      path: '/staff/lolos'
+      fullPath: '/staff/lolos'
+      preLoaderRoute: typeof StaffLolosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff/login': {
+      id: '/staff/login'
+      path: '/staff/login'
+      fullPath: '/staff/login'
+      preLoaderRoute: typeof StaffLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seleksi/essay': {
@@ -1111,6 +1184,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/pengaturan/statistik'
       fullPath: '/admin/pengaturan/statistik'
       preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/staff': {
+      id: '/admin/pengaturan/staff'
+      path: '/admin/pengaturan/staff'
+      fullPath: '/admin/pengaturan/staff'
+      preLoaderRoute: typeof AdminPengaturanStaffRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pengaturan/seleksi-private': {
@@ -1341,7 +1421,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminWaSetupRoute: AdminWaSetupRoute,
   SeleksiEssayRoute: SeleksiEssayRoute,
+  StaffLoginRoute: StaffLoginRoute,
+  StaffLolosRoute: StaffLolosRoute,
   AdminIndexRoute: AdminIndexRoute,
+  StaffIndexRoute: StaffIndexRoute,
   AdminAlurFullyFundedRoute: AdminAlurFullyFundedRoute,
   AdminAlurTahapanSeleksiRoute: AdminAlurTahapanSeleksiRoute,
   AdminPengaturanAffiliateRoute: AdminPengaturanAffiliateRoute,
@@ -1362,6 +1445,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanPengingatPembayaranRoute:
     AdminPengaturanPengingatPembayaranRoute,
   AdminPengaturanSeleksiPrivateRoute: AdminPengaturanSeleksiPrivateRoute,
+  AdminPengaturanStaffRoute: AdminPengaturanStaffRoute,
   AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,
   AdminPengaturanTwibbonRoute: AdminPengaturanTwibbonRoute,
