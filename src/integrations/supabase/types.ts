@@ -379,6 +379,71 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_essay_reviews: {
+        Row: {
+          decision: string
+          participant_id: string
+          reviewed_at: string
+          reviewer_id: string
+          reviewer_name: string
+          updated_at: string
+        }
+        Insert: {
+          decision: string
+          participant_id: string
+          reviewed_at?: string
+          reviewer_id: string
+          reviewer_name: string
+          updated_at?: string
+        }
+        Update: {
+          decision?: string
+          participant_id?: string
+          reviewed_at?: string
+          reviewer_id?: string
+          reviewer_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_essay_reviews_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_reviewers: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          email: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          email: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string

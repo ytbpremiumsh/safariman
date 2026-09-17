@@ -1,11 +1,41 @@
 import { authenticatedUser, corsHeaders, json } from "../_shared/staff-auth.ts";
 
+type Participant = {
+  id: string;
+  essay_worthy: string | null;
+  essay_dream: string | null;
+  essay_contribution: string | null;
+  case_study_1: string | null;
+  case_study_2: string | null;
+  case_study_3: string | null;
+  case_study_4: string | null;
+  case_study_5: string | null;
+  case_study_6: string | null;
+  case_study_7: string | null;
+  [key: string]: unknown;
+};
+
+function hasCompleteSubmission(participant: Participant) {
+  return [
+    participant.essay_worthy,
+    participant.essay_dream,
+    participant.essay_contribution,
+    participant.case_study_1,
+    participant.case_study_2,
+    participant.case_study_3,
+    participant.case_study_4,
+    participant.case_study_5,
+    participant.case_study_6,
+    participant.case_study_7,
+  ].every((answer) => typeof answer === "string" && answer.trim().length > 0);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
-    const { admin, authUser } = await authenticatedUser(req);
+    const { user, admin, authUser } = await authenticatedUser(req);
     if (!authUser) return json({ error: "Unauthorized" }, 401);
     const { data: staff } = await admin.from("staff_reviewers")
       .select("active,name").eq("user_id", authUser.id).maybeSingle();
@@ -14,10 +44,10 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "list");
     if (action === "list") {
-      const { data, error } = await admin.rpc("list_essay_complete_participants");
+      const { data, error } = await user.rpc("list_essay_complete_participants");
       if (error) throw error;
-      const participants = data ?? [];
-      const ids = participants.map((participant: { id: string }) => participant.id);
+      const participants = ((data ?? []) as Participant[]).filter(hasCompleteSubmission);
+      const ids = participants.map((participant) => participant.id);
       const { data: reviews, error: reviewError } = ids.length
         ? await admin.from("staff_essay_reviews")
           .select("participant_id,reviewer_name,decision,reviewed_at,updated_at")
@@ -25,10 +55,14 @@ Deno.serve(async (req) => {
         : { data: [], error: null };
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
-      return json({ participants: participants.map((participant: { id: string }) => ({
-        ...participant,
-        staff_review: reviewMap.get(participant.id) ?? null,
-      })) });
+      return json({ participants: participants.map((participant) => {
+        const staffReview = reviewMap.get(participant.id) ?? null;
+        return {
+          ...participant,
+          status: staffReview?.decision ?? "reviewed",
+          staff_review: staffReview,
+        };
+      }) });
     }
 
     if (action === "update_status") {
@@ -37,14 +71,11 @@ Deno.serve(async (req) => {
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
-      const stageValue = status === "interview" ? "passed" : status === "rejected" ? "failed" : "pending";
-      const { error: participantError } = await admin.from("participants")
-        .update({ status }).eq("id", participantId);
+      const { data: participant, error: participantError } = await user.rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
-      const { error: stageError } = await admin.rpc("admin_set_tahapan", {
-        p_id: participantId, p_stage: "essay", p_value: stageValue,
-      });
-      if (stageError) throw stageError;
+      const eligible = ((participant ?? []) as Participant[])
+        .some((row) => row.id === participantId && hasCompleteSubmission(row));
+      if (!eligible) return json({ error: "Essay dan Studi Kasus peserta belum lengkap" }, 400);
       const review = {
         participant_id: participantId,
         reviewer_id: authUser.id,
@@ -60,6 +91,11 @@ Deno.serve(async (req) => {
 
     return json({ error: "Aksi tidak dikenal" }, 400);
   } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "Terjadi kesalahan" }, 500);
+    const message = error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "Terjadi kesalahan";
+    return json({ error: message }, 500);
   }
 });
