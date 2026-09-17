@@ -1,0 +1,1 @@
+ALTER FUNCTION public.list_essay_complete_participants() SECURITY INVOKER;
