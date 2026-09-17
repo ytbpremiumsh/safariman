@@ -159,43 +159,25 @@ function SeleksiEssayPrivatePage() {
   }, [rows, q, statusFilter, activeTab]);
 
   const updateStatus = async (id: string, s: Status) => {
-    // Note: This requires the token-based bypass or valid admin session. 
-    // Since we are using Supabase JS client, we need a valid session.
-    // However, if the user isn't logged in, they can only READ if we granted it.
-    const { data: { session } } = await supabase.auth.getSession();
-    const isAdmin = session ? await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }) : { data: false };
-    
-    // We only try direct DB update if we are an admin.
-    // If not admin, the Edge Function will handle the service-role update.
-    if (isAdmin.data) {
-      const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
-      if (error) { toast.error(error.message); return; }
-    }
-
-    
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
-    
-    // Use token-based update via edge function if not admin
-    if (!isAdmin.data) {
-       const { data: efData, error: efError } = await supabase.functions.invoke("seleksi-token-update", {
-        body: { token, participant_id: id, status: s, stage_value: stageValue }
-      });
-      if (efError) { toast.error(efError.message); return; }
-       const privateReview = efData?.review ?? null;
-       setRows((previous) => previous.map((row) => row.id === id
-         ? { ...row, status: s, private_review: privateReview }
-         : row));
-       if (detail?.id === id) setDetail({ ...detail, status: s, private_review: privateReview });
-    } else {
-      const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
-      if (e2) { toast.error(e2.message); return; }
+
+    const { data, error } = await supabase.functions.invoke("seleksi-token-update", {
+      body: { token, participant_id: id, status: s, stage_value: stageValue },
+    });
+    if (error) {
+      const response = (error as { context?: Response }).context;
+      const payload = response
+        ? await response.clone().json().catch(() => null) as { error?: string } | null
+        : null;
+      toast.error(payload?.error || error.message);
+      return;
     }
-    
-    if (isAdmin.data) {
-      setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
-      if (detail?.id === id) setDetail({ ...detail, status: s });
-    }
+    const privateReview = data?.review ?? null;
+    setRows((previous) => previous.map((row) => row.id === id
+      ? { ...row, status: s, private_review: privateReview }
+      : row));
+    if (detail?.id === id) setDetail({ ...detail, status: s, private_review: privateReview });
     toast.success(`Status peserta berhasil diperbarui ke ${STATUS_LABEL[s]}`);
   };
 
@@ -403,6 +385,8 @@ function SeleksiEssayPrivatePage() {
                     <EssayBlock title="Studi Kasus 3" body={detail.case_study_3 ?? ""} small />
                     <EssayBlock title="Studi Kasus 4" body={detail.case_study_4 ?? ""} small />
                     <EssayBlock title="Studi Kasus 5" body={detail.case_study_5 ?? ""} small />
+                    <EssayBlock title="Studi Kasus 6" body={detail.case_study_6 ?? ""} small />
+                    <EssayBlock title="Studi Kasus 7" body={detail.case_study_7 ?? ""} small />
                   </div>
                 </div>
 
