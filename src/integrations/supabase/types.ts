@@ -645,6 +645,11 @@ export type Database = {
           donation_status: string
           education: string
           email: string
+          essay_ai_graded_at: string
+          essay_ai_percent: number
+          essay_ai_score: number
+          essay_ai_summary: string
+          essay_ai_verdict: string
           essay_contribution: string
           essay_dream: string
           essay_worthy: string
