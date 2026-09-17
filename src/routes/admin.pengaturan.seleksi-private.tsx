@@ -25,6 +25,7 @@ type Token = {
   token: string;
   created_at: string | null;
   expires_at: string;
+  reviewer_name: string | null;
 };
 
 function SeleksiPrivateSettings() {
