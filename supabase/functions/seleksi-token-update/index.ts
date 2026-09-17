@@ -88,7 +88,7 @@ serve(async (req) => {
     const { error: tahapanError } = await supabaseClient.rpc("admin_set_tahapan", {
       p_id: participantId,
       p_stage: "essay",
-      p_value: stage_value,
+      p_value: stageValue,
     });
 
     if (tahapanError) throw tahapanError;

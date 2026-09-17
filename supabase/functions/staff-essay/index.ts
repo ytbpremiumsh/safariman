@@ -2,33 +2,8 @@ import { authenticatedUser, corsHeaders, json } from "../_shared/staff-auth.ts";
 
 type Participant = {
   id: string;
-  essay_worthy: string | null;
-  essay_dream: string | null;
-  essay_contribution: string | null;
-  case_study_1: string | null;
-  case_study_2: string | null;
-  case_study_3: string | null;
-  case_study_4: string | null;
-  case_study_5: string | null;
-  case_study_6: string | null;
-  case_study_7: string | null;
   [key: string]: unknown;
 };
-
-function hasCompleteSubmission(participant: Participant) {
-  return [
-    participant.essay_worthy,
-    participant.essay_dream,
-    participant.essay_contribution,
-    participant.case_study_1,
-    participant.case_study_2,
-    participant.case_study_3,
-    participant.case_study_4,
-    participant.case_study_5,
-    participant.case_study_6,
-    participant.case_study_7,
-  ].every((answer) => typeof answer === "string" && answer.trim().length > 0);
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -44,9 +19,9 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "list");
     if (action === "list") {
-      const { data, error } = await admin.from("participants").select("id,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,category,status,essay_worthy,essay_dream,essay_contribution,case_study_1,case_study_2,case_study_3,case_study_4,case_study_5,case_study_6,case_study_7,cv_url,photo_url,donation_status,donation_paid_at,created_at");
+      const { data, error } = await admin.rpc("list_essay_complete_participants");
       if (error) throw error;
-      const participants = ((data ?? []) as Participant[]).filter(hasCompleteSubmission);
+      const participants = (data ?? []) as Participant[];
       const ids = participants.map((participant) => participant.id);
       const { data: reviews, error: reviewError } = ids.length
         ? await admin.from("staff_essay_reviews")
@@ -71,10 +46,11 @@ Deno.serve(async (req) => {
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
-      const { data: participant, error: participantError } = await admin.from("participants").select("id,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,category,status,essay_worthy,essay_dream,essay_contribution,case_study_1,case_study_2,case_study_3,case_study_4,case_study_5,case_study_6,case_study_7,cv_url,photo_url,donation_status,donation_paid_at,created_at");
+      const { data: participant, error: participantError } = await admin
+        .rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
       const eligible = ((participant ?? []) as Participant[])
-        .some((row) => row.id === participantId && hasCompleteSubmission(row));
+        .some((row) => row.id === participantId);
       if (!eligible) return json({ error: "Essay dan Studi Kasus peserta belum lengkap" }, 400);
       const review = {
         participant_id: participantId,
