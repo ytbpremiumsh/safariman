@@ -2,18 +2,17 @@ project_id = "tvingnpdeueufagssdte"
 
 [functions.preview-transactional-email]
 verify_jwt = false
-
 [functions.email-notify]
 verify_jwt = false
-
 [functions.wa-notify]
 verify_jwt = false
-
 [functions.mpwa-proxy]
 verify_jwt = true
-
 [functions.essay-ai-grade]
 verify_jwt = true
-
+[functions.staff-management]
+verify_jwt = true
+[functions.staff-essay]
+verify_jwt = true
 [functions.doc-assets-urls]
 verify_jwt = false

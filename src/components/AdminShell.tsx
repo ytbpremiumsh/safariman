@@ -71,6 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/analytics", label: "Google Analytics", keywords: "google analytics ga ga4 tracking pelacakan measurement id statistik pengunjung" },
           { to: "/admin/pengaturan/backup", label: "Backup Database", keywords: "backup database cadangan ekspor json data peserta pengingat reminder" },
           { to: "/admin/pengaturan/seleksi-private", label: "Akses Seleksi Private", keywords: "seleksi private token akses essay studi kasus grading eksternal" },
+          { to: "/admin/pengaturan/staff", label: "Akun Staff Seleksi", keywords: "staff reviewer akun user password koreksi essay studi kasus" },
         ],
       },
     ],
