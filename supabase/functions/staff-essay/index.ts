@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "list");
     if (action === "list") {
-      const { data, error } = await user.rpc("list_essay_complete_participants");
+      const { data, error } = await admin.from("participants").select("id,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,category,status,essay_worthy,essay_dream,essay_contribution,case_study_1,case_study_2,case_study_3,case_study_4,case_study_5,case_study_6,case_study_7,cv_url,photo_url,donation_status,donation_paid_at,created_at");
       if (error) throw error;
       const participants = ((data ?? []) as Participant[]).filter(hasCompleteSubmission);
       const ids = participants.map((participant) => participant.id);
@@ -71,11 +71,18 @@ Deno.serve(async (req) => {
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
-      const { data: participant, error: participantError } = await user.rpc("list_essay_complete_participants");
+      const { data: participant, error: participantError } = await admin.from("participants").select("id,registration_code,full_name,email,whatsapp,gender,birth_date,city,education,occupation,category,status,essay_worthy,essay_dream,essay_contribution,case_study_1,case_study_2,case_study_3,case_study_4,case_study_5,case_study_6,case_study_7,cv_url,photo_url,donation_status,donation_paid_at,created_at");
       if (participantError) throw participantError;
       const eligible = ((participant ?? []) as Participant[])
         .some((row) => row.id === participantId && hasCompleteSubmission(row));
       if (!eligible) return json({ error: "Essay dan Studi Kasus peserta belum lengkap" }, 400);
+      const stageValue = status === "interview" ? "passed" : status === "rejected" ? "failed" : "pending";
+      const { error: statusError } = await admin.from("participants").update({ status }).eq("id", participantId);
+      if (statusError) throw statusError;
+      const { error: stageError } = await admin.rpc("admin_set_tahapan", {
+        p_id: participantId, p_stage: "essay", p_value: stageValue,
+      });
+      if (stageError) throw stageError;
       const review = {
         participant_id: participantId,
         reviewer_id: authUser.id,
