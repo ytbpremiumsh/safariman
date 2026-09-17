@@ -22,12 +22,9 @@ Deno.serve(async (req) => {
       const { data, error } = await admin.rpc("list_essay_complete_participants");
       if (error) throw error;
       const participants = (data ?? []) as Participant[];
-      const ids = participants.map((participant) => participant.id);
-      const { data: reviews, error: reviewError } = ids.length
-        ? await admin.from("staff_essay_reviews")
-          .select("participant_id,reviewer_name,decision,reviewed_at,updated_at")
-          .in("participant_id", ids)
-        : { data: [], error: null };
+      const { data: reviews, error: reviewError } = await admin
+        .from("staff_essay_reviews")
+        .select("participant_id,reviewer_name,decision,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return json({ participants: participants.map((participant) => {
