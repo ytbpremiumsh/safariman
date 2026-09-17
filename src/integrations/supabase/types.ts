@@ -361,20 +361,26 @@ export type Database = {
       seleksi_private_tokens: {
         Row: {
           created_at: string | null
+          created_by: string | null
           expires_at: string
           id: string
+          reviewer_name: string | null
           token: string
         }
         Insert: {
           created_at?: string | null
+          created_by?: string | null
           expires_at: string
           id?: string
+          reviewer_name?: string | null
           token: string
         }
         Update: {
           created_at?: string | null
+          created_by?: string | null
           expires_at?: string
           id?: string
+          reviewer_name?: string | null
           token?: string
         }
         Relationships: []
