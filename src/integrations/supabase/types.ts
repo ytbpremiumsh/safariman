@@ -422,7 +422,7 @@ export type Database = {
           decision: string
           participant_id: string
           reviewed_at: string
-          reviewer_id: string
+          reviewer_id: string | null
           reviewer_name: string
           updated_at: string
         }
@@ -430,7 +430,7 @@ export type Database = {
           decision: string
           participant_id: string
           reviewed_at?: string
-          reviewer_id: string
+          reviewer_id?: string | null
           reviewer_name: string
           updated_at?: string
         }
@@ -438,7 +438,7 @@ export type Database = {
           decision?: string
           participant_id?: string
           reviewed_at?: string
-          reviewer_id?: string
+          reviewer_id?: string | null
           reviewer_name?: string
           updated_at?: string
         }
@@ -663,6 +663,9 @@ export type Database = {
           photo_url: string
           reason: string
           registration_code: string
+          review_decision: string
+          reviewed_at: string
+          reviewer_name: string
           social_media: string
           status: Database["public"]["Enums"]["participant_status"]
           twibbon_confirmed_at: string
