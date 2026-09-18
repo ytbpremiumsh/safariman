@@ -489,44 +489,26 @@ function PesertaEssayPage() {
               {/* Aksi Cepat — Pengoreksi AI */}
               <AiGraderCard row={detail} busy={aiBusy} onRun={() => runAiGrade(detail)} />
 
-              {/* Essays */}
-              <div className="mt-6 space-y-4">
-                <Essay title="Kenapa kamu layak dipilih?" body={detail.essay_worthy} />
-                <Essay title="Apa impianmu setelah ke Tanah Suci?" body={detail.essay_dream} />
-                <Essay title="Bagaimana kontribusimu untuk umat?" body={detail.essay_contribution} />
-                <Essay title="Studi Kasus 1" body={detail.case_study_1 ?? ""} />
-                <Essay title="Studi Kasus 2" body={detail.case_study_2 ?? ""} />
-                <Essay title="Studi Kasus 3" body={detail.case_study_3 ?? ""} />
-                <Essay title="Studi Kasus 4" body={detail.case_study_4 ?? ""} />
-                <Essay title="Studi Kasus 5" body={detail.case_study_5 ?? ""} />
-                <Essay title="Studi Kasus 6" body={detail.case_study_6 ?? ""} />
-                <Essay title="Studi Kasus 7" body={detail.case_study_7 ?? ""} />
-              </div>
-
-
-              {/* Keputusan */}
-              <div className="mt-6 pt-4 border-t border-border space-y-2">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tentukan Keputusan Essay</div>
-                <div className="flex flex-wrap gap-2">
-                  <button onClick={() => updateStatus(detail.id, "reviewed")}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                      detail.status === "reviewed" ? "bg-amber-500 text-white border-amber-500" : "border-amber-500/40 text-amber-600 hover:bg-amber-500/10"
-                    }`}>
-                    Sedang Direview
-                  </button>
-                  <button onClick={() => updateStatus(detail.id, "interview")}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                      detail.status === "interview" ? "bg-emerald text-white border-emerald shadow-emerald" : "border-emerald/40 text-emerald hover:bg-emerald/10"
-                    }`}>
-                    <CheckCircle2 className="size-4" /> Lolos Tahap Selanjutnya
-                  </button>
-                  <button onClick={() => updateStatus(detail.id, "rejected")}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                      detail.status === "rejected" ? "bg-red-500 text-white border-red-500" : "border-red-500/40 text-red-600 hover:bg-red-500/10"
-                    }`}>
-                    <XCircle className="size-4" /> Belum Lolos
-                  </button>
-                </div>
+              {/* Penilaian per soal + keputusan */}
+              <div className="mt-6">
+                <ManualEssayReview
+                  answers={{
+                    essay_1: detail.essay_worthy,
+                    essay_2: detail.essay_dream,
+                    essay_3: detail.essay_contribution,
+                    case_1: detail.case_study_1,
+                    case_2: detail.case_study_2,
+                    case_3: detail.case_study_3,
+                    case_4: detail.case_study_4,
+                    case_5: detail.case_study_5,
+                    case_6: detail.case_study_6,
+                    case_7: detail.case_study_7,
+                  }}
+                  initialScores={detailScores}
+                  currentDecision={detail.status as ReviewDecision}
+                  busy={reviewBusy}
+                  onSave={(decision, scores) => saveReview(detail.id, decision, scores)}
+                />
               </div>
             </>
           )}
