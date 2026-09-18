@@ -57,7 +57,7 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
     criteria: [
       { label: "Empati & kepedulian", point: 2 },
       { label: "Membantu secara fisik", point: 2 },
-      { label: "Memberi minum / istirahat", point: 2 },
+      { label: "Memberi minum ", point: 2 },
       { label: "Mengajak istirahat", point: 2 },
       { label: "Menghubungi pembimbing / ketua rombongan", point: 2 },
     ],
