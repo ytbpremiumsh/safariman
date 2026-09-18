@@ -78,9 +78,9 @@ const STATUS_LABEL: Record<Status, string> = {
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  reviewed: "bg-amber-100 text-amber-700 border-amber-300",
-  interview: "bg-emerald/15 text-emerald border-emerald/40",
-  rejected: "bg-red-100 text-red-700 border-red-300",
+  reviewed: "bg-amber-100 text-amber-800 border-amber-300",
+  interview: "bg-emerald text-primary-foreground border-emerald shadow-soft",
+  rejected: "bg-destructive text-destructive-foreground border-destructive shadow-soft",
 };
 
 function SeleksiEssayPrivatePage() {
@@ -136,8 +136,35 @@ function SeleksiEssayPrivatePage() {
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
+    }).sort((a, b) => {
+      const at = a.private_review ? new Date(a.private_review.updated_at).getTime() : 0;
+      const bt = b.private_review ? new Date(b.private_review.updated_at).getTime() : 0;
+      return bt - at;
     });
   }, [rows, q, statusFilter, activeTab]);
+
+
+
+  const resetReview = async (id: string) => {
+    const { error } = await supabase.functions.invoke("seleksi-token-update", {
+      body: { token, action: "reset", participant_id: id },
+    });
+    if (error) {
+      const response = (error as { context?: Response }).context;
+      const payload = response
+        ? await response.clone().json().catch(() => null) as { error?: string } | null
+        : null;
+      toast.error(payload?.error || error.message);
+      return;
+    }
+    setRows((previous) => previous.map((row) => row.id === id
+      ? { ...row, status: "reviewed" as Status, private_review: null }
+      : row));
+    setDetail((current) => current && current.id === id
+      ? { ...current, status: "reviewed" as Status, private_review: null }
+      : current);
+    toast.success("Penilaian direset — peserta kembali seperti semula.");
+  };
 
   const updateStatus = async (id: string, s: Status, scores: ReviewScores) => {
     const stageValue: "passed" | "failed" | "pending" =
@@ -355,7 +382,7 @@ function SeleksiEssayPrivatePage() {
               </DialogHeader>
 
               <div className="grid md:grid-cols-[1fr,300px] gap-6 mt-4">
-                <ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.private_review?.scores} currentDecision={detail.status} onSave={(decision,scores)=>updateStatus(detail.id,decision,scores)} />
+                <ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.private_review?.scores} currentDecision={detail.status} onSave={(decision,scores)=>updateStatus(detail.id,decision,scores)} onReset={()=>resetReview(detail.id)} />
 
                 <div className="space-y-6">
                   <div className="bg-secondary/40 rounded-xl p-4 space-y-4">
