@@ -67,7 +67,7 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
     title: "Studi Kasus 3 — Jamaah kelelahan berat / kondisi darurat",
     criteria: [
       { label: "Prioritaskan kesehatan", point: 2 },
-      { label: "Mencari tempat teduh", point: 2 },
+      { label: "Mencari tempat duduk /  teduh", point: 2 },
       { label: "Meminta bantuan petugas", point: 2 },
       { label: "Mendampingi jamaah", point: 2 },
       { label: "Informasikan ke ketua rombongan", point: 2 },
