@@ -95,22 +95,27 @@ serve(async (req) => {
       });
     }
 
+    const nowIso = new Date().toISOString();
+    const stagePatch: Record<string, unknown> = {
+      status,
+      essay_status: stageValue,
+      essay_updated_at: nowIso,
+      updated_at: nowIso,
+    };
+    if (stageValue !== "passed") {
+      stagePatch.tka_status = "pending";
+      stagePatch.tka_updated_at = nowIso;
+      stagePatch.interview_status = "pending";
+      stagePatch.interview_updated_at = nowIso;
+    }
     const { error: updateError } = await supabaseClient
       .from("participants")
-      .update({ status })
+      .update(stagePatch)
       .eq("id", participantId);
 
     if (updateError) throw updateError;
 
-    const { error: tahapanError } = await supabaseClient.rpc("admin_set_tahapan", {
-      p_id: participantId,
-      p_stage: "essay",
-      p_value: stageValue,
-    });
-
-    if (tahapanError) throw tahapanError;
-
-    const now = new Date().toISOString();
+    const now = nowIso;
     const { data: review, error: reviewError } = await supabaseClient
       .from("seleksi_private_reviews")
       .upsert({

@@ -78,9 +78,22 @@ Deno.serve(async (req) => {
       const { error: auditError } = await admin.from("staff_essay_reviews").upsert(review, { onConflict: "participant_id" });
       if (auditError) throw auditError;
       const stageValue = status === "interview" ? "passed" : status === "rejected" ? "failed" : "pending";
-      const { error: stageError } = await admin.rpc("admin_set_tahapan", {
-        p_id: participantId, p_stage: "essay", p_value: stageValue,
-      });
+      const nowIso = new Date().toISOString();
+      const stagePatch: Record<string, unknown> = {
+        essay_status: stageValue,
+        essay_updated_at: nowIso,
+        updated_at: nowIso,
+      };
+      if (stageValue !== "passed") {
+        stagePatch.tka_status = "pending";
+        stagePatch.tka_updated_at = nowIso;
+        stagePatch.interview_status = "pending";
+        stagePatch.interview_updated_at = nowIso;
+      }
+      const { error: stageError } = await admin
+        .from("participants")
+        .update(stagePatch)
+        .eq("id", participantId);
       if (stageError) throw stageError;
       return json({ ok: true, review });
     }
