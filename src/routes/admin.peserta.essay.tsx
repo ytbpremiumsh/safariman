@@ -15,6 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
+import { ManualEssayReview, type ReviewDecision, type ReviewScores } from "@/components/ManualEssayReview";
 
 export const Route = createFileRoute("/admin/peserta/essay")({
   head: () => ({ meta: [{ title: "Peserta Lolos Essay — Safar Iman Admin" }] }),
@@ -139,6 +140,34 @@ function PesertaEssayPage() {
   const [aiBusy, setAiBusy] = useState(false);
   const [published, setPublished] = useState(false);
   const [pubBusy, setPubBusy] = useState(false);
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [detailScores, setDetailScores] = useState<ReviewScores | null>(null);
+
+  useEffect(() => {
+    if (!detail?.id) { setDetailScores(null); return; }
+    let cancelled = false;
+    void (async () => {
+      const { data } = await supabase.from("admin_essay_reviews")
+        .select("scores").eq("participant_id", detail.id).maybeSingle();
+      if (!cancelled) setDetailScores((data?.scores as ReviewScores) ?? null);
+    })();
+    return () => { cancelled = true; };
+  }, [detail?.id]);
+
+  const saveReview = async (id: string, decision: ReviewDecision, scores: ReviewScores) => {
+    setReviewBusy(true);
+    const { error } = await supabase.rpc("admin_save_essay_review", {
+      p_participant_id: id, p_scores: scores, p_decision: decision,
+    });
+    setReviewBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setDetailScores(scores);
+    setRows((p) => p.map((r) => r.id === id ? { ...r, status: decision } : r));
+    setDetail((d) => d && d.id === id ? { ...d, status: decision } : d);
+    toast.success(decision === "interview"
+      ? "Nilai tersimpan — peserta masuk Tahapan TKA"
+      : decision === "rejected" ? "Nilai tersimpan — peserta Tidak Lolos" : "Nilai tersimpan");
+  };
 
   const reload = async () => {
     setLoading(true);
