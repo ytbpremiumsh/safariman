@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import { ManualEssayReview, type ReviewScores } from "@/components/ManualEssayReview";
 
 export const Route = createFileRoute("/seleksi/essay")({
   head: () => ({ meta: [{ title: "Seleksi Essay & Studi Kasus — Safar Iman" }] }),
@@ -57,6 +58,8 @@ type Row = {
     decision: Status;
     reviewed_at: string;
     updated_at: string;
+    scores: ReviewScores;
+    total_score: number;
   } | null;
 };
 
@@ -136,12 +139,12 @@ function SeleksiEssayPrivatePage() {
     });
   }, [rows, q, statusFilter, activeTab]);
 
-  const updateStatus = async (id: string, s: Status) => {
+  const updateStatus = async (id: string, s: Status, scores: ReviewScores) => {
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
 
     const { data, error } = await supabase.functions.invoke("seleksi-token-update", {
-      body: { token, participant_id: id, status: s, stage_value: stageValue },
+      body: { token, participant_id: id, status: s, stage_value: stageValue, scores },
     });
     if (error) {
       const response = (error as { context?: Response }).context;
@@ -156,7 +159,7 @@ function SeleksiEssayPrivatePage() {
       ? { ...row, status: s, private_review: privateReview }
       : row));
     if (detail?.id === id) setDetail({ ...detail, status: s, private_review: privateReview });
-    toast.success(`Status peserta berhasil diperbarui ke ${STATUS_LABEL[s]}`);
+    toast.success(s === "interview" ? "Penilaian disimpan dan peserta masuk Tahapan TKA." : `Penilaian disimpan: ${STATUS_LABEL[s]}`);
   };
 
   if (loading) {
@@ -352,21 +355,7 @@ function SeleksiEssayPrivatePage() {
               </DialogHeader>
 
               <div className="grid md:grid-cols-[1fr,300px] gap-6 mt-4">
-                <div className="space-y-6">
-                  <EssayBlock title="Kenapa layak dipilih?" body={detail.essay_worthy} />
-                  <EssayBlock title="Mimpi setelah Umrah" body={detail.essay_dream} />
-                  <EssayBlock title="Kontribusi untuk Umat" body={detail.essay_contribution} />
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <EssayBlock title="Studi Kasus 1" body={detail.case_study_1 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 2" body={detail.case_study_2 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 3" body={detail.case_study_3 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 4" body={detail.case_study_4 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 5" body={detail.case_study_5 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 6" body={detail.case_study_6 ?? ""} small />
-                    <EssayBlock title="Studi Kasus 7" body={detail.case_study_7 ?? ""} small />
-                  </div>
-                </div>
+                <ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.private_review?.scores} currentDecision={detail.status} onSave={(decision,scores)=>updateStatus(detail.id,decision,scores)} />
 
                 <div className="space-y-6">
                   <div className="bg-secondary/40 rounded-xl p-4 space-y-4">
@@ -392,29 +381,6 @@ function SeleksiEssayPrivatePage() {
                     </div>
                   )}
 
-                  <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-4 space-y-3">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-emerald/70">Update Status Kelulusan</div>
-                    <div className="grid gap-2">
-                      <button 
-                        onClick={() => updateStatus(detail.id, "interview")}
-                        className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald text-white font-bold hover:bg-emerald/90 transition-colors shadow-sm"
-                      >
-                        <CheckCircle2 className="size-4" /> Lolos Tahap Seleksi
-                      </button>
-                      <button 
-                        onClick={() => updateStatus(detail.id, "rejected")}
-                        className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-sm"
-                      >
-                        <XCircle className="size-4" /> Tidak Lolos
-                      </button>
-                      <button 
-                        onClick={() => updateStatus(detail.id, "reviewed")}
-                        className="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border bg-white text-muted-foreground font-semibold hover:bg-secondary transition-colors"
-                      >
-                        Reset ke Review
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </>

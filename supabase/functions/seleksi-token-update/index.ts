@@ -6,6 +6,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const scoreKeys = ["essay_1", "essay_2", "essay_3", "case_1", "case_2", "case_3", "case_4", "case_5", "case_6", "case_7"];
+function parseScores(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).length !== scoreKeys.length) return null;
+  const scores: Record<string, number> = {};
+  for (const key of scoreKeys) {
+    const score = input[key];
+    if (!Number.isInteger(score) || Number(score) < 0 || Number(score) > 10) return null;
+    scores[key] = Number(score);
+  }
+  return { scores, total: Object.values(scores).reduce((sum, score) => sum + score, 0) };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -53,7 +67,7 @@ serve(async (req) => {
       if (participantError) throw participantError;
       const { data: reviews, error: reviewError } = await supabaseClient
         .from("seleksi_private_reviews")
-        .select("participant_id,reviewer_name,decision,reviewed_at,updated_at");
+        .select("participant_id,reviewer_name,decision,scores,total_score,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return new Response(JSON.stringify({
@@ -67,11 +81,17 @@ serve(async (req) => {
     const participantId = String(body.participant_id ?? "");
     const status = String(body.status ?? "");
     const stageValue = String(body.stage_value ?? "");
+    const parsedScores = parseScores(body.scores);
     if (!participantId || !["reviewed", "interview", "rejected"].includes(status) ||
       !["pending", "passed", "failed"].includes(stageValue)) {
       return new Response(JSON.stringify({ error: "Data keputusan tidak valid" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!parsedScores) {
+      return new Response(JSON.stringify({ error: "Semua nilai wajib berupa angka 0 sampai 10" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -97,6 +117,8 @@ serve(async (req) => {
         participant_id: participantId,
         reviewer_name: tokenData.reviewer_name?.trim() || "Tim Seleksi Private",
         decision: status,
+        scores: parsedScores.scores,
+        total_score: parsedScores.total,
         reviewed_at: now,
         updated_at: now,
       }, { onConflict: "participant_id" })

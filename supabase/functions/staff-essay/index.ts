@@ -5,6 +5,20 @@ type Participant = {
   [key: string]: unknown;
 };
 
+const scoreKeys = ["essay_1", "essay_2", "essay_3", "case_1", "case_2", "case_3", "case_4", "case_5", "case_6", "case_7"];
+function parseScores(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).length !== scoreKeys.length) return null;
+  const scores: Record<string, number> = {};
+  for (const key of scoreKeys) {
+    const score = input[key];
+    if (!Number.isInteger(score) || Number(score) < 0 || Number(score) > 10) return null;
+    scores[key] = Number(score);
+  }
+  return { scores, total: Object.values(scores).reduce((sum, score) => sum + score, 0) };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -24,7 +38,7 @@ Deno.serve(async (req) => {
       const participants = (data ?? []) as Participant[];
       const { data: reviews, error: reviewError } = await admin
         .from("staff_essay_reviews")
-        .select("participant_id,reviewer_name,decision,reviewed_at,updated_at");
+        .select("participant_id,reviewer_name,decision,scores,total_score,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return json({ participants: participants.map((participant) => {
@@ -40,9 +54,11 @@ Deno.serve(async (req) => {
     if (action === "update_status") {
       const participantId = String(body.participant_id ?? "");
       const status = String(body.status ?? "");
+      const parsedScores = parseScores(body.scores);
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
+      if (!parsedScores) return json({ error: "Semua nilai wajib berupa angka 0 sampai 10" }, 400);
       const { data: participant, error: participantError } = await admin
         .rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
@@ -54,11 +70,18 @@ Deno.serve(async (req) => {
         reviewer_id: authUser.id,
         reviewer_name: staff.name,
         decision: status,
+        scores: parsedScores.scores,
+        total_score: parsedScores.total,
         reviewed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
       const { error: auditError } = await admin.from("staff_essay_reviews").upsert(review, { onConflict: "participant_id" });
       if (auditError) throw auditError;
+      const stageValue = status === "interview" ? "passed" : status === "rejected" ? "failed" : "pending";
+      const { error: stageError } = await admin.rpc("admin_set_tahapan", {
+        p_id: participantId, p_stage: "essay", p_value: stageValue,
+      });
+      if (stageError) throw stageError;
       return json({ ok: true, review });
     }
 
