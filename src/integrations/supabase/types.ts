@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_essay_reviews: {
+        Row: {
+          decision: string
+          participant_id: string
+          reviewed_at: string
+          reviewer_id: string
+          reviewer_name: string
+          scores: Json
+          total_score: number
+          updated_at: string
+        }
+        Insert: {
+          decision: string
+          participant_id: string
+          reviewed_at?: string
+          reviewer_id: string
+          reviewer_name: string
+          scores?: Json
+          total_score?: number
+          updated_at?: string
+        }
+        Update: {
+          decision?: string
+          participant_id?: string
+          reviewed_at?: string
+          reviewer_id?: string
+          reviewer_name?: string
+          scores?: Json
+          total_score?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_essay_reviews_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_clicks: {
         Row: {
           created_at: string
@@ -364,6 +405,8 @@ export type Database = {
           participant_id: string
           reviewed_at: string
           reviewer_name: string
+          scores: Json
+          total_score: number
           updated_at: string
         }
         Insert: {
@@ -371,6 +414,8 @@ export type Database = {
           participant_id: string
           reviewed_at?: string
           reviewer_name: string
+          scores?: Json
+          total_score?: number
           updated_at?: string
         }
         Update: {
@@ -378,6 +423,8 @@ export type Database = {
           participant_id?: string
           reviewed_at?: string
           reviewer_name?: string
+          scores?: Json
+          total_score?: number
           updated_at?: string
         }
         Relationships: [
@@ -424,6 +471,8 @@ export type Database = {
           reviewed_at: string
           reviewer_id: string | null
           reviewer_name: string
+          scores: Json
+          total_score: number
           updated_at: string
         }
         Insert: {
@@ -432,6 +481,8 @@ export type Database = {
           reviewed_at?: string
           reviewer_id?: string | null
           reviewer_name: string
+          scores?: Json
+          total_score?: number
           updated_at?: string
         }
         Update: {
@@ -440,6 +491,8 @@ export type Database = {
           reviewed_at?: string
           reviewer_id?: string | null
           reviewer_name?: string
+          scores?: Json
+          total_score?: number
           updated_at?: string
         }
         Relationships: [
@@ -550,6 +603,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_save_essay_review: {
+        Args: { p_decision: string; p_participant_id: string; p_scores: Json }
+        Returns: Json
+      }
       admin_set_affiliate_config: { Args: { p_json: string }; Returns: boolean }
       admin_set_essay_ai: {
         Args: {
