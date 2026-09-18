@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { Loader2, LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { staffSupabase } from "@/integrations/supabase/staff-client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -20,15 +20,15 @@ function StaffLogin() {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const { error } = await staffSupabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) {
       toast.error("Email atau password staff tidak valid");
       setBusy(false);
       return;
     }
-    const { error: accessError } = await supabase.functions.invoke("staff-essay", { body: { action: "list" } });
+    const { error: accessError } = await staffSupabase.functions.invoke("staff-essay", { body: { action: "list" } });
     if (accessError) {
-      await supabase.auth.signOut();
+      await staffSupabase.auth.signOut();
       toast.error("Akun ini tidak memiliki akses staff atau sedang dinonaktifkan");
       setBusy(false);
       return;
