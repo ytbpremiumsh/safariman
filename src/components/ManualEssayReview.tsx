@@ -80,7 +80,7 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
       { label: "Musyawarah", point: 2 },
       { label: "Menghargai pendapat orang lain", point: 2 },
       { label: "Menjaga ukhuwah", point: 2 },
-      { label: "Menghindari konflik", point: 2 },
+      { label: "Mengajak berdiskusi", point: 2 },
       { label: "Mengikuti keputusan bersama", point: 2 },
     ],
   },
