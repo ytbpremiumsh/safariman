@@ -51,12 +51,9 @@ serve(async (req) => {
       const { data: participants, error: participantError } = await supabaseClient
         .rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
-      const ids = (participants ?? []).map((participant: { id: string }) => participant.id);
-      const { data: reviews, error: reviewError } = ids.length
-        ? await supabaseClient.from("seleksi_private_reviews")
-          .select("participant_id,reviewer_name,decision,reviewed_at,updated_at")
-          .in("participant_id", ids)
-        : { data: [], error: null };
+      const { data: reviews, error: reviewError } = await supabaseClient
+        .from("seleksi_private_reviews")
+        .select("participant_id,reviewer_name,decision,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return new Response(JSON.stringify({
@@ -88,7 +85,7 @@ serve(async (req) => {
     const { error: tahapanError } = await supabaseClient.rpc("admin_set_tahapan", {
       p_id: participantId,
       p_stage: "essay",
-      p_value: stage_value,
+      p_value: stageValue,
     });
 
     if (tahapanError) throw tahapanError;

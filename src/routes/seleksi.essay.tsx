@@ -101,31 +101,7 @@ function SeleksiEssayPrivatePage() {
       return;
     }
 
-    const checkToken = async () => {
-      const { data, error } = await supabase
-        .from("seleksi_private_tokens")
-        .select("id, expires_at")
-        .eq("token", token)
-        .maybeSingle();
-
-      if (error || !data) {
-        setAuthorized(false);
-        setLoading(false);
-        return;
-      }
-
-      if (new Date(data.expires_at) < new Date()) {
-        toast.error("Token akses telah kadaluarsa");
-        setAuthorized(false);
-        setLoading(false);
-        return;
-      }
-
-      setAuthorized(true);
-      fetchData();
-    };
-
-    void checkToken();
+    void fetchData();
   }, [token]);
 
   const fetchData = async () => {
@@ -139,7 +115,9 @@ function SeleksiEssayPrivatePage() {
         ? await response.clone().json().catch(() => null) as { error?: string } | null
         : null;
       toast.error(payload?.error || error.message);
+      setAuthorized(false);
     } else {
+      setAuthorized(true);
       setRows((data?.participants ?? []) as Row[]);
     }
     setLoading(false);
