@@ -20,7 +20,7 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
   },
   {
     key: "essay_2",
-    title: "Essay 2 — Mimpi setelah Umrah",
+    title: "Essay 2 — Impian setelah ke Tanah Suci",
     criteria: [
       { label: "Menjadi pribadi lebih baik", point: 2 },
       { label: "Menjaga ibadah setelah pulang", point: 2 },
