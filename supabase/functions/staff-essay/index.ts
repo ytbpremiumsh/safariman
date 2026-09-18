@@ -51,6 +51,26 @@ Deno.serve(async (req) => {
       }) });
     }
 
+    if (action === "reset_review") {
+      const participantId = String(body.participant_id ?? "");
+      if (!participantId) return json({ error: "Peserta tidak valid" }, 400);
+      const { error: deleteError } = await admin.from("staff_essay_reviews")
+        .delete().eq("participant_id", participantId);
+      if (deleteError) throw deleteError;
+      const nowIso = new Date().toISOString();
+      const { error: resetError } = await admin.from("participants").update({
+        essay_status: "pending",
+        essay_updated_at: nowIso,
+        tka_status: "pending",
+        tka_updated_at: nowIso,
+        interview_status: "pending",
+        interview_updated_at: nowIso,
+        updated_at: nowIso,
+      }).eq("id", participantId);
+      if (resetError) throw resetError;
+      return json({ ok: true, review: null });
+    }
+
     if (action === "update_status") {
       const participantId = String(body.participant_id ?? "");
       const status = String(body.status ?? "");

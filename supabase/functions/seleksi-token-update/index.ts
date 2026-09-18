@@ -78,6 +78,33 @@ serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    if (action === "reset") {
+      const resetId = String(body.participant_id ?? "");
+      if (!resetId) {
+        return new Response(JSON.stringify({ error: "Peserta tidak valid" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { error: deleteError } = await supabaseClient
+        .from("seleksi_private_reviews").delete().eq("participant_id", resetId);
+      if (deleteError) throw deleteError;
+      const resetIso = new Date().toISOString();
+      const { error: resetError } = await supabaseClient.from("participants").update({
+        status: "pending",
+        essay_status: "pending",
+        essay_updated_at: resetIso,
+        tka_status: "pending",
+        tka_updated_at: resetIso,
+        interview_status: "pending",
+        interview_updated_at: resetIso,
+        updated_at: resetIso,
+      }).eq("id", resetId);
+      if (resetError) throw resetError;
+      return new Response(JSON.stringify({ ok: true, review: null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const participantId = String(body.participant_id ?? "");
     const status = String(body.status ?? "");
     const stageValue = String(body.stage_value ?? "");
