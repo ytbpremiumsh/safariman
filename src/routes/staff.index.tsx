@@ -16,6 +16,11 @@ type Status = "reviewed" | "interview" | "rejected";
 type StaffReview={reviewer_name:string;decision:Status;scores:ReviewScores;total_score:number;reviewed_at:string;updated_at:string};
 type Row = { id:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; staff_review:StaffReview|null };
 const labels: Record<Status,string> = { reviewed:"Belum Diputuskan", interview:"Lolos Tahap Selanjutnya", rejected:"Tidak Lolos" };
+const badges: Record<Status,string> = {
+  reviewed:"bg-amber-100 text-amber-800 border-amber-300",
+  interview:"bg-emerald text-primary-foreground border-emerald shadow-soft",
+  rejected:"bg-destructive text-destructive-foreground border-destructive shadow-soft",
+};
 
 function StaffDashboard() {
   const navigate = useNavigate();
