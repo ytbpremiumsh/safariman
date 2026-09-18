@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 
@@ -23,15 +23,20 @@ type Props = {
   currentDecision: ReviewDecision;
   busy?: boolean;
   onSave: (decision: ReviewDecision, scores: ReviewScores) => Promise<void> | void;
+  onReset?: () => Promise<void> | void;
 };
 
-export function ManualEssayReview({ answers, initialScores, currentDecision, busy, onSave }: Props) {
+export function ManualEssayReview({ answers, initialScores, currentDecision, busy, onSave, onReset }: Props) {
   const [scores, setScores] = useState<ReviewScores>(EMPTY_SCORES);
   useEffect(() => setScores({ ...EMPTY_SCORES, ...(initialScores ?? {}) }), [initialScores]);
   const total = useMemo(() => QUESTIONS.reduce((sum, [key]) => sum + (scores[key] ?? 0), 0), [scores]);
   const setScore = (key: string, raw: string) => {
     const parsed = Number(raw);
     setScores((previous) => ({ ...previous, [key]: Number.isFinite(parsed) ? Math.min(10, Math.max(0, Math.trunc(parsed))) : 0 }));
+  };
+  const handleReset = async () => {
+    setScores({ ...EMPTY_SCORES });
+    await onReset?.();
   };
 
   return <div className="space-y-5">
@@ -57,6 +62,10 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
         <button disabled={busy} onClick={() => void onSave("rejected", scores)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
         <button disabled={busy} onClick={() => void onSave("reviewed", scores)} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
       </div>
+      {onReset && <button disabled={busy} onClick={() => void handleReset()}
+        className="mt-2 w-full rounded-lg border border-dashed py-2.5 text-sm font-semibold text-muted-foreground inline-flex justify-center items-center gap-2 hover:text-foreground">
+        <RotateCcw className="size-4" />Reset Penilaian Peserta Ini
+      </button>}
     </div>
   </div>;
 }
