@@ -92,7 +92,7 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
       { label: "Menyerahkan ke petugas resmi", point: 4 },
       { label: "Melaporkan kehilangan", point: 2 },
       { label: "Menjaga amanah", point: 1 },
-      { label: "Mencari pemilik dompet ", point: 1 },
+      { label: "Mencari pemilik dompet dari identitas ", point: 1 },
     ],
   },
   {
