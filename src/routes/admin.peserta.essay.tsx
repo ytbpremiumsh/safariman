@@ -97,9 +97,9 @@ const STATUS_LABEL: Record<Status, string> = {
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  reviewed: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30",
-  interview: "bg-emerald/15 text-emerald border-emerald/40",
-  rejected: "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30",
+  reviewed: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/30 dark:text-amber-200",
+  interview: "bg-emerald text-primary-foreground border-emerald shadow-soft",
+  rejected: "bg-destructive text-destructive-foreground border-destructive shadow-soft",
 };
 
 const normalizeStatus = (s: string): Status =>
@@ -142,6 +142,7 @@ function PesertaEssayPage() {
   const [pubBusy, setPubBusy] = useState(false);
   const [reviewBusy, setReviewBusy] = useState(false);
   const [detailScores, setDetailScores] = useState<ReviewScores | null>(null);
+  const [reviewInfo, setReviewInfo] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!detail?.id) { setDetailScores(null); return; }
@@ -162,6 +163,7 @@ function PesertaEssayPage() {
     setReviewBusy(false);
     if (error) { toast.error(error.message); return; }
     setDetailScores(scores);
+    setReviewInfo((p) => ({ ...p, [id]: new Date().toISOString() }));
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: decision } : r));
     setDetail((d) => d && d.id === id ? { ...d, status: decision } : d);
     toast.success(decision === "interview"
@@ -169,15 +171,34 @@ function PesertaEssayPage() {
       : decision === "rejected" ? "Nilai tersimpan — peserta Tidak Lolos" : "Nilai tersimpan");
   };
 
+  const resetReview = async (id: string) => {
+    setReviewBusy(true);
+    const { error } = await supabase.from("admin_essay_reviews").delete().eq("participant_id", id);
+    if (!error) {
+      await supabase.from("participants").update({ status: "pending" }).eq("id", id);
+      await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: "pending" });
+    }
+    setReviewBusy(false);
+    if (error) { toast.error(error.message); return; }
+    setDetailScores(null);
+    setReviewInfo((p) => { const next = { ...p }; delete next[id]; return next; });
+    setRows((p) => p.map((r) => r.id === id ? { ...r, status: "reviewed" as Status } : r));
+    setDetail((d) => d && d.id === id ? { ...d, status: "reviewed" as Status } : d);
+    toast.success("Penilaian direset — peserta kembali seperti semula.");
+  };
+
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, pendingResult, settingRes] = await Promise.all([
+    const [{ data, error }, pendingResult, settingRes, reviewRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
       loadAllPendingEssayParticipants()
         .then((data) => ({ data, error: null as Error | null }))
         .catch((error: Error) => ({ data: [] as PendingRow[], error })),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
+      supabase.from("admin_essay_reviews").select("participant_id,updated_at"),
     ]);
+    setReviewInfo(Object.fromEntries(((reviewRes.data ?? []) as { participant_id: string; updated_at: string }[])
+      .map((r) => [r.participant_id, r.updated_at])));
     if (error) toast.error(error.message);
     else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
     if (pendingResult.error) toast.error(pendingResult.error.message);
@@ -198,8 +219,12 @@ function PesertaEssayPage() {
       if (!term) return true;
       return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
         .some((v) => v?.toLowerCase().includes(term));
+    }).sort((a, b) => {
+      const at = reviewInfo[a.id] ? new Date(reviewInfo[a.id]).getTime() : 0;
+      const bt = reviewInfo[b.id] ? new Date(reviewInfo[b.id]).getTime() : 0;
+      return bt - at;
     });
-  }, [rows, q, statusFilter]);
+  }, [rows, q, statusFilter, reviewInfo]);
 
   const stats = useMemo(() => ({
     total: rows.length,
@@ -537,6 +562,7 @@ function PesertaEssayPage() {
                   currentDecision={detail.status as ReviewDecision}
                   busy={reviewBusy}
                   onSave={(decision, scores) => saveReview(detail.id, decision, scores)}
+                  onReset={() => resetReview(detail.id)}
                 />
               </div>
             </>
