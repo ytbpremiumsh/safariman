@@ -163,6 +163,7 @@ function PesertaEssayPage() {
     setReviewBusy(false);
     if (error) { toast.error(error.message); return; }
     setDetailScores(scores);
+    setReviewInfo((p) => ({ ...p, [id]: new Date().toISOString() }));
     setRows((p) => p.map((r) => r.id === id ? { ...r, status: decision } : r));
     setDetail((d) => d && d.id === id ? { ...d, status: decision } : d);
     toast.success(decision === "interview"
