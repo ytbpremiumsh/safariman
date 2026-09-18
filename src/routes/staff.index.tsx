@@ -34,8 +34,14 @@ function StaffDashboard() {
     setRows((data?.participants ?? []) as Row[]); setLoading(false);
   };
   useEffect(()=>{ void load(); },[]);
-  const filtered=useMemo(()=>rows.filter(r=>(filter==="all"||r.status===filter)&&(!q.trim()||[r.full_name,r.registration_code,r.email,r.city].some(v=>v?.toLowerCase().includes(q.toLowerCase())))),[rows,q,filter]);
+  const filtered=useMemo(()=>rows.filter(r=>(filter==="all"||r.status===filter)&&(!q.trim()||[r.full_name,r.registration_code,r.email,r.city].some(v=>v?.toLowerCase().includes(q.toLowerCase()))))
+    .sort((a,b)=>{
+      const at=a.staff_review?new Date(a.staff_review.updated_at).getTime():0;
+      const bt=b.staff_review?new Date(b.staff_review.updated_at).getTime():0;
+      return bt-at;
+    }),[rows,q,filter]);
   const decide=async(status:ReviewDecision,scores:ReviewScores)=>{ if(!detail)return; setBusy(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"update_status",participant_id:detail.id,status,scores}}); setBusy(false); if(error){toast.error(error.message);return;} const next={...detail,status,staff_review:data?.review??detail.staff_review};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success(status==="interview"?"Keputusan disimpan dan peserta masuk Tahapan TKA.":"Penilaian dan keputusan berhasil disimpan."); };
+  const resetReview=async()=>{ if(!detail)return; setBusy(true); const {error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"reset_review",participant_id:detail.id}}); setBusy(false); if(error){toast.error(error.message);return;} const next:Row={...detail,status:"reviewed",staff_review:null};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success("Penilaian direset — peserta kembali seperti semula."); };
   const logout=async()=>{await staffSupabase.auth.signOut();navigate({to:"/staff/login"});};
   if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-accent"/></div>;
   return <div className="min-h-screen bg-secondary/30">
