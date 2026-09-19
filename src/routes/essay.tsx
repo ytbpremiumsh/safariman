@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import { SubmissionClosedCard } from "@/components/SubmissionClosedCard";
+import { useSubmissionAvailability } from "@/lib/submission-availability";
 
 const MIN_ESSAY_WORDS = 50;
 const MIN_CASE_WORDS = 30;
@@ -73,6 +75,7 @@ const fastTrackLabel = (cat: string | null | undefined) =>
   cat === "gelombang_1" ? "Fast Track Gelombang 1" : "Fast Track Gelombang 2";
 
 function EssayPage() {
+  const submissionGate = useSubmissionAvailability("essay");
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [code, setCode] = useState((search.code ?? "").toUpperCase());
@@ -188,7 +191,14 @@ function EssayPage() {
 
           </div>
 
-          {!participant ? (
+          {submissionGate.loading ? (
+            <div className="grid place-items-center py-20"><Loader2 className="size-8 animate-spin text-primary" /></div>
+          ) : !submissionGate.open ? (
+            <SubmissionClosedCard
+              title="Essay & Studi Kasus Telah Ditutup"
+              description="Batas waktu pengiriman Essay dan Studi Kasus telah berakhir. Jawaban baru maupun perubahan jawaban tidak dapat dikirim."
+            />
+          ) : !participant ? (
             <CodeForm code={code} setCode={setCode} checking={checking} verify={() => verify()} />
           ) : (
             <BodyByStatus
@@ -464,4 +474,3 @@ function EssayField({ label, value, onChange, min = MIN_ESSAY_WORDS }: { label: 
     </div>
   );
 }
-
