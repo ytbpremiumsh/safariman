@@ -12,6 +12,8 @@ import {
   type GelombangSlot,
 } from "@/lib/gelombang";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
+import { SubmissionClosedCard } from "@/components/SubmissionClosedCard";
+import { useSubmissionAvailability } from "@/lib/submission-availability";
 
 export const Route = createFileRoute("/pendaftaran")({
   head: () => ({
@@ -33,6 +35,7 @@ const ROUTES: Record<SlotKey, string> = {
 };
 
 function PendaftaranHub() {
+  const submissionGate = useSubmissionAvailability("registration");
   // Hidrasi awal dari cache localStorage. Ini menghilangkan "kedip" ke default
   // hard-coded saat RPC belum balas / lambat, dan mencegah kartu Self Funded
   // muncul saat backend eksplisit menonaktifkannya.
@@ -140,7 +143,16 @@ function PendaftaranHub() {
             </p>
           </div>
 
-          {loading || !cfg ? (
+          {submissionGate.loading ? (
+            <div className="grid place-items-center py-20">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : !submissionGate.open ? (
+            <SubmissionClosedCard
+              title="Pendaftaran Telah Ditutup"
+              description="Pendaftaran Program Safar Iman sudah berakhir dan tidak menerima peserta baru. Terima kasih atas antusiasme dan partisipasinya."
+            />
+          ) : loading || !cfg ? (
             <div className="grid place-items-center py-20">
               <Loader2 className="size-8 animate-spin text-primary" />
             </div>
