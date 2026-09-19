@@ -16,17 +16,31 @@ async function requireAdmin(req: Request) {
   return { user: authData.user, admin };
 }
 
+function isMissingHistoryTable(error: { code?: string; message?: string } | null) {
+  return error?.code === "42P01" || error?.message?.includes("ai_provider_config_history") === true;
+}
+
+async function addHistory(admin: ReturnType<typeof createClient>, entry: Record<string, unknown>) {
+  const { error } = await admin.from("ai_provider_config_history").insert(entry);
+  if (error && !isMissingHistoryTable(error)) throw error;
+}
+
 async function currentConfig(admin: ReturnType<typeof createClient>) {
-  const [{ data: settings }, { data: secret }] = await Promise.all([
+  const [settingsResult, secretResult] = await Promise.all([
     admin.from("app_settings").select("key,value").in("key", ["ai_provider", "ai_openrouter_model"]),
     admin.from("ai_provider_secrets").select("provider,updated_at").eq("provider", "openrouter").maybeSingle(),
   ]);
-  const map = Object.fromEntries((settings ?? []).map((row) => [row.key, row.value]));
+  if (settingsResult.error) throw settingsResult.error;
+  if (secretResult.error) throw secretResult.error;
+  const historyResult = await admin.from("ai_provider_config_history").select("id,model,action,api_key_changed,created_at").order("created_at", { ascending: false }).limit(20);
+  if (historyResult.error && !isMissingHistoryTable(historyResult.error)) throw historyResult.error;
+  const map = Object.fromEntries((settingsResult.data ?? []).map((row) => [row.key, row.value]));
   return {
     provider: "openrouter",
     model: String(map.ai_openrouter_model ?? "openai/gpt-4o-mini"),
-    api_key_configured: Boolean(secret),
-    api_key_updated_at: secret?.updated_at ?? null,
+    api_key_configured: Boolean(secretResult.data),
+    api_key_updated_at: secretResult.data?.updated_at ?? null,
+    history: historyResult.error ? [] : historyResult.data ?? [],
   };
 }
 
@@ -56,36 +70,26 @@ Deno.serve(async (req) => {
 
       if (apiKey) {
         const { error: secretError } = await admin.from("ai_provider_secrets").upsert({
-          provider: "openrouter",
-          api_key: apiKey,
-          updated_by: user.id,
-          updated_at: new Date().toISOString(),
+          provider: "openrouter", api_key: apiKey, updated_by: user.id, updated_at: new Date().toISOString(),
         }, { onConflict: "provider" });
         if (secretError) throw secretError;
       }
+      await addHistory(admin, {
+        model, action: "saved", api_key_changed: Boolean(apiKey), changed_by: user.id,
+      });
       return json({ ok: true, ...(await currentConfig(admin)) });
     }
 
     if (action === "test") {
-      const [{ data: secret }, config] = await Promise.all([
-        admin.from("ai_provider_secrets").select("api_key").eq("provider", "openrouter").maybeSingle(),
-        currentConfig(admin),
+      const [{ data: secret, error: secretError }, config] = await Promise.all([
+        admin.from("ai_provider_secrets").select("api_key").eq("provider", "openrouter").maybeSingle(), currentConfig(admin),
       ]);
+      if (secretError) throw secretError;
       if (!secret?.api_key) return json({ error: "API key OpenRouter belum disimpan" }, 400);
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${secret.api_key}`,
-          "HTTP-Referer": "https://safariman.id",
-          "X-Title": "Safar Iman",
-        },
-        body: JSON.stringify({
-          model: config.model,
-          messages: [{ role: "user", content: "Balas tepat dengan kata OK." }],
-          max_tokens: 5,
-          temperature: 0,
-        }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret.api_key}`, "HTTP-Referer": "https://safariman.id", "X-Title": "Safar Iman" },
+        body: JSON.stringify({ model: config.model, messages: [{ role: "user", content: "Balas tepat dengan kata OK." }], max_tokens: 5, temperature: 0 }),
       });
       const responseBody = await response.text();
       if (!response.ok) {
@@ -97,8 +101,12 @@ Deno.serve(async (req) => {
     }
 
     if (action === "remove_key") {
+      const config = await currentConfig(admin);
       const { error } = await admin.from("ai_provider_secrets").delete().eq("provider", "openrouter");
       if (error) throw error;
+      await addHistory(admin, {
+        model: config.model, action: "key_removed", api_key_changed: true, changed_by: user.id,
+      });
       return json({ ok: true, ...(await currentConfig(admin)) });
     }
 
