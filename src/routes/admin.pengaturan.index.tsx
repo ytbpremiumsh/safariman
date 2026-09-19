@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen, DatabaseBackup, ShieldCheck } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, HeartHandshake, BookOpen, HelpCircle, Image as ImageIcon, Layers, Megaphone, FileText, Mail, MessageCircle, MessageSquareText, ListOrdered, Sparkles, FolderOpen, DatabaseBackup, ShieldCheck, CalendarX2 } from "lucide-react";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/")({
@@ -8,6 +8,12 @@ export const Route = createFileRoute("/admin/pengaturan/")({
 });
 
 const ITEMS = [
+  {
+    to: "/admin/pengaturan/penutupan",
+    icon: CalendarX2,
+    title: "Penutupan Tahapan",
+    desc: "Buka atau tutup Form Pendaftaran, Pengiriman Berkas, serta Essay & Studi Kasus secara terpisah.",
+  },
   {
     to: "/admin/pengaturan/kredit",
     icon: Sparkles,
