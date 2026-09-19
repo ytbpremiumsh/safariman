@@ -215,9 +215,6 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
           {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
         </Button>
       </div>
-      <div className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${reviewMethod === "ai" ? "bg-violet-100 text-violet-700 border border-violet-200" : "bg-emerald/10 text-emerald border border-emerald/20"}`}>
-        {reviewMethod === "ai" ? "✦ Penilaian dibantu AI" : "✓ Penilaian manual oleh staff"}
-      </div>
     </div>}
     {QUESTIONS.map((q) => <section key={q.key} className="space-y-2">
       <div className="flex items-center justify-between gap-3">
