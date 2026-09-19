@@ -4,7 +4,7 @@
 //   ai_provider           -> "lovable" | "openrouter"
 //   ai_lovable_model      -> default "google/gemini-2.5-flash"
 //   ai_openrouter_model   -> e.g. "openai/gpt-4o-mini"
-//   ai_openrouter_api_key -> sk-or-...
+// OpenRouter API key is stored in service-role-only table ai_provider_secrets.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -27,22 +27,21 @@ export async function getAiConfig(): Promise<AiConfig> {
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
-  const { data } = await admin
-    .from("app_settings")
-    .select("key,value")
-    .in("key", [
+  const [{ data }, { data: secret }] = await Promise.all([
+    admin.from("app_settings").select("key,value").in("key", [
       "ai_provider",
       "ai_lovable_model",
       "ai_openrouter_model",
-      "ai_openrouter_api_key",
-    ]);
+    ]),
+    admin.from("ai_provider_secrets").select("api_key").eq("provider", "openrouter").maybeSingle(),
+  ]);
   const cfg = Object.fromEntries((data ?? []).map((r: any) => [r.key, (r.value ?? "").trim()])) as Record<string, string>;
   const provider: AiProvider = cfg.ai_provider === "openrouter" ? "openrouter" : "lovable";
   return {
     provider,
     lovableModel: cfg.ai_lovable_model || DEFAULT_LOVABLE_MODEL,
     openrouterModel: cfg.ai_openrouter_model || DEFAULT_OPENROUTER_MODEL,
-    openrouterApiKey: cfg.ai_openrouter_api_key || "",
+    openrouterApiKey: String(secret?.api_key ?? "").trim(),
   };
 }
 
