@@ -9,166 +9,77 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
-import { Route as TwibbonRouteImport } from './routes/twibbon'
-import { Route as TentangRouteImport } from './routes/tentang'
-import { Route as SuksesRouteImport } from './routes/sukses'
-import { Route as StatistikRouteImport } from './routes/statistik'
-import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
-import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
-import { Route as PanduanRouteImport } from './routes/panduan'
-import { Route as KontribusiSuksesRouteImport } from './routes/kontribusi-sukses'
-import { Route as KontribusiRouteImport } from './routes/kontribusi'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as EssaySuksesRouteImport } from './routes/essay-sukses'
-import { Route as EssayRouteImport } from './routes/essay'
-import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
-import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
-import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
-import { Route as DaftarRouteImport } from './routes/daftar'
-import { Route as CekTahapanRouteImport } from './routes/cek-tahapan'
-import { Route as CekHasilRouteImport } from './routes/cek-hasil'
-import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StaffIndexRouteImport } from './routes/staff.index'
+import { Route as BerkasRouteImport } from './routes/berkas'
+import { Route as CekHasilRouteImport } from './routes/cek-hasil'
+import { Route as CekTahapanRouteImport } from './routes/cek-tahapan'
+import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
+import { Route as DaftarGelombang2RouteImport } from './routes/daftar-gelombang-2'
+import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
+import { Route as EssayRouteImport } from './routes/essay'
+import { Route as EssaySuksesRouteImport } from './routes/essay-sukses'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as KontribusiRouteImport } from './routes/kontribusi'
+import { Route as KontribusiSuksesRouteImport } from './routes/kontribusi-sukses'
+import { Route as PanduanRouteImport } from './routes/panduan'
+import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
+import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
+import { Route as StatistikRouteImport } from './routes/statistik'
+import { Route as SuksesRouteImport } from './routes/sukses'
+import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as TwibbonRouteImport } from './routes/twibbon'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as StaffLolosRouteImport } from './routes/staff.lolos'
-import { Route as StaffLoginRouteImport } from './routes/staff.login'
-import { Route as SeleksiEssayRouteImport } from './routes/seleksi.essay'
-import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
-import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
-import { Route as AdminPesertaTahapanRouteImport } from './routes/admin.peserta.tahapan'
-import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
-import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
-import { Route as AdminPesertaKontribusiRouteImport } from './routes/admin.peserta.kontribusi'
-import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
-import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
-import { Route as AdminPengaturanWaQuickReplyRouteImport } from './routes/admin.pengaturan.wa-quick-reply'
-import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
-import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
-import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
-import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
-import { Route as AdminPengaturanStaffRouteImport } from './routes/admin.pengaturan.staff'
-import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
-import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
-import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
-import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
-import { Route as AdminPengaturanKreditRouteImport } from './routes/admin.pengaturan.kredit'
-import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
-import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
-import { Route as AdminPengaturanFaqRouteImport } from './routes/admin.pengaturan.faq'
-import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengaturan.email'
-import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
-import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
-import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
-import { Route as AdminPengaturanBackupRouteImport } from './routes/admin.pengaturan.backup'
-import { Route as AdminPengaturanApresiasiRouteImport } from './routes/admin.pengaturan.apresiasi'
-import { Route as AdminPengaturanAnalyticsRouteImport } from './routes/admin.pengaturan.analytics'
-import { Route as AdminPengaturanAiProviderRouteImport } from './routes/admin.pengaturan.ai-provider'
-import { Route as AdminPengaturanAffiliateRouteImport } from './routes/admin.pengaturan.affiliate'
-import { Route as AdminAlurTahapanSeleksiRouteImport } from './routes/admin.alur.tahapan-seleksi'
+import { Route as AdminWaSetupRouteImport } from './routes/admin.wa-setup'
+import { Route as SeleksiEssayRouteImport } from './routes/seleksi.essay'
+import { Route as StaffIndexRouteImport } from './routes/staff.index'
+import { Route as StaffLoginRouteImport } from './routes/staff.login'
+import { Route as StaffLolosRouteImport } from './routes/staff.lolos'
 import { Route as AdminAlurFullyFundedRouteImport } from './routes/admin.alur.fully-funded'
-import { Route as AdminPesertaSelfFundedIndexRouteImport } from './routes/admin.peserta.self-funded.index'
+import { Route as AdminAlurTahapanSeleksiRouteImport } from './routes/admin.alur.tahapan-seleksi'
+import { Route as AdminPengaturanIndexRouteImport } from './routes/admin.pengaturan.index'
+import { Route as AdminPengaturanAffiliateRouteImport } from './routes/admin.pengaturan.affiliate'
+import { Route as AdminPengaturanAiProviderRouteImport } from './routes/admin.pengaturan.ai-provider'
+import { Route as AdminPengaturanAnalyticsRouteImport } from './routes/admin.pengaturan.analytics'
+import { Route as AdminPengaturanApresiasiRouteImport } from './routes/admin.pengaturan.apresiasi'
+import { Route as AdminPengaturanBackupRouteImport } from './routes/admin.pengaturan.backup'
+import { Route as AdminPengaturanCountdownRouteImport } from './routes/admin.pengaturan.countdown'
+import { Route as AdminPengaturanDokumenSelfFundedRouteImport } from './routes/admin.pengaturan.dokumen-self-funded'
+import { Route as AdminPengaturanDonasiRouteImport } from './routes/admin.pengaturan.donasi'
+import { Route as AdminPengaturanEmailRouteImport } from './routes/admin.pengaturan.email'
+import { Route as AdminPengaturanFaqRouteImport } from './routes/admin.pengaturan.faq'
+import { Route as AdminPengaturanGelombangRouteImport } from './routes/admin.pengaturan.gelombang'
+import { Route as AdminPengaturanHasilSeleksiRouteImport } from './routes/admin.pengaturan.hasil-seleksi'
+import { Route as AdminPengaturanKreditRouteImport } from './routes/admin.pengaturan.kredit'
+import { Route as AdminPengaturanMediaRouteImport } from './routes/admin.pengaturan.media'
+import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.pengaturan.panduan'
+import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
+import { Route as AdminPengaturanPenutupanRouteImport } from './routes/admin.pengaturan.penutupan'
+import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
+import { Route as AdminPengaturanStaffRouteImport } from './routes/admin.pengaturan.staff'
+import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
+import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
+import { Route as AdminPengaturanTwibbonRouteImport } from './routes/admin.pengaturan.twibbon'
+import { Route as AdminPengaturanWaChannelRouteImport } from './routes/admin.pengaturan.wa-channel'
+import { Route as AdminPengaturanWaQuickReplyRouteImport } from './routes/admin.pengaturan.wa-quick-reply'
+import { Route as AdminPesertaIndexRouteImport } from './routes/admin.peserta.index'
+import { Route as AdminPesertaEssayRouteImport } from './routes/admin.peserta.essay'
+import { Route as AdminPesertaEssayApiRouteImport } from './routes/admin.peserta.essay-api'
+import { Route as AdminPesertaKontribusiRouteImport } from './routes/admin.peserta.kontribusi'
+import { Route as AdminPesertaRegulerRouteImport } from './routes/admin.peserta.reguler'
+import { Route as AdminPesertaSelfFundedRouteImport } from './routes/admin.peserta.self-funded'
+import { Route as AdminPesertaTahapanRouteImport } from './routes/admin.peserta.tahapan'
 import { Route as AdminPesertaRegulerIndexRouteImport } from './routes/admin.peserta.reguler.index'
-import { Route as AdminPesertaSelfFundedPendaftaranRouteImport } from './routes/admin.peserta.self-funded.pendaftaran'
-import { Route as AdminPesertaRegulerPendaftaranRouteImport } from './routes/admin.peserta.reguler.pendaftaran'
 import { Route as AdminPesertaRegulerBerkasRouteImport } from './routes/admin.peserta.reguler.berkas'
+import { Route as AdminPesertaRegulerPendaftaranRouteImport } from './routes/admin.peserta.reguler.pendaftaran'
+import { Route as AdminPesertaSelfFundedIndexRouteImport } from './routes/admin.peserta.self-funded.index'
+import { Route as AdminPesertaSelfFundedPendaftaranRouteImport } from './routes/admin.peserta.self-funded.pendaftaran'
 
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TwibbonRoute = TwibbonRouteImport.update({
-  id: '/twibbon',
-  path: '/twibbon',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TentangRoute = TentangRouteImport.update({
-  id: '/tentang',
-  path: '/tentang',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SuksesRoute = SuksesRouteImport.update({
-  id: '/sukses',
-  path: '/sukses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatistikRoute = StatistikRouteImport.update({
-  id: '/statistik',
-  path: '/statistik',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
-  id: '/pendaftaran-sukses',
-  path: '/pendaftaran-sukses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranRoute = PendaftaranRouteImport.update({
-  id: '/pendaftaran',
-  path: '/pendaftaran',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PanduanRoute = PanduanRouteImport.update({
-  id: '/panduan',
-  path: '/panduan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KontribusiSuksesRoute = KontribusiSuksesRouteImport.update({
-  id: '/kontribusi-sukses',
-  path: '/kontribusi-sukses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KontribusiRoute = KontribusiRouteImport.update({
-  id: '/kontribusi',
-  path: '/kontribusi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EssaySuksesRoute = EssaySuksesRouteImport.update({
-  id: '/essay-sukses',
-  path: '/essay-sukses',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EssayRoute = EssayRouteImport.update({
-  id: '/essay',
-  path: '/essay',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
-  id: '/daftar-mandiri',
-  path: '/daftar-mandiri',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DaftarGelombang2Route = DaftarGelombang2RouteImport.update({
-  id: '/daftar-gelombang-2',
-  path: '/daftar-gelombang-2',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DaftarGelombang1Route = DaftarGelombang1RouteImport.update({
-  id: '/daftar-gelombang-1',
-  path: '/daftar-gelombang-1',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DaftarRoute = DaftarRouteImport.update({
-  id: '/daftar',
-  path: '/daftar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CekTahapanRoute = CekTahapanRouteImport.update({
-  id: '/cek-tahapan',
-  path: '/cek-tahapan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CekHasilRoute = CekHasilRouteImport.update({
-  id: '/cek-hasil',
-  path: '/cek-hasil',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasRoute = BerkasRouteImport.update({
@@ -176,14 +87,99 @@ const BerkasRoute = BerkasRouteImport.update({
   path: '/berkas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CekHasilRoute = CekHasilRouteImport.update({
+  id: '/cek-hasil',
+  path: '/cek-hasil',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StaffIndexRoute = StaffIndexRouteImport.update({
-  id: '/staff/',
-  path: '/staff/',
+const CekTahapanRoute = CekTahapanRouteImport.update({
+  id: '/cek-tahapan',
+  path: '/cek-tahapan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarRoute = DaftarRouteImport.update({
+  id: '/daftar',
+  path: '/daftar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarGelombang1Route = DaftarGelombang1RouteImport.update({
+  id: '/daftar-gelombang-1',
+  path: '/daftar-gelombang-1',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarGelombang2Route = DaftarGelombang2RouteImport.update({
+  id: '/daftar-gelombang-2',
+  path: '/daftar-gelombang-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarMandiriRoute = DaftarMandiriRouteImport.update({
+  id: '/daftar-mandiri',
+  path: '/daftar-mandiri',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EssayRoute = EssayRouteImport.update({
+  id: '/essay',
+  path: '/essay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EssaySuksesRoute = EssaySuksesRouteImport.update({
+  id: '/essay-sukses',
+  path: '/essay-sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontribusiRoute = KontribusiRouteImport.update({
+  id: '/kontribusi',
+  path: '/kontribusi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontribusiSuksesRoute = KontribusiSuksesRouteImport.update({
+  id: '/kontribusi-sukses',
+  path: '/kontribusi-sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanduanRoute = PanduanRouteImport.update({
+  id: '/panduan',
+  path: '/panduan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranRoute = PendaftaranRouteImport.update({
+  id: '/pendaftaran',
+  path: '/pendaftaran',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
+  id: '/pendaftaran-sukses',
+  path: '/pendaftaran-sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatistikRoute = StatistikRouteImport.update({
+  id: '/statistik',
+  path: '/statistik',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuksesRoute = SuksesRouteImport.update({
+  id: '/sukses',
+  path: '/sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TwibbonRoute = TwibbonRouteImport.update({
+  id: '/twibbon',
+  path: '/twibbon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -191,19 +187,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StaffLolosRoute = StaffLolosRouteImport.update({
-  id: '/staff/lolos',
-  path: '/staff/lolos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StaffLoginRoute = StaffLoginRouteImport.update({
-  id: '/staff/login',
-  path: '/staff/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SeleksiEssayRoute = SeleksiEssayRouteImport.update({
-  id: '/seleksi/essay',
-  path: '/seleksi/essay',
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
@@ -211,14 +197,34 @@ const AdminWaSetupRoute = AdminWaSetupRouteImport.update({
   path: '/admin/wa-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
+const SeleksiEssayRoute = SeleksiEssayRouteImport.update({
+  id: '/seleksi/essay',
+  path: '/seleksi/essay',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPesertaIndexRoute = AdminPesertaIndexRouteImport.update({
-  id: '/admin/peserta/',
-  path: '/admin/peserta/',
+const StaffIndexRoute = StaffIndexRouteImport.update({
+  id: '/staff/',
+  path: '/staff/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffLoginRoute = StaffLoginRouteImport.update({
+  id: '/staff/login',
+  path: '/staff/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffLolosRoute = StaffLolosRouteImport.update({
+  id: '/staff/lolos',
+  path: '/staff/lolos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAlurFullyFundedRoute = AdminAlurFullyFundedRouteImport.update({
+  id: '/admin/alur/fully-funded',
+  path: '/admin/alur/fully-funded',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAlurTahapanSeleksiRoute = AdminAlurTahapanSeleksiRouteImport.update({
+  id: '/admin/alur/tahapan-seleksi',
+  path: '/admin/alur/tahapan-seleksi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPengaturanIndexRoute = AdminPengaturanIndexRouteImport.update({
@@ -226,150 +232,10 @@ const AdminPengaturanIndexRoute = AdminPengaturanIndexRouteImport.update({
   path: '/admin/pengaturan/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPesertaTahapanRoute = AdminPesertaTahapanRouteImport.update({
-  id: '/admin/peserta/tahapan',
-  path: '/admin/peserta/tahapan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaSelfFundedRoute = AdminPesertaSelfFundedRouteImport.update({
-  id: '/admin/peserta/self-funded',
-  path: '/admin/peserta/self-funded',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaRegulerRoute = AdminPesertaRegulerRouteImport.update({
-  id: '/admin/peserta/reguler',
-  path: '/admin/peserta/reguler',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaKontribusiRoute = AdminPesertaKontribusiRouteImport.update({
-  id: '/admin/peserta/kontribusi',
-  path: '/admin/peserta/kontribusi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaEssayApiRoute = AdminPesertaEssayApiRouteImport.update({
-  id: '/admin/peserta/essay-api',
-  path: '/admin/peserta/essay-api',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaEssayRoute = AdminPesertaEssayRouteImport.update({
-  id: '/admin/peserta/essay',
-  path: '/admin/peserta/essay',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanWaQuickReplyRoute =
-  AdminPengaturanWaQuickReplyRouteImport.update({
-    id: '/admin/pengaturan/wa-quick-reply',
-    path: '/admin/pengaturan/wa-quick-reply',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanWaChannelRoute =
-  AdminPengaturanWaChannelRouteImport.update({
-    id: '/admin/pengaturan/wa-channel',
-    path: '/admin/pengaturan/wa-channel',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanTwibbonRoute = AdminPengaturanTwibbonRouteImport.update({
-  id: '/admin/pengaturan/twibbon',
-  path: '/admin/pengaturan/twibbon',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanTimelineRoute = AdminPengaturanTimelineRouteImport.update({
-  id: '/admin/pengaturan/timeline',
-  path: '/admin/pengaturan/timeline',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanStatistikRoute =
-  AdminPengaturanStatistikRouteImport.update({
-    id: '/admin/pengaturan/statistik',
-    path: '/admin/pengaturan/statistik',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanStaffRoute = AdminPengaturanStaffRouteImport.update({
-  id: '/admin/pengaturan/staff',
-  path: '/admin/pengaturan/staff',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanSeleksiPrivateRoute =
-  AdminPengaturanSeleksiPrivateRouteImport.update({
-    id: '/admin/pengaturan/seleksi-private',
-    path: '/admin/pengaturan/seleksi-private',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanPengingatPembayaranRoute =
-  AdminPengaturanPengingatPembayaranRouteImport.update({
-    id: '/admin/pengaturan/pengingat-pembayaran',
-    path: '/admin/pengaturan/pengingat-pembayaran',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanPanduanRoute = AdminPengaturanPanduanRouteImport.update({
-  id: '/admin/pengaturan/panduan',
-  path: '/admin/pengaturan/panduan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanMediaRoute = AdminPengaturanMediaRouteImport.update({
-  id: '/admin/pengaturan/media',
-  path: '/admin/pengaturan/media',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanKreditRoute = AdminPengaturanKreditRouteImport.update({
-  id: '/admin/pengaturan/kredit',
-  path: '/admin/pengaturan/kredit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanHasilSeleksiRoute =
-  AdminPengaturanHasilSeleksiRouteImport.update({
-    id: '/admin/pengaturan/hasil-seleksi',
-    path: '/admin/pengaturan/hasil-seleksi',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanGelombangRoute =
-  AdminPengaturanGelombangRouteImport.update({
-    id: '/admin/pengaturan/gelombang',
-    path: '/admin/pengaturan/gelombang',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanFaqRoute = AdminPengaturanFaqRouteImport.update({
-  id: '/admin/pengaturan/faq',
-  path: '/admin/pengaturan/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanEmailRoute = AdminPengaturanEmailRouteImport.update({
-  id: '/admin/pengaturan/email',
-  path: '/admin/pengaturan/email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
-  id: '/admin/pengaturan/donasi',
-  path: '/admin/pengaturan/donasi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanDokumenSelfFundedRoute =
-  AdminPengaturanDokumenSelfFundedRouteImport.update({
-    id: '/admin/pengaturan/dokumen-self-funded',
-    path: '/admin/pengaturan/dokumen-self-funded',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanCountdownRoute =
-  AdminPengaturanCountdownRouteImport.update({
-    id: '/admin/pengaturan/countdown',
-    path: '/admin/pengaturan/countdown',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanBackupRoute = AdminPengaturanBackupRouteImport.update({
-  id: '/admin/pengaturan/backup',
-  path: '/admin/pengaturan/backup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPengaturanApresiasiRoute =
-  AdminPengaturanApresiasiRouteImport.update({
-    id: '/admin/pengaturan/apresiasi',
-    path: '/admin/pengaturan/apresiasi',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminPengaturanAnalyticsRoute =
-  AdminPengaturanAnalyticsRouteImport.update({
-    id: '/admin/pengaturan/analytics',
-    path: '/admin/pengaturan/analytics',
+const AdminPengaturanAffiliateRoute =
+  AdminPengaturanAffiliateRouteImport.update({
+    id: '/admin/pengaturan/affiliate',
+    path: '/admin/pengaturan/affiliate',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AdminPengaturanAiProviderRoute =
@@ -378,44 +244,167 @@ const AdminPengaturanAiProviderRoute =
     path: '/admin/pengaturan/ai-provider',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminPengaturanAffiliateRoute =
-  AdminPengaturanAffiliateRouteImport.update({
-    id: '/admin/pengaturan/affiliate',
-    path: '/admin/pengaturan/affiliate',
+const AdminPengaturanAnalyticsRoute =
+  AdminPengaturanAnalyticsRouteImport.update({
+    id: '/admin/pengaturan/analytics',
+    path: '/admin/pengaturan/analytics',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminAlurTahapanSeleksiRoute = AdminAlurTahapanSeleksiRouteImport.update({
-  id: '/admin/alur/tahapan-seleksi',
-  path: '/admin/alur/tahapan-seleksi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAlurFullyFundedRoute = AdminAlurFullyFundedRouteImport.update({
-  id: '/admin/alur/fully-funded',
-  path: '/admin/alur/fully-funded',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPesertaSelfFundedIndexRoute =
-  AdminPesertaSelfFundedIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AdminPesertaSelfFundedRoute,
+const AdminPengaturanApresiasiRoute =
+  AdminPengaturanApresiasiRouteImport.update({
+    id: '/admin/pengaturan/apresiasi',
+    path: '/admin/pengaturan/apresiasi',
+    getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanBackupRoute = AdminPengaturanBackupRouteImport.update({
+  id: '/admin/pengaturan/backup',
+  path: '/admin/pengaturan/backup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanCountdownRoute =
+  AdminPengaturanCountdownRouteImport.update({
+    id: '/admin/pengaturan/countdown',
+    path: '/admin/pengaturan/countdown',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanDokumenSelfFundedRoute =
+  AdminPengaturanDokumenSelfFundedRouteImport.update({
+    id: '/admin/pengaturan/dokumen-self-funded',
+    path: '/admin/pengaturan/dokumen-self-funded',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanDonasiRoute = AdminPengaturanDonasiRouteImport.update({
+  id: '/admin/pengaturan/donasi',
+  path: '/admin/pengaturan/donasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanEmailRoute = AdminPengaturanEmailRouteImport.update({
+  id: '/admin/pengaturan/email',
+  path: '/admin/pengaturan/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanFaqRoute = AdminPengaturanFaqRouteImport.update({
+  id: '/admin/pengaturan/faq',
+  path: '/admin/pengaturan/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanGelombangRoute =
+  AdminPengaturanGelombangRouteImport.update({
+    id: '/admin/pengaturan/gelombang',
+    path: '/admin/pengaturan/gelombang',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanHasilSeleksiRoute =
+  AdminPengaturanHasilSeleksiRouteImport.update({
+    id: '/admin/pengaturan/hasil-seleksi',
+    path: '/admin/pengaturan/hasil-seleksi',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanKreditRoute = AdminPengaturanKreditRouteImport.update({
+  id: '/admin/pengaturan/kredit',
+  path: '/admin/pengaturan/kredit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanMediaRoute = AdminPengaturanMediaRouteImport.update({
+  id: '/admin/pengaturan/media',
+  path: '/admin/pengaturan/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanPanduanRoute = AdminPengaturanPanduanRouteImport.update({
+  id: '/admin/pengaturan/panduan',
+  path: '/admin/pengaturan/panduan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanPengingatPembayaranRoute =
+  AdminPengaturanPengingatPembayaranRouteImport.update({
+    id: '/admin/pengaturan/pengingat-pembayaran',
+    path: '/admin/pengaturan/pengingat-pembayaran',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanPenutupanRoute =
+  AdminPengaturanPenutupanRouteImport.update({
+    id: '/admin/pengaturan/penutupan',
+    path: '/admin/pengaturan/penutupan',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanSeleksiPrivateRoute =
+  AdminPengaturanSeleksiPrivateRouteImport.update({
+    id: '/admin/pengaturan/seleksi-private',
+    path: '/admin/pengaturan/seleksi-private',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanStaffRoute = AdminPengaturanStaffRouteImport.update({
+  id: '/admin/pengaturan/staff',
+  path: '/admin/pengaturan/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanStatistikRoute =
+  AdminPengaturanStatistikRouteImport.update({
+    id: '/admin/pengaturan/statistik',
+    path: '/admin/pengaturan/statistik',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanTimelineRoute = AdminPengaturanTimelineRouteImport.update({
+  id: '/admin/pengaturan/timeline',
+  path: '/admin/pengaturan/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanTwibbonRoute = AdminPengaturanTwibbonRouteImport.update({
+  id: '/admin/pengaturan/twibbon',
+  path: '/admin/pengaturan/twibbon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPengaturanWaChannelRoute =
+  AdminPengaturanWaChannelRouteImport.update({
+    id: '/admin/pengaturan/wa-channel',
+    path: '/admin/pengaturan/wa-channel',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPengaturanWaQuickReplyRoute =
+  AdminPengaturanWaQuickReplyRouteImport.update({
+    id: '/admin/pengaturan/wa-quick-reply',
+    path: '/admin/pengaturan/wa-quick-reply',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminPesertaIndexRoute = AdminPesertaIndexRouteImport.update({
+  id: '/admin/peserta/',
+  path: '/admin/peserta/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaEssayRoute = AdminPesertaEssayRouteImport.update({
+  id: '/admin/peserta/essay',
+  path: '/admin/peserta/essay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaEssayApiRoute = AdminPesertaEssayApiRouteImport.update({
+  id: '/admin/peserta/essay-api',
+  path: '/admin/peserta/essay-api',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaKontribusiRoute = AdminPesertaKontribusiRouteImport.update({
+  id: '/admin/peserta/kontribusi',
+  path: '/admin/peserta/kontribusi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaRegulerRoute = AdminPesertaRegulerRouteImport.update({
+  id: '/admin/peserta/reguler',
+  path: '/admin/peserta/reguler',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaSelfFundedRoute = AdminPesertaSelfFundedRouteImport.update({
+  id: '/admin/peserta/self-funded',
+  path: '/admin/peserta/self-funded',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPesertaTahapanRoute = AdminPesertaTahapanRouteImport.update({
+  id: '/admin/peserta/tahapan',
+  path: '/admin/peserta/tahapan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPesertaRegulerIndexRoute =
   AdminPesertaRegulerIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AdminPesertaRegulerRoute,
-  } as any)
-const AdminPesertaSelfFundedPendaftaranRoute =
-  AdminPesertaSelfFundedPendaftaranRouteImport.update({
-    id: '/pendaftaran',
-    path: '/pendaftaran',
-    getParentRoute: () => AdminPesertaSelfFundedRoute,
-  } as any)
-const AdminPesertaRegulerPendaftaranRoute =
-  AdminPesertaRegulerPendaftaranRouteImport.update({
-    id: '/pendaftaran',
-    path: '/pendaftaran',
     getParentRoute: () => AdminPesertaRegulerRoute,
   } as any)
 const AdminPesertaRegulerBerkasRoute =
@@ -423,6 +412,24 @@ const AdminPesertaRegulerBerkasRoute =
     id: '/berkas',
     path: '/berkas',
     getParentRoute: () => AdminPesertaRegulerRoute,
+  } as any)
+const AdminPesertaRegulerPendaftaranRoute =
+  AdminPesertaRegulerPendaftaranRouteImport.update({
+    id: '/pendaftaran',
+    path: '/pendaftaran',
+    getParentRoute: () => AdminPesertaRegulerRoute,
+  } as any)
+const AdminPesertaSelfFundedIndexRoute =
+  AdminPesertaSelfFundedIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AdminPesertaSelfFundedRoute,
+  } as any)
+const AdminPesertaSelfFundedPendaftaranRoute =
+  AdminPesertaSelfFundedPendaftaranRouteImport.update({
+    id: '/pendaftaran',
+    path: '/pendaftaran',
+    getParentRoute: () => AdminPesertaSelfFundedRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -472,6 +479,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
@@ -540,6 +548,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
@@ -607,6 +616,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/media': typeof AdminPengaturanMediaRoute
   '/admin/pengaturan/panduan': typeof AdminPengaturanPanduanRoute
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
+  '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
@@ -677,6 +687,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
@@ -745,6 +756,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
@@ -811,6 +823,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/media'
     | '/admin/pengaturan/panduan'
     | '/admin/pengaturan/pengingat-pembayaran'
+    | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
@@ -880,6 +893,7 @@ export interface RootRouteChildren {
   AdminPengaturanMediaRoute: typeof AdminPengaturanMediaRoute
   AdminPengaturanPanduanRoute: typeof AdminPengaturanPanduanRoute
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
+  AdminPengaturanPenutupanRoute: typeof AdminPengaturanPenutupanRoute
   AdminPengaturanSeleksiPrivateRoute: typeof AdminPengaturanSeleksiPrivateRoute
   AdminPengaturanStaffRoute: typeof AdminPengaturanStaffRoute
   AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
@@ -899,137 +913,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/twibbon': {
-      id: '/twibbon'
-      path: '/twibbon'
-      fullPath: '/twibbon'
-      preLoaderRoute: typeof TwibbonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tentang': {
-      id: '/tentang'
-      path: '/tentang'
-      fullPath: '/tentang'
-      preLoaderRoute: typeof TentangRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sukses': {
-      id: '/sukses'
-      path: '/sukses'
-      fullPath: '/sukses'
-      preLoaderRoute: typeof SuksesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/statistik': {
-      id: '/statistik'
-      path: '/statistik'
-      fullPath: '/statistik'
-      preLoaderRoute: typeof StatistikRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran-sukses': {
-      id: '/pendaftaran-sukses'
-      path: '/pendaftaran-sukses'
-      fullPath: '/pendaftaran-sukses'
-      preLoaderRoute: typeof PendaftaranSuksesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran': {
-      id: '/pendaftaran'
-      path: '/pendaftaran'
-      fullPath: '/pendaftaran'
-      preLoaderRoute: typeof PendaftaranRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panduan': {
-      id: '/panduan'
-      path: '/panduan'
-      fullPath: '/panduan'
-      preLoaderRoute: typeof PanduanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kontribusi-sukses': {
-      id: '/kontribusi-sukses'
-      path: '/kontribusi-sukses'
-      fullPath: '/kontribusi-sukses'
-      preLoaderRoute: typeof KontribusiSuksesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kontribusi': {
-      id: '/kontribusi'
-      path: '/kontribusi'
-      fullPath: '/kontribusi'
-      preLoaderRoute: typeof KontribusiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/essay-sukses': {
-      id: '/essay-sukses'
-      path: '/essay-sukses'
-      fullPath: '/essay-sukses'
-      preLoaderRoute: typeof EssaySuksesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/essay': {
-      id: '/essay'
-      path: '/essay'
-      fullPath: '/essay'
-      preLoaderRoute: typeof EssayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/daftar-mandiri': {
-      id: '/daftar-mandiri'
-      path: '/daftar-mandiri'
-      fullPath: '/daftar-mandiri'
-      preLoaderRoute: typeof DaftarMandiriRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/daftar-gelombang-2': {
-      id: '/daftar-gelombang-2'
-      path: '/daftar-gelombang-2'
-      fullPath: '/daftar-gelombang-2'
-      preLoaderRoute: typeof DaftarGelombang2RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/daftar-gelombang-1': {
-      id: '/daftar-gelombang-1'
-      path: '/daftar-gelombang-1'
-      fullPath: '/daftar-gelombang-1'
-      preLoaderRoute: typeof DaftarGelombang1RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/daftar': {
-      id: '/daftar'
-      path: '/daftar'
-      fullPath: '/daftar'
-      preLoaderRoute: typeof DaftarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cek-tahapan': {
-      id: '/cek-tahapan'
-      path: '/cek-tahapan'
-      fullPath: '/cek-tahapan'
-      preLoaderRoute: typeof CekTahapanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cek-hasil': {
-      id: '/cek-hasil'
-      path: '/cek-hasil'
-      fullPath: '/cek-hasil'
-      preLoaderRoute: typeof CekHasilRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berkas': {
@@ -1039,18 +927,137 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/cek-hasil': {
+      id: '/cek-hasil'
+      path: '/cek-hasil'
+      fullPath: '/cek-hasil'
+      preLoaderRoute: typeof CekHasilRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/staff/': {
-      id: '/staff/'
-      path: '/staff'
-      fullPath: '/staff/'
-      preLoaderRoute: typeof StaffIndexRouteImport
+    '/cek-tahapan': {
+      id: '/cek-tahapan'
+      path: '/cek-tahapan'
+      fullPath: '/cek-tahapan'
+      preLoaderRoute: typeof CekTahapanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar': {
+      id: '/daftar'
+      path: '/daftar'
+      fullPath: '/daftar'
+      preLoaderRoute: typeof DaftarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-gelombang-1': {
+      id: '/daftar-gelombang-1'
+      path: '/daftar-gelombang-1'
+      fullPath: '/daftar-gelombang-1'
+      preLoaderRoute: typeof DaftarGelombang1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-gelombang-2': {
+      id: '/daftar-gelombang-2'
+      path: '/daftar-gelombang-2'
+      fullPath: '/daftar-gelombang-2'
+      preLoaderRoute: typeof DaftarGelombang2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar-mandiri': {
+      id: '/daftar-mandiri'
+      path: '/daftar-mandiri'
+      fullPath: '/daftar-mandiri'
+      preLoaderRoute: typeof DaftarMandiriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/essay': {
+      id: '/essay'
+      path: '/essay'
+      fullPath: '/essay'
+      preLoaderRoute: typeof EssayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/essay-sukses': {
+      id: '/essay-sukses'
+      path: '/essay-sukses'
+      fullPath: '/essay-sukses'
+      preLoaderRoute: typeof EssaySuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontribusi': {
+      id: '/kontribusi'
+      path: '/kontribusi'
+      fullPath: '/kontribusi'
+      preLoaderRoute: typeof KontribusiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontribusi-sukses': {
+      id: '/kontribusi-sukses'
+      path: '/kontribusi-sukses'
+      fullPath: '/kontribusi-sukses'
+      preLoaderRoute: typeof KontribusiSuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panduan': {
+      id: '/panduan'
+      path: '/panduan'
+      fullPath: '/panduan'
+      preLoaderRoute: typeof PanduanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran': {
+      id: '/pendaftaran'
+      path: '/pendaftaran'
+      fullPath: '/pendaftaran'
+      preLoaderRoute: typeof PendaftaranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran-sukses': {
+      id: '/pendaftaran-sukses'
+      path: '/pendaftaran-sukses'
+      fullPath: '/pendaftaran-sukses'
+      preLoaderRoute: typeof PendaftaranSuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/statistik': {
+      id: '/statistik'
+      path: '/statistik'
+      fullPath: '/statistik'
+      preLoaderRoute: typeof StatistikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sukses': {
+      id: '/sukses'
+      path: '/sukses'
+      fullPath: '/sukses'
+      preLoaderRoute: typeof SuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/twibbon': {
+      id: '/twibbon'
+      path: '/twibbon'
+      fullPath: '/twibbon'
+      preLoaderRoute: typeof TwibbonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1060,25 +1067,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/staff/lolos': {
-      id: '/staff/lolos'
-      path: '/staff/lolos'
-      fullPath: '/staff/lolos'
-      preLoaderRoute: typeof StaffLolosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/staff/login': {
-      id: '/staff/login'
-      path: '/staff/login'
-      fullPath: '/staff/login'
-      preLoaderRoute: typeof StaffLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/seleksi/essay': {
-      id: '/seleksi/essay'
-      path: '/seleksi/essay'
-      fullPath: '/seleksi/essay'
-      preLoaderRoute: typeof SeleksiEssayRouteImport
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/wa-setup': {
@@ -1088,235 +1081,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWaSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
+    '/seleksi/essay': {
+      id: '/seleksi/essay'
+      path: '/seleksi/essay'
+      fullPath: '/seleksi/essay'
+      preLoaderRoute: typeof SeleksiEssayRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/peserta/': {
-      id: '/admin/peserta/'
-      path: '/admin/peserta'
-      fullPath: '/admin/peserta/'
-      preLoaderRoute: typeof AdminPesertaIndexRouteImport
+    '/staff/': {
+      id: '/staff/'
+      path: '/staff'
+      fullPath: '/staff/'
+      preLoaderRoute: typeof StaffIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/pengaturan/': {
-      id: '/admin/pengaturan/'
-      path: '/admin/pengaturan'
-      fullPath: '/admin/pengaturan/'
-      preLoaderRoute: typeof AdminPengaturanIndexRouteImport
+    '/staff/login': {
+      id: '/staff/login'
+      path: '/staff/login'
+      fullPath: '/staff/login'
+      preLoaderRoute: typeof StaffLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/peserta/tahapan': {
-      id: '/admin/peserta/tahapan'
-      path: '/admin/peserta/tahapan'
-      fullPath: '/admin/peserta/tahapan'
-      preLoaderRoute: typeof AdminPesertaTahapanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/peserta/self-funded': {
-      id: '/admin/peserta/self-funded'
-      path: '/admin/peserta/self-funded'
-      fullPath: '/admin/peserta/self-funded'
-      preLoaderRoute: typeof AdminPesertaSelfFundedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/peserta/reguler': {
-      id: '/admin/peserta/reguler'
-      path: '/admin/peserta/reguler'
-      fullPath: '/admin/peserta/reguler'
-      preLoaderRoute: typeof AdminPesertaRegulerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/peserta/kontribusi': {
-      id: '/admin/peserta/kontribusi'
-      path: '/admin/peserta/kontribusi'
-      fullPath: '/admin/peserta/kontribusi'
-      preLoaderRoute: typeof AdminPesertaKontribusiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/peserta/essay-api': {
-      id: '/admin/peserta/essay-api'
-      path: '/admin/peserta/essay-api'
-      fullPath: '/admin/peserta/essay-api'
-      preLoaderRoute: typeof AdminPesertaEssayApiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/peserta/essay': {
-      id: '/admin/peserta/essay'
-      path: '/admin/peserta/essay'
-      fullPath: '/admin/peserta/essay'
-      preLoaderRoute: typeof AdminPesertaEssayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/wa-quick-reply': {
-      id: '/admin/pengaturan/wa-quick-reply'
-      path: '/admin/pengaturan/wa-quick-reply'
-      fullPath: '/admin/pengaturan/wa-quick-reply'
-      preLoaderRoute: typeof AdminPengaturanWaQuickReplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/wa-channel': {
-      id: '/admin/pengaturan/wa-channel'
-      path: '/admin/pengaturan/wa-channel'
-      fullPath: '/admin/pengaturan/wa-channel'
-      preLoaderRoute: typeof AdminPengaturanWaChannelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/twibbon': {
-      id: '/admin/pengaturan/twibbon'
-      path: '/admin/pengaturan/twibbon'
-      fullPath: '/admin/pengaturan/twibbon'
-      preLoaderRoute: typeof AdminPengaturanTwibbonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/timeline': {
-      id: '/admin/pengaturan/timeline'
-      path: '/admin/pengaturan/timeline'
-      fullPath: '/admin/pengaturan/timeline'
-      preLoaderRoute: typeof AdminPengaturanTimelineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/statistik': {
-      id: '/admin/pengaturan/statistik'
-      path: '/admin/pengaturan/statistik'
-      fullPath: '/admin/pengaturan/statistik'
-      preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/staff': {
-      id: '/admin/pengaturan/staff'
-      path: '/admin/pengaturan/staff'
-      fullPath: '/admin/pengaturan/staff'
-      preLoaderRoute: typeof AdminPengaturanStaffRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/seleksi-private': {
-      id: '/admin/pengaturan/seleksi-private'
-      path: '/admin/pengaturan/seleksi-private'
-      fullPath: '/admin/pengaturan/seleksi-private'
-      preLoaderRoute: typeof AdminPengaturanSeleksiPrivateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/pengingat-pembayaran': {
-      id: '/admin/pengaturan/pengingat-pembayaran'
-      path: '/admin/pengaturan/pengingat-pembayaran'
-      fullPath: '/admin/pengaturan/pengingat-pembayaran'
-      preLoaderRoute: typeof AdminPengaturanPengingatPembayaranRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/panduan': {
-      id: '/admin/pengaturan/panduan'
-      path: '/admin/pengaturan/panduan'
-      fullPath: '/admin/pengaturan/panduan'
-      preLoaderRoute: typeof AdminPengaturanPanduanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/media': {
-      id: '/admin/pengaturan/media'
-      path: '/admin/pengaturan/media'
-      fullPath: '/admin/pengaturan/media'
-      preLoaderRoute: typeof AdminPengaturanMediaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/kredit': {
-      id: '/admin/pengaturan/kredit'
-      path: '/admin/pengaturan/kredit'
-      fullPath: '/admin/pengaturan/kredit'
-      preLoaderRoute: typeof AdminPengaturanKreditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/hasil-seleksi': {
-      id: '/admin/pengaturan/hasil-seleksi'
-      path: '/admin/pengaturan/hasil-seleksi'
-      fullPath: '/admin/pengaturan/hasil-seleksi'
-      preLoaderRoute: typeof AdminPengaturanHasilSeleksiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/gelombang': {
-      id: '/admin/pengaturan/gelombang'
-      path: '/admin/pengaturan/gelombang'
-      fullPath: '/admin/pengaturan/gelombang'
-      preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/faq': {
-      id: '/admin/pengaturan/faq'
-      path: '/admin/pengaturan/faq'
-      fullPath: '/admin/pengaturan/faq'
-      preLoaderRoute: typeof AdminPengaturanFaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/email': {
-      id: '/admin/pengaturan/email'
-      path: '/admin/pengaturan/email'
-      fullPath: '/admin/pengaturan/email'
-      preLoaderRoute: typeof AdminPengaturanEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/donasi': {
-      id: '/admin/pengaturan/donasi'
-      path: '/admin/pengaturan/donasi'
-      fullPath: '/admin/pengaturan/donasi'
-      preLoaderRoute: typeof AdminPengaturanDonasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/dokumen-self-funded': {
-      id: '/admin/pengaturan/dokumen-self-funded'
-      path: '/admin/pengaturan/dokumen-self-funded'
-      fullPath: '/admin/pengaturan/dokumen-self-funded'
-      preLoaderRoute: typeof AdminPengaturanDokumenSelfFundedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/countdown': {
-      id: '/admin/pengaturan/countdown'
-      path: '/admin/pengaturan/countdown'
-      fullPath: '/admin/pengaturan/countdown'
-      preLoaderRoute: typeof AdminPengaturanCountdownRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/backup': {
-      id: '/admin/pengaturan/backup'
-      path: '/admin/pengaturan/backup'
-      fullPath: '/admin/pengaturan/backup'
-      preLoaderRoute: typeof AdminPengaturanBackupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/apresiasi': {
-      id: '/admin/pengaturan/apresiasi'
-      path: '/admin/pengaturan/apresiasi'
-      fullPath: '/admin/pengaturan/apresiasi'
-      preLoaderRoute: typeof AdminPengaturanApresiasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/analytics': {
-      id: '/admin/pengaturan/analytics'
-      path: '/admin/pengaturan/analytics'
-      fullPath: '/admin/pengaturan/analytics'
-      preLoaderRoute: typeof AdminPengaturanAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/ai-provider': {
-      id: '/admin/pengaturan/ai-provider'
-      path: '/admin/pengaturan/ai-provider'
-      fullPath: '/admin/pengaturan/ai-provider'
-      preLoaderRoute: typeof AdminPengaturanAiProviderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pengaturan/affiliate': {
-      id: '/admin/pengaturan/affiliate'
-      path: '/admin/pengaturan/affiliate'
-      fullPath: '/admin/pengaturan/affiliate'
-      preLoaderRoute: typeof AdminPengaturanAffiliateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/alur/tahapan-seleksi': {
-      id: '/admin/alur/tahapan-seleksi'
-      path: '/admin/alur/tahapan-seleksi'
-      fullPath: '/admin/alur/tahapan-seleksi'
-      preLoaderRoute: typeof AdminAlurTahapanSeleksiRouteImport
+    '/staff/lolos': {
+      id: '/staff/lolos'
+      path: '/staff/lolos'
+      fullPath: '/staff/lolos'
+      preLoaderRoute: typeof StaffLolosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/alur/fully-funded': {
@@ -1326,12 +1116,236 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAlurFullyFundedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/peserta/self-funded/': {
-      id: '/admin/peserta/self-funded/'
-      path: '/'
-      fullPath: '/admin/peserta/self-funded/'
-      preLoaderRoute: typeof AdminPesertaSelfFundedIndexRouteImport
-      parentRoute: typeof AdminPesertaSelfFundedRoute
+    '/admin/alur/tahapan-seleksi': {
+      id: '/admin/alur/tahapan-seleksi'
+      path: '/admin/alur/tahapan-seleksi'
+      fullPath: '/admin/alur/tahapan-seleksi'
+      preLoaderRoute: typeof AdminAlurTahapanSeleksiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/': {
+      id: '/admin/pengaturan/'
+      path: '/admin/pengaturan'
+      fullPath: '/admin/pengaturan/'
+      preLoaderRoute: typeof AdminPengaturanIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/affiliate': {
+      id: '/admin/pengaturan/affiliate'
+      path: '/admin/pengaturan/affiliate'
+      fullPath: '/admin/pengaturan/affiliate'
+      preLoaderRoute: typeof AdminPengaturanAffiliateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/ai-provider': {
+      id: '/admin/pengaturan/ai-provider'
+      path: '/admin/pengaturan/ai-provider'
+      fullPath: '/admin/pengaturan/ai-provider'
+      preLoaderRoute: typeof AdminPengaturanAiProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/analytics': {
+      id: '/admin/pengaturan/analytics'
+      path: '/admin/pengaturan/analytics'
+      fullPath: '/admin/pengaturan/analytics'
+      preLoaderRoute: typeof AdminPengaturanAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/apresiasi': {
+      id: '/admin/pengaturan/apresiasi'
+      path: '/admin/pengaturan/apresiasi'
+      fullPath: '/admin/pengaturan/apresiasi'
+      preLoaderRoute: typeof AdminPengaturanApresiasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/backup': {
+      id: '/admin/pengaturan/backup'
+      path: '/admin/pengaturan/backup'
+      fullPath: '/admin/pengaturan/backup'
+      preLoaderRoute: typeof AdminPengaturanBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/countdown': {
+      id: '/admin/pengaturan/countdown'
+      path: '/admin/pengaturan/countdown'
+      fullPath: '/admin/pengaturan/countdown'
+      preLoaderRoute: typeof AdminPengaturanCountdownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/dokumen-self-funded': {
+      id: '/admin/pengaturan/dokumen-self-funded'
+      path: '/admin/pengaturan/dokumen-self-funded'
+      fullPath: '/admin/pengaturan/dokumen-self-funded'
+      preLoaderRoute: typeof AdminPengaturanDokumenSelfFundedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/donasi': {
+      id: '/admin/pengaturan/donasi'
+      path: '/admin/pengaturan/donasi'
+      fullPath: '/admin/pengaturan/donasi'
+      preLoaderRoute: typeof AdminPengaturanDonasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/email': {
+      id: '/admin/pengaturan/email'
+      path: '/admin/pengaturan/email'
+      fullPath: '/admin/pengaturan/email'
+      preLoaderRoute: typeof AdminPengaturanEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/faq': {
+      id: '/admin/pengaturan/faq'
+      path: '/admin/pengaturan/faq'
+      fullPath: '/admin/pengaturan/faq'
+      preLoaderRoute: typeof AdminPengaturanFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/gelombang': {
+      id: '/admin/pengaturan/gelombang'
+      path: '/admin/pengaturan/gelombang'
+      fullPath: '/admin/pengaturan/gelombang'
+      preLoaderRoute: typeof AdminPengaturanGelombangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/hasil-seleksi': {
+      id: '/admin/pengaturan/hasil-seleksi'
+      path: '/admin/pengaturan/hasil-seleksi'
+      fullPath: '/admin/pengaturan/hasil-seleksi'
+      preLoaderRoute: typeof AdminPengaturanHasilSeleksiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/kredit': {
+      id: '/admin/pengaturan/kredit'
+      path: '/admin/pengaturan/kredit'
+      fullPath: '/admin/pengaturan/kredit'
+      preLoaderRoute: typeof AdminPengaturanKreditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/media': {
+      id: '/admin/pengaturan/media'
+      path: '/admin/pengaturan/media'
+      fullPath: '/admin/pengaturan/media'
+      preLoaderRoute: typeof AdminPengaturanMediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/panduan': {
+      id: '/admin/pengaturan/panduan'
+      path: '/admin/pengaturan/panduan'
+      fullPath: '/admin/pengaturan/panduan'
+      preLoaderRoute: typeof AdminPengaturanPanduanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/pengingat-pembayaran': {
+      id: '/admin/pengaturan/pengingat-pembayaran'
+      path: '/admin/pengaturan/pengingat-pembayaran'
+      fullPath: '/admin/pengaturan/pengingat-pembayaran'
+      preLoaderRoute: typeof AdminPengaturanPengingatPembayaranRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/penutupan': {
+      id: '/admin/pengaturan/penutupan'
+      path: '/admin/pengaturan/penutupan'
+      fullPath: '/admin/pengaturan/penutupan'
+      preLoaderRoute: typeof AdminPengaturanPenutupanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/seleksi-private': {
+      id: '/admin/pengaturan/seleksi-private'
+      path: '/admin/pengaturan/seleksi-private'
+      fullPath: '/admin/pengaturan/seleksi-private'
+      preLoaderRoute: typeof AdminPengaturanSeleksiPrivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/staff': {
+      id: '/admin/pengaturan/staff'
+      path: '/admin/pengaturan/staff'
+      fullPath: '/admin/pengaturan/staff'
+      preLoaderRoute: typeof AdminPengaturanStaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/statistik': {
+      id: '/admin/pengaturan/statistik'
+      path: '/admin/pengaturan/statistik'
+      fullPath: '/admin/pengaturan/statistik'
+      preLoaderRoute: typeof AdminPengaturanStatistikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/timeline': {
+      id: '/admin/pengaturan/timeline'
+      path: '/admin/pengaturan/timeline'
+      fullPath: '/admin/pengaturan/timeline'
+      preLoaderRoute: typeof AdminPengaturanTimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/twibbon': {
+      id: '/admin/pengaturan/twibbon'
+      path: '/admin/pengaturan/twibbon'
+      fullPath: '/admin/pengaturan/twibbon'
+      preLoaderRoute: typeof AdminPengaturanTwibbonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/wa-channel': {
+      id: '/admin/pengaturan/wa-channel'
+      path: '/admin/pengaturan/wa-channel'
+      fullPath: '/admin/pengaturan/wa-channel'
+      preLoaderRoute: typeof AdminPengaturanWaChannelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pengaturan/wa-quick-reply': {
+      id: '/admin/pengaturan/wa-quick-reply'
+      path: '/admin/pengaturan/wa-quick-reply'
+      fullPath: '/admin/pengaturan/wa-quick-reply'
+      preLoaderRoute: typeof AdminPengaturanWaQuickReplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/': {
+      id: '/admin/peserta/'
+      path: '/admin/peserta'
+      fullPath: '/admin/peserta/'
+      preLoaderRoute: typeof AdminPesertaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/essay': {
+      id: '/admin/peserta/essay'
+      path: '/admin/peserta/essay'
+      fullPath: '/admin/peserta/essay'
+      preLoaderRoute: typeof AdminPesertaEssayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/essay-api': {
+      id: '/admin/peserta/essay-api'
+      path: '/admin/peserta/essay-api'
+      fullPath: '/admin/peserta/essay-api'
+      preLoaderRoute: typeof AdminPesertaEssayApiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/kontribusi': {
+      id: '/admin/peserta/kontribusi'
+      path: '/admin/peserta/kontribusi'
+      fullPath: '/admin/peserta/kontribusi'
+      preLoaderRoute: typeof AdminPesertaKontribusiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/reguler': {
+      id: '/admin/peserta/reguler'
+      path: '/admin/peserta/reguler'
+      fullPath: '/admin/peserta/reguler'
+      preLoaderRoute: typeof AdminPesertaRegulerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/self-funded': {
+      id: '/admin/peserta/self-funded'
+      path: '/admin/peserta/self-funded'
+      fullPath: '/admin/peserta/self-funded'
+      preLoaderRoute: typeof AdminPesertaSelfFundedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/peserta/tahapan': {
+      id: '/admin/peserta/tahapan'
+      path: '/admin/peserta/tahapan'
+      fullPath: '/admin/peserta/tahapan'
+      preLoaderRoute: typeof AdminPesertaTahapanRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/peserta/reguler/': {
       id: '/admin/peserta/reguler/'
@@ -1340,12 +1354,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaRegulerIndexRouteImport
       parentRoute: typeof AdminPesertaRegulerRoute
     }
-    '/admin/peserta/self-funded/pendaftaran': {
-      id: '/admin/peserta/self-funded/pendaftaran'
-      path: '/pendaftaran'
-      fullPath: '/admin/peserta/self-funded/pendaftaran'
-      preLoaderRoute: typeof AdminPesertaSelfFundedPendaftaranRouteImport
-      parentRoute: typeof AdminPesertaSelfFundedRoute
+    '/admin/peserta/reguler/berkas': {
+      id: '/admin/peserta/reguler/berkas'
+      path: '/berkas'
+      fullPath: '/admin/peserta/reguler/berkas'
+      preLoaderRoute: typeof AdminPesertaRegulerBerkasRouteImport
+      parentRoute: typeof AdminPesertaRegulerRoute
     }
     '/admin/peserta/reguler/pendaftaran': {
       id: '/admin/peserta/reguler/pendaftaran'
@@ -1354,12 +1368,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPesertaRegulerPendaftaranRouteImport
       parentRoute: typeof AdminPesertaRegulerRoute
     }
-    '/admin/peserta/reguler/berkas': {
-      id: '/admin/peserta/reguler/berkas'
-      path: '/berkas'
-      fullPath: '/admin/peserta/reguler/berkas'
-      preLoaderRoute: typeof AdminPesertaRegulerBerkasRouteImport
-      parentRoute: typeof AdminPesertaRegulerRoute
+    '/admin/peserta/self-funded/': {
+      id: '/admin/peserta/self-funded/'
+      path: '/'
+      fullPath: '/admin/peserta/self-funded/'
+      preLoaderRoute: typeof AdminPesertaSelfFundedIndexRouteImport
+      parentRoute: typeof AdminPesertaSelfFundedRoute
+    }
+    '/admin/peserta/self-funded/pendaftaran': {
+      id: '/admin/peserta/self-funded/pendaftaran'
+      path: '/pendaftaran'
+      fullPath: '/admin/peserta/self-funded/pendaftaran'
+      preLoaderRoute: typeof AdminPesertaSelfFundedPendaftaranRouteImport
+      parentRoute: typeof AdminPesertaSelfFundedRoute
     }
   }
 }
@@ -1444,6 +1465,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPengaturanPanduanRoute: AdminPengaturanPanduanRoute,
   AdminPengaturanPengingatPembayaranRoute:
     AdminPengaturanPengingatPembayaranRoute,
+  AdminPengaturanPenutupanRoute: AdminPengaturanPenutupanRoute,
   AdminPengaturanSeleksiPrivateRoute: AdminPengaturanSeleksiPrivateRoute,
   AdminPengaturanStaffRoute: AdminPengaturanStaffRoute,
   AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
