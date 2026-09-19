@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
       const participants = (data ?? []) as Participant[];
       const { data: reviews, error: reviewError } = await admin
         .from("staff_essay_reviews")
-        .select("participant_id,reviewer_name,decision,scores,total_score,reviewed_at,updated_at");
+        .select("participant_id,reviewer_name,decision,scores,total_score,reviewer_notes,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return json({ participants: participants.map((participant) => {
@@ -159,10 +159,12 @@ Deno.serve(async (req) => {
       const participantId = String(body.participant_id ?? "");
       const status = String(body.status ?? "");
       const parsedScores = parseScores(body.scores);
+      const reviewerNotes = typeof body.reviewer_notes === "string" ? body.reviewer_notes.trim() : "";
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
       if (!parsedScores) return json({ error: "Semua nilai wajib berupa angka 0 sampai 10" }, 400);
+      if (reviewerNotes.length > 2000) return json({ error: "Keterangan maksimal 2000 karakter" }, 400);
       const { data: participant, error: participantError } = await admin
         .rpc("list_essay_complete_participants");
       if (participantError) throw participantError;
@@ -176,6 +178,7 @@ Deno.serve(async (req) => {
         decision: status,
         scores: parsedScores.scores,
         total_score: parsedScores.total,
+        reviewer_notes: reviewerNotes || null,
         reviewed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
