@@ -35,7 +35,13 @@ function normalizeEvidence(value: string) {
 }
 
 async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId: string) {
-  const apiKey = Deno.env.get("OPENROUTER_API_KEY");
+  const { data: providerSecret, error: secretError } = await admin
+    .from("ai_provider_secrets")
+    .select("api_key")
+    .eq("provider", "openrouter")
+    .maybeSingle();
+  if (secretError) return { response: json({ error: "Koneksi OpenRouter tidak dapat dibaca." }, 500) };
+  const apiKey = String(providerSecret?.api_key ?? Deno.env.get("OPENROUTER_API_KEY") ?? "").trim();
   if (!apiKey) return { response: json({ error: "OpenRouter belum terhubung. Admin perlu menyimpan API key terlebih dahulu." }, 503) };
 
   const answerColumns = ["essay_worthy", "essay_dream", "essay_contribution", "case_study_1", "case_study_2", "case_study_3", "case_study_4", "case_study_5", "case_study_6", "case_study_7"];
@@ -64,7 +70,7 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
   if (!response.ok) {
     let safeMessage = `OpenRouter gagal (${response.status})`;
     try { safeMessage = JSON.parse(raw)?.error?.message ?? safeMessage; } catch { /* use safe fallback */ }
-    return { response: json({ error: safeMessage, provider_status: response.status }) };
+    return { response: json({ error: safeMessage, provider_status: response.status }, response.status) };
   }
 
   let parsed: { questions?: Array<{ key?: unknown; criteria?: unknown }> };
