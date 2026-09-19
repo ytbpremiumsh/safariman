@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2, KeyRound, Loader2, PlugZap, Save, ShieldCheck, Trash2 } from "lucide-react";
+import { CheckCircle2, History, KeyRound, Loader2, PlugZap, Save, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -12,12 +12,39 @@ export const Route = createFileRoute("/admin/pengaturan/ai-provider")({
   component: AiProviderPage,
 });
 
+type ConfigHistory = {
+  id: number;
+  model: string;
+  action: "saved" | "key_removed" | "existing";
+  api_key_changed: boolean;
+  created_at: string;
+};
+
 type Config = {
   provider: "openrouter";
   model: string;
   api_key_configured: boolean;
   api_key_updated_at: string | null;
+  history?: ConfigHistory[];
 };
+
+async function readFunctionError(error: unknown) {
+  const fallback = error instanceof Error ? error.message : "Permintaan ke server gagal";
+  if (!error || typeof error !== "object") return fallback;
+  const context = (error as { context?: unknown }).context;
+  if (!context || typeof context !== "object") return fallback;
+  const jsonReader = (context as { json?: unknown }).json;
+  if (typeof jsonReader !== "function") {
+    const contextMessage = (context as { message?: unknown }).message;
+    return typeof contextMessage === "string" ? contextMessage : fallback;
+  }
+  try {
+    const payload = await jsonReader.call(context) as { error?: unknown };
+    return typeof payload?.error === "string" ? payload.error : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 function AiProviderPage() {
   const navigate = useNavigate();
@@ -27,6 +54,7 @@ function AiProviderPage() {
   const [apiKey, setApiKey] = useState("");
   const [configured, setConfigured] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [history, setHistory] = useState<ConfigHistory[]>([]);
 
   const invoke = async (body: Record<string, unknown>) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -38,23 +66,16 @@ function AiProviderPage() {
       body,
       headers: { Authorization: `Bearer ${session.access_token}` },
     });
-    if (error) {
-      let message = error.message;
-      const response = (error as { context?: Response }).context;
-      if (response) {
-        const payload = await response.clone().json().catch(() => null) as { error?: string } | null;
-        message = payload?.error || message;
-      }
-      throw new Error(message);
-    }
+    if (error) throw new Error(await readFunctionError(error));
     if (data?.error) throw new Error(data.error);
     return data as Config & { ok?: boolean };
   };
 
   const applyConfig = (config: Config) => {
     setModel(config.model || "openai/gpt-4o-mini");
-    setConfigured(config.api_key_configured);
-    setUpdatedAt(config.api_key_updated_at);
+    setConfigured(Boolean(config.api_key_configured));
+    setUpdatedAt(config.api_key_updated_at || null);
+    setHistory(Array.isArray(config.history) ? config.history : []);
   };
 
   useEffect(() => {
@@ -138,12 +159,12 @@ function AiProviderPage() {
           <div className="space-y-1.5">
             <Label htmlFor="openrouter-key">API Key OpenRouter</Label>
             <Input id="openrouter-key" type="password" autoComplete="new-password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} placeholder={configured ? "Kosongkan jika tidak ingin mengganti API key" : "sk-or-v1-..."} />
-            <p className="text-xs text-muted-foreground">API key hanya dikirim ke fungsi backend dan disimpan pada tabel yang tidak dapat dibaca browser maupun akun staff.</p>
+            <p className="text-xs text-muted-foreground">API key hanya dikirim ke fungsi backend. Demi keamanan, isi key tidak pernah ditampilkan kembali atau disimpan dalam riwayat.</p>
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="openrouter-model">ID Model OpenRouter</Label>
-            <Input id="openrouter-model" className="font-mono" value={model} onChange={(event) => setModel(event.target.value)} placeholder="openai/gpt-4o-mini" />
+            <Input id="openrouter-model" className="font-mono" value={model} onChange={(event) => setModel(event.target.value)} placeholder="inception/mercury-2.5" />
             <p className="text-xs text-muted-foreground">Salin ID model persis dari <a href="https://openrouter.ai/models" target="_blank" rel="noreferrer" className="text-accent underline">daftar model OpenRouter</a>. Pilih model yang mendukung structured JSON.</p>
           </div>
 
@@ -158,6 +179,21 @@ function AiProviderPage() {
               {busy === "remove" ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Hapus Key
             </button>}
           </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="p-5 border-b flex items-center gap-2">
+            <History className="size-5 text-accent" />
+            <div><h2 className="font-semibold">Riwayat Konfigurasi</h2><p className="text-xs text-muted-foreground">Menampilkan 20 perubahan terakhir tanpa membocorkan API key.</p></div>
+          </div>
+          {history.length === 0 ? <p className="p-6 text-sm text-muted-foreground text-center">Belum ada riwayat perubahan.</p> : (
+            <div className="divide-y">
+              {history.map((item) => <div key={item.id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
+                <div><div className="font-mono font-medium break-all">{item.model}</div><div className="text-xs text-muted-foreground">{item.action === "key_removed" ? "API key dihapus" : item.api_key_changed ? "Model disimpan dan API key diperbarui" : "Model disimpan tanpa mengganti API key"}</div></div>
+                <time className="text-xs text-muted-foreground whitespace-nowrap">{new Date(item.created_at).toLocaleString("id-ID")}</time>
+              </div>)}
+            </div>
+          )}
         </section>
 
         <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
