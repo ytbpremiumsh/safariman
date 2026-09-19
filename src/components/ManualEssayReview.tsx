@@ -199,7 +199,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
 
   return <div className="space-y-5">
     {onAnalyze && <div className="rounded-lg border bg-secondary/20 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div><div className="text-sm font-semibold">Rekomendasi penilaian OpenRouter</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
+      <div><div className="text-sm font-semibold">Rekomendasi penilaian dengan AI</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
       <Button type="button" variant="outline" disabled={busy || analyzing} onClick={() => void handleAnalyze()}>
         {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
       </Button>
