@@ -5,6 +5,7 @@ type Participant = {
   id: string;
   [key: string]: unknown;
 };
+type StaffClients = Awaited<ReturnType<typeof authenticatedUser>>;
 
 const scoreKeys = ["essay_1", "essay_2", "essay_3", "case_1", "case_2", "case_3", "case_4", "case_5", "case_6", "case_7"];
 function parseScores(value: unknown) {
@@ -33,7 +34,7 @@ function normalizeEvidence(value: string) {
   return value.toLocaleLowerCase("id-ID").replace(/\s+/g, " ").trim();
 }
 
-async function analyzeWithOpenRouter(admin: ReturnType<typeof authenticatedUser> extends Promise<infer R> ? R["admin"] : never, participantId: string) {
+async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId: string) {
   const apiKey = Deno.env.get("OPENROUTER_API_KEY");
   if (!apiKey) return { response: json({ error: "OpenRouter belum terhubung. Admin perlu menyimpan API key terlebih dahulu." }, 503) };
 
@@ -63,7 +64,7 @@ async function analyzeWithOpenRouter(admin: ReturnType<typeof authenticatedUser>
   if (!response.ok) {
     let safeMessage = `OpenRouter gagal (${response.status})`;
     try { safeMessage = JSON.parse(raw)?.error?.message ?? safeMessage; } catch { /* use safe fallback */ }
-    return { response: json({ error: safeMessage }, response.status) };
+    return { response: json({ error: safeMessage, provider_status: response.status }) };
   }
 
   let parsed: { questions?: Array<{ key?: unknown; criteria?: unknown }> };

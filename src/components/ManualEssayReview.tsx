@@ -169,6 +169,7 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
   const handleReset = async () => {
     setChecks(emptyChecks());
     setSaved({ ...EMPTY_SCORES });
+    setRecommendations({});
     await onReset?.();
   };
 
