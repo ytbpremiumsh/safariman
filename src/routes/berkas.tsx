@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { IslamicPattern, GeometricOrnament } from "@/components/IslamicPattern";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import { FastTrackPaymentRequired } from "@/routes/essay";
+import { SubmissionClosedCard } from "@/components/SubmissionClosedCard";
+import { useSubmissionAvailability } from "@/lib/submission-availability";
 
 const urlSchema = z.string().trim().url("Harus berupa link valid (https://...)").max(500);
 const optionalUrlSchema = z
@@ -57,6 +59,7 @@ const fastTrackLabel = (cat: string | null | undefined) =>
   cat === "gelombang_1" ? "Fast Track Gelombang 1" : "Fast Track Gelombang 2";
 
 function BerkasPage() {
+  const submissionGate = useSubmissionAvailability("berkas");
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [checking, setChecking] = useState(false);
@@ -168,7 +171,14 @@ function BerkasPage() {
             </p>
           </div>
 
-          {!participant ? (
+          {submissionGate.loading ? (
+            <div className="grid place-items-center py-20"><Loader2 className="size-8 animate-spin text-primary" /></div>
+          ) : !submissionGate.open ? (
+            <SubmissionClosedCard
+              title="Pengiriman Berkas Telah Ditutup"
+              description="Batas waktu pengiriman berkas Program Safar Iman telah berakhir. Berkas baru maupun perubahan berkas tidak dapat dikirim."
+            />
+          ) : !participant ? (
             <CodeForm code={code} setCode={setCode} checking={checking} verify={verify} />
           ) : participant.has_berkas ? (
             <AlreadySubmittedCard
