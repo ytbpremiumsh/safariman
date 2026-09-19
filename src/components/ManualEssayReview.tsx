@@ -1,10 +1,13 @@
-import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, RotateCcw, Sparkles, XCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export type ReviewDecision = "reviewed" | "interview" | "rejected";
 export type ReviewScores = Record<string, number>;
 
 type Criterion = { label: string; point: number };
+export type AiCriterionRecommendation = { index: number; matched: boolean; confidence: "high" | "medium" | "low"; evidence: string };
+export type AiReviewRecommendation = { recommendations: Record<string, AiCriterionRecommendation[]>; scores: ReviewScores; total_score: number; model: string };
 
 const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
   {
@@ -129,15 +132,19 @@ type Props = {
   busy?: boolean;
   onSave: (decision: ReviewDecision, scores: ReviewScores) => Promise<void> | void;
   onReset?: () => Promise<void> | void;
+  onAnalyze?: () => Promise<AiReviewRecommendation | null>;
+  analyzing?: boolean;
 };
 
-export function ManualEssayReview({ answers, initialScores, currentDecision, busy, onSave, onReset }: Props) {
+export function ManualEssayReview({ answers, initialScores, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
   const [checks, setChecks] = useState<Record<string, number[]>>(emptyChecks);
   const [saved, setSaved] = useState<ReviewScores>(EMPTY_SCORES);
+  const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
 
   useEffect(() => {
     setChecks(emptyChecks());
     setSaved({ ...EMPTY_SCORES, ...(initialScores ?? {}) });
+    setRecommendations({});
   }, [initialScores]);
 
   const scores = useMemo(() => {
@@ -162,10 +169,27 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
   const handleReset = async () => {
     setChecks(emptyChecks());
     setSaved({ ...EMPTY_SCORES });
+    setRecommendations({});
     await onReset?.();
   };
 
+  const handleAnalyze = async () => {
+    const result = await onAnalyze?.();
+    if (!result) return;
+    setRecommendations(result.recommendations);
+    setChecks(Object.fromEntries(QUESTIONS.map((question) => [question.key,
+      (result.recommendations[question.key] ?? []).filter((item) => item.matched && item.confidence === "high").map((item) => item.index),
+    ])));
+    setSaved({ ...EMPTY_SCORES });
+  };
+
   return <div className="space-y-5">
+    {onAnalyze && <div className="rounded-lg border bg-secondary/20 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div><div className="text-sm font-semibold">Rekomendasi penilaian OpenRouter</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
+      <Button type="button" variant="outline" disabled={busy || analyzing} onClick={() => void handleAnalyze()}>
+        {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
+      </Button>
+    </div>}
     {QUESTIONS.map((q) => <section key={q.key} className="space-y-2">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xs font-bold text-accent">{q.title}</h3>
@@ -175,10 +199,14 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
       <div className="grid sm:grid-cols-2 gap-1.5 rounded-lg border border-dashed p-3">
         {q.criteria.map((criterion, index) => {
           const checked = (checks[q.key] ?? []).includes(index);
-          return <label key={criterion.label} className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs cursor-pointer ${checked ? "bg-emerald/10 font-semibold" : "hover:bg-secondary/40"}`}>
+          const suggestion = (recommendations[q.key] ?? []).find((item) => item.index === index && item.matched);
+          return <label key={criterion.label} className={`flex flex-wrap items-center gap-2 rounded-md px-2 py-1.5 text-xs cursor-pointer ${checked ? "bg-emerald/10 font-semibold" : "hover:bg-secondary/40"}`}>
             <input type="checkbox" className="size-4 accent-current" checked={checked} onChange={() => toggle(q.key, index)} />
             <span className="flex-1">{criterion.label}</span>
             <span className="font-bold text-muted-foreground">+{criterion.point}</span>
+            {suggestion && <span className={`basis-full ml-6 rounded-md px-2 py-1 text-[11px] ${suggestion.confidence === "high" ? "bg-emerald/10 text-emerald" : "bg-amber-100 text-amber-800"}`}>
+              {suggestion.confidence === "high" ? "Bukti kuat" : "Perlu diperiksa"}: “{suggestion.evidence}”
+            </span>}
           </label>;
         })}
       </div>

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { staffSupabase } from "@/integrations/supabase/staff-client";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ManualEssayReview, type ReviewDecision, type ReviewScores } from "@/components/ManualEssayReview";
+import { ManualEssayReview, type AiReviewRecommendation, type ReviewDecision, type ReviewScores } from "@/components/ManualEssayReview";
 
 export const Route = createFileRoute("/staff/")({
   head: () => ({ meta: [{ title: "Dashboard Staff Seleksi — Safar Iman" }] }),
@@ -24,7 +24,7 @@ const badges: Record<Status,string> = {
 
 function StaffDashboard() {
   const navigate = useNavigate();
-  const [rows,setRows]=useState<Row[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false);
+  const [rows,setRows]=useState<Row[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false); const [analyzing,setAnalyzing]=useState(false);
   const [q,setQ]=useState(""); const [filter,setFilter]=useState<Status|"all">("all"); const [detail,setDetail]=useState<Row|null>(null);
   const load = async () => {
     const { data:{ session } } = await staffSupabase.auth.getSession();
@@ -42,6 +42,7 @@ function StaffDashboard() {
     }),[rows,q,filter]);
   const decide=async(status:ReviewDecision,scores:ReviewScores)=>{ if(!detail)return; setBusy(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"update_status",participant_id:detail.id,status,scores}}); setBusy(false); if(error){toast.error(error.message);return;} const next={...detail,status,staff_review:data?.review??detail.staff_review};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success(status==="interview"?"Keputusan disimpan dan peserta masuk Tahapan TKA.":"Penilaian dan keputusan berhasil disimpan."); };
   const resetReview=async()=>{ if(!detail)return; setBusy(true); const {error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"reset_review",participant_id:detail.id}}); setBusy(false); if(error){toast.error(error.message);return;} const next:Row={...detail,status:"reviewed",staff_review:null};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success("Penilaian direset — peserta kembali seperti semula."); };
+  const analyze=async()=>{ if(!detail)return null; setAnalyzing(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"analyze",participant_id:detail.id}}); setAnalyzing(false); if(error){toast.error(error.message);return null;} if(data?.error){toast.error(data.error);return null;} toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan."); return data as AiReviewRecommendation; };
   const logout=async()=>{await staffSupabase.auth.signOut();navigate({to:"/staff/login"});};
   if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-accent"/></div>;
   return <div className="min-h-screen bg-secondary/30">
@@ -51,6 +52,6 @@ function StaffDashboard() {
       <div className="bg-card border rounded-2xl p-4 flex flex-col sm:flex-row gap-3"><div className="relative flex-1"><Search className="absolute size-4 left-3 top-3 text-muted-foreground"/><Input className="pl-9" placeholder="Cari nama, token, email, kota" value={q} onChange={e=>setQ(e.target.value)}/></div><select className="h-10 rounded-md border bg-background px-3 text-sm" value={filter} onChange={e=>setFilter(e.target.value as Status|"all")}><option value="all">Semua Hasil</option><option value="reviewed">Belum Diputuskan</option><option value="interview">Lolos</option><option value="rejected">Tidak Lolos</option></select></div>
       <div className="bg-card border rounded-2xl overflow-x-auto"><table className="w-full text-sm"><thead className="bg-secondary/60"><tr><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead><tbody>{filtered.map(r=><tr key={r.id} className="border-t"><td className="p-3"><b>{r.full_name}</b><div className="text-xs font-mono text-muted-foreground">{r.registration_code}</div></td><td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td><td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td><td className="p-3 font-bold">{r.staff_review?`${r.staff_review.total_score}/100`:"—"}</td><td className="p-3 text-xs"><b>{r.staff_review?.reviewer_name||"Belum dikoreksi"}</b>{r.staff_review&&<div className="text-muted-foreground">{new Date(r.staff_review.updated_at).toLocaleString("id-ID")}</div>}</td><td className="p-3 text-right"><button onClick={()=>setDetail(r)} className="rounded-lg bg-accent text-primary-foreground px-3 py-2 inline-flex gap-1"><FileText className="size-4"/>Koreksi</button></td></tr>)}</tbody></table></div>
     </main>
-    <Dialog open={!!detail} onOpenChange={o=>!o&&setDetail(null)}><DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">{detail&&<><DialogHeader><DialogTitle>{detail.full_name} · {detail.registration_code}</DialogTitle></DialogHeader><ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.staff_review?.scores} currentDecision={detail.status} busy={busy} onSave={decide} onReset={resetReview}/></>}</DialogContent></Dialog>
+    <Dialog open={!!detail} onOpenChange={o=>!o&&setDetail(null)}><DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">{detail&&<><DialogHeader><DialogTitle>{detail.full_name} · {detail.registration_code}</DialogTitle></DialogHeader><ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.staff_review?.scores} currentDecision={detail.status} busy={busy} analyzing={analyzing} onAnalyze={analyze} onSave={decide} onReset={resetReview}/></>}</DialogContent></Dialog>
   </div>;
 }
