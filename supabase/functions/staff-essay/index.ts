@@ -35,6 +35,7 @@ function parseScores(value: unknown) {
 
 type Confidence = "high" | "medium" | "low";
 type AiCriterion = { index: number; matched: boolean; confidence: Confidence; evidence: string };
+type AiAuthorship = { verdict: "likely_human" | "likely_ai" | "uncertain"; confidence: Confidence; reason: string };
 
 function cleanJson(text: string) {
   const trimmed = text.trim();
@@ -59,7 +60,7 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
   const { data: modelSetting } = await admin.from("app_settings").select("value").eq("key", "ai_openrouter_model").maybeSingle();
   const model = String(modelSetting?.value ?? "openai/gpt-4o-mini").trim() || "openai/gpt-4o-mini";
   const answers = Object.fromEntries(ESSAY_RUBRIC.map((question, index) => [question.key, String(participant[answerColumns[index]] ?? "")]));
-  const system = `Anda membantu panitia menilai Essay dan Studi Kasus. Nilai berdasarkan makna, konteks, sinonim, dan tindakan nyata; jangan mencocokkan kata saja. Untuk setiap kriteria, matched=true hanya jika jawaban mendukung kriteria secara jelas dan tidak bertentangan. evidence harus kutipan persis dan singkat dari jawaban. confidence wajib high, medium, atau low. Gunakan high hanya jika bukti tegas. Jangan memberi keputusan kelulusan. Kembalikan JSON saja: {"questions":[{"key":"essay_1","criteria":[{"index":0,"matched":true,"confidence":"high","evidence":"kutipan"}]}]}. Sertakan seluruh kriteria untuk seluruh soal.`;
+  const system = `Anda membantu panitia menilai Essay dan Studi Kasus. Nilai berdasarkan makna, konteks, sinonim, dan tindakan nyata; jangan mencocokkan kata saja. Untuk setiap kriteria, matched=true hanya jika jawaban mendukung kriteria secara jelas dan tidak bertentangan. evidence harus kutipan persis dan singkat dari jawaban. confidence wajib high, medium, atau low. Gunakan high hanya jika bukti tegas. Jangan memberi keputusan kelulusan. Untuk setiap jawaban, perkirakan pola kepenulisan dalam authorship.verdict: likely_human, likely_ai, atau uncertain. Analisis variasi gaya, kekhususan pengalaman pribadi, pola kalimat, repetisi, dan bahasa yang terlalu generik; jangan menyatakan hasil sebagai bukti mutlak. confidence wajib high, medium, atau low dan reason berupa alasan singkat tanpa menghakimi. Kembalikan JSON saja: {"questions":[{"key":"essay_1","criteria":[{"index":0,"matched":true,"confidence":"high","evidence":"kutipan"}],"authorship":{"verdict":"uncertain","confidence":"low","reason":"alasan singkat"}}]}. Sertakan seluruh kriteria dan authorship untuk seluruh soal.`;
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -81,7 +82,7 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
     return { response: json({ error: safeMessage, provider_status: response.status }) };
   }
 
-  let parsed: { questions?: Array<{ key?: unknown; criteria?: unknown }> };
+  let parsed: { questions?: Array<{ key?: unknown; criteria?: unknown; authorship?: unknown }> };
   try {
     const envelope = JSON.parse(raw);
     parsed = JSON.parse(cleanJson(String(envelope?.choices?.[0]?.message?.content ?? "")));
@@ -91,10 +92,19 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
 
   const recommendations: Record<string, AiCriterion[]> = {};
   const scores: Record<string, number> = {};
+  const authorship: Record<string, AiAuthorship> = {};
   for (const question of ESSAY_RUBRIC) {
     const received = parsed.questions?.find((item) => item?.key === question.key);
     const criteria = Array.isArray(received?.criteria) ? received.criteria : [];
     const answer = normalizeEvidence(answers[question.key]);
+    const rawAuthorship = received?.authorship && typeof received.authorship === "object" ? received.authorship as Record<string, unknown> : {};
+    const verdict = rawAuthorship.verdict === "likely_human" || rawAuthorship.verdict === "likely_ai" ? rawAuthorship.verdict : "uncertain";
+    const authorConfidence: Confidence = rawAuthorship.confidence === "high" || rawAuthorship.confidence === "medium" ? rawAuthorship.confidence : "low";
+    authorship[question.key] = {
+      verdict,
+      confidence: authorConfidence,
+      reason: typeof rawAuthorship.reason === "string" ? rawAuthorship.reason.trim().slice(0, 240) : "",
+    };
     recommendations[question.key] = question.criteria.map((_, index) => {
       const item = criteria.find((entry) => entry && typeof entry === "object" && (entry as Record<string, unknown>).index === index) as Record<string, unknown> | undefined;
       const confidence: Confidence = item?.confidence === "high" || item?.confidence === "medium" ? item.confidence : "low";
@@ -105,7 +115,7 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
     scores[question.key] = recommendations[question.key].reduce((sum, item) =>
       sum + (item.matched && item.confidence === "high" ? (question.criteria[item.index]?.point ?? 0) : 0), 0);
   }
-  return { result: { recommendations, scores, total_score: Object.values(scores).reduce((sum, score) => sum + score, 0), model } };
+  return { result: { recommendations, authorship, scores, total_score: Object.values(scores).reduce((sum, score) => sum + score, 0), model } };
 }
 
 Deno.serve(async (req) => {
