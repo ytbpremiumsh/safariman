@@ -38,9 +38,48 @@ type AiCriterion = { index: number; matched: boolean; confidence: Confidence; ev
 type AiAuthorship = { verdict: "likely_human" | "likely_ai" | "uncertain"; confidence: Confidence; reason: string };
 
 function cleanJson(text: string) {
-  const trimmed = text.trim();
+  const trimmed = text.replace(/^\uFEFF/, "").trim();
   if (trimmed.startsWith("```")) return trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   return trimmed;
+}
+
+function messageContent(value: unknown) {
+  if (typeof value === "string") return value;
+  if (!Array.isArray(value)) return "";
+  return value.map((part) => {
+    if (typeof part === "string") return part;
+    if (!part || typeof part !== "object") return "";
+    const record = part as Record<string, unknown>;
+    return typeof record.text === "string" ? record.text : typeof record.content === "string" ? record.content : "";
+  }).join("");
+}
+
+function parseJsonObject(text: string) {
+  const candidate = cleanJson(text);
+  try { return JSON.parse(candidate) as Record<string, unknown>; } catch { /* try extracting a complete object */ }
+  const start = candidate.indexOf("{");
+  if (start < 0) return null;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let index = start; index < candidate.length; index += 1) {
+    const char = candidate[index];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') inString = false;
+      continue;
+    }
+    if (char === '"') inString = true;
+    else if (char === "{") depth += 1;
+    else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        try { return JSON.parse(candidate.slice(start, index + 1)) as Record<string, unknown>; } catch { return null; }
+      }
+    }
+  }
+  return null;
 }
 
 function normalizeEvidence(value: string) {
@@ -61,34 +100,56 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
   const model = String(modelSetting?.value ?? "openai/gpt-4o-mini").trim() || "openai/gpt-4o-mini";
   const answers = Object.fromEntries(ESSAY_RUBRIC.map((question, index) => [question.key, String(participant[answerColumns[index]] ?? "")]));
   const system = `Anda membantu panitia menilai Essay dan Studi Kasus. Nilai berdasarkan makna, konteks, sinonim, dan tindakan nyata; jangan mencocokkan kata saja. Untuk setiap kriteria, matched=true hanya jika jawaban mendukung kriteria secara jelas dan tidak bertentangan. evidence harus kutipan persis dan singkat dari jawaban. confidence wajib high, medium, atau low. Gunakan high hanya jika bukti tegas. Jangan memberi keputusan kelulusan. Untuk setiap jawaban, perkirakan pola kepenulisan dalam authorship.verdict: likely_human, likely_ai, atau uncertain. Analisis variasi gaya, kekhususan pengalaman pribadi, pola kalimat, repetisi, dan bahasa yang terlalu generik; jangan menyatakan hasil sebagai bukti mutlak. confidence wajib high, medium, atau low dan reason berupa alasan singkat tanpa menghakimi. Kembalikan JSON saja: {"questions":[{"key":"essay_1","criteria":[{"index":0,"matched":true,"confidence":"high","evidence":"kutipan"}],"authorship":{"verdict":"uncertain","confidence":"low","reason":"alasan singkat"}}]}. Sertakan seluruh kriteria dan authorship untuk seluruh soal.`;
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://safariman.id",
-      "X-Title": "Safar Iman Staff Review",
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ rubric: ESSAY_RUBRIC, answers }) }],
-      response_format: { type: "json_object" },
-    }),
-  });
-  const raw = await response.text();
-  if (!response.ok) {
-    let safeMessage = `OpenRouter gagal (${response.status})`;
-    try { safeMessage = JSON.parse(raw)?.error?.message ?? safeMessage; } catch { /* use safe fallback */ }
-    return { response: json({ error: safeMessage, provider_status: response.status }) };
-  }
+  const baseMessages = [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ rubric: ESSAY_RUBRIC, answers }) }];
+  const requestOpenRouter = async (messages: Array<{ role: string; content: string }>) => {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://safariman.id",
+        "X-Title": "Safar Iman Staff Review",
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        response_format: { type: "json_object" },
+        temperature: 0,
+        max_tokens: 10000,
+      }),
+    });
+    const raw = await response.text();
+    if (!response.ok) {
+      let safeMessage = `OpenRouter gagal (${response.status})`;
+      try { safeMessage = JSON.parse(raw)?.error?.message ?? safeMessage; } catch { /* use safe fallback */ }
+      return { error: json({ error: safeMessage, provider_status: response.status }, response.status >= 500 ? 502 : response.status) };
+    }
+    try {
+      const envelope = JSON.parse(raw);
+      const content = messageContent(envelope?.choices?.[0]?.message?.content);
+      const parsed = parseJsonObject(content);
+      const questions = parsed?.questions;
+      return { content, parsed: parsed && Array.isArray(questions) ? parsed : null };
+    } catch {
+      return { content: "", parsed: null };
+    }
+  };
 
-  let parsed: { questions?: Array<{ key?: unknown; criteria?: unknown; authorship?: unknown }> };
-  try {
-    const envelope = JSON.parse(raw);
-    parsed = JSON.parse(cleanJson(String(envelope?.choices?.[0]?.message?.content ?? "")));
-  } catch {
-    return { response: json({ error: "Hasil OpenRouter tidak dapat dibaca. Silakan coba lagi." }, 502) };
+  let attempt = await requestOpenRouter(baseMessages);
+  if (attempt.error) return { response: attempt.error };
+  if (!attempt.parsed) {
+    const repairMessages = [
+      ...baseMessages,
+      ...(attempt.content ? [{ role: "assistant", content: attempt.content.slice(0, 50000) }] : []),
+      { role: "user", content: "Respons sebelumnya bukan JSON lengkap yang dapat dibaca. Ulangi seluruh analisis dari awal dan balas hanya satu objek JSON valid sesuai struktur yang diminta. Jangan gunakan markdown." },
+    ];
+    attempt = await requestOpenRouter(repairMessages);
+    if (attempt.error) return { response: attempt.error };
   }
+  if (!attempt.parsed) {
+    return { response: json({ error: "Model OpenRouter dua kali mengirim format JSON yang tidak lengkap. Coba kembali atau pilih model yang mendukung structured JSON." }, 502) };
+  }
+  const parsed = attempt.parsed as { questions?: Array<{ key?: unknown; criteria?: unknown; authorship?: unknown }> };
 
   const recommendations: Record<string, AiCriterion[]> = {};
   const scores: Record<string, number> = {};
