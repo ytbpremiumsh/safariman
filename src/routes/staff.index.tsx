@@ -42,7 +42,30 @@ function StaffDashboard() {
     }),[rows,q,filter]);
   const decide=async(status:ReviewDecision,scores:ReviewScores)=>{ if(!detail)return; setBusy(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"update_status",participant_id:detail.id,status,scores}}); setBusy(false); if(error){toast.error(error.message);return;} const next={...detail,status,staff_review:data?.review??detail.staff_review};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success(status==="interview"?"Keputusan disimpan dan peserta masuk Tahapan TKA.":"Penilaian dan keputusan berhasil disimpan."); };
   const resetReview=async()=>{ if(!detail)return; setBusy(true); const {error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"reset_review",participant_id:detail.id}}); setBusy(false); if(error){toast.error(error.message);return;} const next:Row={...detail,status:"reviewed",staff_review:null};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);toast.success("Penilaian direset — peserta kembali seperti semula."); };
-  const analyze=async()=>{ if(!detail)return null; setAnalyzing(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"analyze",participant_id:detail.id}}); setAnalyzing(false); if(error){toast.error(error.message);return null;} if(data?.error){toast.error(data.error);return null;} toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan."); return data as AiReviewRecommendation; };
+  const analyze=async()=>{
+    if(!detail)return null;
+    setAnalyzing(true);
+    try{
+      const {data:{session}}=await staffSupabase.auth.getSession();
+      if(!session?.access_token)throw new Error("Sesi staff berakhir. Silakan login ulang.");
+      const {data,error}=await staffSupabase.functions.invoke("staff-essay",{
+        body:{action:"analyze",participant_id:detail.id},
+        headers:{Authorization:`Bearer ${session.access_token}`},
+      });
+      if(error){
+        let message=error.message;
+        const response=(error as {context?:Response}).context;
+        if(response){const payload=await response.clone().json().catch(()=>null) as {error?:string;message?:string}|null;message=payload?.message||payload?.error||message;}
+        throw new Error(message);
+      }
+      if(data?.error)throw new Error(data.error);
+      toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan.");
+      return data as AiReviewRecommendation;
+    }catch(error){
+      toast.error(error instanceof Error?error.message:"Analisis AI gagal");
+      return null;
+    }finally{setAnalyzing(false);}
+  };
   const logout=async()=>{await staffSupabase.auth.signOut();navigate({to:"/staff/login"});};
   if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-accent"/></div>;
   return <div className="min-h-screen bg-secondary/30">
