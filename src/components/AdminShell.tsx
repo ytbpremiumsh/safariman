@@ -63,7 +63,7 @@ const NAV_GROUPS: NavGroup[] = [
           { to: "/admin/pengaturan/email", label: "Template Email", keywords: "email template transactional smtp kirim notifikasi" },
           { to: "/admin/pengaturan/wa-channel", label: "Link Saluran WhatsApp", keywords: "whatsapp channel saluran link grup wa" },
           { to: "/admin/pengaturan/faq", label: "Halaman FAQ", keywords: "faq pertanyaan tanya jawab bantuan" },
-          { to: "/admin/pengaturan/ai-provider", label: "AI Provider (WA & Essay)", keywords: "ai openai gemini provider kunci api essay wa" },
+          { to: "/admin/pengaturan/ai-provider", label: "OpenRouter Koreksi Essay", keywords: "ai openrouter provider api key model koreksi essay studi kasus" },
           { to: "/admin/pengaturan/affiliate", label: "Affiliate Button", keywords: "affiliate afiliasi tombol link referral" },
           { to: "/admin/pengaturan/apresiasi", label: "Apresiasi Peserta", keywords: "apresiasi testimoni peserta" },
           { to: "/admin/pengaturan/wa-quick-reply", label: "WA Quick Reply", keywords: "wa whatsapp quick reply balasan cepat template" },
@@ -79,6 +79,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Integrasi",
     items: [
+      { to: "/admin/pengaturan/ai-provider", label: "OpenRouter Koreksi Essay", icon: ShieldCheck, keywords: "openrouter ai api key model koreksi essay studi kasus" },
       { to: "/admin/wa-setup", label: "WhatsApp & AI", icon: MessageSquare, keywords: "whatsapp wa ai setup mpwa provider integrasi" },
       { to: "/admin/pengaturan/wa-quick-reply", label: "Balas Cepat WhatsApp", icon: MessageSquareText, keywords: "wa whatsapp quick reply balas cepat template pesan siap kirim" },
     ],
