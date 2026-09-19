@@ -76,6 +76,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_provider_config_history: {
+        Row: {
+          action: string
+          api_key_changed: boolean
+          changed_by: string | null
+          created_at: string
+          id: number
+          model: string
+        }
+        Insert: {
+          action: string
+          api_key_changed?: boolean
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          model: string
+        }
+        Update: {
+          action?: string
+          api_key_changed?: boolean
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          model?: string
+        }
+        Relationships: []
+      }
+      ai_provider_secrets: {
+        Row: {
+          api_key: string
+          provider: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          api_key: string
+          provider: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          api_key?: string
+          provider?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           key: string
@@ -212,6 +260,7 @@ export type Database = {
           essay_contribution: string | null
           essay_dream: string | null
           essay_status: string
+          essay_submitted_at: string | null
           essay_updated_at: string | null
           essay_worthy: string | null
           full_name: string
@@ -269,6 +318,7 @@ export type Database = {
           essay_contribution?: string | null
           essay_dream?: string | null
           essay_status?: string
+          essay_submitted_at?: string | null
           essay_updated_at?: string | null
           essay_worthy?: string | null
           full_name: string
@@ -326,6 +376,7 @@ export type Database = {
           essay_contribution?: string | null
           essay_dream?: string | null
           essay_status?: string
+          essay_submitted_at?: string | null
           essay_updated_at?: string | null
           essay_worthy?: string | null
           full_name?: string
@@ -466,31 +517,40 @@ export type Database = {
       }
       staff_essay_reviews: {
         Row: {
+          criteria_checks: Json | null
           decision: string
           participant_id: string
+          review_method: string
           reviewed_at: string
           reviewer_id: string | null
           reviewer_name: string
+          reviewer_notes: string | null
           scores: Json
           total_score: number
           updated_at: string
         }
         Insert: {
+          criteria_checks?: Json | null
           decision: string
           participant_id: string
+          review_method?: string
           reviewed_at?: string
           reviewer_id?: string | null
           reviewer_name: string
+          reviewer_notes?: string | null
           scores?: Json
           total_score?: number
           updated_at?: string
         }
         Update: {
+          criteria_checks?: Json | null
           decision?: string
           participant_id?: string
+          review_method?: string
           reviewed_at?: string
           reviewer_id?: string | null
           reviewer_name?: string
+          reviewer_notes?: string | null
           scores?: Json
           total_score?: number
           updated_at?: string
