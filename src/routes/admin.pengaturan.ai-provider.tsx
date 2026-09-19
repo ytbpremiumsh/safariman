@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2, History, KeyRound, Loader2, PlugZap, Save, ShieldCheck, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, History, KeyRound, Loader2, PlugZap, RefreshCw, Save, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,9 @@ type Config = {
 
 async function readFunctionError(error: unknown) {
   const fallback = error instanceof Error ? error.message : "Permintaan ke server gagal";
+  if (/failed to fetch|networkerror|load failed/i.test(fallback)) {
+    return "Backend OpenRouter belum dapat dijangkau. Pastikan Edge Function admin-ai-settings sudah di-deploy, lalu coba lagi.";
+  }
   if (!error || typeof error !== "object") return fallback;
   const context = (error as { context?: unknown }).context;
   if (!context || typeof context !== "object") return fallback;
@@ -55,6 +58,7 @@ function AiProviderPage() {
   const [configured, setConfigured] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [history, setHistory] = useState<ConfigHistory[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const invoke = async (body: Record<string, unknown>) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -76,19 +80,23 @@ function AiProviderPage() {
     setConfigured(Boolean(config.api_key_configured));
     setUpdatedAt(config.api_key_updated_at || null);
     setHistory(Array.isArray(config.history) ? config.history : []);
+    setLoadError(null);
   };
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        applyConfig(await invoke({ action: "get" }));
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Gagal memuat pengaturan OpenRouter");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const loadConfig = async () => {
+    setLoading(true);
+    try {
+      applyConfig(await invoke({ action: "get" }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Gagal memuat pengaturan OpenRouter";
+      setLoadError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadConfig(); }, []);
 
   const save = async () => {
     if (!model.trim()) return toast.error("Model OpenRouter wajib diisi");
@@ -137,6 +145,12 @@ function AiProviderPage() {
   return (
     <AdminShell title="OpenRouter untuk Pengoreksi Essay">
       <div className="max-w-3xl space-y-6">
+        {loadError && <section className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3"><AlertCircle className="size-5 mt-0.5 shrink-0" /><div><div className="font-semibold">Layanan konfigurasi belum terhubung</div><p className="text-sm mt-0.5">{loadError}</p></div></div>
+          <button type="button" onClick={() => void loadConfig()} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold disabled:opacity-50">
+            {loading ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />} Coba Lagi
+          </button>
+        </section>}
         <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5">
           <div className="flex items-start gap-3">
             <div className="size-11 rounded-xl bg-accent/10 grid place-items-center"><PlugZap className="size-5 text-accent" /></div>
@@ -169,7 +183,7 @@ function AiProviderPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => void save()} disabled={busy !== null} className="inline-flex items-center gap-2 rounded-lg bg-accent text-white px-5 py-2.5 font-semibold disabled:opacity-60">
+            <button onClick={() => void save()} disabled={busy !== null || Boolean(loadError)} className="inline-flex items-center gap-2 rounded-lg bg-accent text-white px-5 py-2.5 font-semibold disabled:opacity-60">
               {busy === "save" ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan
             </button>
             <button onClick={() => void test()} disabled={!configured || busy !== null} className="inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 font-semibold disabled:opacity-50">
