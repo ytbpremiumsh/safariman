@@ -229,7 +229,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
         <span className="font-bold">{authorship[q.key].verdict === "likely_ai" ? "Indikasi kemungkinan dibantu AI" : authorship[q.key].verdict === "likely_human" ? "Indikasi kemungkinan ditulis sendiri" : "Asal penulisan belum dapat dipastikan"}</span>
         <span className="ml-1 opacity-80">· Keyakinan {authorship[q.key].confidence === "high" ? "tinggi" : authorship[q.key].confidence === "medium" ? "sedang" : "rendah"}</span>
         {authorship[q.key].reason && <div className="mt-0.5 opacity-80">{authorship[q.key].reason}</div>}
-      </div>
+      </div>}
       <div className="grid sm:grid-cols-2 gap-1.5 rounded-lg border border-dashed p-3">
         {q.criteria.map((criterion, index) => {
           const checked = (checks[q.key] ?? []).includes(index);
