@@ -157,11 +157,13 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
   const [checks, setChecks] = useState<ReviewChecks>(emptyChecks);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
   const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
+  const [reviewMethod, setReviewMethod] = useState<"manual" | "ai">("manual");
 
   useEffect(() => {
     setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : checksFromSavedScores(initialScores));
     setRecommendations({});
     setReviewerNotes(initialNotes ?? "");
+    setReviewMethod("manual");
   }, [initialScores, initialChecks, initialNotes]);
 
   const scores = useMemo(() => {
@@ -185,6 +187,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
     setChecks(emptyChecks());
     setRecommendations({});
     setReviewerNotes("");
+    setReviewMethod("manual");
     await onReset?.();
   };
 
@@ -192,17 +195,23 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
     const result = await onAnalyze?.();
     if (!result) return;
     setRecommendations(result.recommendations);
+    setReviewMethod("ai");
     setChecks(Object.fromEntries(QUESTIONS.map((question) => [question.key,
       (result.recommendations[question.key] ?? []).filter((item) => item.matched && item.confidence === "high").map((item) => item.index),
     ])));
   };
 
   return <div className="space-y-5">
-    {onAnalyze && <div className="rounded-lg border bg-secondary/20 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div><div className="text-sm font-semibold">Rekomendasi penilaian dengan AI</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
-      <Button type="button" disabled={busy || analyzing} onClick={() => void handleAnalyze()} className="bg-accent text-primary-foreground shadow-gold hover:bg-accent/90">
-        {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
-      </Button>
+    {onAnalyze && <div className="space-y-2">
+      <div className="rounded-lg border bg-secondary/20 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div><div className="text-sm font-semibold">Rekomendasi penilaian dengan AI</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
+        <Button type="button" disabled={busy || analyzing} onClick={() => void handleAnalyze()} className="bg-accent text-primary-foreground shadow-gold hover:bg-accent/90">
+          {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
+        </Button>
+      </div>
+      <div className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${reviewMethod === "ai" ? "bg-violet-100 text-violet-700 border border-violet-200" : "bg-emerald/10 text-emerald border border-emerald/20"}`}>
+        {reviewMethod === "ai" ? "✦ Penilaian dibantu AI" : "✓ Penilaian manual oleh staff"}
+      </div>
     </div>}
     {QUESTIONS.map((q) => <section key={q.key} className="space-y-2">
       <div className="flex items-center justify-between gap-3">
