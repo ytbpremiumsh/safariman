@@ -505,6 +505,30 @@ export type Database = {
           },
         ]
       }
+      staff_group_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          staff_name: string
+          staff_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          staff_name: string
+          staff_user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          staff_name?: string
+          staff_user_id?: string
+        }
+        Relationships: []
+      }
       staff_reviewers: {
         Row: {
           active: boolean
