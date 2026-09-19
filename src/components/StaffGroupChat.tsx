@@ -8,7 +8,7 @@ const timeLabel=(value:string)=>new Intl.DateTimeFormat("id-ID",{hour:"2-digit",
 
 export function StaffGroupChat(){
   const [open,setOpen]=useState(false),[messages,setMessages]=useState<ChatMessage[]>([]),[currentUserId,setCurrentUserId]=useState(""),[draft,setDraft]=useState("");
-  const [loading,setLoading]=useState(false),[sending,setSending]=useState(false); const scrollRef=useRef<HTMLDivElement>(null);
+  const [loading,setLoading]=useState(false),[sending,setSending]=useState(false),[unreadCount,setUnreadCount]=useState(0); const scrollRef=useRef<HTMLDivElement>(null);
   const loadMessages=async(silent=false)=>{
     if(!silent)setLoading(true);
     const {data:{session}}=await staffSupabase.auth.getSession();
@@ -17,10 +17,23 @@ export function StaffGroupChat(){
     const {data,error}=await staffSupabase.from("staff_group_messages").select("id,staff_user_id,staff_name,message,created_at").order("created_at",{ascending:false}).limit(100);
     if(!silent)setLoading(false);
     if(error){if(!silent)toast.error("Chat staff belum dapat dimuat");return;}
-    setMessages(((data??[])as ChatMessage[]).reverse());
+    const ordered=((data??[])as ChatMessage[]).reverse();
+    setMessages(ordered);
+    const seenKey=`staff-chat-last-seen-${session.user.id}`;
+    const newestAt=ordered.at(-1)?.created_at;
+    const savedSeen=window.localStorage.getItem(seenKey);
+    if(open){
+      if(newestAt)window.localStorage.setItem(seenKey,newestAt);
+      setUnreadCount(0);
+    }else if(!savedSeen){
+      if(newestAt)window.localStorage.setItem(seenKey,newestAt);
+      setUnreadCount(0);
+    }else{
+      const seenTime=new Date(savedSeen).getTime();
+      setUnreadCount(ordered.filter(item=>item.staff_user_id!==session.user.id&&new Date(item.created_at).getTime()>seenTime).length);
+    }
   };
-  useEffect(()=>{if(window.matchMedia("(min-width: 1280px)").matches)setOpen(true);},[]);
-  useEffect(()=>{if(!open)return;void loadMessages();const timer=window.setInterval(()=>void loadMessages(true),7000);return()=>window.clearInterval(timer);},[open]);
+  useEffect(()=>{void loadMessages();const timer=window.setInterval(()=>void loadMessages(true),7000);return()=>window.clearInterval(timer);},[open]);
   useEffect(()=>{if(open)requestAnimationFrame(()=>{if(scrollRef.current)scrollRef.current.scrollTop=scrollRef.current.scrollHeight;});},[messages,open]);
   const sendMessage=async(event?:FormEvent)=>{
     event?.preventDefault();const message=draft.trim();if(!message||sending)return;
@@ -33,7 +46,7 @@ export function StaffGroupChat(){
     setDraft("");if(data)setMessages(previous=>[...previous.filter(item=>item.id!==data.id),data as ChatMessage]);
   };
   const keyDown=(event:KeyboardEvent<HTMLTextAreaElement>)=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();void sendMessage();}};
-  if(!open)return <button type="button" onClick={()=>setOpen(true)} className="fixed z-40 bottom-5 right-5 rounded-full bg-emerald text-primary-foreground shadow-xl px-4 py-3 inline-flex items-center gap-2 font-bold"><MessageCircle className="size-5"/>Chat Staff</button>;
+  if(!open)return <button type="button" onClick={()=>setOpen(true)} className="fixed z-40 bottom-5 right-5 rounded-full bg-emerald relative text-primary-foreground shadow-xl px-4 py-3 inline-flex items-center gap-2 font-bold"><MessageCircle className="size-5"/>Chat Staff{unreadCount>0&&<span className="absolute -top-2 -right-2 min-w-6 h-6 px-1.5 rounded-full bg-red-600 text-white text-xs font-bold grid place-items-center ring-2 ring-white">{unreadCount>99?"99+":unreadCount}</span>}</button>;
   return <aside className="fixed z-40 right-3 sm:right-5 top-20 bottom-3 sm:bottom-5 w-[calc(100vw-1.5rem)] sm:w-[360px] rounded-2xl border bg-card shadow-2xl flex flex-col overflow-hidden">
     <header className="bg-gradient-emerald text-primary-foreground px-4 py-3 flex items-center gap-3"><div className="size-9 rounded-full bg-white/15 grid place-items-center"><Users className="size-5"/></div><div className="min-w-0 flex-1"><div className="font-bold">Koordinasi Staff</div><div className="text-[11px] opacity-80">Chat bersama seluruh pengoreksi</div></div><button type="button" onClick={()=>setOpen(false)} className="rounded-full p-2 hover:bg-white/15" aria-label="Tutup chat"><span className="hidden xl:block"><Minus className="size-4"/></span><span className="xl:hidden"><X className="size-4"/></span></button></header>
     <div ref={scrollRef} className="flex-1 overflow-y-auto bg-secondary/30 p-3 space-y-3">{loading?<div className="h-full grid place-items-center"><Loader2 className="size-5 animate-spin text-accent"/></div>:messages.length===0?<div className="h-full grid place-items-center text-center px-8"><div><MessageCircle className="size-9 mx-auto mb-2 text-muted-foreground"/><p className="text-sm font-semibold">Belum ada percakapan</p><p className="text-xs text-muted-foreground">Mulai koordinasi dengan staff lainnya.</p></div></div>:messages.map(item=>{const mine=item.staff_user_id===currentUserId;return <div key={item.id} className={mine?"flex justify-end":"flex justify-start"}><div className={`max-w-[85%] rounded-2xl px-3 py-2 ${mine?"bg-emerald text-primary-foreground rounded-br-md":"bg-card border rounded-bl-md"}`}>{!mine&&<div className="text-[10px] font-bold text-accent mb-0.5">{item.staff_name}</div>}<div className="text-sm whitespace-pre-wrap break-words">{item.message}</div><div className={`mt-1 text-[9px] text-right ${mine?"text-primary-foreground/70":"text-muted-foreground"}`}>{timeLabel(item.created_at)}</div></div></div>;})}</div>
