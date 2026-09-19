@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
       const participants = (data ?? []) as Participant[];
       const { data: reviews, error: reviewError } = await admin
         .from("staff_essay_reviews")
-        .select("participant_id,reviewer_name,decision,scores,total_score,reviewer_notes,criteria_checks,reviewed_at,updated_at");
+        .select("participant_id,reviewer_name,decision,scores,total_score,reviewer_notes,criteria_checks,review_method,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return json({ participants: participants.map((participant) => {
@@ -190,6 +190,7 @@ Deno.serve(async (req) => {
       const parsedScores = parseScores(body.scores);
       const reviewerNotes = typeof body.reviewer_notes === "string" ? body.reviewer_notes.trim() : "";
       const criteriaChecks = parseCriteriaChecks(body.criteria_checks);
+      const reviewMethod = body.review_method === "ai" ? "ai" : "manual";
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
@@ -216,6 +217,7 @@ Deno.serve(async (req) => {
         total_score: parsedScores.total,
         reviewer_notes: reviewerNotes || null,
         criteria_checks: criteriaChecks,
+        review_method: reviewMethod,
         reviewed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
