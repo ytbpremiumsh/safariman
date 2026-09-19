@@ -9,11 +9,29 @@ const timeLabel=(value:string)=>new Intl.DateTimeFormat("id-ID",{hour:"2-digit",
 export function StaffGroupChat(){
   const [open,setOpen]=useState(false),[messages,setMessages]=useState<ChatMessage[]>([]),[currentUserId,setCurrentUserId]=useState(""),[draft,setDraft]=useState("");
   const [loading,setLoading]=useState(false),[sending,setSending]=useState(false); const scrollRef=useRef<HTMLDivElement>(null);
-  const loadMessages=async(silent=false)=>{if(!silent)setLoading(true);const{data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"chat_list"}});if(!silent)setLoading(false);if(error){if(!silent)toast.error("Chat staff belum dapat dimuat");return;}setMessages((data?.messages??[])as ChatMessage[]);setCurrentUserId(String(data?.current_user_id??""));};
+  const loadMessages=async(silent=false)=>{
+    if(!silent)setLoading(true);
+    const {data:{session}}=await staffSupabase.auth.getSession();
+    if(!session?.user){if(!silent)toast.error("Sesi staff berakhir");setLoading(false);return;}
+    setCurrentUserId(session.user.id);
+    const {data,error}=await staffSupabase.from("staff_group_messages").select("id,staff_user_id,staff_name,message,created_at").order("created_at",{ascending:false}).limit(100);
+    if(!silent)setLoading(false);
+    if(error){if(!silent)toast.error("Chat staff belum dapat dimuat");return;}
+    setMessages(((data??[])as ChatMessage[]).reverse());
+  };
   useEffect(()=>{if(window.matchMedia("(min-width: 1280px)").matches)setOpen(true);},[]);
   useEffect(()=>{if(!open)return;void loadMessages();const timer=window.setInterval(()=>void loadMessages(true),7000);return()=>window.clearInterval(timer);},[open]);
   useEffect(()=>{if(open)requestAnimationFrame(()=>{if(scrollRef.current)scrollRef.current.scrollTop=scrollRef.current.scrollHeight;});},[messages,open]);
-  const sendMessage=async(event?:FormEvent)=>{event?.preventDefault();const message=draft.trim();if(!message||sending)return;setSending(true);const{data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"chat_send",message}});setSending(false);if(error){toast.error(error.message||"Pesan gagal dikirim");return;}setDraft("");if(data?.message)setMessages(previous=>[...previous.filter(item=>item.id!==data.message.id),data.message as ChatMessage]);};
+  const sendMessage=async(event?:FormEvent)=>{
+    event?.preventDefault();const message=draft.trim();if(!message||sending)return;
+    setSending(true);
+    const {data:{session}}=await staffSupabase.auth.getSession();
+    if(!session?.user){setSending(false);toast.error("Sesi staff berakhir");return;}
+    const {data,error}=await staffSupabase.from("staff_group_messages").insert({staff_user_id:session.user.id,staff_name:"Staff",message}).select("id,staff_user_id,staff_name,message,created_at").single();
+    setSending(false);
+    if(error){toast.error(error.message||"Pesan gagal dikirim");return;}
+    setDraft("");if(data)setMessages(previous=>[...previous.filter(item=>item.id!==data.id),data as ChatMessage]);
+  };
   const keyDown=(event:KeyboardEvent<HTMLTextAreaElement>)=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();void sendMessage();}};
   if(!open)return <button type="button" onClick={()=>setOpen(true)} className="fixed z-40 bottom-5 right-5 rounded-full bg-emerald text-primary-foreground shadow-xl px-4 py-3 inline-flex items-center gap-2 font-bold"><MessageCircle className="size-5"/>Chat Staff</button>;
   return <aside className="fixed z-40 right-3 sm:right-5 top-20 bottom-3 sm:bottom-5 w-[calc(100vw-1.5rem)] sm:w-[360px] rounded-2xl border bg-card shadow-2xl flex flex-col overflow-hidden">
