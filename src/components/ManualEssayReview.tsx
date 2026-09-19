@@ -8,7 +8,8 @@ export type ReviewChecks = Record<string, number[]>;
 
 type Criterion = { label: string; point: number };
 export type AiCriterionRecommendation = { index: number; matched: boolean; confidence: "high" | "medium" | "low"; evidence: string };
-export type AiReviewRecommendation = { recommendations: Record<string, AiCriterionRecommendation[]>; scores: ReviewScores; total_score: number; model: string };
+export type AiAuthorshipAssessment = { verdict: "likely_human" | "likely_ai" | "uncertain"; confidence: "high" | "medium" | "low"; reason: string };
+export type AiReviewRecommendation = { recommendations: Record<string, AiCriterionRecommendation[]>; authorship: Record<string, AiAuthorshipAssessment>; scores: ReviewScores; total_score: number; model: string };
 
 const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
   {
@@ -157,12 +158,14 @@ type Props = {
 export function ManualEssayReview({ answers, initialScores, initialChecks, initialNotes, initialMethod, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
   const [checks, setChecks] = useState<ReviewChecks>(emptyChecks);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
+  const [authorship, setAuthorship] = useState<Record<string, AiAuthorshipAssessment>>({});
   const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
   const [reviewMethod, setReviewMethod] = useState<"manual" | "ai">(initialMethod ?? "manual");
 
   useEffect(() => {
     setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : checksFromSavedScores(initialScores));
     setRecommendations({});
+    setAuthorship({});
     setReviewerNotes(initialNotes ?? "");
     setReviewMethod(initialMethod ?? "manual");
   }, [initialScores, initialChecks, initialNotes, initialMethod]);
@@ -187,6 +190,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
   const handleReset = async () => {
     setChecks(emptyChecks());
     setRecommendations({});
+    setAuthorship({});
     setReviewerNotes("");
     setReviewMethod("manual");
     await onReset?.();
@@ -196,6 +200,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
     const result = await onAnalyze?.();
     if (!result) return;
     setRecommendations(result.recommendations);
+    setAuthorship(result.authorship ?? {});
     setReviewMethod("ai");
     setChecks(Object.fromEntries(QUESTIONS.map((question) => [question.key,
       (result.recommendations[question.key] ?? []).filter((item) => item.matched && item.confidence === "high").map((item) => item.index),
@@ -205,7 +210,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
   return <div className="space-y-5">
     {onAnalyze && <div className="space-y-2">
       <div className="rounded-lg border bg-secondary/20 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div><div className="text-sm font-semibold">Rekomendasi penilaian dengan AI</div><div className="text-xs text-muted-foreground">AI hanya mengusulkan centang berdasarkan bukti. Periksa kembali sebelum menyimpan.</div></div>
+        <div><div className="text-sm font-semibold">Rekomendasi penilaian dengan AI</div><div className="text-xs text-muted-foreground">AI mengusulkan poin dan memperkirakan pola penulisan jawaban. Hasil deteksi AI hanya indikasi, bukan bukti mutlak.</div></div>
         <Button type="button" disabled={busy || analyzing} onClick={() => void handleAnalyze()} className="bg-accent text-primary-foreground shadow-gold hover:bg-accent/90">
           {analyzing ? <Loader2 className="animate-spin" /> : <Sparkles />} {analyzing ? "Menganalisis..." : "Analisis dengan AI"}
         </Button>
@@ -220,6 +225,11 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
         <span className="text-xs font-bold">{scores[q.key] ?? 0}<span className="text-muted-foreground">/10</span></span>
       </div>
       <div className="rounded-lg border bg-secondary/20 p-4 whitespace-pre-wrap text-sm leading-relaxed">{answers[q.key] || "—"}</div>
+      {authorship[q.key] && <div className={`rounded-md border px-2.5 py-1.5 text-[11px] ${authorship[q.key].verdict === "likely_ai" ? "border-violet-200 bg-violet-50 text-violet-700" : authorship[q.key].verdict === "likely_human" ? "border-emerald/20 bg-emerald/10 text-emerald" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+        <span className="font-bold">{authorship[q.key].verdict === "likely_ai" ? "Indikasi kemungkinan dibantu AI" : authorship[q.key].verdict === "likely_human" ? "Indikasi kemungkinan ditulis sendiri" : "Asal penulisan belum dapat dipastikan"}</span>
+        <span className="ml-1 opacity-80">· Keyakinan {authorship[q.key].confidence === "high" ? "tinggi" : authorship[q.key].confidence === "medium" ? "sedang" : "rendah"}</span>
+        {authorship[q.key].reason && <div className="mt-0.5 opacity-80">{authorship[q.key].reason}</div>}
+      </div>
       <div className="grid sm:grid-cols-2 gap-1.5 rounded-lg border border-dashed p-3">
         {q.criteria.map((criterion, index) => {
           const checked = (checks[q.key] ?? []).includes(index);
