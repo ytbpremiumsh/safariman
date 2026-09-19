@@ -16,7 +16,6 @@ const KEYS = [
   "ai_provider",
   "ai_lovable_model",
   "ai_openrouter_model",
-  "ai_openrouter_api_key",
 ] as const;
 
 const LOVABLE_MODELS = [
@@ -35,7 +34,6 @@ function AiProviderPage() {
   const [provider, setProvider] = useState<"lovable" | "openrouter">("lovable");
   const [lovableModel, setLovableModel] = useState("google/gemini-2.5-flash");
   const [openrouterModel, setOpenrouterModel] = useState("openai/gpt-4o-mini");
-  const [openrouterKey, setOpenrouterKey] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -48,7 +46,6 @@ function AiProviderPage() {
       if (map.ai_provider === "openrouter") setProvider("openrouter");
       if (map.ai_lovable_model) setLovableModel(map.ai_lovable_model);
       if (map.ai_openrouter_model) setOpenrouterModel(map.ai_openrouter_model);
-      if (map.ai_openrouter_api_key) setOpenrouterKey(map.ai_openrouter_api_key);
       setLoading(false);
     })();
   }, [navigate]);
@@ -59,7 +56,6 @@ function AiProviderPage() {
       ai_provider: provider,
       ai_lovable_model: lovableModel.trim(),
       ai_openrouter_model: openrouterModel.trim(),
-      ai_openrouter_api_key: openrouterKey.trim(),
     };
     for (const [key, value] of Object.entries(entries)) {
       const { error } = await supabase.rpc("admin_set_setting", { p_key: key, p_value: value });
@@ -135,16 +131,7 @@ function AiProviderPage() {
               <a className="text-accent underline" href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.
             </p>
           </div>
-          <div>
-            <Label className="text-sm">API Key</Label>
-            <Input
-              type="password"
-              value={openrouterKey}
-              onChange={(e) => setOpenrouterKey(e.target.value)}
-              placeholder="sk-or-v1-..."
-              className="font-mono"
-            />
-          </div>
+          <div className="rounded-lg border bg-secondary/30 p-3 text-sm text-muted-foreground">API key OpenRouter disimpan sebagai rahasia server dan tidak ditampilkan di halaman ini.</div>
           <div>
             <Label className="text-sm">Model</Label>
             <Input
