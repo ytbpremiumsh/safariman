@@ -128,24 +128,27 @@ const emptyChecks = () => Object.fromEntries(QUESTIONS.map((q) => [q.key, [] as 
 type Props = {
   answers: Record<string, string | null>;
   initialScores?: ReviewScores | null;
+  initialNotes?: string | null;
   currentDecision: ReviewDecision;
   busy?: boolean;
-  onSave: (decision: ReviewDecision, scores: ReviewScores) => Promise<void> | void;
+  onSave: (decision: ReviewDecision, scores: ReviewScores, reviewerNotes: string) => Promise<void> | void;
   onReset?: () => Promise<void> | void;
   onAnalyze?: () => Promise<AiReviewRecommendation | null>;
   analyzing?: boolean;
 };
 
-export function ManualEssayReview({ answers, initialScores, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
+export function ManualEssayReview({ answers, initialScores, initialNotes, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
   const [checks, setChecks] = useState<Record<string, number[]>>(emptyChecks);
   const [saved, setSaved] = useState<ReviewScores>(EMPTY_SCORES);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
+  const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
 
   useEffect(() => {
     setChecks(emptyChecks());
     setSaved({ ...EMPTY_SCORES, ...(initialScores ?? {}) });
     setRecommendations({});
-  }, [initialScores]);
+    setReviewerNotes(initialNotes ?? "");
+  }, [initialScores, initialNotes]);
 
   const scores = useMemo(() => {
     const next: ReviewScores = { ...EMPTY_SCORES };
@@ -170,6 +173,7 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
     setChecks(emptyChecks());
     setSaved({ ...EMPTY_SCORES });
     setRecommendations({});
+    setReviewerNotes("");
     await onReset?.();
   };
 
@@ -211,15 +215,22 @@ export function ManualEssayReview({ answers, initialScores, currentDecision, bus
         })}
       </div>
     </section>)}
+    <section className="space-y-2 rounded-lg border bg-secondary/20 p-4">
+      <label htmlFor="reviewer-notes" className="text-sm font-bold">Keterangan Pengoreksi <span className="font-normal text-muted-foreground">(Opsional)</span></label>
+      <textarea id="reviewer-notes" value={reviewerNotes} onChange={(event) => setReviewerNotes(event.target.value)} maxLength={2000} rows={4}
+        placeholder="Tambahkan catatan, pertimbangan, atau hal yang perlu diperhatikan tentang peserta ini..."
+        className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      <div className="text-right text-[11px] text-muted-foreground">{reviewerNotes.length}/2000 karakter</div>
+    </section>
     <div className="sticky bottom-0 rounded-lg border bg-card p-4 shadow-soft">
       <div className="flex items-center justify-between gap-4 mb-3">
         <div><div className="text-xs font-semibold text-muted-foreground">Total Nilai</div><div className="text-3xl font-bold">{total}<span className="text-sm text-muted-foreground">/100</span></div></div>
         <div className="text-xs text-right text-muted-foreground">Keputusan akhir tetap ditentukan panitia.</div>
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
-        <button disabled={busy} onClick={() => void onSave("interview", scores)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
-        <button disabled={busy} onClick={() => void onSave("rejected", scores)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
-        <button disabled={busy} onClick={() => void onSave("reviewed", scores)} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
+        <button disabled={busy} onClick={() => void onSave("interview", scores, reviewerNotes.trim())} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
+        <button disabled={busy} onClick={() => void onSave("rejected", scores, reviewerNotes.trim())} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
+        <button disabled={busy} onClick={() => void onSave("reviewed", scores, reviewerNotes.trim())} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
       </div>
       {onReset && <button disabled={busy} onClick={() => void handleReset()}
         className="mt-2 w-full rounded-lg border border-dashed py-2.5 text-sm font-semibold text-muted-foreground inline-flex justify-center items-center gap-2 hover:text-foreground">
