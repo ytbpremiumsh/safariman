@@ -145,26 +145,27 @@ type Props = {
   initialScores?: ReviewScores | null;
   initialChecks?: ReviewChecks | null;
   initialNotes?: string | null;
+  initialMethod?: "manual" | "ai" | null;
   currentDecision: ReviewDecision;
   busy?: boolean;
-  onSave: (decision: ReviewDecision, scores: ReviewScores, reviewerNotes: string, criteriaChecks: ReviewChecks) => Promise<void> | void;
+  onSave: (decision: ReviewDecision, scores: ReviewScores, reviewerNotes: string, criteriaChecks: ReviewChecks, reviewMethod: "manual" | "ai") => Promise<void> | void;
   onReset?: () => Promise<void> | void;
   onAnalyze?: () => Promise<AiReviewRecommendation | null>;
   analyzing?: boolean;
 };
 
-export function ManualEssayReview({ answers, initialScores, initialChecks, initialNotes, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
+export function ManualEssayReview({ answers, initialScores, initialChecks, initialNotes, initialMethod, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
   const [checks, setChecks] = useState<ReviewChecks>(emptyChecks);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
   const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
-  const [reviewMethod, setReviewMethod] = useState<"manual" | "ai">("manual");
+  const [reviewMethod, setReviewMethod] = useState<"manual" | "ai">(initialMethod ?? "manual");
 
   useEffect(() => {
     setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : checksFromSavedScores(initialScores));
     setRecommendations({});
     setReviewerNotes(initialNotes ?? "");
-    setReviewMethod("manual");
-  }, [initialScores, initialChecks, initialNotes]);
+    setReviewMethod(initialMethod ?? "manual");
+  }, [initialScores, initialChecks, initialNotes, initialMethod]);
 
   const scores = useMemo(() => {
     const next: ReviewScores = { ...EMPTY_SCORES };
@@ -247,9 +248,9 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
         <div className="text-xs text-right text-muted-foreground">Keputusan akhir tetap ditentukan panitia.</div>
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
-        <button disabled={busy} onClick={() => void onSave("interview", scores, reviewerNotes.trim(), checks)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
-        <button disabled={busy} onClick={() => void onSave("rejected", scores, reviewerNotes.trim(), checks)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
-        <button disabled={busy} onClick={() => void onSave("reviewed", scores, reviewerNotes.trim(), checks)} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
+        <button disabled={busy} onClick={() => void onSave("interview", scores, reviewerNotes.trim(), checks, reviewMethod)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
+        <button disabled={busy} onClick={() => void onSave("rejected", scores, reviewerNotes.trim(), checks, reviewMethod)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
+        <button disabled={busy} onClick={() => void onSave("reviewed", scores, reviewerNotes.trim(), checks, reviewMethod)} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
       </div>
       {onReset && <button disabled={busy} onClick={() => void handleReset()}
         className="mt-2 w-full rounded-lg border border-dashed py-2.5 text-sm font-semibold text-muted-foreground inline-flex justify-center items-center gap-2 hover:text-foreground">
