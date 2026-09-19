@@ -76,6 +76,24 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_provider_secrets: {
+        Row: {
+          api_key: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          api_key: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           key: string
