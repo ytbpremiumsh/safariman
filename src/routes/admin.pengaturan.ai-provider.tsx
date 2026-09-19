@@ -28,22 +28,30 @@ type Config = {
   history?: ConfigHistory[];
 };
 
-async function readFunctionError(error: unknown) {
-  const fallback = error instanceof Error ? error.message : "Permintaan ke server gagal";
-  if (/failed to fetch|networkerror|load failed/i.test(fallback)) {
+function friendlyFunctionError(message: string) {
+  if (/failed to fetch|networkerror|load failed/i.test(message)) {
     return "Backend OpenRouter belum dapat dijangkau. Pastikan Edge Function admin-ai-settings sudah di-deploy, lalu coba lagi.";
   }
+  if (/not found|requested function was not found|404/i.test(message)) {
+    return "Edge Function admin-ai-settings belum terpasang pada Supabase Safar Iman.";
+  }
+  return message;
+}
+
+async function readFunctionError(error: unknown) {
+  const fallback = friendlyFunctionError(error instanceof Error ? error.message : "Permintaan ke server gagal");
   if (!error || typeof error !== "object") return fallback;
   const context = (error as { context?: unknown }).context;
   if (!context || typeof context !== "object") return fallback;
   const jsonReader = (context as { json?: unknown }).json;
   if (typeof jsonReader !== "function") {
     const contextMessage = (context as { message?: unknown }).message;
-    return typeof contextMessage === "string" ? contextMessage : fallback;
+    return typeof contextMessage === "string" ? friendlyFunctionError(contextMessage) : fallback;
   }
   try {
-    const payload = await jsonReader.call(context) as { error?: unknown };
-    return typeof payload?.error === "string" ? payload.error : fallback;
+    const payload = await jsonReader.call(context) as { error?: unknown; message?: unknown; code?: unknown };
+    const detail = typeof payload?.error === "string" ? payload.error : typeof payload?.message === "string" ? payload.message : "";
+    return detail ? friendlyFunctionError(detail) : fallback;
   } catch {
     return fallback;
   }
@@ -90,7 +98,6 @@ function AiProviderPage() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Gagal memuat pengaturan OpenRouter";
       setLoadError(message);
-      toast.error(message);
     } finally {
       setLoading(false);
     }
