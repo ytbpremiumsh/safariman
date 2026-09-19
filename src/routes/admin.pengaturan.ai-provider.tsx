@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Save, Sparkles, Bot } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2, Save, Sparkles, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -11,12 +11,6 @@ export const Route = createFileRoute("/admin/pengaturan/ai-provider")({
   head: () => ({ meta: [{ title: "AI Provider — Safar Iman Admin" }] }),
   component: AiProviderPage,
 });
-
-const KEYS = [
-  "ai_provider",
-  "ai_lovable_model",
-  "ai_openrouter_model",
-] as const;
 
 const LOVABLE_MODELS = [
   "google/gemini-2.5-flash",
@@ -34,6 +28,10 @@ function AiProviderPage() {
   const [provider, setProvider] = useState<"lovable" | "openrouter">("lovable");
   const [lovableModel, setLovableModel] = useState("google/gemini-2.5-flash");
   const [openrouterModel, setOpenrouterModel] = useState("openai/gpt-4o-mini");
+  const [openrouterKey, setOpenrouterKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [openrouterConnected, setOpenrouterConnected] = useState(false);
+  const [openrouterUpdatedAt, setOpenrouterUpdatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -41,27 +39,25 @@ function AiProviderPage() {
       if (!session) { navigate({ to: "/admin/login" }); return; }
       const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" });
       if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
-      const { data } = await supabase.from("app_settings").select("key,value").in("key", KEYS as unknown as string[]);
-      const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, (r.value ?? "").trim()]));
-      if (map.ai_provider === "openrouter") setProvider("openrouter");
-      if (map.ai_lovable_model) setLovableModel(map.ai_lovable_model);
-      if (map.ai_openrouter_model) setOpenrouterModel(map.ai_openrouter_model);
+      const { data, error } = await supabase.functions.invoke("admin-ai-provider", { body: { action: "get" } });
+      if (error || data?.error) { toast.error(data?.error ?? "Gagal memuat pengaturan AI"); setLoading(false); return; }
+      setProvider(data.provider === "openrouter" ? "openrouter" : "lovable");
+      if (data.lovable_model) setLovableModel(data.lovable_model);
+      if (data.openrouter_model) setOpenrouterModel(data.openrouter_model);
+      setOpenrouterConnected(Boolean(data.openrouter_connected));
+      setOpenrouterUpdatedAt(data.openrouter_updated_at ?? null);
       setLoading(false);
     })();
   }, [navigate]);
 
   const save = async () => {
     setSaving(true);
-    const entries: Record<string, string> = {
-      ai_provider: provider,
-      ai_lovable_model: lovableModel.trim(),
-      ai_openrouter_model: openrouterModel.trim(),
-    };
-    for (const [key, value] of Object.entries(entries)) {
-      const { error } = await supabase.rpc("admin_set_setting", { p_key: key, p_value: value });
-      if (error) { toast.error(`${key}: ${error.message}`); setSaving(false); return; }
-    }
+    const { data, error } = await supabase.functions.invoke("admin-ai-provider", { body: {
+      action: "save", provider, lovable_model: lovableModel.trim(), openrouter_model: openrouterModel.trim(), openrouter_api_key: openrouterKey.trim() || null,
+    } });
     setSaving(false);
+    if (error || data?.error) { toast.error(data?.error ?? error?.message ?? "Gagal menyimpan pengaturan AI"); return; }
+    if (openrouterKey.trim()) { setOpenrouterConnected(true); setOpenrouterUpdatedAt(new Date().toISOString()); setOpenrouterKey(""); }
     toast.success("Pengaturan AI tersimpan");
   };
 
@@ -131,7 +127,17 @@ function AiProviderPage() {
               <a className="text-accent underline" href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.
             </p>
           </div>
-          <div className="rounded-lg border bg-secondary/30 p-3 text-sm text-muted-foreground">API key OpenRouter disimpan sebagai rahasia server dan tidak ditampilkan di halaman ini.</div>
+          <div className="rounded-lg border bg-secondary/30 p-3 text-sm flex items-start gap-2">
+            <KeyRound className="size-4 mt-0.5 text-accent shrink-0" />
+            <div><div className="font-semibold">{openrouterConnected ? "OpenRouter sudah terhubung" : "OpenRouter belum terhubung"}</div><div className="text-xs text-muted-foreground">API key disimpan aman dan tidak ditampilkan kembali.{openrouterUpdatedAt ? ` Terakhir diperbarui ${new Date(openrouterUpdatedAt).toLocaleString("id-ID")}.` : ""}</div></div>
+          </div>
+          <div>
+            <Label className="text-sm">API Key OpenRouter</Label>
+            <div className="relative mt-1">
+              <Input type={showKey ? "text" : "password"} value={openrouterKey} onChange={(event) => setOpenrouterKey(event.target.value)} placeholder={openrouterConnected ? "Kosongkan jika tidak ingin mengganti" : "sk-or-v1-..."} autoComplete="new-password" className="font-mono pr-11" />
+              <button type="button" onClick={() => setShowKey((value) => !value)} aria-label={showKey ? "Sembunyikan API key" : "Tampilkan API key"} className="absolute right-1 top-1 size-8 grid place-items-center text-muted-foreground">{showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button>
+            </div>
+          </div>
           <div>
             <Label className="text-sm">Model</Label>
             <Input

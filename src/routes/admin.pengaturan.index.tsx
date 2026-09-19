@@ -9,6 +9,12 @@ export const Route = createFileRoute("/admin/pengaturan/")({
 
 const ITEMS = [
   {
+    to: "/admin/pengaturan/ai-provider",
+    icon: Sparkles,
+    title: "AI Provider",
+    desc: "Hubungkan OpenRouter dan atur model untuk rekomendasi koreksi Essay & Studi Kasus.",
+  },
+  {
     to: "/admin/pengaturan/kredit",
     icon: Sparkles,
     title: "Kontrol Kredit",
