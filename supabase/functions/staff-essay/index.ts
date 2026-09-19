@@ -121,6 +121,23 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "list");
+    if (action === "chat_list") {
+      const { data: messages, error: chatError } = await admin.from("staff_group_messages")
+        .select("id,staff_user_id,staff_name,message,created_at")
+        .order("created_at", { ascending: false }).limit(100);
+      if (chatError) throw chatError;
+      return json({ messages: (messages ?? []).reverse(), current_user_id: authUser.id });
+    }
+    if (action === "chat_send") {
+      const message = typeof body.message === "string" ? body.message.trim() : "";
+      if (!message) return json({ error: "Pesan tidak boleh kosong" }, 400);
+      if (message.length > 2000) return json({ error: "Pesan maksimal 2000 karakter" }, 400);
+      const { data: sent, error: sendError } = await admin.from("staff_group_messages").insert({
+        staff_user_id: authUser.id, staff_name: staff.name, message,
+      }).select("id,staff_user_id,staff_name,message,created_at").single();
+      if (sendError) throw sendError;
+      return json({ message: sent, current_user_id: authUser.id });
+    }
     if (action === "analyze") {
       const participantId = String(body.participant_id ?? "");
       if (!participantId) return json({ error: "Peserta tidak valid" }, 400);
