@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export type ReviewDecision = "reviewed" | "interview" | "rejected";
 export type ReviewScores = Record<string, number>;
+export type ReviewChecks = Record<string, number[]>;
 
 type Criterion = { label: string; point: number };
 export type AiCriterionRecommendation = { index: number; matched: boolean; confidence: "high" | "medium" | "low"; evidence: string };
@@ -123,43 +124,54 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
 ];
 
 const EMPTY_SCORES = Object.fromEntries(QUESTIONS.map((q) => [q.key, 0])) as ReviewScores;
-const emptyChecks = () => Object.fromEntries(QUESTIONS.map((q) => [q.key, [] as number[]])) as Record<string, number[]>;
+const emptyChecks = () => Object.fromEntries(QUESTIONS.map((q) => [q.key, [] as number[]])) as ReviewChecks;
+
+function checksFromSavedScores(savedScores?: ReviewScores | null): ReviewChecks {
+  const restored = emptyChecks();
+  if (!savedScores) return restored;
+  for (const question of QUESTIONS) {
+    const target = savedScores[question.key] ?? 0;
+    for (let mask = 0; mask < (1 << question.criteria.length); mask += 1) {
+      const indices = question.criteria.map((_, index) => index).filter((index) => (mask & (1 << index)) !== 0);
+      const total = indices.reduce((sum, index) => sum + question.criteria[index].point, 0);
+      if (total === target) { restored[question.key] = indices; break; }
+    }
+  }
+  return restored;
+}
 
 type Props = {
   answers: Record<string, string | null>;
   initialScores?: ReviewScores | null;
+  initialChecks?: ReviewChecks | null;
   initialNotes?: string | null;
   currentDecision: ReviewDecision;
   busy?: boolean;
-  onSave: (decision: ReviewDecision, scores: ReviewScores, reviewerNotes: string) => Promise<void> | void;
+  onSave: (decision: ReviewDecision, scores: ReviewScores, reviewerNotes: string, criteriaChecks: ReviewChecks) => Promise<void> | void;
   onReset?: () => Promise<void> | void;
   onAnalyze?: () => Promise<AiReviewRecommendation | null>;
   analyzing?: boolean;
 };
 
-export function ManualEssayReview({ answers, initialScores, initialNotes, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
-  const [checks, setChecks] = useState<Record<string, number[]>>(emptyChecks);
-  const [saved, setSaved] = useState<ReviewScores>(EMPTY_SCORES);
+export function ManualEssayReview({ answers, initialScores, initialChecks, initialNotes, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
+  const [checks, setChecks] = useState<ReviewChecks>(emptyChecks);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
   const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
 
   useEffect(() => {
-    setChecks(emptyChecks());
-    setSaved({ ...EMPTY_SCORES, ...(initialScores ?? {}) });
+    setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : checksFromSavedScores(initialScores));
     setRecommendations({});
     setReviewerNotes(initialNotes ?? "");
-  }, [initialScores, initialNotes]);
+  }, [initialScores, initialChecks, initialNotes]);
 
   const scores = useMemo(() => {
     const next: ReviewScores = { ...EMPTY_SCORES };
     for (const q of QUESTIONS) {
       const picked = checks[q.key] ?? [];
-      next[q.key] = picked.length
-        ? Math.min(10, picked.reduce((sum, index) => sum + (q.criteria[index]?.point ?? 0), 0))
-        : (saved[q.key] ?? 0);
+      next[q.key] = Math.min(10, picked.reduce((sum, index) => sum + (q.criteria[index]?.point ?? 0), 0));
     }
     return next;
-  }, [checks, saved]);
+  }, [checks]);
 
   const total = useMemo(() => QUESTIONS.reduce((sum, q) => sum + (scores[q.key] ?? 0), 0), [scores]);
 
@@ -171,7 +183,6 @@ export function ManualEssayReview({ answers, initialScores, initialNotes, curren
 
   const handleReset = async () => {
     setChecks(emptyChecks());
-    setSaved({ ...EMPTY_SCORES });
     setRecommendations({});
     setReviewerNotes("");
     await onReset?.();
@@ -184,7 +195,6 @@ export function ManualEssayReview({ answers, initialScores, initialNotes, curren
     setChecks(Object.fromEntries(QUESTIONS.map((question) => [question.key,
       (result.recommendations[question.key] ?? []).filter((item) => item.matched && item.confidence === "high").map((item) => item.index),
     ])));
-    setSaved({ ...EMPTY_SCORES });
   };
 
   return <div className="space-y-5">
@@ -228,9 +238,9 @@ export function ManualEssayReview({ answers, initialScores, initialNotes, curren
         <div className="text-xs text-right text-muted-foreground">Keputusan akhir tetap ditentukan panitia.</div>
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
-        <button disabled={busy} onClick={() => void onSave("interview", scores, reviewerNotes.trim())} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
-        <button disabled={busy} onClick={() => void onSave("rejected", scores, reviewerNotes.trim())} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
-        <button disabled={busy} onClick={() => void onSave("reviewed", scores, reviewerNotes.trim())} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
+        <button disabled={busy} onClick={() => void onSave("interview", scores, reviewerNotes.trim(), checks)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "interview" ? "bg-emerald text-primary-foreground" : "border border-emerald text-emerald"}`}><CheckCircle2 className="size-4"/>Lolos ke TKA</button>
+        <button disabled={busy} onClick={() => void onSave("rejected", scores, reviewerNotes.trim(), checks)} className={`rounded-lg py-2.5 font-bold inline-flex justify-center items-center gap-2 ${currentDecision === "rejected" ? "bg-destructive text-destructive-foreground" : "border border-destructive text-destructive"}`}><XCircle className="size-4"/>Tidak Lolos</button>
+        <button disabled={busy} onClick={() => void onSave("reviewed", scores, reviewerNotes.trim(), checks)} className="rounded-lg border py-2.5 font-semibold">Simpan, Belum Diputuskan</button>
       </div>
       {onReset && <button disabled={busy} onClick={() => void handleReset()}
         className="mt-2 w-full rounded-lg border border-dashed py-2.5 text-sm font-semibold text-muted-foreground inline-flex justify-center items-center gap-2 hover:text-foreground">
