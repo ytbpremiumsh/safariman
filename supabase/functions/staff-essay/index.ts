@@ -35,8 +35,10 @@ function normalizeEvidence(value: string) {
 }
 
 async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId: string) {
-  const apiKey = Deno.env.get("OPENROUTER_API_KEY");
-  if (!apiKey) return { response: json({ error: "OpenRouter belum terhubung. Admin perlu menyimpan API key terlebih dahulu." }, 503) };
+  const { data: secret, error: secretError } = await admin.from("ai_provider_secrets")
+    .select("api_key").eq("provider", "openrouter").maybeSingle();
+  const apiKey = String(secret?.api_key ?? "").trim();
+  if (secretError || !apiKey) return { response: json({ error: "OpenRouter belum terhubung. Admin perlu menyimpan API key terlebih dahulu." }, 503) };
 
   const answerColumns = ["essay_worthy", "essay_dream", "essay_contribution", "case_study_1", "case_study_2", "case_study_3", "case_study_4", "case_study_5", "case_study_6", "case_study_7"];
   const { data: participant, error } = await admin.from("participants").select(`id,${answerColumns.join(",")}`).eq("id", participantId).maybeSingle();
@@ -51,7 +53,7 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://safariman.my.id",
+      "HTTP-Referer": "https://safariman.id",
       "X-Title": "Safar Iman Staff Review",
     },
     body: JSON.stringify({
