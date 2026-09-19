@@ -18,3 +18,6 @@ verify_jwt = true
 verify_jwt = false
 [functions.doc-assets-urls]
 verify_jwt = false
+
+[functions.admin-ai-settings]
+verify_jwt = true
