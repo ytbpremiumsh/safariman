@@ -76,21 +76,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_provider_config_history: {
+        Row: {
+          action: string
+          api_key_changed: boolean
+          changed_by: string | null
+          created_at: string
+          id: number
+          model: string
+        }
+        Insert: {
+          action: string
+          api_key_changed?: boolean
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          model: string
+        }
+        Update: {
+          action?: string
+          api_key_changed?: boolean
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          model?: string
+        }
+        Relationships: []
+      }
       ai_provider_secrets: {
         Row: {
           api_key: string
           provider: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           api_key: string
           provider: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           api_key?: string
           provider?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
