@@ -8,6 +8,18 @@ type Participant = {
 type StaffClients = Awaited<ReturnType<typeof authenticatedUser>>;
 
 const scoreKeys = ["essay_1", "essay_2", "essay_3", "case_1", "case_2", "case_3", "case_4", "case_5", "case_6", "case_7"];
+function parseCriteriaChecks(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  const checks: Record<string, number[]> = {};
+  for (const question of ESSAY_RUBRIC) {
+    const selected = input[question.key];
+    if (!Array.isArray(selected) || selected.some((index) => !Number.isInteger(index) || Number(index) < 0 || Number(index) >= question.criteria.length)) return null;
+    checks[question.key] = [...new Set(selected.map(Number))];
+  }
+  return checks;
+}
+
 function parseScores(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
@@ -122,7 +134,7 @@ Deno.serve(async (req) => {
       const participants = (data ?? []) as Participant[];
       const { data: reviews, error: reviewError } = await admin
         .from("staff_essay_reviews")
-        .select("participant_id,reviewer_name,decision,scores,total_score,reviewer_notes,reviewed_at,updated_at");
+        .select("participant_id,reviewer_name,decision,scores,total_score,reviewer_notes,criteria_checks,reviewed_at,updated_at");
       if (reviewError) throw reviewError;
       const reviewMap = new Map((reviews ?? []).map((review) => [review.participant_id, review]));
       return json({ participants: participants.map((participant) => {
@@ -160,10 +172,17 @@ Deno.serve(async (req) => {
       const status = String(body.status ?? "");
       const parsedScores = parseScores(body.scores);
       const reviewerNotes = typeof body.reviewer_notes === "string" ? body.reviewer_notes.trim() : "";
+      const criteriaChecks = parseCriteriaChecks(body.criteria_checks);
       if (!participantId || !["reviewed", "interview", "rejected"].includes(status)) {
         return json({ error: "Data keputusan tidak valid" }, 400);
       }
       if (!parsedScores) return json({ error: "Semua nilai wajib berupa angka 0 sampai 10" }, 400);
+      if (!criteriaChecks) return json({ error: "Riwayat centang penilaian tidak valid" }, 400);
+      const calculatedScores = Object.fromEntries(ESSAY_RUBRIC.map((question) => [
+        question.key,
+        criteriaChecks[question.key].reduce((sum, index) => sum + (question.criteria[index]?.point ?? 0), 0),
+      ]));
+      if (scoreKeys.some((key) => calculatedScores[key] !== parsedScores.scores[key])) return json({ error: "Nilai tidak sesuai dengan kriteria yang dicentang" }, 400);
       if (reviewerNotes.length > 2000) return json({ error: "Keterangan maksimal 2000 karakter" }, 400);
       const { data: participant, error: participantError } = await admin
         .rpc("list_essay_complete_participants");
@@ -179,6 +198,7 @@ Deno.serve(async (req) => {
         scores: parsedScores.scores,
         total_score: parsedScores.total,
         reviewer_notes: reviewerNotes || null,
+        criteria_checks: criteriaChecks,
         reviewed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
