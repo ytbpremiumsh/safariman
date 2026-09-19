@@ -50,8 +50,8 @@ function StaffDashboard() {
     (reviewerFilter==="all"||(reviewerFilter==="__unreviewed__"?!r.staff_review:r.staff_review?.reviewer_name===reviewerFilter))&&
     (!q.trim()||[r.full_name,r.registration_code,r.email,r.city,r.staff_review?.reviewer_name].some(v=>v?.toLowerCase().includes(q.toLowerCase())))
   ).sort((a,b)=>{
-      if(!a.staff_review&&b.staff_review)return -1;
-      if(a.staff_review&&!b.staff_review)return 1;
+      if(a.staff_review&&!b.staff_review)return -1;
+      if(!a.staff_review&&b.staff_review)return 1;
       if(!a.staff_review&&!b.staff_review)return a.full_name.localeCompare(b.full_name,"id-ID");
       const at=new Date(a.staff_review!.updated_at).getTime();
       const bt=new Date(b.staff_review!.updated_at).getTime();
