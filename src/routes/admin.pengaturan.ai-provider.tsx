@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Save, Sparkles, Bot } from "lucide-react";
+import { CheckCircle2, KeyRound, Loader2, PlugZap, Save, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -8,153 +8,161 @@ import { Label } from "@/components/ui/label";
 import { AdminShell } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/ai-provider")({
-  head: () => ({ meta: [{ title: "AI Provider — Safar Iman Admin" }] }),
+  head: () => ({ meta: [{ title: "OpenRouter AI — Safar Iman Admin" }] }),
   component: AiProviderPage,
 });
 
-const KEYS = [
-  "ai_provider",
-  "ai_lovable_model",
-  "ai_openrouter_model",
-] as const;
-
-const LOVABLE_MODELS = [
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-flash-lite",
-  "google/gemini-2.5-pro",
-  "google/gemini-3-flash-preview",
-  "openai/gpt-5-mini",
-  "openai/gpt-5",
-];
+type Config = {
+  provider: "openrouter";
+  model: string;
+  api_key_configured: boolean;
+  api_key_updated_at: string | null;
+};
 
 function AiProviderPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [provider, setProvider] = useState<"lovable" | "openrouter">("lovable");
-  const [lovableModel, setLovableModel] = useState("google/gemini-2.5-flash");
-  const [openrouterModel, setOpenrouterModel] = useState("openai/gpt-4o-mini");
+  const [busy, setBusy] = useState<"save" | "test" | "remove" | null>(null);
+  const [model, setModel] = useState("openai/gpt-4o-mini");
+  const [apiKey, setApiKey] = useState("");
+  const [configured, setConfigured] = useState(false);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { navigate({ to: "/admin/login" }); return; }
-      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" });
-      if (!isAdmin) { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); return; }
-      const { data } = await supabase.from("app_settings").select("key,value").in("key", KEYS as unknown as string[]);
-      const map = Object.fromEntries((data ?? []).map((r: { key: string; value: string | null }) => [r.key, (r.value ?? "").trim()]));
-      if (map.ai_provider === "openrouter") setProvider("openrouter");
-      if (map.ai_lovable_model) setLovableModel(map.ai_lovable_model);
-      if (map.ai_openrouter_model) setOpenrouterModel(map.ai_openrouter_model);
-      setLoading(false);
-    })();
-  }, [navigate]);
-
-  const save = async () => {
-    setSaving(true);
-    const entries: Record<string, string> = {
-      ai_provider: provider,
-      ai_lovable_model: lovableModel.trim(),
-      ai_openrouter_model: openrouterModel.trim(),
-    };
-    for (const [key, value] of Object.entries(entries)) {
-      const { error } = await supabase.rpc("admin_set_setting", { p_key: key, p_value: value });
-      if (error) { toast.error(`${key}: ${error.message}`); setSaving(false); return; }
+  const invoke = async (body: Record<string, unknown>) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      navigate({ to: "/admin/login" });
+      throw new Error("Sesi admin berakhir. Silakan login ulang.");
     }
-    setSaving(false);
-    toast.success("Pengaturan AI tersimpan");
+    const { data, error } = await supabase.functions.invoke("admin-ai-settings", {
+      body,
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (error) {
+      let message = error.message;
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        const payload = await response.clone().json().catch(() => null) as { error?: string } | null;
+        message = payload?.error || message;
+      }
+      throw new Error(message);
+    }
+    if (data?.error) throw new Error(data.error);
+    return data as Config & { ok?: boolean };
   };
 
-  if (loading) {
-    return <div className="min-h-screen grid place-items-center"><Loader2 className="size-8 animate-spin text-accent" /></div>;
-  }
+  const applyConfig = (config: Config) => {
+    setModel(config.model || "openai/gpt-4o-mini");
+    setConfigured(config.api_key_configured);
+    setUpdatedAt(config.api_key_updated_at);
+  };
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        applyConfig(await invoke({ action: "get" }));
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Gagal memuat pengaturan OpenRouter");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const save = async () => {
+    if (!model.trim()) return toast.error("Model OpenRouter wajib diisi");
+    setBusy("save");
+    try {
+      const result = await invoke({ action: "save", model: model.trim(), api_key: apiKey.trim() });
+      applyConfig(result);
+      setApiKey("");
+      toast.success("Pengaturan OpenRouter berhasil disimpan");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal menyimpan pengaturan");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const test = async () => {
+    setBusy("test");
+    try {
+      const result = await invoke({ action: "test" });
+      toast.success(`OpenRouter terhubung. Model aktif: ${result.model}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Tes koneksi gagal");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const removeKey = async () => {
+    if (!confirm("Hapus API key OpenRouter dari server? Analisis AI akan berhenti sampai key baru disimpan.")) return;
+    setBusy("remove");
+    try {
+      const result = await invoke({ action: "remove_key" });
+      applyConfig(result);
+      setApiKey("");
+      toast.success("API key OpenRouter telah dihapus");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal menghapus API key");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  if (loading) return <div className="min-h-screen grid place-items-center"><Loader2 className="size-8 animate-spin text-accent" /></div>;
 
   return (
-    <AdminShell title="AI Provider (WA Auto-Reply & Pengoreksi Essay)">
-      <div className="space-y-6 max-w-3xl">
-        <section className="bg-card border border-border rounded-2xl p-6 sm:p-8 space-y-5">
-          <div>
-            <h2 className="font-display text-xl font-semibold flex items-center gap-2">
-              <Sparkles className="size-5 text-accent" /> Pilih Provider AI
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Provider yang dipilih akan dipakai untuk <strong>AI Auto-Reply WhatsApp</strong> dan <strong>Pengoreksi Essay & Studi Kasus</strong>.
-            </p>
+    <AdminShell title="OpenRouter untuk Pengoreksi Essay">
+      <div className="max-w-3xl space-y-6">
+        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 space-y-5">
+          <div className="flex items-start gap-3">
+            <div className="size-11 rounded-xl bg-accent/10 grid place-items-center"><PlugZap className="size-5 text-accent" /></div>
+            <div>
+              <h2 className="font-display text-xl font-semibold">Konfigurasi OpenRouter</h2>
+              <p className="text-sm text-muted-foreground mt-1">Dipakai untuk memberi rekomendasi centang, skor, dan bukti pada halaman koreksi staff. Keputusan akhir tetap ditentukan staff.</p>
+            </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            <button
-              onClick={() => setProvider("lovable")}
-              className={`text-left rounded-2xl border-2 p-4 transition ${provider === "lovable" ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"}`}
-            >
-              <div className="flex items-center gap-2 font-semibold">
-                <Bot className="size-4 text-accent" /> Lovable AI Gateway
+          <div className={`rounded-xl border p-4 flex gap-3 ${configured ? "border-emerald/30 bg-emerald/5" : "border-amber-300 bg-amber-50"}`}>
+            {configured ? <CheckCircle2 className="size-5 text-emerald shrink-0" /> : <KeyRound className="size-5 text-amber-700 shrink-0" />}
+            <div className="text-sm">
+              <div className="font-semibold">{configured ? "API key sudah tersimpan aman di backend" : "API key belum disimpan"}</div>
+              <div className="text-muted-foreground">
+                {configured && updatedAt ? `Terakhir diperbarui ${new Date(updatedAt).toLocaleString("id-ID")}. Key tidak pernah ditampilkan kembali.` : "Masukkan API key OpenRouter untuk mengaktifkan analisis."}
               </div>
-              <p className="text-xs text-muted-foreground mt-1.5">Bawaan Lovable. Tidak perlu API key. Berbasis kredit workspace.</p>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="openrouter-key">API Key OpenRouter</Label>
+            <Input id="openrouter-key" type="password" autoComplete="new-password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} placeholder={configured ? "Kosongkan jika tidak ingin mengganti API key" : "sk-or-v1-..."} />
+            <p className="text-xs text-muted-foreground">API key hanya dikirim ke fungsi backend dan disimpan pada tabel yang tidak dapat dibaca browser maupun akun staff.</p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="openrouter-model">ID Model OpenRouter</Label>
+            <Input id="openrouter-model" className="font-mono" value={model} onChange={(event) => setModel(event.target.value)} placeholder="openai/gpt-4o-mini" />
+            <p className="text-xs text-muted-foreground">Salin ID model persis dari <a href="https://openrouter.ai/models" target="_blank" rel="noreferrer" className="text-accent underline">daftar model OpenRouter</a>. Pilih model yang mendukung structured JSON.</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => void save()} disabled={busy !== null} className="inline-flex items-center gap-2 rounded-lg bg-accent text-white px-5 py-2.5 font-semibold disabled:opacity-60">
+              {busy === "save" ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan
             </button>
-            <button
-              onClick={() => setProvider("openrouter")}
-              className={`text-left rounded-2xl border-2 p-4 transition ${provider === "openrouter" ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"}`}
-            >
-              <div className="flex items-center gap-2 font-semibold">
-                <Bot className="size-4 text-accent" /> OpenRouter
-              </div>
-              <p className="text-xs text-muted-foreground mt-1.5">Pakai API key & model OpenRouter sendiri (GPT-4o, Claude, Llama, dll).</p>
+            <button onClick={() => void test()} disabled={!configured || busy !== null} className="inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 font-semibold disabled:opacity-50">
+              {busy === "test" ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />} Tes Koneksi
             </button>
+            {configured && <button onClick={() => void removeKey()} disabled={busy !== null} className="inline-flex items-center gap-2 rounded-lg border border-red-300 text-red-600 px-4 py-2.5 font-semibold disabled:opacity-50">
+              {busy === "remove" ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Hapus Key
+            </button>}
           </div>
         </section>
 
-        {/* Lovable settings */}
-        <section className={`bg-card border rounded-2xl p-6 sm:p-8 space-y-4 ${provider === "lovable" ? "border-accent/40" : "border-border opacity-70"}`}>
-          <div>
-            <h3 className="font-display text-lg font-semibold">Lovable AI Gateway</h3>
-            <p className="text-sm text-muted-foreground">Pilih model Lovable yang akan dipakai.</p>
-          </div>
-          <div>
-            <Label className="text-sm">Model</Label>
-            <select
-              value={lovableModel}
-              onChange={(e) => setLovableModel(e.target.value)}
-              className="w-full mt-1 rounded-md border border-input bg-background p-2.5 text-sm font-mono"
-            >
-              {LOVABLE_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
-          </div>
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <b>Kontrol biaya:</b> OpenRouter hanya dipanggil ketika staff menekan tombol “Analisis dengan AI”. Hasil AI tidak otomatis meluluskan peserta dan tidak menggunakan kredit Lovable.
         </section>
-
-        {/* OpenRouter settings */}
-        <section className={`bg-card border rounded-2xl p-6 sm:p-8 space-y-4 ${provider === "openrouter" ? "border-accent/40" : "border-border opacity-70"}`}>
-          <div>
-            <h3 className="font-display text-lg font-semibold">OpenRouter</h3>
-            <p className="text-sm text-muted-foreground">
-              Dapatkan API key di <a className="text-accent underline" href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">openrouter.ai/keys</a> dan pilih model dari{" "}
-              <a className="text-accent underline" href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.
-            </p>
-          </div>
-          <div className="rounded-lg border bg-secondary/30 p-3 text-sm text-muted-foreground">API key OpenRouter disimpan sebagai rahasia server dan tidak ditampilkan di halaman ini.</div>
-          <div>
-            <Label className="text-sm">Model</Label>
-            <Input
-              value={openrouterModel}
-              onChange={(e) => setOpenrouterModel(e.target.value)}
-              placeholder="openai/gpt-4o-mini"
-              className="font-mono"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Contoh: <code>openai/gpt-4o-mini</code>, <code>anthropic/claude-3.5-sonnet</code>, <code>google/gemini-2.5-flash</code>, <code>meta-llama/llama-3.3-70b-instruct</code>.
-            </p>
-          </div>
-        </section>
-
-        <div>
-          <button
-            onClick={save}
-            disabled={saving}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-gold text-emerald-deep px-6 py-3 text-sm font-bold shadow-gold disabled:opacity-60"
-          >
-            {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Simpan Pengaturan AI
-          </button>
-        </div>
       </div>
     </AdminShell>
   );
