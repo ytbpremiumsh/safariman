@@ -12,6 +12,8 @@ import { IslamicPattern } from "@/components/IslamicPattern";
 import { WhatsAppChannelCTA } from "@/components/WhatsAppChannelCTA";
 import logoSafarIman from "@/assets/logo-safar-iman.png";
 import { seoHead } from "@/lib/seo";
+import { SubmissionClosedCard } from "@/components/SubmissionClosedCard";
+import { useSubmissionAvailability } from "@/lib/submission-availability";
 
 export const Route = createFileRoute("/daftar")({
   head: () =>
@@ -62,6 +64,7 @@ const KIND_META_MAP: Record<Kind, { title: string; tagline: string; note: string
 };
 
 export function RegisterPage({ kind }: { kind: Kind }) {
+  const submissionGate = useSubmissionAvailability("registration");
   const KIND_META_BASE = KIND_META_MAP[kind];
   const [selfPaidEnabled, setSelfPaidEnabled] = useState<boolean>(true);
   const [selfEnabled, setSelfEnabled] = useState<boolean>(true);
@@ -199,7 +202,16 @@ export function RegisterPage({ kind }: { kind: Kind }) {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
-          {kind === "self_funded" && !selfLoaded ? (
+          {submissionGate.loading ? (
+            <div className="grid place-items-center py-20">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : !submissionGate.open ? (
+            <SubmissionClosedCard
+              title="Pendaftaran Telah Ditutup"
+              description="Form pendaftaran seluruh jalur Program Safar Iman sudah ditutup dan tidak dapat menerima pendaftaran baru."
+            />
+          ) : kind === "self_funded" && !selfLoaded ? (
             <div className="grid place-items-center py-20">
               <Loader2 className="size-8 animate-spin text-primary" />
             </div>
