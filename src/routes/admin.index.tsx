@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight, Wallet, Layers } from "lucide-react";
+import { Users, UserCheck, FileCheck, HeartHandshake, ArrowUpRight, Wallet, Layers, FileText, Loader2 } from "lucide-react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { fetchSubmissionAvailability, type SubmissionAvailability } from "@/lib/submission-availability";
 
 import { FeatureToggles } from "@/components/admin/FeatureToggles";
 
@@ -49,10 +52,17 @@ function AdminOverview() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState<7 | 14 | 30>(14);
   const [live, setLive] = useState(false);
+  const [closureSaving, setClosureSaving] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<SubmissionAvailability>({
+    registration_open: false,
+    berkas_open: false,
+    essay_open: false,
+  });
 
   useEffect(() => {
     if (!ready) return;
     (async () => {
+      fetchSubmissionAvailability().then(setAvailability);
       // Ambil data ringan lewat RPC (tanpa isi essay/berkas) agar payload kecil.
       // PostgREST membatasi 1000 baris per permintaan, jadi ambil bertahap
       // sampai semua peserta terkumpul (bisa ribuan).
@@ -97,6 +107,28 @@ function AdminOverview() {
 
     return () => { supabase.removeChannel(channel); };
   }, [ready]);
+
+  const toggleSubmission = async (
+    field: keyof SubmissionAvailability,
+    setting: string,
+    label: string,
+    next: boolean,
+  ) => {
+    const previous = availability[field];
+    setAvailability((current) => ({ ...current, [field]: next }));
+    setClosureSaving(field);
+    const { error } = await supabase.rpc("admin_set_setting", {
+      p_key: setting,
+      p_value: next ? "true" : "false",
+    });
+    setClosureSaving(null);
+    if (error) {
+      setAvailability((current) => ({ ...current, [field]: previous }));
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`${label} ${next ? "dibuka" : "ditutup"}`);
+  };
 
   const submitted = (r: Row) => r.submitted;
 
@@ -174,7 +206,44 @@ function AdminOverview() {
 
   return (
     <AdminShell title="Ringkasan">
-      
+      <section className="bg-card border border-amber-300 rounded-2xl p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Kontrol Penutupan Tahapan</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Perubahan langsung berlaku pada halaman peserta dan pengaman database.</p>
+          </div>
+          <Link to="/admin/pengaturan/penutupan" className="text-xs font-semibold text-accent hover:underline shrink-0">Detail</Link>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-2.5">
+          {[
+            { field: "registration_open" as const, setting: "registration_open", label: "Form Pendaftaran", icon: Users },
+            { field: "berkas_open" as const, setting: "berkas_submission_open", label: "Pengiriman Berkas", icon: FileCheck },
+            { field: "essay_open" as const, setting: "essay_submission_open", label: "Essay & Studi Kasus", icon: FileText },
+          ].map((control) => {
+            const Icon = control.icon;
+            const isOpen = availability[control.field];
+            return (
+              <div key={control.field} className={`rounded-xl border px-3.5 py-3 flex items-center justify-between gap-3 ${isOpen ? "border-emerald/30 bg-emerald/5" : "border-amber-300 bg-amber-50"}`}>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Icon className={`size-4 shrink-0 ${isOpen ? "text-emerald" : "text-amber-700"}`} />
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold truncate">{control.label}</div>
+                    <div className={`text-[10px] font-bold ${isOpen ? "text-emerald" : "text-amber-700"}`}>{isOpen ? "DIBUKA" : "DITUTUP"}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {closureSaving === control.field && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+                  <Switch
+                    checked={isOpen}
+                    disabled={closureSaving !== null}
+                    onCheckedChange={(next) => toggleSubmission(control.field, control.setting, control.label, next)}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <MiniStat label="Total Peserta" value={stats.total} />
