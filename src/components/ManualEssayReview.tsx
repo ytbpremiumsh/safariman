@@ -127,6 +127,143 @@ const QUESTIONS: { key: string; title: string; criteria: Criterion[] }[] = [
 const EMPTY_SCORES = Object.fromEntries(QUESTIONS.map((q) => [q.key, 0])) as ReviewScores;
 const emptyChecks = () => Object.fromEntries(QUESTIONS.map((q) => [q.key, [] as number[]])) as ReviewChecks;
 
+type EvidenceHighlight = {
+  start: number;
+  end: number;
+  criterionIndex: number;
+  criterionLabel: string;
+  confidence: AiCriterionRecommendation["confidence"];
+};
+
+function normalizeEvidenceText(value: string) {
+  return value
+    .trim()
+    .replace(/^[\s"'“”‘’`]+|[\s"'“”‘’`]+$/g, "")
+    .replace(/^\.{3}|\.{3}$/g, "")
+    .trim();
+}
+
+function normalizedTextWithSourceMap(value: string) {
+  let normalized = "";
+  const sourceIndices: number[] = [];
+  let previousWasSpace = false;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    if (/\s/.test(character)) {
+      if (!previousWasSpace) {
+        normalized += " ";
+        sourceIndices.push(index);
+        previousWasSpace = true;
+      }
+      continue;
+    }
+
+    const comparableCharacter = character
+      .toLocaleLowerCase("id-ID")
+      .replace(/[“”]/g, '"')
+      .replace(/[‘’]/g, "'")
+      .replace(/[–—]/g, "-");
+    normalized += comparableCharacter;
+    sourceIndices.push(index);
+    previousWasSpace = false;
+  }
+
+  return { normalized, sourceIndices };
+}
+
+function compactTextWithSourceMap(value: string) {
+  let normalized = "";
+  const sourceIndices: number[] = [];
+
+  for (let index = 0; index < value.length; index += 1) {
+    const comparableCharacter = value[index]
+      .toLocaleLowerCase("id-ID")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    if (!/[a-z0-9]/.test(comparableCharacter)) continue;
+    normalized += comparableCharacter;
+    sourceIndices.push(index);
+  }
+
+  return { normalized, sourceIndices };
+}
+
+function findEvidenceHighlights(answer: string, recommendations: AiCriterionRecommendation[], criteria: Criterion[]) {
+  const answerMap = normalizedTextWithSourceMap(answer);
+  const highlights: EvidenceHighlight[] = [];
+
+  for (const recommendation of recommendations) {
+    if (!recommendation.matched) continue;
+    const evidence = normalizeEvidenceText(recommendation.evidence ?? "");
+    // Jangan menyorot satu keyword pendek. AI harus memberikan potongan narasi yang cukup untuk dinilai konteksnya.
+    if (evidence.length < 12 || evidence.split(/\s+/).length < 3) continue;
+
+    const normalizedEvidence = normalizedTextWithSourceMap(evidence).normalized;
+    let normalizedStart = answerMap.normalized.indexOf(normalizedEvidence);
+    let sourceMap = answerMap.sourceIndices;
+    let evidenceLength = normalizedEvidence.length;
+
+    // Cadangan untuk perbedaan kecil seperti "di sana" vs "disana" atau tanda baca dari respons AI.
+    if (normalizedStart < 0) {
+      const compactAnswerMap = compactTextWithSourceMap(answer);
+      const compactEvidence = compactTextWithSourceMap(evidence).normalized;
+      normalizedStart = compactAnswerMap.normalized.indexOf(compactEvidence);
+      sourceMap = compactAnswerMap.sourceIndices;
+      evidenceLength = compactEvidence.length;
+    }
+    if (normalizedStart < 0) continue;
+
+    const start = sourceMap[normalizedStart];
+    const lastNormalizedIndex = normalizedStart + evidenceLength - 1;
+    const end = (sourceMap[lastNormalizedIndex] ?? start) + 1;
+    if (start == null || end <= start) continue;
+
+    highlights.push({
+      start,
+      end,
+      criterionIndex: recommendation.index,
+      criterionLabel: criteria[recommendation.index]?.label ?? `Kriteria ${recommendation.index + 1}`,
+      confidence: recommendation.confidence,
+    });
+  }
+
+  return highlights;
+}
+
+function HighlightedAnswer({ answer, questionKey, recommendations, criteria, focusedEvidence }: {
+  answer: string;
+  questionKey: string;
+  recommendations: AiCriterionRecommendation[];
+  criteria: Criterion[];
+  focusedEvidence: string | null;
+}) {
+  const highlights = findEvidenceHighlights(answer, recommendations, criteria);
+  if (highlights.length === 0) return <>{answer || "—"}</>;
+
+  const boundaries = Array.from(new Set([0, answer.length, ...highlights.flatMap((item) => [item.start, item.end])])).sort((a, b) => a - b);
+  return <>{boundaries.slice(0, -1).map((start, segmentIndex) => {
+    const end = boundaries[segmentIndex + 1];
+    const active = highlights.filter((item) => item.start <= start && item.end >= end);
+    const segment = answer.slice(start, end);
+    if (active.length === 0) return <span key={`${start}-${end}`}>{segment}</span>;
+
+    const strongest = active.some((item) => item.confidence === "high") ? "high" : active.some((item) => item.confidence === "medium") ? "medium" : "low";
+    const evidenceIds = active.map((item) => `${questionKey}-${item.criterionIndex}`);
+    const isFocused = evidenceIds.includes(focusedEvidence ?? "");
+    const title = active.map((item) => `${item.criterionLabel} · keyakinan ${item.confidence === "high" ? "tinggi" : item.confidence === "medium" ? "sedang" : "rendah"}`).join("\n");
+    const backgroundColor = strongest === "high" ? "#bbf7d0" : strongest === "medium" ? "#fde68a" : "#fef9c3";
+
+    return <mark
+      key={`${start}-${end}`}
+      data-evidence-ids={evidenceIds.join(" ")}
+      title={title}
+      style={{ backgroundColor, color: "#052e16", boxShadow: isFocused ? "0 0 0 3px #f59e0b" : undefined }}
+      className="rounded-sm px-0.5 font-medium transition-all [box-decoration-break:clone]"
+    >{segment}</mark>;
+  })}</>;
+}
+
 function checksFromSavedScores(savedScores?: ReviewScores | null): ReviewChecks {
   const restored = emptyChecks();
   if (!savedScores) return restored;
@@ -143,6 +280,7 @@ function checksFromSavedScores(savedScores?: ReviewScores | null): ReviewChecks 
 
 type Props = {
   answers: Record<string, string | null>;
+  initialAiRecommendation?: AiReviewRecommendation | null;
   initialScores?: ReviewScores | null;
   initialChecks?: ReviewChecks | null;
   initialNotes?: string | null;
@@ -155,20 +293,26 @@ type Props = {
   analyzing?: boolean;
 };
 
-export function ManualEssayReview({ answers, initialScores, initialChecks, initialNotes, initialMethod, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
+export function ManualEssayReview({ answers, initialAiRecommendation, initialScores, initialChecks, initialNotes, initialMethod, currentDecision, busy, onSave, onReset, onAnalyze, analyzing }: Props) {
   const [checks, setChecks] = useState<ReviewChecks>(emptyChecks);
   const [recommendations, setRecommendations] = useState<Record<string, AiCriterionRecommendation[]>>({});
   const [authorship, setAuthorship] = useState<Record<string, AiAuthorshipAssessment>>({});
   const [reviewerNotes, setReviewerNotes] = useState(initialNotes ?? "");
   const [reviewMethod, setReviewMethod] = useState<"manual" | "ai">(initialMethod ?? "manual");
+  const [focusedEvidence, setFocusedEvidence] = useState<string | null>(null);
 
   useEffect(() => {
-    setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : checksFromSavedScores(initialScores));
-    setRecommendations({});
-    setAuthorship({});
+    const savedRecommendations=initialAiRecommendation?.recommendations??{};
+    const recommendedChecks=Object.fromEntries(QUESTIONS.map((question)=>[question.key,
+      (savedRecommendations[question.key]??[]).filter((item)=>item.matched&&item.confidence==="high").map((item)=>item.index),
+    ])) as ReviewChecks;
+    setChecks(initialChecks ? { ...emptyChecks(), ...initialChecks } : initialAiRecommendation ? recommendedChecks : checksFromSavedScores(initialScores));
+    setRecommendations(savedRecommendations);
+    setAuthorship(initialAiRecommendation?.authorship??{});
     setReviewerNotes(initialNotes ?? "");
-    setReviewMethod(initialMethod ?? "manual");
-  }, [initialScores, initialChecks, initialNotes, initialMethod]);
+    setReviewMethod(initialMethod ?? (initialAiRecommendation?"ai":"manual"));
+    setFocusedEvidence(null);
+  }, [initialAiRecommendation, initialScores, initialChecks, initialNotes, initialMethod]);
 
   const scores = useMemo(() => {
     const next: ReviewScores = { ...EMPTY_SCORES };
@@ -193,6 +337,7 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
     setAuthorship({});
     setReviewerNotes("");
     setReviewMethod("manual");
+    setFocusedEvidence(null);
     await onReset?.();
   };
 
@@ -205,6 +350,15 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
     setChecks(Object.fromEntries(QUESTIONS.map((question) => [question.key,
       (result.recommendations[question.key] ?? []).filter((item) => item.matched && item.confidence === "high").map((item) => item.index),
     ])));
+  };
+
+  const focusEvidence = (questionKey: string, criterionIndex: number) => {
+    const evidenceId = `${questionKey}-${criterionIndex}`;
+    const target = document.querySelector<HTMLElement>(`mark[data-evidence-ids~="${evidenceId}"]`);
+    if (!target) return;
+    setFocusedEvidence(evidenceId);
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => setFocusedEvidence((current) => current === evidenceId ? null : current), 2200);
   };
 
   return <div className="space-y-5">
@@ -221,7 +375,15 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
         <h3 className="text-xs font-bold text-accent">{q.title}</h3>
         <span className="text-xs font-bold">{scores[q.key] ?? 0}<span className="text-muted-foreground">/10</span></span>
       </div>
-      <div className="rounded-lg border bg-secondary/20 p-4 whitespace-pre-wrap text-sm leading-relaxed">{answers[q.key] || "—"}</div>
+      <div className="rounded-lg border bg-secondary/20 p-4 whitespace-pre-wrap text-sm leading-relaxed">
+        <HighlightedAnswer
+          answer={answers[q.key] || ""}
+          questionKey={q.key}
+          recommendations={recommendations[q.key] ?? []}
+          criteria={q.criteria}
+          focusedEvidence={focusedEvidence}
+        />
+      </div>
       {authorship[q.key] && <div className={`rounded-md border px-2.5 py-1.5 text-[11px] ${authorship[q.key].verdict === "likely_ai" ? "border-violet-200 bg-violet-50 text-violet-700" : authorship[q.key].verdict === "likely_human" ? "border-emerald/20 bg-emerald/10 text-emerald" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
         <span className="font-bold">{authorship[q.key].verdict === "likely_ai" ? "Indikasi kemungkinan dibantu AI" : authorship[q.key].verdict === "likely_human" ? "Indikasi kemungkinan ditulis sendiri" : "Asal penulisan belum dapat dipastikan"}</span>
         <span className="ml-1 opacity-80">· Keyakinan {authorship[q.key].confidence === "high" ? "tinggi" : authorship[q.key].confidence === "medium" ? "sedang" : "rendah"}</span>
@@ -231,14 +393,25 @@ export function ManualEssayReview({ answers, initialScores, initialChecks, initi
         {q.criteria.map((criterion, index) => {
           const checked = (checks[q.key] ?? []).includes(index);
           const suggestion = (recommendations[q.key] ?? []).find((item) => item.index === index && item.matched);
-          return <label key={criterion.label} className={`flex flex-wrap items-center gap-2 rounded-md px-2 py-1.5 text-xs cursor-pointer ${checked ? "bg-emerald/10 font-semibold" : "hover:bg-secondary/40"}`}>
-            <input type="checkbox" className="size-4 accent-current" checked={checked} onChange={() => toggle(q.key, index)} />
-            <span className="flex-1">{criterion.label}</span>
-            <span className="font-bold text-muted-foreground">+{criterion.point}</span>
-            {suggestion && <span className={`basis-full ml-6 rounded-md px-2 py-1 text-[11px] ${suggestion.confidence === "high" ? "bg-emerald/10 text-emerald" : "bg-amber-100 text-amber-800"}`}>
-              {suggestion.confidence === "high" ? "Bukti kuat" : "Perlu diperiksa"}: “{suggestion.evidence}”
-            </span>}
-          </label>;
+          const hasHighlight = suggestion
+            ? findEvidenceHighlights(answers[q.key] || "", [suggestion], q.criteria).length > 0
+            : false;
+          return <div key={criterion.label} className={`rounded-md px-2 py-1.5 text-xs ${checked ? "bg-emerald/10 font-semibold" : "hover:bg-secondary/40"}`}>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="size-4 accent-current" checked={checked} onChange={() => toggle(q.key, index)} />
+              <span className="flex-1">{criterion.label}</span>
+              <span className="font-bold text-muted-foreground">+{criterion.point}</span>
+            </label>
+            {suggestion && <button
+              type="button"
+              disabled={!hasHighlight}
+              onClick={() => focusEvidence(q.key, index)}
+              title={hasHighlight ? "Klik untuk melihat bagian jawaban yang disorot" : "Kutipan AI tidak ditemukan persis pada jawaban"}
+              className={`mt-1 ml-6 block w-[calc(100%-1.5rem)] rounded-md px-2 py-1 text-left text-[11px] ${suggestion.confidence === "high" ? "bg-emerald/10 text-emerald" : "bg-amber-100 text-amber-800"} ${hasHighlight ? "cursor-pointer hover:ring-1 hover:ring-current" : "cursor-default opacity-80"}`}
+            >
+              {suggestion.confidence === "high" ? "Bukti kuat" : "Perlu diperiksa"}: “{suggestion.evidence}”{hasHighlight && <span className="ml-1 font-semibold">· Lihat highlight</span>}
+            </button>}
+          </div>;
         })}
       </div>
     </section>)}
