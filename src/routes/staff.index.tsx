@@ -66,6 +66,7 @@ function StaffDashboard() {
   const pageScrollRef=useRef(0);
   const [rows,setRows]=useState<Row[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false); const [analyzing,setAnalyzing]=useState(false);
   const [q,setQ]=useState(""); const [filter,setFilter]=useState<Status|"all">("all"); const [reviewerFilter,setReviewerFilter]=useState("all"); const [detail,setDetail]=useState<Row|null>(null);
+  const [minimumScore,setMinimumScore]=useState(""); const [maximumScore,setMaximumScore]=useState("");
   const [noteDetail,setNoteDetail]=useState<{participantName:string;registrationCode:string;reviewerName:string;notes:string;updatedAt:string}|null>(null);
   const [selectedIds,setSelectedIds]=useState<Set<string>>(new Set());
   const [batchAnalyzing,setBatchAnalyzing]=useState(false);
@@ -85,9 +86,13 @@ function StaffDashboard() {
   }),[rows]);
   const reviewers=useMemo(()=>Array.from(new Set(rows.map(r=>r.staff_review?.reviewer_name).filter((name):name is string=>Boolean(name)))).sort((a,b)=>a.localeCompare(b,"id-ID")),[rows]);
   const detailAiRecommendation=useMemo(()=>parseAiRecommendation(detail?.essay_ai_summary),[detail?.essay_ai_summary]);
+  const minimumScoreValue=minimumScore===""?null:Math.max(0,Math.min(100,Number(minimumScore)));
+  const maximumScoreValue=maximumScore===""?null:Math.max(0,Math.min(100,Number(maximumScore)));
   const filtered=useMemo(()=>rows.filter(r=>
     (filter==="all"||r.status===filter)&&
     (reviewerFilter==="all"||(reviewerFilter==="__unreviewed__"?!r.staff_review:r.staff_review?.reviewer_name===reviewerFilter))&&
+    (minimumScoreValue===null||(r.essay_ai_score!==null&&r.essay_ai_score>=minimumScoreValue))&&
+    (maximumScoreValue===null||(r.essay_ai_score!==null&&r.essay_ai_score<=maximumScoreValue))&&
     (!q.trim()||[r.full_name,r.registration_code,r.email,r.city,r.staff_review?.reviewer_name].some(v=>v?.toLowerCase().includes(q.toLowerCase())))
   ).sort((a,b)=>{
       if(a.staff_review&&!b.staff_review)return -1;
@@ -96,7 +101,7 @@ function StaffDashboard() {
       const at=new Date(a.staff_review!.updated_at).getTime();
       const bt=new Date(b.staff_review!.updated_at).getTime();
       return bt-at;
-    }),[rows,q,filter,reviewerFilter]);
+    }),[rows,q,filter,reviewerFilter,minimumScoreValue,maximumScoreValue]);
   const restorePageScroll=()=>{const top=pageScrollRef.current;requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top,behavior:"auto"})));};
   const openDetail=(row:Row)=>{pageScrollRef.current=window.scrollY;setDetail(row);};
   const closeDetail=()=>{setDetail(null);restorePageScroll();};
@@ -173,15 +178,20 @@ function StaffDashboard() {
         <button onClick={()=>setFilter("rejected")} className={`rounded-xl border px-3 py-2.5 sm:px-4 sm:py-3 text-left transition ${filter==="rejected"?"border-destructive bg-destructive/10 ring-2 ring-destructive/20":"bg-card hover:border-destructive/50"}`}><div className="text-[10px] sm:text-xs font-semibold leading-tight text-muted-foreground">Tidak Lolos</div><div className="mt-1 text-2xl sm:text-3xl font-bold text-destructive">{counts.rejected}</div></button>
         <button onClick={()=>setFilter("reviewed")} className={`rounded-xl border px-3 py-2.5 sm:px-4 sm:py-3 text-left transition ${filter==="reviewed"?"border-amber-400 bg-amber-50 ring-2 ring-amber-200":"bg-card hover:border-amber-400"}`}><div className="text-[10px] sm:text-xs font-semibold leading-tight text-muted-foreground">Belum Diputuskan</div><div className="mt-1 text-2xl sm:text-3xl font-bold text-amber-700">{counts.reviewed}</div></button>
       </div>
-      <div className="bg-card border rounded-xl p-3 grid md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_220px_240px] gap-2.5">
+      <div className="bg-card border rounded-xl p-3 grid md:grid-cols-2 lg:grid-cols-[minmax(260px,1fr)_190px_220px_220px] gap-2.5">
         <div className="relative md:col-span-2 lg:col-span-1"><Search className="absolute size-4 left-3 top-3 text-muted-foreground"/><Input className="pl-9" placeholder="Cari nama, token, email, kota, atau pengoreksi" value={q} onChange={e=>setQ(e.target.value)}/></div>
         <select className="h-10 rounded-md border bg-background px-3 text-sm" value={filter} onChange={e=>setFilter(e.target.value as Status|"all")}><option value="all">Semua Hasil</option><option value="reviewed">Belum Diputuskan</option><option value="interview">Lolos Tahap Selanjutnya</option><option value="rejected">Tidak Lolos</option></select>
         <select className="h-10 rounded-md border bg-background px-3 text-sm" value={reviewerFilter} onChange={e=>setReviewerFilter(e.target.value)}><option value="all">Semua Staff Pengoreksi</option><option value="__unreviewed__">Belum Ada Pengoreksi</option>{reviewers.map(name=><option key={name} value={name}>{name}</option>)}</select>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5" aria-label="Filter rentang nilai AI">
+          <Input type="number" inputMode="numeric" min={0} max={100} placeholder="Min" value={minimumScore} onChange={e=>setMinimumScore(e.target.value)} className="h-10 px-2 text-sm"/>
+          <span className="text-xs text-muted-foreground">–</span>
+          <Input type="number" inputMode="numeric" min={0} max={100} placeholder="Maks" value={maximumScore} onChange={e=>setMaximumScore(e.target.value)} className="h-10 px-2 text-sm"/>
+        </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta · <b className="text-foreground">{selectedIds.size}</b>/10 dipilih</span>
         <div className="flex items-center gap-2">
-          {(filter!=="all"||reviewerFilter!=="all"||q)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}
+          {(filter!=="all"||reviewerFilter!=="all"||q||minimumScore||maximumScore)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");setMinimumScore("");setMaximumScore("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}
           <button type="button" disabled={selectedIds.size===0||batchAnalyzing} onClick={()=>void analyzeSelected()} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-2 font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50">
             {batchAnalyzing?<Loader2 className="size-4 animate-spin"/>:<Sparkles className="size-4"/>}
             {batchAnalyzing?`Menganalisis ${batchProgress.done}/${batchProgress.total}`:`Analisis AI (${selectedIds.size})`}
