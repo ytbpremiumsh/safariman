@@ -46,6 +46,7 @@ const parseAiRecommendation=(value:string|null|undefined):AiReviewRecommendation
     return parsed&&typeof parsed.total_score==="number"&&parsed.recommendations&&typeof parsed.recommendations==="object"?parsed:null;
   }catch{return null;}
 };
+const getParticipantScore=(participant:Row)=>participant.essay_ai_score??participant.staff_review?.total_score??null;
 const formatSubmissionDate = (value:string) => {
   const date=new Date(value);
   return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{dateStyle:"full",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(date)+" WIB";
@@ -93,8 +94,8 @@ function StaffDashboard() {
   const filtered=useMemo(()=>rows.filter(r=>
     (filter==="all"||r.status===filter)&&
     (reviewerFilter==="all"||(reviewerFilter==="__unreviewed__"?!r.staff_review:r.staff_review?.reviewer_name===reviewerFilter))&&
-    (minimumScoreValue===null||(r.essay_ai_score!==null&&r.essay_ai_score>=minimumScoreValue))&&
-    (maximumScoreValue===null||(r.essay_ai_score!==null&&r.essay_ai_score<=maximumScoreValue))&&
+    (minimumScoreValue===null||(getParticipantScore(r)!==null&&getParticipantScore(r)!>=minimumScoreValue))&&
+    (maximumScoreValue===null||(getParticipantScore(r)!==null&&getParticipantScore(r)!<=maximumScoreValue))&&
     (!q.trim()||[r.full_name,r.registration_code,r.email,r.city,r.staff_review?.reviewer_name].some(v=>v?.toLowerCase().includes(q.toLowerCase())))
   ).sort((a,b)=>{
       if(a.staff_review&&!b.staff_review)return -1;
