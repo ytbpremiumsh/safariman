@@ -15,7 +15,15 @@ export const Route = createFileRoute("/staff/")({
 
 type Status = "reviewed" | "interview" | "rejected";
 type StaffReview={reviewer_name:string;decision:Status;scores:ReviewScores;total_score:number;reviewer_notes:string|null;criteria_checks:ReviewChecks|null;review_method:"manual"|"ai";reviewed_at:string;updated_at:string};
-type Row = { id:string; updated_at:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; essay_ai_score:number|null; essay_ai_graded_at:string|null; staff_review:StaffReview|null };
+type Row = { id:string; updated_at:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; essay_ai_score:number|null; essay_ai_summary:string|null; essay_ai_graded_at:string|null; staff_review:StaffReview|null };
+const encodeAiRecommendation=(value:AiReviewRecommendation)=>`STAFF_AI_JSON:${JSON.stringify(value)}`;
+const parseAiRecommendation=(value:string|null|undefined):AiReviewRecommendation|null=>{
+  if(!value?.startsWith("STAFF_AI_JSON:"))return null;
+  try{
+    const parsed=JSON.parse(value.slice("STAFF_AI_JSON:".length)) as AiReviewRecommendation;
+    return parsed&&typeof parsed.total_score==="number"&&parsed.recommendations&&typeof parsed.recommendations==="object"?parsed:null;
+  }catch{return null;}
+};
 const formatSubmissionDate = (value:string) => {
   const date=new Date(value);
   return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{dateStyle:"full",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(date)+" WIB";
@@ -54,6 +62,7 @@ function StaffDashboard() {
     reviewed:rows.filter(r=>r.status==="reviewed").length,
   }),[rows]);
   const reviewers=useMemo(()=>Array.from(new Set(rows.map(r=>r.staff_review?.reviewer_name).filter((name):name is string=>Boolean(name)))).sort((a,b)=>a.localeCompare(b,"id-ID")),[rows]);
+  const detailAiRecommendation=useMemo(()=>parseAiRecommendation(detail?.essay_ai_summary),[detail?.essay_ai_summary]);
   const filtered=useMemo(()=>rows.filter(r=>
     (filter==="all"||r.status===filter)&&
     (reviewerFilter==="all"||(reviewerFilter==="__unreviewed__"?!r.staff_review:r.staff_review?.reviewer_name===reviewerFilter))&&
@@ -95,8 +104,9 @@ function StaffDashboard() {
     try{
       const result=await requestAiAnalysis(detail.id);
       const analyzedAt=new Date().toISOString();
-      setRows(current=>current.map(row=>row.id===detail.id?{...row,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:row));
-      setDetail(current=>current?.id===detail.id?{...current,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:current);
+      const encoded=encodeAiRecommendation(result);
+      setRows(current=>current.map(row=>row.id===detail.id?{...row,essay_ai_score:result.total_score,essay_ai_summary:encoded,essay_ai_graded_at:analyzedAt}:row));
+      setDetail(current=>current?.id===detail.id?{...current,essay_ai_score:result.total_score,essay_ai_summary:encoded,essay_ai_graded_at:analyzedAt}:current);
       toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan.");
       return result;
     }catch(error){toast.error(error instanceof Error?error.message:"Analisis AI gagal");return null;}
@@ -118,7 +128,7 @@ function StaffDashboard() {
       try{
         const result=await requestAiAnalysis(id);
         const analyzedAt=new Date().toISOString();
-        setRows(current=>current.map(row=>row.id===id?{...row,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:row));
+        setRows(current=>current.map(row=>row.id===id?{...row,essay_ai_score:result.total_score,essay_ai_summary:encodeAiRecommendation(result),essay_ai_graded_at:analyzedAt}:row));
         success+=1;
       }catch{failed+=1;}
       setBatchProgress(current=>({...current,done:current.done+1}));
@@ -182,6 +192,6 @@ function StaffDashboard() {
         </>}
       </DialogContent>
     </Dialog>
-    <Dialog open={!!detail} onOpenChange={o=>!o&&closeDetail()}><DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">{detail&&<><DialogHeader><DialogTitle>{detail.full_name} · {detail.registration_code}</DialogTitle><div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground"><div className="flex items-center gap-1.5"><BriefcaseBusiness className="size-3.5"/><span>Pekerjaan: <b className="text-foreground font-medium">{detail.occupation?.trim()||"Belum diisi"}</b></span></div><div className="flex items-center gap-1.5"><CalendarClock className="size-3.5"/><span>Dikirim: {formatSubmissionDate(detail.updated_at)}</span></div></div></DialogHeader><ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.staff_review?.scores} initialChecks={detail.staff_review?.criteria_checks} initialMethod={detail.staff_review?.review_method} initialNotes={detail.staff_review?.reviewer_notes} currentDecision={detail.status} busy={busy} analyzing={analyzing} onAnalyze={analyze} onSave={decide} onReset={resetReview}/></>}</DialogContent></Dialog>
+    <Dialog open={!!detail} onOpenChange={o=>!o&&closeDetail()}><DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">{detail&&<><DialogHeader><DialogTitle>{detail.full_name} · {detail.registration_code}</DialogTitle><div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground"><div className="flex items-center gap-1.5"><BriefcaseBusiness className="size-3.5"/><span>Pekerjaan: <b className="text-foreground font-medium">{detail.occupation?.trim()||"Belum diisi"}</b></span></div><div className="flex items-center gap-1.5"><CalendarClock className="size-3.5"/><span>Dikirim: {formatSubmissionDate(detail.updated_at)}</span></div></div></DialogHeader><ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialAiRecommendation={detailAiRecommendation} initialScores={detail.staff_review?.scores} initialChecks={detail.staff_review?.criteria_checks} initialMethod={detail.staff_review?.review_method} initialNotes={detail.staff_review?.reviewer_notes} currentDecision={detail.status} busy={busy} analyzing={analyzing} onAnalyze={analyze} onSave={decide} onReset={resetReview}/></>}</DialogContent></Dialog>
   </div>;
 }
