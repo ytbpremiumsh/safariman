@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, Loader2, LogOut, MessageSquareText, Search, ShieldCheck, XCircle } from "lucide-react";
+import { BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, Loader2, LogOut, MessageSquareText, Search, ShieldCheck, Sparkles, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { staffSupabase } from "@/integrations/supabase/staff-client";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/staff/")({
 
 type Status = "reviewed" | "interview" | "rejected";
 type StaffReview={reviewer_name:string;decision:Status;scores:ReviewScores;total_score:number;reviewer_notes:string|null;criteria_checks:ReviewChecks|null;review_method:"manual"|"ai";reviewed_at:string;updated_at:string};
-type Row = { id:string; updated_at:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; staff_review:StaffReview|null };
+type Row = { id:string; updated_at:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; essay_ai_score:number|null; essay_ai_graded_at:string|null; staff_review:StaffReview|null };
 const formatSubmissionDate = (value:string) => {
   const date=new Date(value);
   return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{dateStyle:"full",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(date)+" WIB";
@@ -37,6 +37,9 @@ function StaffDashboard() {
   const [rows,setRows]=useState<Row[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false); const [analyzing,setAnalyzing]=useState(false);
   const [q,setQ]=useState(""); const [filter,setFilter]=useState<Status|"all">("all"); const [reviewerFilter,setReviewerFilter]=useState("all"); const [detail,setDetail]=useState<Row|null>(null);
   const [noteDetail,setNoteDetail]=useState<{participantName:string;registrationCode:string;reviewerName:string;notes:string;updatedAt:string}|null>(null);
+  const [selectedIds,setSelectedIds]=useState<Set<string>>(new Set());
+  const [batchAnalyzing,setBatchAnalyzing]=useState(false);
+  const [batchProgress,setBatchProgress]=useState({done:0,total:0});
   const load = async () => {
     const { data:{ session } } = await staffSupabase.auth.getSession();
     if (!session) { navigate({to:"/staff/login"}); return; }
@@ -68,14 +71,12 @@ function StaffDashboard() {
   const closeDetail=()=>{setDetail(null);restorePageScroll();};
   const decide=async(status:ReviewDecision,scores:ReviewScores,reviewerNotes:string,criteriaChecks:ReviewChecks,reviewMethod:"manual"|"ai")=>{ if(!detail)return; setBusy(true); const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"update_status",participant_id:detail.id,status,scores,reviewer_notes:reviewerNotes,criteria_checks:criteriaChecks,review_method:reviewMethod}}); setBusy(false); if(error){toast.error(error.message);return;} const storedReview={...(data?.review??detail.staff_review),review_method:reviewMethod} as StaffReview; const next={...detail,status,staff_review:storedReview};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);restorePageScroll();toast.success(status==="interview"?"Keputusan disimpan dan peserta masuk Tahapan TKA.":"Penilaian dan keputusan berhasil disimpan."); };
   const resetReview=async()=>{ if(!detail)return; setBusy(true); const {error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"reset_review",participant_id:detail.id}}); setBusy(false); if(error){toast.error(error.message);return;} const next:Row={...detail,status:"reviewed",staff_review:null};setRows(v=>v.map(r=>r.id===detail.id?next:r));setDetail(next);restorePageScroll();toast.success("Penilaian direset — peserta kembali seperti semula."); };
-  const analyze=async()=>{
-    if(!detail)return null;
-    setAnalyzing(true);
+  const requestAiAnalysis=async(participantId:string)=>{
     try{
       const {data:{session}}=await staffSupabase.auth.getSession();
       if(!session?.access_token)throw new Error("Sesi staff berakhir. Silakan login ulang.");
       const {data,error}=await staffSupabase.functions.invoke("staff-essay",{
-        body:{action:"analyze",participant_id:detail.id},
+        body:{action:"analyze",participant_id:participantId},
         headers:{Authorization:`Bearer ${session.access_token}`},
       });
       if(error){
@@ -85,12 +86,47 @@ function StaffDashboard() {
         throw new Error(message);
       }
       if(data?.error)throw new Error(data.error);
-      toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan.");
       return data as AiReviewRecommendation;
-    }catch(error){
-      toast.error(error instanceof Error?error.message:"Analisis AI gagal");
-      return null;
-    }finally{setAnalyzing(false);}
+    }catch(error){throw error instanceof Error?error:new Error("Analisis AI gagal");}
+  };
+  const analyze=async()=>{
+    if(!detail)return null;
+    setAnalyzing(true);
+    try{
+      const result=await requestAiAnalysis(detail.id);
+      const analyzedAt=new Date().toISOString();
+      setRows(current=>current.map(row=>row.id===detail.id?{...row,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:row));
+      setDetail(current=>current?.id===detail.id?{...current,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:current);
+      toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan.");
+      return result;
+    }catch(error){toast.error(error instanceof Error?error.message:"Analisis AI gagal");return null;}
+    finally{setAnalyzing(false);}
+  };
+  const toggleSelected=(id:string)=>setSelectedIds(current=>{
+    const next=new Set(current);
+    if(next.has(id))next.delete(id);
+    else if(next.size<10)next.add(id);
+    else toast.warning("Maksimal 10 peserta dalam satu kali analisis.");
+    return next;
+  });
+  const analyzeSelected=async()=>{
+    const ids=Array.from(selectedIds).slice(0,10);
+    if(ids.length===0)return;
+    setBatchAnalyzing(true);setBatchProgress({done:0,total:ids.length});
+    let success=0;let failed=0;
+    for(const id of ids){
+      try{
+        const result=await requestAiAnalysis(id);
+        const analyzedAt=new Date().toISOString();
+        setRows(current=>current.map(row=>row.id===id?{...row,essay_ai_score:result.total_score,essay_ai_graded_at:analyzedAt}:row));
+        success+=1;
+      }catch{failed+=1;}
+      setBatchProgress(current=>({...current,done:current.done+1}));
+    }
+    setBatchAnalyzing(false);
+    setSelectedIds(new Set());
+    if(success)toast.success(`${success} peserta berhasil dianalisis AI.`);
+    if(failed)toast.error(`${failed} peserta gagal dianalisis. Silakan pilih dan coba kembali.`);
   };
   const logout=async()=>{await staffSupabase.auth.signOut();navigate({to:"/staff/login"});};
   if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-accent"/></div>;
@@ -108,8 +144,30 @@ function StaffDashboard() {
         <select className="h-10 rounded-md border bg-background px-3 text-sm" value={filter} onChange={e=>setFilter(e.target.value as Status|"all")}><option value="all">Semua Hasil</option><option value="reviewed">Belum Diputuskan</option><option value="interview">Lolos Tahap Selanjutnya</option><option value="rejected">Tidak Lolos</option></select>
         <select className="h-10 rounded-md border bg-background px-3 text-sm" value={reviewerFilter} onChange={e=>setReviewerFilter(e.target.value)}><option value="all">Semua Staff Pengoreksi</option><option value="__unreviewed__">Belum Ada Pengoreksi</option>{reviewers.map(name=><option key={name} value={name}>{name}</option>)}</select>
       </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground"><span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta</span>{(filter!=="all"||reviewerFilter!=="all"||q)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}</div>
-      <div className="bg-card border rounded-2xl overflow-x-auto"><table className="w-full text-sm"><thead className="bg-secondary/60"><tr><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead><tbody>{filtered.map(r=><tr key={r.id} className="border-t"><td className="p-3"><b>{r.full_name}</b><div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground"><span className="font-mono">{r.registration_code}</span><span aria-hidden="true">|</span><span className="text-[11px]">{formatCompactSubmissionDate(r.updated_at)}</span></div></td><td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td><td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td><td className="p-3 font-bold">{r.staff_review?`${r.staff_review.total_score}/100`:"—"}</td><td className="p-3 text-xs"><b>{r.staff_review?.reviewer_name||"Belum dikoreksi"}</b>{r.staff_review&&<div className="text-muted-foreground">{new Date(r.staff_review.updated_at).toLocaleString("id-ID")}</div>}{r.staff_review?.reviewer_notes?.trim()&&<button type="button" onClick={()=>setNoteDetail({participantName:r.full_name,registrationCode:r.registration_code,reviewerName:r.staff_review!.reviewer_name,notes:r.staff_review!.reviewer_notes!.trim(),updatedAt:r.staff_review!.updated_at})} className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-[10px] font-bold text-sky-700 transition hover:bg-sky-100"><MessageSquareText className="size-3"/>Ada Catatan</button>}</td><td className="p-3 text-right"><button onClick={()=>openDetail(r)} className="rounded-lg bg-accent text-primary-foreground px-3 py-2 inline-flex gap-1"><FileText className="size-4"/>Koreksi</button></td></tr>)}</tbody></table></div>
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta · <b className="text-foreground">{selectedIds.size}</b>/10 dipilih</span>
+        <div className="flex items-center gap-2">
+          {(filter!=="all"||reviewerFilter!=="all"||q)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}
+          <button type="button" disabled={selectedIds.size===0||batchAnalyzing} onClick={()=>void analyzeSelected()} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-2 font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50">
+            {batchAnalyzing?<Loader2 className="size-4 animate-spin"/>:<Sparkles className="size-4"/>}
+            {batchAnalyzing?`Menganalisis ${batchProgress.done}/${batchProgress.total}`:`Analisis AI (${selectedIds.size})`}
+          </button>
+        </div>
+      </div>
+      <div className="bg-card border rounded-2xl overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-secondary/60"><tr><th className="w-10 p-3 text-center">Pilih</th><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead>
+          <tbody>{filtered.map(r=><tr key={r.id} className={`border-t ${selectedIds.has(r.id)?"bg-violet-50/70":""}`}>
+            <td className="p-3 text-center"><input type="checkbox" aria-label={`Pilih ${r.full_name}`} checked={selectedIds.has(r.id)} disabled={batchAnalyzing||(!selectedIds.has(r.id)&&selectedIds.size>=10)} onChange={()=>toggleSelected(r.id)} className="size-4 accent-violet-600"/></td>
+            <td className="p-3"><b>{r.full_name}</b><div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground"><span className="font-mono">{r.registration_code}</span><span aria-hidden="true">|</span><span className="text-[11px]">{formatCompactSubmissionDate(r.updated_at)}</span></div></td>
+            <td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td>
+            <td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td>
+            <td className="p-3"><div className="font-bold">{r.essay_ai_graded_at&&r.essay_ai_score!=null?`${r.essay_ai_score}/100`:r.staff_review?`${r.staff_review.total_score}/100`:"—"}</div>{r.essay_ai_graded_at&&<span className="mt-1 inline-flex items-center gap-1 rounded-full border border-violet-300 bg-violet-50 px-2 py-0.5 text-[9px] font-bold text-violet-700"><Sparkles className="size-2.5"/>Sudah Dianalisis AI</span>}{r.staff_review&&r.essay_ai_graded_at&&<div className="mt-1 text-[10px] text-muted-foreground">Nilai staff: {r.staff_review.total_score}/100</div>}</td>
+            <td className="p-3 text-xs"><b>{r.staff_review?.reviewer_name||"Belum dikoreksi"}</b>{r.staff_review&&<div className="text-muted-foreground">{new Date(r.staff_review.updated_at).toLocaleString("id-ID")}</div>}{r.staff_review?.reviewer_notes?.trim()&&<button type="button" onClick={()=>setNoteDetail({participantName:r.full_name,registrationCode:r.registration_code,reviewerName:r.staff_review!.reviewer_name,notes:r.staff_review!.reviewer_notes!.trim(),updatedAt:r.staff_review!.updated_at})} className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-[10px] font-bold text-sky-700 transition hover:bg-sky-100"><MessageSquareText className="size-3"/>Ada Catatan</button>}</td>
+            <td className="p-3 text-right"><button onClick={()=>openDetail(r)} className="rounded-lg bg-accent text-primary-foreground px-3 py-2 inline-flex gap-1"><FileText className="size-4"/>Koreksi</button></td>
+          </tr>)}</tbody>
+        </table>
+      </div>
     </main>
     <StaffGroupChat />
     <Dialog open={!!noteDetail} onOpenChange={open=>!open&&setNoteDetail(null)}>
