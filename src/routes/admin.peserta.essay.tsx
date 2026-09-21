@@ -58,6 +58,18 @@ type Row = {
   essay_ai_summary: string | null;
   essay_ai_graded_at: string | null;
   created_at: string;
+  reviewer_name?: string | null;
+  reviewed_at?: string | null;
+  review_decision?: string | null;
+};
+
+type StaffDecisionRow = {
+  participant_id: string;
+  decision: Status;
+  reviewer_name: string;
+  reviewed_at: string;
+  updated_at: string;
+  scores: ReviewScores | null;
 };
 
 type PendingRow = {
@@ -148,9 +160,11 @@ function PesertaEssayPage() {
     if (!detail?.id) { setDetailScores(null); return; }
     let cancelled = false;
     void (async () => {
-      const { data } = await supabase.from("admin_essay_reviews")
-        .select("scores").eq("participant_id", detail.id).maybeSingle();
-      if (!cancelled) setDetailScores((data?.scores as ReviewScores) ?? null);
+      const [staffResult, adminResult] = await Promise.all([
+        supabase.from("staff_essay_reviews").select("scores").eq("participant_id", detail.id).maybeSingle(),
+        supabase.from("admin_essay_reviews").select("scores").eq("participant_id", detail.id).maybeSingle(),
+      ]);
+      if (!cancelled) setDetailScores((staffResult.data?.scores as ReviewScores) ?? (adminResult.data?.scores as ReviewScores) ?? null);
     })();
     return () => { cancelled = true; };
   }, [detail?.id]);
@@ -189,18 +203,30 @@ function PesertaEssayPage() {
 
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, pendingResult, settingRes, reviewRes] = await Promise.all([
+    const [{ data, error }, pendingResult, settingRes, reviewRes, staffReviewRes] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
       loadAllPendingEssayParticipants()
         .then((data) => ({ data, error: null as Error | null }))
         .catch((error: Error) => ({ data: [] as PendingRow[], error })),
       supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
       supabase.from("admin_essay_reviews").select("participant_id,updated_at"),
+      supabase.from("staff_essay_reviews").select("participant_id,decision,reviewer_name,reviewed_at,updated_at,scores"),
     ]);
-    setReviewInfo(Object.fromEntries(((reviewRes.data ?? []) as { participant_id: string; updated_at: string }[])
-      .map((r) => [r.participant_id, r.updated_at])));
+    const staffReviews = (staffReviewRes.data ?? []) as StaffDecisionRow[];
+    const staffReviewMap = new Map(staffReviews.map((review) => [review.participant_id, review]));
+    const adminReviewMap = new Map(((reviewRes.data ?? []) as { participant_id: string; updated_at: string }[])
+      .map((review) => [review.participant_id, review.updated_at]));
+    setReviewInfo(Object.fromEntries(((data ?? []) as Row[]).map((row) => [
+      row.id,
+      staffReviewMap.get(row.id)?.updated_at ?? adminReviewMap.get(row.id) ?? row.reviewed_at ?? "",
+    ])));
     if (error) toast.error(error.message);
-    else setRows(((data ?? []) as Row[]).map((r) => ({ ...r, status: normalizeStatus(r.status as string) })));
+    else setRows(((data ?? []) as Row[]).map((row) => ({
+      ...row,
+      status: normalizeStatus(staffReviewMap.get(row.id)?.decision ?? row.review_decision ?? row.status as string),
+      reviewer_name: staffReviewMap.get(row.id)?.reviewer_name ?? row.reviewer_name,
+      reviewed_at: staffReviewMap.get(row.id)?.reviewed_at ?? row.reviewed_at,
+    })));
     if (pendingResult.error) toast.error(pendingResult.error.message);
     else setPendingRows(pendingResult.data);
     setPublished((settingRes.data?.value ?? "false") === "true");
