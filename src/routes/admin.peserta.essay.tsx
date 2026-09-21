@@ -673,7 +673,9 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
         <div className="mt-3">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Kesimpulan AI</div>
           <div className="text-sm bg-card border border-border rounded-lg p-3 leading-relaxed whitespace-pre-wrap">
-            {row.essay_ai_summary}
+            {row.essay_ai_summary.startsWith("STAFF_AI_JSON:")
+              ? "Rekomendasi poin AI staff telah tersimpan. Buka detail koreksi pada halaman staff untuk melihat centang dan highlight bukti."
+              : row.essay_ai_summary}
           </div>
           <div className="text-[11px] text-muted-foreground mt-2 italic">
             Catatan: hasil AI bersifat bantuan/indikasi. Keputusan akhir tetap di tangan tim seleksi.
