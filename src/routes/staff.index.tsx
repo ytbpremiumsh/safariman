@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, Loader2, LogOut, Search, ShieldCheck, XCircle } from "lucide-react";
+import { BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, Loader2, LogOut, MessageSquareText, Search, ShieldCheck, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { staffSupabase } from "@/integrations/supabase/staff-client";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ManualEssayReview, type AiReviewRecommendation, type ReviewChecks, type ReviewDecision, type ReviewScores } from "@/components/ManualEssayReview";
 import { StaffGroupChat } from "@/components/StaffGroupChat";
 
@@ -20,6 +20,10 @@ const formatSubmissionDate = (value:string) => {
   const date=new Date(value);
   return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{dateStyle:"full",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(date)+" WIB";
 };
+const formatCompactSubmissionDate = (value:string) => {
+  const date=new Date(value);
+  return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"short",year:"numeric",timeZone:"Asia/Jakarta"}).format(date);
+};
 const labels: Record<Status,string> = { reviewed:"Belum Diputuskan", interview:"Lolos Tahap Selanjutnya", rejected:"Tidak Lolos" };
 const badges: Record<Status,string> = {
   reviewed:"bg-amber-100 text-amber-800 border-amber-300",
@@ -32,6 +36,7 @@ function StaffDashboard() {
   const pageScrollRef=useRef(0);
   const [rows,setRows]=useState<Row[]>([]); const [loading,setLoading]=useState(true); const [busy,setBusy]=useState(false); const [analyzing,setAnalyzing]=useState(false);
   const [q,setQ]=useState(""); const [filter,setFilter]=useState<Status|"all">("all"); const [reviewerFilter,setReviewerFilter]=useState("all"); const [detail,setDetail]=useState<Row|null>(null);
+  const [noteDetail,setNoteDetail]=useState<{participantName:string;registrationCode:string;reviewerName:string;notes:string;updatedAt:string}|null>(null);
   const load = async () => {
     const { data:{ session } } = await staffSupabase.auth.getSession();
     if (!session) { navigate({to:"/staff/login"}); return; }
@@ -104,9 +109,21 @@ function StaffDashboard() {
         <select className="h-10 rounded-md border bg-background px-3 text-sm" value={reviewerFilter} onChange={e=>setReviewerFilter(e.target.value)}><option value="all">Semua Staff Pengoreksi</option><option value="__unreviewed__">Belum Ada Pengoreksi</option>{reviewers.map(name=><option key={name} value={name}>{name}</option>)}</select>
       </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground"><span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta</span>{(filter!=="all"||reviewerFilter!=="all"||q)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}</div>
-      <div className="bg-card border rounded-2xl overflow-x-auto"><table className="w-full text-sm"><thead className="bg-secondary/60"><tr><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead><tbody>{filtered.map(r=><tr key={r.id} className="border-t"><td className="p-3"><b>{r.full_name}</b><div className="text-xs font-mono text-muted-foreground">{r.registration_code}</div></td><td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td><td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td><td className="p-3 font-bold">{r.staff_review?`${r.staff_review.total_score}/100`:"—"}</td><td className="p-3 text-xs"><b>{r.staff_review?.reviewer_name||"Belum dikoreksi"}</b>{r.staff_review&&<div className="text-muted-foreground">{new Date(r.staff_review.updated_at).toLocaleString("id-ID")}</div>}</td><td className="p-3 text-right"><button onClick={()=>openDetail(r)} className="rounded-lg bg-accent text-primary-foreground px-3 py-2 inline-flex gap-1"><FileText className="size-4"/>Koreksi</button></td></tr>)}</tbody></table></div>
+      <div className="bg-card border rounded-2xl overflow-x-auto"><table className="w-full text-sm"><thead className="bg-secondary/60"><tr><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead><tbody>{filtered.map(r=><tr key={r.id} className="border-t"><td className="p-3"><b>{r.full_name}</b><div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground"><span className="font-mono">{r.registration_code}</span><span aria-hidden="true">|</span><span className="text-[11px]">{formatCompactSubmissionDate(r.updated_at)}</span></div></td><td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td><td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td><td className="p-3 font-bold">{r.staff_review?`${r.staff_review.total_score}/100`:"—"}</td><td className="p-3 text-xs"><b>{r.staff_review?.reviewer_name||"Belum dikoreksi"}</b>{r.staff_review&&<div className="text-muted-foreground">{new Date(r.staff_review.updated_at).toLocaleString("id-ID")}</div>}{r.staff_review?.reviewer_notes?.trim()&&<button type="button" onClick={()=>setNoteDetail({participantName:r.full_name,registrationCode:r.registration_code,reviewerName:r.staff_review!.reviewer_name,notes:r.staff_review!.reviewer_notes!.trim(),updatedAt:r.staff_review!.updated_at})} className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-[10px] font-bold text-sky-700 transition hover:bg-sky-100"><MessageSquareText className="size-3"/>Ada Catatan</button>}</td><td className="p-3 text-right"><button onClick={()=>openDetail(r)} className="rounded-lg bg-accent text-primary-foreground px-3 py-2 inline-flex gap-1"><FileText className="size-4"/>Koreksi</button></td></tr>)}</tbody></table></div>
     </main>
     <StaffGroupChat />
+    <Dialog open={!!noteDetail} onOpenChange={open=>!open&&setNoteDetail(null)}>
+      <DialogContent className="max-w-lg">
+        {noteDetail&&<>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><MessageSquareText className="size-5 text-sky-600"/>Keterangan Pengoreksi</DialogTitle>
+            <DialogDescription>{noteDetail.participantName} · {noteDetail.registrationCode}</DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-4 text-sm leading-relaxed whitespace-pre-wrap text-foreground">{noteDetail.notes}</div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground"><span>Dicatat oleh <b className="text-foreground">{noteDetail.reviewerName}</b></span><span>{new Date(noteDetail.updatedAt).toLocaleString("id-ID")}</span></div>
+        </>}
+      </DialogContent>
+    </Dialog>
     <Dialog open={!!detail} onOpenChange={o=>!o&&closeDetail()}><DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">{detail&&<><DialogHeader><DialogTitle>{detail.full_name} · {detail.registration_code}</DialogTitle><div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground"><div className="flex items-center gap-1.5"><BriefcaseBusiness className="size-3.5"/><span>Pekerjaan: <b className="text-foreground font-medium">{detail.occupation?.trim()||"Belum diisi"}</b></span></div><div className="flex items-center gap-1.5"><CalendarClock className="size-3.5"/><span>Dikirim: {formatSubmissionDate(detail.updated_at)}</span></div></div></DialogHeader><ManualEssayReview answers={{essay_1:detail.essay_worthy,essay_2:detail.essay_dream,essay_3:detail.essay_contribution,case_1:detail.case_study_1,case_2:detail.case_study_2,case_3:detail.case_study_3,case_4:detail.case_study_4,case_5:detail.case_study_5,case_6:detail.case_study_6,case_7:detail.case_study_7}} initialScores={detail.staff_review?.scores} initialChecks={detail.staff_review?.criteria_checks} initialMethod={detail.staff_review?.review_method} initialNotes={detail.staff_review?.reviewer_notes} currentDecision={detail.status} busy={busy} analyzing={analyzing} onAnalyze={analyze} onSave={decide} onReset={resetReview}/></>}</DialogContent></Dialog>
   </div>;
 }
