@@ -37,6 +37,79 @@ type Confidence = "high" | "medium" | "low";
 type AiCriterion = { index: number; matched: boolean; confidence: Confidence; evidence: string };
 type AiAuthorship = { verdict: "likely_human" | "likely_ai" | "uncertain"; confidence: Confidence; reason: string };
 
+const RUBRIC_SEMANTIC_GUIDANCE: Record<string, string[]> = {
+  essay_1: [
+    "Ada orientasi ibadah kepada Allah/Tanah Suci yang jelas dan menjadi alasan utama; doa, membantu jamaah, atau kalimat positif saja tidak otomatis membuktikannya.",
+    "Ada kesediaan nyata mengikuti seluruh rangkaian, aturan, pembinaan, atau tanggung jawab program; rencana beribadah saat umrah saja bukan komitmen mengikuti program.",
+    "Ada ungkapan syukur atau memandang kesempatan sebagai nikmat/amanah; sekadar senang, berharap terpilih, atau merasa layak tidak cukup.",
+    "Ada niat atau dampak eksplisit untuk memberi teladan, memotivasi, atau menginspirasi orang lain; membantu orang saja tidak otomatis berarti menginspirasi.",
+    "Ada sikap tidak menyombongkan diri, mengakui keterbatasan, tidak merasa paling layak, atau menyerahkan hasil kepada Allah; menolong, berkorban, dan bersikap baik saja bukan bukti kerendahan hati.",
+  ],
+  essay_2: [
+    "Ada perubahan diri/akhlak/kebiasaan yang ingin diwujudkan setelah pulang, bukan hanya perasaan bahagia atau harapan umum.",
+    "Ada niat menjaga atau meningkatkan ibadah secara berkelanjutan setelah pulang; ibadah yang hanya dilakukan selama perjalanan tidak cukup.",
+    "Ada rencana menceritakan, membagikan pengalaman, atau menyampaikan pelajaran perjalanan kepada orang lain.",
+    "Ada tindakan mengajak orang kepada kebaikan/ibadah atau berdakwah; berbagi cerita tanpa ajakan kebaikan tidak otomatis termasuk dakwah.",
+    "Ada rencana kegiatan sosial dengan penerima manfaat yang jelas; menjadi lebih baik bagi diri sendiri atau sekadar ingin bermanfaat tidak cukup.",
+  ],
+  essay_3: [
+    "Ada aktivitas menyampaikan ajaran Islam atau mengajak ibadah/kebaikan secara nyata; kata dakwah tanpa bentuk tindakan yang jelas tidak cukup.",
+    "Ada tindakan mengajar, membimbing belajar, menyediakan akses belajar, atau program pendidikan untuk orang lain; pendidikan diri sendiri, profesi, atau penyebutan kata pendidikan tidak cukup.",
+    "Ada bantuan sosial/kemanusiaan konkret kepada penerima manfaat, misalnya bantuan kebutuhan, kesehatan, kebencanaan, atau kelompok rentan.",
+    "Ada tindakan yang secara spesifik ditujukan kepada warga/komunitas di lingkungan sekitar; kontribusi umum tanpa sasaran masyarakat sekitar tidak cukup.",
+    "Ada program atau kegiatan yang benar-benar pernah dilakukan, ditandai pengalaman masa lalu yang konkret; rencana masa depan dan niat saja tidak cukup.",
+  ],
+  case_1: [
+    "Peserta menyatakan akan menenangkan diri dan berpikir jernih dalam situasi tersebut.",
+    "Peserta menyatakan tidak panik/tidak bertindak gegabah; menyebut kemungkinan panik atau nasihat umum bukan bukti.",
+    "Peserta akan menuju lokasi pertemuan yang telah disepakati/titik kumpul, bukan sekadar mencari rombongan tanpa tujuan jelas.",
+    "Peserta sendiri akan mencari atau menghubungi petugas/pembimbing/pihak resmi untuk bantuan.",
+    "Peserta akan menunggu arahan atau tetap di lokasi aman setelah melapor; hanya meminta bantuan belum membuktikan menunggu instruksi.",
+  ],
+  case_2: [
+    "Ada perhatian pada kondisi lansia dan respons peduli, bukan hanya pengamatan bahwa lansia lelah.",
+    "Ada bantuan fisik langsung seperti menopang, memapah, membawakan barang, atau membantu berjalan.",
+    "Ada tindakan menawarkan/memberikan air minum, bukan hanya menyebut dehidrasi atau air.",
+    "Ada tindakan mengajak berhenti dan beristirahat di tempat yang sesuai.",
+    "Ada tindakan menghubungi pembimbing/ketua rombongan/petugas yang bertanggung jawab.",
+  ],
+  case_3: [
+    "Keputusan menempatkan kondisi kesehatan/keselamatan di atas kelanjutan aktivitas atau ibadah.",
+    "Ada tindakan membawa/mencari tempat duduk, teduh, atau tempat aman untuk pemulihan.",
+    "Ada tindakan meminta bantuan petugas/tenaga medis/pihak resmi.",
+    "Ada tindakan tetap bersama dan tidak meninggalkan jamaah yang sakit.",
+    "Ada tindakan memberi tahu ketua rombongan/pembimbing tentang kondisi jamaah.",
+  ],
+  case_4: [
+    "Ada upaya mencapai keputusan melalui musyawarah bersama, bukan memaksakan pilihan pribadi.",
+    "Ada penerimaan/mendengarkan pandangan berbeda tanpa merendahkan atau memaksakan pendapat.",
+    "Ada tujuan atau tindakan menjaga persaudaraan/kerukunan dan mencegah konflik.",
+    "Ada ajakan nyata untuk duduk bersama, berbicara, atau membahas pilihan.",
+    "Ada kesediaan menerima keputusan/kesepakatan kelompok meskipun berbeda dari pilihan pribadi.",
+  ],
+  case_5: [
+    "Ada keputusan eksplisit tidak memakai, menyimpan untuk diri sendiri, atau mengambil isi dompet.",
+    "Ada tindakan menyerahkan dompet kepada petugas resmi/pihak berwenang, bukan hanya menyimpannya atau mengumumkannya sendiri.",
+    "Ada tindakan melaporkan temuan dompet kepada petugas/rombongan/pihak resmi.",
+    "Ada sikap menjaga barang tetap utuh/aman sampai dikembalikan; kata amanah tanpa perilaku pendukung tidak cukup.",
+    "Ada tindakan memeriksa identitas secara wajar untuk menemukan pemilik, bukan mengambil data untuk kepentingan lain.",
+  ],
+  case_6: [
+    "Peserta menyatakan akan menenangkan diri dan berpikir jernih ketika terpisah.",
+    "Ada upaya tetap melanjutkan/menjaga kekhusyukan ibadah dengan aman; sekadar menyebut tawaf tidak cukup.",
+    "Ada keputusan tidak menerobos atau bergerak berlawanan dengan arus jamaah.",
+    "Ada tindakan menuju titik temu yang telah disepakati setelah memungkinkan/aman.",
+    "Ada urutan jelas menghubungi pendamping setelah berada pada posisi aman, bukan mengoperasikan ponsel di tengah kondisi berbahaya.",
+  ],
+  case_7: [
+    "Ada tindakan memberi pemahaman tentang risiko/akibat kekurangan cairan, bukan hanya menyebut cuaca panas.",
+    "Ada cara penyampaian yang lembut, masuk akal, tidak memaksa, atau disesuaikan dengan kondisi orang tersebut.",
+    "Ada ajakan nyata untuk minum dengan jumlah/cara yang wajar.",
+    "Keputusan jelas memprioritaskan keselamatan/kesehatan dibanding memaksakan aktivitas.",
+    "Peserta memberi teladan melalui tindakannya sendiri, misalnya ikut minum/beristirahat; sekadar memberi nasihat bukan contoh nyata.",
+  ],
+};
+
 function cleanJson(text: string) {
   const trimmed = text.replace(/^\uFEFF/, "").trim();
   if (trimmed.startsWith("```")) return trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
@@ -86,6 +159,22 @@ function normalizeEvidence(value: string) {
   return value.toLocaleLowerCase("id-ID").replace(/\s+/g, " ").trim();
 }
 
+const OPENROUTER_RETRYABLE_STATUS = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
+
+function providerErrorMessage(status: number, providerMessage: string) {
+  if (status === 401 || status === 403) return "API key OpenRouter ditolak. Hubungi admin untuk memeriksa konfigurasi AI.";
+  if (status === 402) return "Saldo atau batas penggunaan OpenRouter tidak mencukupi. Hubungi admin.";
+  if (status === 404) return "Model OpenRouter yang dipilih tidak tersedia. Hubungi admin untuk mengganti model.";
+  if (status === 429) return "Model AI sedang penuh atau terkena batas permintaan. Sistem sudah mencoba ulang; silakan coba lagi sebentar.";
+  if (status >= 500) return "Provider model AI sedang mengalami gangguan sementara. Sistem sudah mencoba ulang; silakan coba lagi sebentar.";
+  if (/provider returned error/i.test(providerMessage)) return "Provider model AI sedang bermasalah. Sistem sudah mencoba ulang; silakan coba lagi sebentar.";
+  return providerMessage || `OpenRouter gagal memproses analisis (${status}).`;
+}
+
+function delay(milliseconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId: string) {
   const { data: secret, error: secretError } = await admin.from("ai_provider_secrets")
     .select("api_key").eq("provider", "openrouter").maybeSingle();
@@ -101,6 +190,19 @@ async function analyzeWithOpenRouter(admin: StaffClients["admin"], participantId
   const answers = Object.fromEntries(ESSAY_RUBRIC.map((question, index) => [question.key, String(participant[answerColumns[index]] ?? "")]));
   const system = `Anda adalah asisten penilaian Essay dan Studi Kasus Safar Iman. Tugas Anda menilai KESESUAIAN MAKNA jawaban dengan rubrik, bukan mencari kemunculan kata kunci.
 
+ALUR WAJIB DUA TAHAP — JANGAN DIBALIK:
+TAHAP 1 — PEMAHAMAN JAWABAN:
+- Baca SELURUH jawaban terlebih dahulu sebelum melihat kecocokan poin.
+- Simpulkan apa yang benar-benar dimaksud peserta: siapa pelakunya, tindakan/niatnya, objek atau penerima manfaatnya, waktu pelaksanaannya, alasan, dan hasil yang dituju.
+- Bedakan pengalaman masa lalu, kondisi sekarang, rencana masa depan, contoh hipotetis, dan ucapan tentang orang lain.
+
+TAHAP 2 — PENGUJIAN RUBRIK:
+- Setelah makna utuh dipahami, bandingkan makna tersebut dengan definisi_semantik setiap poin.
+- Kata kunci hanya boleh menjadi petunjuk lokasi kalimat, BUKAN dasar pemberian poin.
+- Gunakan UJI PENGHAPUSAN KATA: bayangkan kata yang sama dengan label kriteria dihapus. Jika maksud narasinya tidak lagi jelas memenuhi kriteria, matched harus false.
+- Gunakan UJI SUBJEK-TINDAKAN-TUJUAN: pastikan siapa yang bertindak, apa tindakannya, dan untuk tujuan/siapa tindakan itu. Kesesuaian topik tanpa hubungan ini harus false.
+- Definisi semantik adalah batas penilaian. Jangan memperluas satu kriteria menjadi perilaku positif lain yang terdengar mirip.
+
 ATURAN WAJIB PENILAIAN:
 1. Baca satu jawaban secara utuh dan pahami tujuan, niat, tindakan, alasan, serta dampak yang benar-benar dinyatakan peserta.
 2. Evaluasi setiap kriteria secara terpisah. matched=true hanya jika ada pernyataan yang secara jelas membuktikan makna kriteria tersebut.
@@ -109,8 +211,11 @@ ATURAN WAJIB PENILAIAN:
 5. Perhatikan negasi, penolakan, perbandingan, contoh hipotetis, kutipan pendapat orang lain, dan konteks kalimat. Kata yang muncul dalam konteks tersebut tidak otomatis menjadi sikap atau tindakan peserta.
 6. Untuk kriteria tindakan atau kontribusi, harus ada tindakan, rencana konkret, kebiasaan, sasaran penerima manfaat, atau pengalaman nyata yang relevan. Keinginan umum seperti "ingin bermanfaat" tidak cukup untuk membuktikan bidang kontribusi tertentu.
 7. evidence wajib berupa kutipan persis dan singkat dari jawaban yang membuktikan hubungan makna. Jika tidak ada kutipan yang benar-benar membuktikan kriteria, gunakan matched=false dan evidence="".
-8. Gunakan confidence=high hanya jika bukti eksplisit dan tidak ambigu. Jika bukti tersirat atau masih dapat ditafsirkan lain, gunakan matched=false; confidence boleh medium atau low.
+8. Gunakan confidence=high hanya jika bukti eksplisit, hubungan maknanya langsung, dan lulus uji subjek-tindakan-tujuan. Jika bukti tersirat, hanya memiliki kata/topik serupa, atau masih dapat ditafsirkan lain, gunakan matched=false; confidence boleh medium atau low.
 9. Jangan memberi poin karena gaya bahasa bagus, jawaban panjang, atau tema yang terdengar positif. Jangan memberi keputusan kelulusan.
+10. Satu kutipan boleh mendukung lebih dari satu poin HANYA jika narasinya memang membuktikan arti masing-masing poin secara mandiri. Jangan menggandakan poin hanya karena tindakannya positif.
+11. Untuk setiap matched=true, semantic_reason harus menjelaskan hubungan antara makna kutipan dan definisi poin secara sangat singkat. Alasan yang hanya mengulang label kriteria tidak valid.
+12. Demi respons cepat, JANGAN kirim kriteria dengan matched=false. Hanya masukkan kriteria yang benar-benar matched=true; kriteria yang tidak dikirim otomatis dianggap false.
 
 CONTOH PENTING:
 - Jawaban "Saya ingin melanjutkan pendidikan" TIDAK membuktikan kriteria kontribusi Pendidikan karena hanya membahas pendidikan peserta sendiri.
@@ -123,44 +228,110 @@ PROSEDUR INTERNAL UNTUK SETIAP KRITERIA:
 A. Rumuskan dalam pikiran arti inti kriteria.
 B. Cari klaim atau tindakan peserta yang relevan dalam keseluruhan narasi.
 C. Uji apakah kutipan tersebut tetap membuktikan kriteria tanpa mengandalkan kemunculan kata kunci.
-D. Jika tidak, bertentangan, terlalu umum, atau pelakunya bukan peserta, tetapkan matched=false.
+D. Cocokkan dengan definisi_semantik khusus poin tersebut, bukan hanya label singkatnya.
+E. Jika tidak, bertentangan, terlalu umum, hanya satu topik, atau pelakunya bukan peserta, tetapkan matched=false.
 
 Untuk setiap jawaban, perkirakan pola kepenulisan dalam authorship.verdict: likely_human, likely_ai, atau uncertain. Analisis variasi gaya, kekhususan pengalaman pribadi, pola kalimat, repetisi, dan bahasa yang terlalu generik. Hasil ini hanya indikasi, bukan bukti mutlak. confidence wajib high, medium, atau low dan reason berupa alasan singkat tanpa menghakimi.
 
-Balas dengan satu objek JSON valid saja, tanpa markdown dan tanpa teks tambahan, dengan struktur: {"questions":[{"key":"essay_1","criteria":[{"index":0,"matched":true,"confidence":"high","evidence":"kutipan persis"}],"authorship":{"verdict":"uncertain","confidence":"low","reason":"alasan singkat"}}]}. Sertakan seluruh kriteria dan authorship untuk seluruh soal.`;
-  const baseMessages = [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ rubric: ESSAY_RUBRIC, answers }) }];
-  const requestOpenRouter = async (messages: Array<{ role: string; content: string }>) => {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://safariman.id",
-        "X-Title": "Safar Iman Staff Review",
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        response_format: { type: "json_object" },
-        temperature: 0,
-        max_tokens: 10000,
-      }),
-    });
-    const raw = await response.text();
-    if (!response.ok) {
-      let safeMessage = `OpenRouter gagal (${response.status})`;
-      try { safeMessage = JSON.parse(raw)?.error?.message ?? safeMessage; } catch { /* use safe fallback */ }
-      return { error: json({ error: safeMessage, provider_status: response.status }, response.status >= 500 ? 502 : response.status) };
+Lakukan pemahaman/ringkasan jawaban secara internal, tetapi JANGAN keluarkan answer_summary agar respons ringkas.
+Balas dengan satu objek JSON valid saja, tanpa markdown dan tanpa teks tambahan, dengan struktur: {"questions":[{"key":"essay_1","criteria":[{"index":0,"matched":true,"confidence":"high","evidence":"kutipan persis","semantic_reason":"alasan sangat singkat"}],"authorship":{"verdict":"uncertain","confidence":"low","reason":"alasan singkat"}}]}. Sertakan seluruh soal dan authorship, tetapi dalam criteria HANYA sertakan poin matched=true. Jika tidak ada poin yang cocok, gunakan criteria:[].`;
+  const rubricWithGuidance = ESSAY_RUBRIC.map((question) => ({
+    ...question,
+    criteria: question.criteria.map((criterion, index) => ({
+      ...criterion,
+      definisi_semantik: RUBRIC_SEMANTIC_GUIDANCE[question.key]?.[index] ?? criterion.label,
+    })),
+  }));
+  const baseMessages = [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ rubric: rubricWithGuidance, answers }) }];
+  // Sisakan ruang dari batas request Supabase agar fungsi selalu sempat mengirim respons yang jelas.
+  const analysisDeadline = Date.now() + 75_000;
+  const requestOpenRouter = async (messages: Array<{ role: string; content: string }>, maxAttempts = 2) => {
+    let lastStatus = 502;
+    let lastProviderMessage = "";
+
+    for (let attemptNumber = 1; attemptNumber <= maxAttempts; attemptNumber += 1) {
+      const remainingMilliseconds = analysisDeadline - Date.now();
+      if (remainingMilliseconds < 5_000) break;
+      const timeoutMilliseconds = Math.min(32_000, remainingMilliseconds - 1_000);
+
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+            "HTTP-Referer": "https://safariman.id",
+            "X-Title": "Safar Iman Staff Review",
+          },
+          signal: AbortSignal.timeout(timeoutMilliseconds),
+          body: JSON.stringify({
+            model,
+            messages,
+            response_format: { type: "json_object" },
+            provider: { allow_fallbacks: true },
+            temperature: 0,
+            max_tokens: 6000,
+          }),
+        });
+        const raw = await response.text();
+        if (!response.ok) {
+          lastStatus = response.status;
+          try { lastProviderMessage = JSON.parse(raw)?.error?.message ?? ""; } catch { lastProviderMessage = ""; }
+          const mayRetry = OPENROUTER_RETRYABLE_STATUS.has(response.status)
+            || /provider returned error/i.test(lastProviderMessage);
+          if (mayRetry && attemptNumber < maxAttempts && analysisDeadline - Date.now() > 6_000) {
+            const retryAfterSeconds = Number(response.headers.get("retry-after"));
+            const retryDelay = Number.isFinite(retryAfterSeconds)
+              ? Math.min(2_000, Math.max(500, retryAfterSeconds * 1_000))
+              : 750 * attemptNumber;
+            await delay(retryDelay);
+            continue;
+          }
+          return {
+            error: json({
+              error: providerErrorMessage(response.status, lastProviderMessage),
+              provider_status: response.status,
+              retryable: mayRetry,
+            }, mayRetry ? 503 : response.status),
+          };
+        }
+        try {
+          const envelope = JSON.parse(raw);
+          const content = messageContent(envelope?.choices?.[0]?.message?.content);
+          const parsed = parseJsonObject(content);
+          const questions = parsed?.questions;
+          return { content, parsed: parsed && Array.isArray(questions) ? parsed : null };
+        } catch {
+          return { content: "", parsed: null };
+        }
+      } catch (requestError) {
+        lastStatus = 504;
+        lastProviderMessage = requestError instanceof Error ? requestError.message : "";
+        const requestErrorName = requestError instanceof Error ? requestError.name : "";
+        // Timeout tidak diulang karena percobaan kedua hanya membuat staff menunggu dua kali lebih lama.
+        if (requestErrorName === "TimeoutError" || requestErrorName === "AbortError") {
+          return {
+            error: json({
+              error: "Model AI tidak merespons dalam 32 detik. Silakan coba lagi atau pilih model yang lebih cepat.",
+              provider_status: 504,
+              retryable: true,
+            }, 503),
+          };
+        }
+        if (attemptNumber < maxAttempts && analysisDeadline - Date.now() > 6_000) {
+          await delay(750 * attemptNumber);
+          continue;
+        }
+      }
     }
-    try {
-      const envelope = JSON.parse(raw);
-      const content = messageContent(envelope?.choices?.[0]?.message?.content);
-      const parsed = parseJsonObject(content);
-      const questions = parsed?.questions;
-      return { content, parsed: parsed && Array.isArray(questions) ? parsed : null };
-    } catch {
-      return { content: "", parsed: null };
-    }
+
+    return {
+      error: json({
+        error: "Koneksi ke model AI terlalu lama atau terputus. Sistem sudah mencoba ulang; silakan coba lagi sebentar.",
+        provider_status: lastStatus,
+        retryable: true,
+      }, 503),
+    };
   };
 
   let attempt = await requestOpenRouter(baseMessages);
@@ -169,9 +340,10 @@ Balas dengan satu objek JSON valid saja, tanpa markdown dan tanpa teks tambahan,
     const repairMessages = [
       ...baseMessages,
       ...(attempt.content ? [{ role: "assistant", content: attempt.content.slice(0, 50000) }] : []),
-      { role: "user", content: "Respons sebelumnya bukan JSON lengkap yang dapat dibaca. Ulangi seluruh analisis dari awal dan balas hanya satu objek JSON valid sesuai struktur yang diminta. Jangan gunakan markdown." },
+      { role: "user", content: "Perbaiki respons sebelumnya menjadi satu objek JSON valid sesuai struktur yang diminta. Pertahankan hasil analisis yang sama, ringkas, jangan gunakan markdown, dan jangan menambahkan kriteria matched=false." },
     ];
-    attempt = await requestOpenRouter(repairMessages);
+    // Percobaan perbaikan format hanya sekali agar total waktu tetap di bawah batas Edge Function.
+    attempt = await requestOpenRouter(repairMessages, 1);
     if (attempt.error) return { response: attempt.error };
   }
   if (!attempt.parsed) {
@@ -198,8 +370,17 @@ Balas dengan satu objek JSON valid saja, tanpa markdown dan tanpa teks tambahan,
       const item = criteria.find((entry) => entry && typeof entry === "object" && (entry as Record<string, unknown>).index === index) as Record<string, unknown> | undefined;
       const confidence: Confidence = item?.confidence === "high" || item?.confidence === "medium" ? item.confidence : "low";
       const evidence = typeof item?.evidence === "string" ? item.evidence.trim().slice(0, 300) : "";
-      const evidenceValid = evidence.length >= 3 && answer.includes(normalizeEvidence(evidence));
-      return { index, matched: item?.matched === true && evidenceValid, confidence, evidence: evidenceValid ? evidence : "" };
+      const semanticReason = typeof item?.semantic_reason === "string" ? item.semantic_reason.trim() : "";
+      const evidenceValid = evidence.length >= 12
+        && evidence.split(/\s+/).length >= 3
+        && answer.includes(normalizeEvidence(evidence));
+      const semanticReasonValid = semanticReason.length >= 12;
+      return {
+        index,
+        matched: item?.matched === true && evidenceValid && semanticReasonValid,
+        confidence,
+        evidence: evidenceValid ? evidence : "",
+      };
     });
     scores[question.key] = recommendations[question.key].reduce((sum, item) =>
       sum + (item.matched && item.confidence === "high" ? (question.criteria[item.index]?.point ?? 0) : 0), 0);
@@ -242,7 +423,19 @@ Deno.serve(async (req) => {
       if (!participantId) return json({ error: "Peserta tidak valid" }, 400);
       const analysis = await analyzeWithOpenRouter(admin, participantId);
       if (analysis.response) return analysis.response;
-      return json(analysis.result);
+      const result = analysis.result!;
+      const { error: saveAnalysisError } = await admin.from("participants").update({
+        essay_ai_score: result.total_score,
+        essay_ai_percent: result.total_score,
+        essay_ai_verdict: null,
+        essay_ai_summary: `Rekomendasi penilaian AI menggunakan ${result.model}. Keputusan akhir tetap ditentukan staff.`,
+        essay_ai_graded_at: new Date().toISOString(),
+      }).eq("id", participantId);
+      if (saveAnalysisError) {
+        console.error("Failed to persist staff AI analysis", saveAnalysisError);
+        return json({ error: "Analisis selesai, tetapi hasilnya belum dapat disimpan. Silakan coba lagi." }, 500);
+      }
+      return json(result);
     }
     if (action === "list") {
       const { data, error } = await admin.rpc("list_essay_complete_participants");
