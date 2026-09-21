@@ -476,6 +476,63 @@ Deno.serve(async (req) => {
       return json({ ok: true, review: null });
     }
 
+    if (action === "bulk_decision") {
+      const participantIds = Array.from(new Set(Array.isArray(body.participant_ids)
+        ? body.participant_ids.map((value: unknown) => String(value)).filter(Boolean)
+        : []));
+      const status = String(body.status ?? "");
+      if (participantIds.length === 0 || participantIds.length > 2000 || !["interview", "rejected"].includes(status)) {
+        return json({ error: "Data keputusan massal tidak valid" }, 400);
+      }
+
+      const { data: completeParticipants, error: completeError } = await admin.rpc("list_essay_complete_participants");
+      if (completeError) throw completeError;
+      const eligibleIds = new Set(((completeParticipants ?? []) as Participant[]).map((participant) => participant.id));
+      const ids = participantIds.filter((id) => eligibleIds.has(id));
+      if (ids.length === 0) return json({ error: "Tidak ada peserta dengan Essay dan Studi Kasus lengkap" }, 400);
+
+      const nowIso = new Date().toISOString();
+      const stageValue = status === "interview" ? "passed" : "failed";
+      const chunkSize = 100;
+      for (let start = 0; start < ids.length; start += chunkSize) {
+        const chunk = ids.slice(start, start + chunkSize);
+        const { data: existingReviews, error: existingError } = await admin.from("staff_essay_reviews")
+          .select("participant_id,scores,total_score,reviewer_notes,criteria_checks,review_method,reviewed_at")
+          .in("participant_id", chunk);
+        if (existingError) throw existingError;
+        const existingMap = new Map((existingReviews ?? []).map((review) => [review.participant_id, review]));
+        const reviews = chunk.map((participantId) => {
+          const existing = existingMap.get(participantId);
+          return {
+            participant_id: participantId,
+            reviewer_id: authUser.id,
+            reviewer_name: staff.name,
+            decision: status,
+            scores: existing?.scores ?? {},
+            total_score: existing?.total_score ?? 0,
+            reviewer_notes: existing?.reviewer_notes ?? null,
+            criteria_checks: existing?.criteria_checks ?? null,
+            review_method: existing?.review_method ?? "manual",
+            reviewed_at: existing?.reviewed_at ?? nowIso,
+            updated_at: nowIso,
+          };
+        });
+        const { error: reviewError } = await admin.from("staff_essay_reviews").upsert(reviews, { onConflict: "participant_id" });
+        if (reviewError) throw reviewError;
+
+        const stagePatch: Record<string, unknown> = { essay_status: stageValue, essay_updated_at: nowIso, updated_at: nowIso };
+        if (stageValue !== "passed") {
+          stagePatch.tka_status = "pending";
+          stagePatch.tka_updated_at = nowIso;
+          stagePatch.interview_status = "pending";
+          stagePatch.interview_updated_at = nowIso;
+        }
+        const { error: stageError } = await admin.from("participants").update(stagePatch).in("id", chunk);
+        if (stageError) throw stageError;
+      }
+      return json({ ok: true, updated: ids.length, participant_ids: ids, reviewer_name: staff.name, updated_at: nowIso });
+    }
+
     if (action === "update_status") {
       const participantId = String(body.participant_id ?? "");
       const status = String(body.status ?? "");
