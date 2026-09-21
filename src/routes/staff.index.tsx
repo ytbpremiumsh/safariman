@@ -17,6 +17,28 @@ type Status = "reviewed" | "interview" | "rejected";
 type StaffReview={reviewer_name:string;decision:Status;scores:ReviewScores;total_score:number;reviewer_notes:string|null;criteria_checks:ReviewChecks|null;review_method:"manual"|"ai";reviewed_at:string;updated_at:string};
 type Row = { id:string; updated_at:string; registration_code:string; full_name:string; email:string; whatsapp:string; city:string; education:string; occupation:string; category:string|null; status:Status; essay_worthy:string; essay_dream:string; essay_contribution:string; case_study_1:string|null; case_study_2:string|null; case_study_3:string|null; case_study_4:string|null; case_study_5:string|null; case_study_6:string|null; case_study_7:string|null; essay_ai_score:number|null; essay_ai_summary:string|null; essay_ai_graded_at:string|null; staff_review:StaffReview|null };
 const encodeAiRecommendation=(value:AiReviewRecommendation)=>`STAFF_AI_JSON:${JSON.stringify(value)}`;
+const AI_CACHE_KEY="safariman_staff_ai_analysis_v1";
+type CachedAiAnalysis={essay_ai_score:number;essay_ai_summary:string;essay_ai_graded_at:string};
+const readAiCache=():Record<string,CachedAiAnalysis>=>{
+  try{return JSON.parse(localStorage.getItem(AI_CACHE_KEY)??"{}") as Record<string,CachedAiAnalysis>;}catch{return {};}
+};
+const cacheAiRecommendation=(participantId:string,result:AiReviewRecommendation,gradedAt:string)=>{
+  try{
+    const current=readAiCache();
+    current[participantId]={essay_ai_score:result.total_score,essay_ai_summary:encodeAiRecommendation(result),essay_ai_graded_at:gradedAt};
+    localStorage.setItem(AI_CACHE_KEY,JSON.stringify(current));
+  }catch{/* Database tetap menjadi penyimpanan utama jika browser menolak localStorage. */}
+};
+const mergeCachedAiAnalysis=(participants:Row[])=>{
+  const cache=readAiCache();
+  return participants.map((participant)=>{
+    const cached=cache[participant.id];
+    if(!cached)return participant;
+    const databaseTime=participant.essay_ai_graded_at?new Date(participant.essay_ai_graded_at).getTime():0;
+    const cacheTime=new Date(cached.essay_ai_graded_at).getTime();
+    return cacheTime>databaseTime?{...participant,...cached}:participant;
+  });
+};
 const parseAiRecommendation=(value:string|null|undefined):AiReviewRecommendation|null=>{
   if(!value?.startsWith("STAFF_AI_JSON:"))return null;
   try{
@@ -53,7 +75,7 @@ function StaffDashboard() {
     if (!session) { navigate({to:"/staff/login"}); return; }
     const { data,error } = await staffSupabase.functions.invoke("staff-essay",{body:{action:"list"}});
     if (error) { toast.error("Akses staff tidak aktif"); navigate({to:"/staff/login"}); return; }
-    setRows((data?.participants ?? []) as Row[]); setLoading(false);
+    setRows(mergeCachedAiAnalysis((data?.participants ?? []) as Row[])); setLoading(false);
   };
   useEffect(()=>{ void load(); },[]);
   const counts=useMemo(()=>({
@@ -105,6 +127,7 @@ function StaffDashboard() {
       const result=await requestAiAnalysis(detail.id);
       const analyzedAt=new Date().toISOString();
       const encoded=encodeAiRecommendation(result);
+      cacheAiRecommendation(detail.id,result,analyzedAt);
       setRows(current=>current.map(row=>row.id===detail.id?{...row,essay_ai_score:result.total_score,essay_ai_summary:encoded,essay_ai_graded_at:analyzedAt}:row));
       setDetail(current=>current?.id===detail.id?{...current,essay_ai_score:result.total_score,essay_ai_summary:encoded,essay_ai_graded_at:analyzedAt}:current);
       toast.success("Rekomendasi selesai. Periksa bukti dan centang sebelum menyimpan.");
@@ -128,6 +151,7 @@ function StaffDashboard() {
       try{
         const result=await requestAiAnalysis(id);
         const analyzedAt=new Date().toISOString();
+        cacheAiRecommendation(id,result,analyzedAt);
         setRows(current=>current.map(row=>row.id===id?{...row,essay_ai_score:result.total_score,essay_ai_summary:encodeAiRecommendation(result),essay_ai_graded_at:analyzedAt}:row));
         success+=1;
       }catch{failed+=1;}
