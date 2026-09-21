@@ -47,6 +47,32 @@ const parseAiRecommendation=(value:string|null|undefined):AiReviewRecommendation
   }catch{return null;}
 };
 const getParticipantScore=(participant:Row)=>participant.essay_ai_score??participant.staff_review?.total_score??null;
+const REVIEW_POINTS:Record<string,number[]>={
+  essay_1:[4,2,2,1,1],essay_2:[2,2,2,2,2],essay_3:[2,2,2,2,2],case_1:[4,2,2,1,1],
+  case_2:[2,2,2,2,2],case_3:[2,2,2,2,2],case_4:[2,2,2,2,2],case_5:[2,4,2,1,1],
+  case_6:[2,2,2,3,1],case_7:[2,2,2,2,2],
+};
+const emptyReviewScores=()=>Object.fromEntries(Object.keys(REVIEW_POINTS).map(key=>[key,0])) as ReviewScores;
+const checksFromScores=(scores:ReviewScores):ReviewChecks=>Object.fromEntries(Object.entries(REVIEW_POINTS).map(([key,points])=>{
+  const target=Number(scores[key]??0);
+  for(let mask=0;mask<(1<<points.length);mask+=1){
+    const indices=points.map((_,index)=>index).filter(index=>(mask&(1<<index))!==0);
+    if(indices.reduce((sum,index)=>sum+points[index],0)===target)return [key,indices];
+  }
+  return [key,[]];
+})) as ReviewChecks;
+const reviewPayloadForRow=(row:Row)=>{
+  const ai=parseAiRecommendation(row.essay_ai_summary);
+  const aiChecks=ai?Object.fromEntries(Object.entries(ai.recommendations).map(([key,recommendations])=>[
+    key,recommendations.filter(item=>item.matched&&item.confidence==="high").map(item=>item.index),
+  ])) as ReviewChecks:null;
+  const storedScores=row.staff_review?.scores??ai?.scores??emptyReviewScores();
+  const criteriaChecks=row.staff_review?.criteria_checks??aiChecks??checksFromScores(storedScores);
+  const scores=Object.fromEntries(Object.entries(REVIEW_POINTS).map(([key,points])=>[
+    key,(criteriaChecks[key]??[]).reduce((sum,index)=>sum+(points[index]??0),0),
+  ])) as ReviewScores;
+  return {scores,criteriaChecks};
+};
 const formatSubmissionDate = (value:string) => {
   const date=new Date(value);
   return Number.isNaN(date.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID",{dateStyle:"full",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(date)+" WIB";
@@ -183,15 +209,37 @@ function StaffDashboard() {
     if(!window.confirm(`${actionLabel} ${eligible.length} peserta terpilih? Hasil belum dipublikasikan ke peserta.`))return;
     setBulkDecision(status);
     try{
-      const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"bulk_decision",participant_ids:eligible.map(row=>row.id),status}});
-      if(error)throw error;
+      const bulkResult=await staffSupabase.functions.invoke("staff-essay",{body:{action:"bulk_decision",participant_ids:eligible.map(row=>row.id),status}});
+      let data=bulkResult.data;
+      const fallbackReviews=new Map<string,StaffReview>();
+      let fallbackFailed=0;
+      if(bulkResult.error){
+        let cursor=0;
+        const workers=Array.from({length:Math.min(8,eligible.length)},async()=>{
+          while(cursor<eligible.length){
+            const row=eligible[cursor++];
+            const payload=reviewPayloadForRow(row);
+            const result=await staffSupabase.functions.invoke("staff-essay",{body:{
+              action:"update_status",participant_id:row.id,status,scores:payload.scores,
+              reviewer_notes:row.staff_review?.reviewer_notes??"",criteria_checks:payload.criteriaChecks,
+              review_method:row.staff_review?.review_method??(parseAiRecommendation(row.essay_ai_summary)?"ai":"manual"),
+            }});
+            if(result.error)fallbackFailed+=1;
+            else fallbackReviews.set(row.id,result.data?.review as StaffReview);
+          }
+        });
+        await Promise.all(workers);
+        if(fallbackReviews.size===0)throw bulkResult.error;
+        data={updated:fallbackReviews.size,participant_ids:Array.from(fallbackReviews.keys()),updated_at:new Date().toISOString()};
+      }
       const updatedIds=new Set<string>(data?.participant_ids??eligible.map(row=>row.id));
       const updatedAt=String(data?.updated_at??new Date().toISOString());
       const reviewerName=String(data?.reviewer_name??"Staff");
       setRows(current=>current.map(row=>{
         if(!updatedIds.has(row.id))return row;
         const existing=row.staff_review;
-        const review:StaffReview={
+        const fallbackReview=fallbackReviews.get(row.id);
+        const review:StaffReview=fallbackReview??{
           reviewer_name:reviewerName,decision:status,scores:existing?.scores??{},total_score:existing?.total_score??0,
           reviewer_notes:existing?.reviewer_notes??null,criteria_checks:existing?.criteria_checks??null,
           review_method:existing?.review_method??"manual",reviewed_at:existing?.reviewed_at??updatedAt,updated_at:updatedAt,
@@ -200,6 +248,7 @@ function StaffDashboard() {
       }));
       setSelectedIds(new Set());restorePageScroll();
       toast.success(`${Number(data?.updated??updatedIds.size)} peserta berhasil ${status==="interview"?"diloloskan":"ditetapkan tidak lolos"}. Publikasi tetap melalui admin.`);
+      if(fallbackFailed)toast.warning(`${fallbackFailed} peserta belum berhasil diperbarui dan dapat dicoba kembali.`);
     }catch(error){toast.error(error instanceof Error?error.message:"Keputusan massal gagal disimpan.");}
     finally{setBulkDecision(null);}
   };
