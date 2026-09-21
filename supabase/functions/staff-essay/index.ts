@@ -428,7 +428,7 @@ Deno.serve(async (req) => {
         essay_ai_score: result.total_score,
         essay_ai_percent: result.total_score,
         essay_ai_verdict: null,
-        essay_ai_summary: `Rekomendasi penilaian AI menggunakan ${result.model}. Keputusan akhir tetap ditentukan staff.`,
+        essay_ai_summary: `STAFF_AI_JSON:${JSON.stringify(result)}`,
         essay_ai_graded_at: new Date().toISOString(),
       }).eq("id", participantId);
       if (saveAnalysisError) {
