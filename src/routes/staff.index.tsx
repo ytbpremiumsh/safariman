@@ -71,6 +71,8 @@ function StaffDashboard() {
   const [selectedIds,setSelectedIds]=useState<Set<string>>(new Set());
   const [batchAnalyzing,setBatchAnalyzing]=useState(false);
   const [batchProgress,setBatchProgress]=useState({done:0,total:0});
+  const [bulkPassing,setBulkPassing]=useState(false);
+  const [bulkPassProgress,setBulkPassProgress]=useState({done:0,total:0});
   const load = async () => {
     const { data:{ session } } = await staffSupabase.auth.getSession();
     if (!session) { navigate({to:"/staff/login"}); return; }
@@ -143,13 +145,19 @@ function StaffDashboard() {
   const toggleSelected=(id:string)=>setSelectedIds(current=>{
     const next=new Set(current);
     if(next.has(id))next.delete(id);
-    else if(next.size<10)next.add(id);
-    else toast.warning("Maksimal 10 peserta dalam satu kali analisis.");
+    else next.add(id);
     return next;
   });
+  const toggleAllFiltered=()=>setSelectedIds(current=>{
+    const filteredIds=filtered.map(row=>row.id);
+    const allSelected=filteredIds.length>0&&filteredIds.every(id=>current.has(id));
+    if(allSelected)return new Set([...current].filter(id=>!filteredIds.includes(id)));
+    return new Set([...current,...filteredIds]);
+  });
   const analyzeSelected=async()=>{
-    const ids=Array.from(selectedIds).slice(0,10);
+    const ids=Array.from(selectedIds);
     if(ids.length===0)return;
+    if(ids.length>10){toast.warning("Analisis AI maksimal 10 peserta dalam satu proses.");return;}
     setBatchAnalyzing(true);setBatchProgress({done:0,total:ids.length});
     let success=0;let failed=0;
     for(const id of ids){
@@ -166,6 +174,31 @@ function StaffDashboard() {
     setSelectedIds(new Set());
     if(success)toast.success(`${success} peserta berhasil dianalisis AI.`);
     if(failed)toast.error(`${failed} peserta gagal dianalisis. Silakan pilih dan coba kembali.`);
+  };
+  const passSelected=async()=>{
+    const selectedRows=rows.filter(row=>selectedIds.has(row.id));
+    const eligible=selectedRows.filter(row=>row.status!=="interview"&&parseAiRecommendation(row.essay_ai_summary));
+    if(eligible.length===0){toast.warning("Peserta terpilih belum memiliki hasil analisis AI lengkap.");return;}
+    if(!window.confirm(`Loloskan ${eligible.length} peserta terpilih ke tahap selanjutnya? Hasil belum dipublikasikan ke peserta.`))return;
+    setBulkPassing(true);setBulkPassProgress({done:0,total:eligible.length});
+    let success=0;let failed=0;
+    for(const row of eligible){
+      const aiResult=parseAiRecommendation(row.essay_ai_summary)!;
+      const criteriaChecks=Object.fromEntries(Object.entries(aiResult.recommendations).map(([key,recommendations])=>[
+        key,recommendations.filter(item=>item.matched&&item.confidence==="high").map(item=>item.index),
+      ]));
+      try{
+        const {data,error}=await staffSupabase.functions.invoke("staff-essay",{body:{action:"update_status",participant_id:row.id,status:"interview",scores:aiResult.scores,reviewer_notes:row.staff_review?.reviewer_notes??"",criteria_checks:criteriaChecks,review_method:"ai"}});
+        if(error)throw error;
+        const storedReview={...(data?.review??row.staff_review),review_method:"ai"} as StaffReview;
+        setRows(current=>current.map(item=>item.id===row.id?{...item,status:"interview",staff_review:storedReview}:item));
+        success+=1;
+      }catch{failed+=1;}
+      setBulkPassProgress(current=>({...current,done:current.done+1}));
+    }
+    setBulkPassing(false);setSelectedIds(new Set());restorePageScroll();
+    if(success)toast.success(`${success} peserta berhasil diloloskan. Publikasi tetap melalui admin.`);
+    if(failed)toast.error(`${failed} peserta gagal diperbarui. Silakan coba kembali.`);
   };
   const logout=async()=>{await staffSupabase.auth.signOut();navigate({to:"/staff/login"});};
   if(loading)return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-accent"/></div>;
@@ -189,20 +222,24 @@ function StaffDashboard() {
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-        <span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta · <b className="text-foreground">{selectedIds.size}</b>/10 dipilih</span>
+        <span>Menampilkan <b className="text-foreground">{filtered.length}</b> dari {rows.length} peserta · <b className="text-foreground">{selectedIds.size}</b> dipilih</span>
         <div className="flex items-center gap-2">
           {(filter!=="all"||reviewerFilter!=="all"||q||minimumScore||maximumScore)&&<button onClick={()=>{setFilter("all");setReviewerFilter("all");setQ("");setMinimumScore("");setMaximumScore("");}} className="font-semibold text-accent hover:underline">Reset Filter</button>}
-          <button type="button" disabled={selectedIds.size===0||batchAnalyzing} onClick={()=>void analyzeSelected()} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-2 font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="button" disabled={selectedIds.size===0||selectedIds.size>10||batchAnalyzing||bulkPassing} onClick={()=>void analyzeSelected()} title={selectedIds.size>10?"Analisis AI maksimal 10 peserta":""} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-2 font-bold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50">
             {batchAnalyzing?<Loader2 className="size-4 animate-spin"/>:<Sparkles className="size-4"/>}
-            {batchAnalyzing?`Menganalisis ${batchProgress.done}/${batchProgress.total}`:`Analisis AI (${selectedIds.size})`}
+            {batchAnalyzing?`Menganalisis ${batchProgress.done}/${batchProgress.total}`:selectedIds.size>10?"AI Maks. 10":`Analisis AI (${selectedIds.size})`}
+          </button>
+          <button type="button" disabled={selectedIds.size===0||bulkPassing||batchAnalyzing} onClick={()=>void passSelected()} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald px-3 py-2 font-bold text-white shadow-sm transition hover:bg-emerald/90 disabled:cursor-not-allowed disabled:opacity-50">
+            {bulkPassing?<Loader2 className="size-4 animate-spin"/>:<CheckCircle2 className="size-4"/>}
+            {bulkPassing?`Meloloskan ${bulkPassProgress.done}/${bulkPassProgress.total}`:`Loloskan Terpilih (${selectedIds.size})`}
           </button>
         </div>
       </div>
       <div className="bg-card border rounded-2xl overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-secondary/60"><tr><th className="w-10 p-3 text-center">Pilih</th><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead>
+          <thead className="bg-secondary/60"><tr><th className="w-10 p-3 text-center"><input type="checkbox" aria-label="Pilih semua peserta dalam hasil filter" checked={filtered.length>0&&filtered.every(row=>selectedIds.has(row.id))} onChange={toggleAllFiltered} disabled={filtered.length===0||batchAnalyzing||bulkPassing} className="size-4 accent-violet-600"/></th><th className="text-left p-3">Peserta</th><th className="text-left p-3">Kontak</th><th className="text-left p-3">Status</th><th className="text-left p-3">Nilai</th><th className="text-left p-3">Staff Pengoreksi</th><th className="p-3"></th></tr></thead>
           <tbody>{filtered.map(r=><tr key={r.id} className={`border-t ${selectedIds.has(r.id)?"bg-violet-50/70":""}`}>
-            <td className="p-3 text-center"><input type="checkbox" aria-label={`Pilih ${r.full_name}`} checked={selectedIds.has(r.id)} disabled={batchAnalyzing||(!selectedIds.has(r.id)&&selectedIds.size>=10)} onChange={()=>toggleSelected(r.id)} className="size-4 accent-violet-600"/></td>
+            <td className="p-3 text-center"><input type="checkbox" aria-label={`Pilih ${r.full_name}`} checked={selectedIds.has(r.id)} disabled={batchAnalyzing||bulkPassing} onChange={()=>toggleSelected(r.id)} className="size-4 accent-violet-600"/></td>
             <td className="p-3"><b>{r.full_name}</b><div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground"><span className="font-mono">{r.registration_code}</span><span aria-hidden="true">|</span><span className="text-[11px]">{formatCompactSubmissionDate(r.updated_at)}</span></div></td>
             <td className="p-3 text-xs">{r.email}<div>{r.whatsapp}</div></td>
             <td className="p-3"><span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badges[r.status]}`}>{labels[r.status]}</span></td>
