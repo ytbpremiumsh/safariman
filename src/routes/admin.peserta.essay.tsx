@@ -3,19 +3,43 @@ import { useEffect, useState, useMemo } from "react";
 import { isFeatureEnabled } from "@/lib/features";
 
 import {
-  Search, Download, Copy, FileText, CheckCircle2, XCircle, FileDown, Image as ImageIcon,
-  ShieldCheck, ArrowRight, HeartHandshake, Sparkles, Loader2, Megaphone, EyeOff, Bot,
-  Inbox, MailQuestion, MessageCircle,
+  Search,
+  Download,
+  Copy,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  FileDown,
+  Image as ImageIcon,
+  ShieldCheck,
+  ArrowRight,
+  HeartHandshake,
+  Sparkles,
+  Loader2,
+  Megaphone,
+  EyeOff,
+  Bot,
+  Inbox,
+  MailQuestion,
+  MessageCircle,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
-import { ManualEssayReview, type ReviewDecision, type ReviewScores } from "@/components/ManualEssayReview";
+import {
+  ManualEssayReview,
+  type ReviewDecision,
+  type ReviewScores,
+} from "@/components/ManualEssayReview";
 
 export const Route = createFileRoute("/admin/peserta/essay")({
   head: () => ({ meta: [{ title: "Peserta Lolos Essay — Safar Iman Admin" }] }),
@@ -91,6 +115,8 @@ type PendingRow = {
   has_case_study_5: boolean;
   has_case_study_6: boolean;
   has_case_study_7: boolean;
+  donation_status: string;
+  donation_paid_at: string | null;
   updated_at: string;
 };
 
@@ -115,9 +141,7 @@ const STATUS_STYLE: Record<Status, string> = {
 };
 
 const normalizeStatus = (s: string): Status =>
-  s === "interview" || s === "accepted" ? "interview"
-  : s === "rejected" ? "rejected"
-  : "reviewed";
+  s === "interview" || s === "accepted" ? "interview" : s === "rejected" ? "rejected" : "reviewed";
 
 const PENDING_PAGE_SIZE = 1000;
 
@@ -140,12 +164,31 @@ async function loadAllPendingEssayParticipants(): Promise<PendingRow[]> {
   return Array.from(new Map(allRows.map((row) => [row.id, row])).values());
 }
 
+async function loadAllContributedPendingEssayParticipants(): Promise<PendingRow[]> {
+  const allRows: PendingRow[] = [];
+
+  for (let from = 0; ; from += PENDING_PAGE_SIZE) {
+    const { data, error } = await (supabase.rpc as any)(
+      "list_contributed_pending_essay_participants",
+    ).range(from, from + PENDING_PAGE_SIZE - 1);
+
+    if (error) throw error;
+
+    const page = (data ?? []) as PendingRow[];
+    allRows.push(...page);
+    if (page.length < PENDING_PAGE_SIZE) break;
+  }
+
+  return Array.from(new Map(allRows.map((row) => [row.id, row])).values());
+}
+
 function PesertaEssayPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [pendingRows, setPendingRows] = useState<PendingRow[]>([]);
-  const [tab, setTab] = useState<"sent" | "pending">("sent");
+  const [contributedPendingRows, setContributedPendingRows] = useState<PendingRow[]>([]);
+  const [tab, setTab] = useState<"sent" | "pending" | "contributed_pending">("sent");
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [detail, setDetail] = useState<Row | null>(null);
@@ -157,32 +200,59 @@ function PesertaEssayPage() {
   const [reviewInfo, setReviewInfo] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!detail?.id) { setDetailScores(null); return; }
+    if (!detail?.id) {
+      setDetailScores(null);
+      return;
+    }
     let cancelled = false;
     void (async () => {
       const [staffResult, adminResult] = await Promise.all([
-        supabase.from("staff_essay_reviews").select("scores").eq("participant_id", detail.id).maybeSingle(),
-        supabase.from("admin_essay_reviews").select("scores").eq("participant_id", detail.id).maybeSingle(),
+        supabase
+          .from("staff_essay_reviews")
+          .select("scores")
+          .eq("participant_id", detail.id)
+          .maybeSingle(),
+        supabase
+          .from("admin_essay_reviews")
+          .select("scores")
+          .eq("participant_id", detail.id)
+          .maybeSingle(),
       ]);
-      if (!cancelled) setDetailScores((staffResult.data?.scores as ReviewScores) ?? (adminResult.data?.scores as ReviewScores) ?? null);
+      if (!cancelled)
+        setDetailScores(
+          (staffResult.data?.scores as ReviewScores) ??
+            (adminResult.data?.scores as ReviewScores) ??
+            null,
+        );
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [detail?.id]);
 
   const saveReview = async (id: string, decision: ReviewDecision, scores: ReviewScores) => {
     setReviewBusy(true);
     const { error } = await supabase.rpc("admin_save_essay_review", {
-      p_participant_id: id, p_scores: scores, p_decision: decision,
+      p_participant_id: id,
+      p_scores: scores,
+      p_decision: decision,
     });
     setReviewBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setDetailScores(scores);
     setReviewInfo((p) => ({ ...p, [id]: new Date().toISOString() }));
-    setRows((p) => p.map((r) => r.id === id ? { ...r, status: decision } : r));
-    setDetail((d) => d && d.id === id ? { ...d, status: decision } : d);
-    toast.success(decision === "interview"
-      ? "Nilai tersimpan — peserta masuk Tahapan TKA"
-      : decision === "rejected" ? "Nilai tersimpan — peserta Tidak Lolos" : "Nilai tersimpan");
+    setRows((p) => p.map((r) => (r.id === id ? { ...r, status: decision } : r)));
+    setDetail((d) => (d && d.id === id ? { ...d, status: decision } : d));
+    toast.success(
+      decision === "interview"
+        ? "Nilai tersimpan — peserta masuk Tahapan TKA"
+        : decision === "rejected"
+          ? "Nilai tersimpan — peserta Tidak Lolos"
+          : "Nilai tersimpan",
+    );
   };
 
   const resetReview = async (id: string) => {
@@ -193,42 +263,83 @@ function PesertaEssayPage() {
       await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: "pending" });
     }
     setReviewBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setDetailScores(null);
-    setReviewInfo((p) => { const next = { ...p }; delete next[id]; return next; });
-    setRows((p) => p.map((r) => r.id === id ? { ...r, status: "reviewed" as Status } : r));
-    setDetail((d) => d && d.id === id ? { ...d, status: "reviewed" as Status } : d);
+    setReviewInfo((p) => {
+      const next = { ...p };
+      delete next[id];
+      return next;
+    });
+    setRows((p) => p.map((r) => (r.id === id ? { ...r, status: "reviewed" as Status } : r)));
+    setDetail((d) => (d && d.id === id ? { ...d, status: "reviewed" as Status } : d));
     toast.success("Penilaian direset — peserta kembali seperti semula.");
   };
 
   const reload = async () => {
     setLoading(true);
-    const [{ data, error }, pendingResult, settingRes, reviewRes, staffReviewRes] = await Promise.all([
+    const [
+      { data, error },
+      pendingResult,
+      contributedPendingResult,
+      settingRes,
+      reviewRes,
+      staffReviewRes,
+    ] = await Promise.all([
       supabase.rpc("list_essay_complete_participants"),
       loadAllPendingEssayParticipants()
         .then((data) => ({ data, error: null as Error | null }))
         .catch((error: Error) => ({ data: [] as PendingRow[], error })),
-      supabase.from("app_settings").select("value").eq("key", "essay_results_published").maybeSingle(),
+      loadAllContributedPendingEssayParticipants()
+        .then((data) => ({ data, error: null as Error | null }))
+        .catch((error: Error) => ({ data: [] as PendingRow[], error })),
+      supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "essay_results_published")
+        .maybeSingle(),
       supabase.from("admin_essay_reviews").select("participant_id,updated_at"),
-      supabase.from("staff_essay_reviews").select("participant_id,decision,reviewer_name,reviewed_at,updated_at,scores"),
+      supabase
+        .from("staff_essay_reviews")
+        .select("participant_id,decision,reviewer_name,reviewed_at,updated_at,scores"),
     ]);
     const staffReviews = (staffReviewRes.data ?? []) as StaffDecisionRow[];
     const staffReviewMap = new Map(staffReviews.map((review) => [review.participant_id, review]));
-    const adminReviewMap = new Map(((reviewRes.data ?? []) as { participant_id: string; updated_at: string }[])
-      .map((review) => [review.participant_id, review.updated_at]));
-    setReviewInfo(Object.fromEntries(((data ?? []) as Row[]).map((row) => [
-      row.id,
-      staffReviewMap.get(row.id)?.updated_at ?? adminReviewMap.get(row.id) ?? row.reviewed_at ?? "",
-    ])));
+    const adminReviewMap = new Map(
+      ((reviewRes.data ?? []) as { participant_id: string; updated_at: string }[]).map((review) => [
+        review.participant_id,
+        review.updated_at,
+      ]),
+    );
+    setReviewInfo(
+      Object.fromEntries(
+        ((data ?? []) as Row[]).map((row) => [
+          row.id,
+          staffReviewMap.get(row.id)?.updated_at ??
+            adminReviewMap.get(row.id) ??
+            row.reviewed_at ??
+            "",
+        ]),
+      ),
+    );
     if (error) toast.error(error.message);
-    else setRows(((data ?? []) as Row[]).map((row) => ({
-      ...row,
-      status: normalizeStatus(staffReviewMap.get(row.id)?.decision ?? row.review_decision ?? row.status as string),
-      reviewer_name: staffReviewMap.get(row.id)?.reviewer_name ?? row.reviewer_name,
-      reviewed_at: staffReviewMap.get(row.id)?.reviewed_at ?? row.reviewed_at,
-    })));
+    else
+      setRows(
+        ((data ?? []) as Row[]).map((row) => ({
+          ...row,
+          status: normalizeStatus(
+            staffReviewMap.get(row.id)?.decision ?? row.review_decision ?? (row.status as string),
+          ),
+          reviewer_name: staffReviewMap.get(row.id)?.reviewer_name ?? row.reviewer_name,
+          reviewed_at: staffReviewMap.get(row.id)?.reviewed_at ?? row.reviewed_at,
+        })),
+      );
     if (pendingResult.error) toast.error(pendingResult.error.message);
     else setPendingRows(pendingResult.data);
+    if (contributedPendingResult.error) toast.error(contributedPendingResult.error.message);
+    else setContributedPendingRows(contributedPendingResult.data);
     setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
@@ -240,36 +351,53 @@ function PesertaEssayPage() {
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return rows.filter((r) => {
-      if (statusFilter !== "all" && r.status !== statusFilter) return false;
-      if (!term) return true;
-      return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
-        .some((v) => v?.toLowerCase().includes(term));
-    }).sort((a, b) => {
-      const at = reviewInfo[a.id] ? new Date(reviewInfo[a.id]).getTime() : 0;
-      const bt = reviewInfo[b.id] ? new Date(reviewInfo[b.id]).getTime() : 0;
-      return bt - at;
-    });
+    return rows
+      .filter((r) => {
+        if (statusFilter !== "all" && r.status !== statusFilter) return false;
+        if (!term) return true;
+        return [r.full_name, r.email, r.whatsapp, r.city, r.registration_code].some((v) =>
+          v?.toLowerCase().includes(term),
+        );
+      })
+      .sort((a, b) => {
+        const at = reviewInfo[a.id] ? new Date(reviewInfo[a.id]).getTime() : 0;
+        const bt = reviewInfo[b.id] ? new Date(reviewInfo[b.id]).getTime() : 0;
+        return bt - at;
+      });
   }, [rows, q, statusFilter, reviewInfo]);
 
-  const stats = useMemo(() => ({
-    total: rows.length,
-    pending: rows.filter((r) => r.status === "reviewed").length,
-    lolos: rows.filter((r) => r.status === "interview").length,
-    tidak: rows.filter((r) => r.status === "rejected").length,
-  }), [rows]);
+  const stats = useMemo(
+    () => ({
+      total: rows.length,
+      pending: rows.filter((r) => r.status === "reviewed").length,
+      lolos: rows.filter((r) => r.status === "interview").length,
+      tidak: rows.filter((r) => r.status === "rejected").length,
+    }),
+    [rows],
+  );
 
-  const allDecided = rows.length > 0 && rows.every((r) => r.status === "interview" || r.status === "rejected");
+  const allDecided =
+    rows.length > 0 && rows.every((r) => r.status === "interview" || r.status === "rejected");
 
   const updateStatus = async (id: string, s: Status) => {
     const { error } = await supabase.from("participants").update({ status: s }).eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     // Sinkronkan juga essay_status agar Tahapan (TKA / Interview) & halaman Cek Tahapan konsisten
     const stageValue: "passed" | "failed" | "pending" =
       s === "interview" ? "passed" : s === "rejected" ? "failed" : "pending";
-    const { error: e2 } = await supabase.rpc("admin_set_tahapan", { p_id: id, p_stage: "essay", p_value: stageValue });
-    if (e2) { toast.error(e2.message); return; }
-    setRows((p) => p.map((r) => r.id === id ? { ...r, status: s } : r));
+    const { error: e2 } = await supabase.rpc("admin_set_tahapan", {
+      p_id: id,
+      p_stage: "essay",
+      p_value: stageValue,
+    });
+    if (e2) {
+      toast.error(e2.message);
+      return;
+    }
+    setRows((p) => p.map((r) => (r.id === id ? { ...r, status: s } : r)));
     if (detail?.id === id) setDetail({ ...detail, status: s });
     if (s === "interview") {
       toast.success(`Lolos Essay & Studi Kasus — otomatis dipindahkan ke tahap TKA`);
@@ -282,9 +410,15 @@ function PesertaEssayPage() {
 
   const togglePublish = async (next: boolean) => {
     setPubBusy(true);
-    const { error } = await supabase.rpc("admin_set_setting", { p_key: "essay_results_published", p_value: next ? "true" : "false" });
+    const { error } = await supabase.rpc("admin_set_setting", {
+      p_key: "essay_results_published",
+      p_value: next ? "true" : "false",
+    });
     setPubBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setPublished(next);
     toast.success(next ? "Hasil Essay dipublikasikan ke peserta" : "Publikasi hasil Essay ditahan");
   };
@@ -301,9 +435,15 @@ function PesertaEssayPage() {
       body: { participant_id: row.id },
     });
     setAiBusy(false);
-    if (error) { toast.error(error.message ?? "Gagal menjalankan koreksi AI"); return; }
+    if (error) {
+      toast.error(error.message ?? "Gagal menjalankan koreksi AI");
+      return;
+    }
     const res = (data as any)?.result;
-    if (!res) { toast.error("Respons AI tidak valid"); return; }
+    if (!res) {
+      toast.error("Respons AI tidak valid");
+      return;
+    }
     const patched: Row = {
       ...row,
       essay_ai_score: res.score,
@@ -312,11 +452,10 @@ function PesertaEssayPage() {
       essay_ai_summary: res.summary,
       essay_ai_graded_at: new Date().toISOString(),
     };
-    setRows((p) => p.map((r) => r.id === row.id ? patched : r));
+    setRows((p) => p.map((r) => (r.id === row.id ? patched : r)));
     if (detail?.id === row.id) setDetail(patched);
     toast.success("Koreksi AI selesai");
   };
-
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -357,7 +496,8 @@ function PesertaEssayPage() {
       {/* Header actions — link to API docs in separate page */}
       <div className="flex flex-wrap gap-2 items-center justify-between -mt-3">
         <p className="text-sm text-muted-foreground">
-          Tentukan keputusan kelulusan tiap peserta untuk lanjut ke tahap <strong>TPA / LDS</strong>.
+          Tentukan keputusan kelulusan tiap peserta untuk lanjut ke tahap <strong>TPA / LDS</strong>
+          .
         </p>
         <div className="flex gap-2">
           <Link
@@ -370,7 +510,8 @@ function PesertaEssayPage() {
             to="/admin/peserta/essay-api"
             className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-gradient-emerald text-accent shadow-emerald hover-lift font-semibold"
           >
-            <ShieldCheck className="size-3.5" /> API CBT &amp; Dokumentasi <ArrowRight className="size-3" />
+            <ShieldCheck className="size-3.5" /> API CBT &amp; Dokumentasi{" "}
+            <ArrowRight className="size-3" />
           </Link>
         </div>
       </div>
@@ -380,7 +521,9 @@ function PesertaEssayPage() {
         <button
           onClick={() => setTab("sent")}
           className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "sent" ? "bg-gradient-emerald text-accent shadow-emerald" : "text-muted-foreground hover:bg-secondary"
+            tab === "sent"
+              ? "bg-gradient-emerald text-accent shadow-emerald"
+              : "text-muted-foreground hover:bg-secondary"
           }`}
         >
           <Inbox className="size-4" /> Sudah Kirim
@@ -391,12 +534,27 @@ function PesertaEssayPage() {
         <button
           onClick={() => setTab("pending")}
           className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
-            tab === "pending" ? "bg-amber-500 text-white shadow-md" : "text-muted-foreground hover:bg-secondary"
+            tab === "pending"
+              ? "bg-amber-500 text-white shadow-md"
+              : "text-muted-foreground hover:bg-secondary"
           }`}
         >
           <MailQuestion className="size-4" /> Belum Kirim
           <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/25 border border-white/30">
             {pendingRows.length}
+          </span>
+        </button>
+        <button
+          onClick={() => setTab("contributed_pending")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition ${
+            tab === "contributed_pending"
+              ? "bg-gradient-gold text-emerald-deep shadow-gold"
+              : "text-muted-foreground hover:bg-secondary"
+          }`}
+        >
+          <HeartHandshake className="size-4" /> Sudah Kontribusi, Belum Kirim
+          <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-background/60 border border-border">
+            {contributedPendingRows.length}
           </span>
         </button>
       </div>
@@ -420,8 +578,12 @@ function PesertaEssayPage() {
               { label: "Tidak Lolos", value: stats.tidak, color: "text-red-600" },
             ].map((s) => (
               <div key={s.label} className="bg-card border border-border rounded-2xl p-4">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
-                <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>{s.value}</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {s.label}
+                </div>
+                <div className={`text-2xl font-display font-semibold mt-1 ${s.color}`}>
+                  {s.value}
+                </div>
               </div>
             ))}
           </div>
@@ -430,7 +592,12 @@ function PesertaEssayPage() {
           <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Cari nama, kode token, email, WA, kota…"
+                className="pl-9"
+              />
             </div>
             <select
               value={statusFilter}
@@ -439,10 +606,15 @@ function PesertaEssayPage() {
             >
               <option value="all">Semua Keputusan</option>
               {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-                <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                <option key={s} value={s}>
+                  {STATUS_LABEL[s]}
+                </option>
               ))}
             </select>
-            <button onClick={exportExcel} className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift">
+            <button
+              onClick={exportExcel}
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-emerald text-accent px-4 py-2 text-sm font-semibold shadow-emerald hover-lift"
+            >
               <Download className="size-4" /> Export
             </button>
           </div>
@@ -453,66 +625,93 @@ function PesertaEssayPage() {
               <table className="w-full text-sm">
                 <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
                   <tr>
-                    <Th>Token CBT</Th><Th>Nama</Th><Th>Kategori</Th>
-                    <Th>Kontak</Th><Th>Kota</Th><Th>Keputusan</Th><Th>Aksi Cepat</Th>
+                    <Th>Token CBT</Th>
+                    <Th>Nama</Th>
+                    <Th>Kategori</Th>
+                    <Th>Kontak</Th>
+                    <Th>Kota</Th>
+                    <Th>Keputusan</Th>
+                    <Th>Aksi Cepat</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Belum ada peserta yang kirim essay lengkap.</td></tr>
-                  ) : filtered.map((r) => (
-                    <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
-                      <td className="px-3 py-3">
-                        <button onClick={() => copy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
-                          {r.registration_code} <Copy className="size-3" />
-                        </button>
-                      </td>
-                      <td className="px-3 py-3">
-                        <div className="font-medium">{r.full_name}</div>
-                        <div className="text-xs text-muted-foreground">{r.education}</div>
-                      </td>
-                      <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
-                      <td className="px-3 py-3">
-                        <div className="text-xs">{r.email}</div>
-                        <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
-                      </td>
-                      <td className="px-3 py-3 text-xs">{r.city}</td>
-                      <td className="px-3 py-3">
-                        <select
-                          value={r.status}
-                          onChange={(e) => updateStatus(r.id, e.target.value as Status)}
-                          className={"h-8 rounded-md border px-2 text-xs font-medium " + STATUS_STYLE[r.status]}
-                        >
-                          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
-                            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-3 py-3">
-                        <div className="flex items-center gap-1">
-                          <button onClick={() => setDetail(r)} className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-border hover:bg-secondary" title="Detail">
-                            <FileText className="size-3.5" />
-                          </button>
-                          <button
-                            onClick={() => updateStatus(r.id, "interview")}
-                            disabled={r.status === "interview"}
-                            title="Loloskan"
-                            className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
-                          >
-                            <CheckCircle2 className="size-3.5" />
-                          </button>
-                          <button
-                            onClick={() => updateStatus(r.id, "rejected")}
-                            disabled={r.status === "rejected"}
-                            title="Tidak loloskan"
-                            className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-40 dark:bg-red-950/30"
-                          >
-                            <XCircle className="size-3.5" />
-                          </button>
-                        </div>
+                    <tr>
+                      <td colSpan={7} className="text-center py-10 text-muted-foreground">
+                        Belum ada peserta yang kirim essay lengkap.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filtered.map((r) => (
+                      <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                        <td className="px-3 py-3">
+                          <button
+                            onClick={() =>
+                              copy(r.registration_code, `Token ${r.registration_code} disalin`)
+                            }
+                            className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25"
+                          >
+                            {r.registration_code} <Copy className="size-3" />
+                          </button>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="font-medium">{r.full_name}</div>
+                          <div className="text-xs text-muted-foreground">{r.education}</div>
+                        </td>
+                        <td className="px-3 py-3 text-xs">
+                          {r.category ? CAT_LABEL[r.category] : "—"}
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="text-xs">{r.email}</div>
+                          <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
+                        </td>
+                        <td className="px-3 py-3 text-xs">{r.city}</td>
+                        <td className="px-3 py-3">
+                          <select
+                            value={r.status}
+                            onChange={(e) => updateStatus(r.id, e.target.value as Status)}
+                            className={
+                              "h-8 rounded-md border px-2 text-xs font-medium " +
+                              STATUS_STYLE[r.status]
+                            }
+                          >
+                            {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+                              <option key={s} value={s}>
+                                {STATUS_LABEL[s]}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => setDetail(r)}
+                              className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md border border-border hover:bg-secondary"
+                              title="Detail"
+                            >
+                              <FileText className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => updateStatus(r.id, "interview")}
+                              disabled={r.status === "interview"}
+                              title="Loloskan"
+                              className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25 disabled:opacity-40"
+                            >
+                              <CheckCircle2 className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => updateStatus(r.id, "rejected")}
+                              disabled={r.status === "rejected"}
+                              title="Tidak loloskan"
+                              className="inline-flex items-center text-xs px-2 py-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-40 dark:bg-red-950/30"
+                            >
+                              <XCircle className="size-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -524,6 +723,16 @@ function PesertaEssayPage() {
         <PendingEssaySection rows={pendingRows} q={q} setQ={setQ} onCopy={copy} />
       )}
 
+      {tab === "contributed_pending" && (
+        <PendingEssaySection
+          rows={contributedPendingRows}
+          q={q}
+          setQ={setQ}
+          onCopy={copy}
+          contributedOnly
+        />
+      )}
+
       {/* Detail dialog */}
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -532,7 +741,12 @@ function PesertaEssayPage() {
               <DialogHeader>
                 <DialogTitle className="font-display text-2xl flex items-center gap-2 flex-wrap">
                   {detail.full_name}
-                  <span className={"text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border " + STATUS_STYLE[detail.status]}>
+                  <span
+                    className={
+                      "text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border " +
+                      STATUS_STYLE[detail.status]
+                    }
+                  >
                     {STATUS_LABEL[detail.status]}
                   </span>
                 </DialogTitle>
@@ -561,7 +775,9 @@ function PesertaEssayPage() {
                 {detail.donation_status === "paid" && (
                   <span className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold border bg-gradient-gold text-emerald-deep border-accent/40">
                     <HeartHandshake className="size-4" /> Donasi Valid
-                    {detail.donation_paid_at ? ` · ${new Date(detail.donation_paid_at).toLocaleDateString("id-ID")}` : ""}
+                    {detail.donation_paid_at
+                      ? ` · ${new Date(detail.donation_paid_at).toLocaleDateString("id-ID")}`
+                      : ""}
                   </span>
                 )}
               </div>
@@ -614,7 +830,9 @@ function Essay({ title, body }: { title: string; body: string }) {
   return (
     <div>
       <div className="text-xs font-semibold text-accent mb-1">{title}</div>
-      <div className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-3 leading-relaxed">{body || "—"}</div>
+      <div className="text-sm whitespace-pre-wrap bg-secondary/40 rounded-lg p-3 leading-relaxed">
+        {body || "—"}
+      </div>
     </div>
   );
 }
@@ -623,19 +841,23 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
   const verdict = row.essay_ai_verdict;
   const percent = row.essay_ai_percent;
   const score = row.essay_ai_score;
-  const verdictMeta = verdict === "layak"
-    ? { label: "AI: LAYAK", cls: "bg-emerald text-white border-emerald" }
-    : verdict === "tidak_layak"
-    ? { label: "AI: TIDAK LAYAK", cls: "bg-red-500 text-white border-red-500" }
-    : verdict === "ragu"
-    ? { label: "AI: RAGU", cls: "bg-amber-500 text-white border-amber-500" }
-    : null;
+  const verdictMeta =
+    verdict === "layak"
+      ? { label: "AI: LAYAK", cls: "bg-emerald text-white border-emerald" }
+      : verdict === "tidak_layak"
+        ? { label: "AI: TIDAK LAYAK", cls: "bg-red-500 text-white border-red-500" }
+        : verdict === "ragu"
+          ? { label: "AI: RAGU", cls: "bg-amber-500 text-white border-amber-500" }
+          : null;
 
   const aiBadgeCls =
-    percent == null ? "bg-secondary text-muted-foreground"
-    : percent >= 70 ? "bg-red-100 text-red-700 border border-red-300"
-    : percent >= 40 ? "bg-amber-100 text-amber-700 border border-amber-300"
-    : "bg-emerald/15 text-emerald border border-emerald/30";
+    percent == null
+      ? "bg-secondary text-muted-foreground"
+      : percent >= 70
+        ? "bg-red-100 text-red-700 border border-red-300"
+        : percent >= 40
+          ? "bg-amber-100 text-amber-700 border border-amber-300"
+          : "bg-emerald/15 text-emerald border border-emerald/30";
 
   return (
     <div className="mt-6 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/5 via-card to-emerald/5 p-4">
@@ -652,8 +874,9 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1 max-w-xl leading-relaxed">
-              Jalankan koreksi otomatis untuk mendapat indikasi penggunaan AI, skor kualitas jawaban, dan rekomendasi
-              kesimpulan layak / tidak layak melanjutkan ke tahap berikutnya.
+              Jalankan koreksi otomatis untuk mendapat indikasi penggunaan AI, skor kualitas
+              jawaban, dan rekomendasi kesimpulan layak / tidak layak melanjutkan ke tahap
+              berikutnya.
             </p>
           </div>
         </div>
@@ -670,24 +893,48 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
       {row.essay_ai_graded_at && (
         <div className="mt-4 grid sm:grid-cols-3 gap-3">
           <div className={`rounded-xl p-3 ${aiBadgeCls}`}>
-            <div className="text-[10px] uppercase tracking-wider opacity-80">Indikasi Penggunaan AI</div>
-            <div className="text-2xl font-display font-bold">{percent ?? "—"}<span className="text-sm font-medium">/100</span></div>
+            <div className="text-[10px] uppercase tracking-wider opacity-80">
+              Indikasi Penggunaan AI
+            </div>
+            <div className="text-2xl font-display font-bold">
+              {percent ?? "—"}
+              <span className="text-sm font-medium">/100</span>
+            </div>
             <div className="text-[11px] opacity-80 mt-0.5">
-              {percent == null ? "—" : percent >= 70 ? "Tinggi (kemungkinan ditulis AI)" : percent >= 40 ? "Sedang" : "Rendah (otentik)"}
+              {percent == null
+                ? "—"
+                : percent >= 70
+                  ? "Tinggi (kemungkinan ditulis AI)"
+                  : percent >= 40
+                    ? "Sedang"
+                    : "Rendah (otentik)"}
             </div>
           </div>
           <div className="rounded-xl p-3 bg-secondary/60 border border-border">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Skor Kualitas</div>
-            <div className="text-2xl font-display font-bold">{score ?? "—"}<span className="text-sm font-medium">/100</span></div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">Kedalaman, relevansi, otentisitas</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Skor Kualitas
+            </div>
+            <div className="text-2xl font-display font-bold">
+              {score ?? "—"}
+              <span className="text-sm font-medium">/100</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">
+              Kedalaman, relevansi, otentisitas
+            </div>
           </div>
           <div className="rounded-xl p-3 border bg-card flex flex-col">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rekomendasi</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Rekomendasi
+            </div>
             {verdictMeta ? (
-              <span className={`inline-flex items-center justify-center text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border mt-1 self-start ${verdictMeta.cls}`}>
+              <span
+                className={`inline-flex items-center justify-center text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border mt-1 self-start ${verdictMeta.cls}`}
+              >
                 {verdictMeta.label}
               </span>
-            ) : <span className="text-sm">—</span>}
+            ) : (
+              <span className="text-sm">—</span>
+            )}
             <div className="text-[11px] text-muted-foreground mt-1">
               Dinilai {new Date(row.essay_ai_graded_at).toLocaleString("id-ID")}
             </div>
@@ -697,14 +944,17 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
 
       {row.essay_ai_summary && (
         <div className="mt-3">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Kesimpulan AI</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            Kesimpulan AI
+          </div>
           <div className="text-sm bg-card border border-border rounded-lg p-3 leading-relaxed whitespace-pre-wrap">
             {row.essay_ai_summary.startsWith("STAFF_AI_JSON:")
               ? "Rekomendasi poin AI staff telah tersimpan. Buka detail koreksi pada halaman staff untuk melihat centang dan highlight bukti."
               : row.essay_ai_summary}
           </div>
           <div className="text-[11px] text-muted-foreground mt-2 italic">
-            Catatan: hasil AI bersifat bantuan/indikasi. Keputusan akhir tetap di tangan tim seleksi.
+            Catatan: hasil AI bersifat bantuan/indikasi. Keputusan akhir tetap di tangan tim
+            seleksi.
           </div>
         </div>
       )}
@@ -713,7 +963,11 @@ function AiGraderCard({ row, busy, onRun }: { row: Row; busy: boolean; onRun: ()
 }
 
 function EssayPublishBox({
-  published, pubBusy, allDecided, pendingCount, onToggle,
+  published,
+  pubBusy,
+  allDecided,
+  pendingCount,
+  onToggle,
 }: {
   published: boolean;
   pubBusy: boolean;
@@ -732,7 +986,9 @@ function EssayPublishBox({
       }`}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className={`shrink-0 size-10 rounded-xl grid place-items-center ${published ? "bg-indigo-600 text-white" : "bg-amber-400 text-white"}`}>
+        <div
+          className={`shrink-0 size-10 rounded-xl grid place-items-center ${published ? "bg-indigo-600 text-white" : "bg-amber-400 text-white"}`}
+        >
           {published ? <Megaphone className="size-5" /> : <EyeOff className="size-5" />}
         </div>
         <div className="min-w-0">
@@ -740,7 +996,9 @@ function EssayPublishBox({
             <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-indigo-600 text-white">
               Tahap 3 · Essay &amp; Studi Kasus
             </span>
-            <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${published ? "bg-emerald text-white" : "bg-amber-500 text-white"}`}>
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${published ? "bg-emerald text-white" : "bg-amber-500 text-white"}`}
+            >
               {published ? "Status: AKTIF" : "Status: NONAKTIF"}
             </span>
           </div>
@@ -767,11 +1025,18 @@ function EssayPublishBox({
               Batal
             </button>
             <button
-              onClick={() => { onToggle(!published); setConfirming(false); }}
+              onClick={() => {
+                onToggle(!published);
+                setConfirming(false);
+              }}
               disabled={pubBusy}
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold text-white shadow-lg ${published ? "bg-red-600 hover:bg-red-700" : "bg-indigo-600 hover:bg-indigo-700"}`}
             >
-              {pubBusy ? <Loader2 className="size-4 animate-spin" /> : <Megaphone className="size-4" />}
+              {pubBusy ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Megaphone className="size-4" />
+              )}
               Ya, {published ? "tarik" : "publish"}
             </button>
           </>
@@ -795,24 +1060,26 @@ function EssayPublishBox({
   );
 }
 
-
 function PendingEssaySection({
   rows,
   q,
   setQ,
   onCopy,
+  contributedOnly = false,
 }: {
   rows: PendingRow[];
   q: string;
   setQ: (s: string) => void;
   onCopy: (txt: string, label?: string) => void;
+  contributedOnly?: boolean;
 }) {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return rows;
     return rows.filter((r) =>
-      [r.full_name, r.email, r.whatsapp, r.city, r.registration_code]
-        .some((v) => v?.toLowerCase().includes(term)),
+      [r.full_name, r.email, r.whatsapp, r.city, r.registration_code].some((v) =>
+        v?.toLowerCase().includes(term),
+      ),
     );
   }, [rows, q]);
 
@@ -823,10 +1090,17 @@ function PendingEssaySection({
     }
 
     const data = rows.map((r, index) => {
-      const essayFilled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
+      const essayFilled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(
+        Boolean,
+      ).length;
       const caseStudyFilled = [
-        r.has_case_study_1, r.has_case_study_2, r.has_case_study_3, r.has_case_study_4,
-        r.has_case_study_5, r.has_case_study_6, r.has_case_study_7,
+        r.has_case_study_1,
+        r.has_case_study_2,
+        r.has_case_study_3,
+        r.has_case_study_4,
+        r.has_case_study_5,
+        r.has_case_study_6,
+        r.has_case_study_7,
       ].filter(Boolean).length;
 
       return {
@@ -849,20 +1123,39 @@ function PendingEssaySection({
         "Studi Kasus 6": r.has_case_study_6 ? "Sudah" : "Belum",
         "Studi Kasus 7": r.has_case_study_7 ? "Sudah" : "Belum",
         "Total Terisi": `${essayFilled + caseStudyFilled}/10`,
-        Status: "Belum Mengirim Lengkap",
-        "Terakhir Diperbarui": r.updated_at
-          ? new Date(r.updated_at).toLocaleString("id-ID")
+        "Status Kontribusi": r.donation_status === "paid" ? "Sudah Valid" : "Belum Valid",
+        "Tanggal Kontribusi": r.donation_paid_at
+          ? new Date(r.donation_paid_at).toLocaleString("id-ID")
           : "-",
+        Status: contributedOnly
+          ? "Sudah Kontribusi, Belum Mengirim Lengkap"
+          : "Belum Mengirim Lengkap",
+        "Terakhir Diperbarui": r.updated_at ? new Date(r.updated_at).toLocaleString("id-ID") : "-",
       };
     });
 
     const ws = XLSX.utils.json_to_sheet(data);
     ws["!cols"] = Object.keys(data[0]).map((key) => ({
-      wch: Math.min(42, Math.max(key.length + 2, ...data.map((row) => String(row[key as keyof typeof row] ?? "").length + 2))),
+      wch: Math.min(
+        42,
+        Math.max(
+          key.length + 2,
+          ...data.map((row) => String(row[key as keyof typeof row] ?? "").length + 2),
+        ),
+      ),
     }));
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Belum Kirim Essay");
-    XLSX.writeFile(wb, `safar-iman-belum-kirim-essay-${Date.now()}.xlsx`);
+    XLSX.utils.book_append_sheet(
+      wb,
+      ws,
+      contributedOnly ? "Kontribusi Belum Kirim" : "Belum Kirim Essay",
+    );
+    XLSX.writeFile(
+      wb,
+      contributedOnly
+        ? `safar-iman-sudah-kontribusi-belum-kirim-${Date.now()}.xlsx`
+        : `safar-iman-belum-kirim-essay-${Date.now()}.xlsx`,
+    );
     toast.success(`${data.length} peserta belum kirim berhasil diekspor`);
   };
 
@@ -876,14 +1169,29 @@ function PendingEssaySection({
 
   return (
     <>
-      <div className="bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-800 rounded-2xl p-4 flex items-start gap-3">
-        <MailQuestion className="size-5 text-amber-600 mt-0.5 shrink-0" />
+      <div
+        className={`${contributedOnly ? "bg-emerald/5 border-emerald/30" : "bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800"} border-2 rounded-2xl p-4 flex items-start gap-3`}
+      >
+        {contributedOnly ? (
+          <HeartHandshake className="size-5 text-emerald mt-0.5 shrink-0" />
+        ) : (
+          <MailQuestion className="size-5 text-amber-600 mt-0.5 shrink-0" />
+        )}
         <div className="text-sm">
-          <div className="font-semibold text-amber-900 dark:text-amber-200">
-            {rows.length} peserta belum mengirim Essay & Studi Kasus
+          <div
+            className={`font-semibold ${contributedOnly ? "text-emerald" : "text-amber-900 dark:text-amber-200"}`}
+          >
+            {rows.length} peserta{" "}
+            {contributedOnly
+              ? "sudah berkontribusi tetapi belum mengirim lengkap"
+              : "belum mengirim Essay & Studi Kasus"}
           </div>
-          <div className="text-xs text-amber-800/80 dark:text-amber-200/70 mt-0.5">
-            Daftar peserta yang sudah lolos tahap Berkas namun belum melengkapi jawaban Essay & Studi Kasus. Hubungi via WhatsApp untuk mengingatkan.
+          <div
+            className={`text-xs mt-0.5 ${contributedOnly ? "text-muted-foreground" : "text-amber-800/80 dark:text-amber-200/70"}`}
+          >
+            {contributedOnly
+              ? "Kontribusi peserta ini sudah valid, tetapi Essay dan Studi Kasus masih kosong atau belum lengkap. Hubungi via WhatsApp untuk mengingatkan."
+              : "Daftar peserta yang sudah lolos tahap Berkas namun belum melengkapi jawaban Essay & Studi Kasus. Hubungi via WhatsApp untuk mengingatkan."}
           </div>
         </div>
       </div>
@@ -891,12 +1199,17 @@ function PendingEssaySection({
       <div className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, kode token, email, WA, kota…" className="pl-9" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Cari nama, kode token, email, WA, kota…"
+            className="pl-9"
+          />
         </div>
         <button
           onClick={exportPendingExcel}
           disabled={rows.length === 0}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 text-white px-4 py-2 text-sm font-semibold shadow-md hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold shadow-md disabled:cursor-not-allowed disabled:opacity-50 ${contributedOnly ? "bg-emerald text-white hover:bg-emerald/90" : "bg-amber-500 text-white hover:bg-amber-600"}`}
         >
           <Download className="size-4" /> Export Semua ({rows.length})
         </button>
@@ -907,76 +1220,113 @@ function PendingEssaySection({
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase text-muted-foreground">
               <tr>
-                <Th>Token</Th><Th>Nama</Th><Th>Kategori</Th><Th>Kontak</Th><Th>Kota</Th><Th>Kelengkapan</Th><Th>Aksi</Th>
+                <Th>Token</Th>
+                <Th>Nama</Th>
+                <Th>Kategori</Th>
+                <Th>Kontak</Th>
+                <Th>Kota</Th>
+                <Th>Kelengkapan</Th>
+                <Th>Aksi</Th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">
-                  🎉 Semua peserta sudah mengirim Essay & Studi Kasus.
-                </td></tr>
-              ) : filtered.map((r) => {
-                const filled = [r.has_essay_worthy, r.has_essay_dream, r.has_essay_contribution].filter(Boolean).length;
-                const csFilled = [
-                  r.has_case_study_1, r.has_case_study_2, r.has_case_study_3, r.has_case_study_4,
-                  r.has_case_study_5, r.has_case_study_6, r.has_case_study_7,
-                ].filter(Boolean).length;
-                const totalFilled = filled + csFilled;
-                const totalAll = 3 + 7;
-                return (
-                  <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
-                    <td className="px-3 py-3">
-                      <button onClick={() => onCopy(r.registration_code, `Token ${r.registration_code} disalin`)} className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25">
-                        {r.registration_code} <Copy className="size-3" />
-                      </button>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="font-medium">{r.full_name}</div>
-                      <div className="text-xs text-muted-foreground">{r.education}</div>
-                    </td>
-                    <td className="px-3 py-3 text-xs">{r.category ? CAT_LABEL[r.category] : "—"}</td>
-                    <td className="px-3 py-3">
-                      <div className="text-xs">{r.email}</div>
-                      <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
-                    </td>
-                    <td className="px-3 py-3 text-xs">{r.city}</td>
-                    <td className="px-3 py-3">
-                      <div className="flex flex-col gap-1">
-                        <span className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                          filled === 0
-                            ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
-                            : filled < 3
-                              ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
-                              : "bg-emerald/15 text-emerald border-emerald/30"
-                        }`}>
-                          {filled}/3 Essay
-                        </span>
-                        <span className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                          csFilled === 0
-                            ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
-                            : csFilled < 7
-                              ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
-                              : "bg-emerald/15 text-emerald border-emerald/30"
-                        }`}>
-                          {csFilled}/7 Studi Kasus
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">Total {totalFilled}/{totalAll}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <a
-                        href={waLink(r.whatsapp, r.full_name, r.registration_code)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
-                        title="Ingatkan via WhatsApp"
-                      >
-                        <MessageCircle className="size-3.5" /> Ingatkan
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
+                <tr>
+                  <td colSpan={7} className="text-center py-10 text-muted-foreground">
+                    🎉 Semua peserta sudah mengirim Essay & Studi Kasus.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((r) => {
+                  const filled = [
+                    r.has_essay_worthy,
+                    r.has_essay_dream,
+                    r.has_essay_contribution,
+                  ].filter(Boolean).length;
+                  const csFilled = [
+                    r.has_case_study_1,
+                    r.has_case_study_2,
+                    r.has_case_study_3,
+                    r.has_case_study_4,
+                    r.has_case_study_5,
+                    r.has_case_study_6,
+                    r.has_case_study_7,
+                  ].filter(Boolean).length;
+                  const totalFilled = filled + csFilled;
+                  const totalAll = 3 + 7;
+                  return (
+                    <tr key={r.id} className="border-t border-border hover:bg-secondary/30">
+                      <td className="px-3 py-3">
+                        <button
+                          onClick={() =>
+                            onCopy(r.registration_code, `Token ${r.registration_code} disalin`)
+                          }
+                          className="inline-flex items-center gap-1 font-mono text-xs px-2 py-1 rounded-md bg-accent/15 text-accent hover:bg-accent/25"
+                        >
+                          {r.registration_code} <Copy className="size-3" />
+                        </button>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="font-medium">{r.full_name}</div>
+                        <div className="text-xs text-muted-foreground">{r.education}</div>
+                        {contributedOnly && (
+                          <div className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-emerald">
+                            <CheckCircle2 className="size-3" /> Kontribusi Valid
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-xs">
+                        {r.category ? CAT_LABEL[r.category] : "—"}
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="text-xs">{r.email}</div>
+                        <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
+                      </td>
+                      <td className="px-3 py-3 text-xs">{r.city}</td>
+                      <td className="px-3 py-3">
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                              filled === 0
+                                ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                                : filled < 3
+                                  ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                                  : "bg-emerald/15 text-emerald border-emerald/30"
+                            }`}
+                          >
+                            {filled}/3 Essay
+                          </span>
+                          <span
+                            className={`inline-flex w-fit items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                              csFilled === 0
+                                ? "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/30"
+                                : csFilled < 7
+                                  ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/30"
+                                  : "bg-emerald/15 text-emerald border-emerald/30"
+                            }`}
+                          >
+                            {csFilled}/7 Studi Kasus
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            Total {totalFilled}/{totalAll}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <a
+                          href={waLink(r.whatsapp, r.full_name, r.registration_code)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1.5 rounded-md bg-emerald/15 text-emerald hover:bg-emerald/25"
+                          title="Ingatkan via WhatsApp"
+                        >
+                          <MessageCircle className="size-3.5" /> Ingatkan
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
