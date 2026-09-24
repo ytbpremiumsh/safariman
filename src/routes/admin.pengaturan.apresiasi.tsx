@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { AdminShell, AdminLoading, useAdminGuard } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/admin/pengaturan/apresiasi")({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/admin/pengaturan/apresiasi")({
 });
 
 const KEYS = [
+  "cek_pengumuman_public_enabled",
   "apresiasi_heading",
   "apresiasi_description",
   "apresiasi_kelas_link",
@@ -34,6 +36,7 @@ const KEYS = [
 ];
 
 const DEFAULTS: Record<string, string> = {
+  cek_pengumuman_public_enabled: "false",
   apresiasi_heading: "Apresiasi & Benefit untuk Peserta",
   apresiasi_description:
     "Tidak ada proses yang sia-sia. Walaupun belum lolos ke tahap berikutnya, Anda tetap mendapatkan kelas online, kajian, akses rekaman, dan E-Sertifikat sebagai bentuk apresiasi atas usaha yang telah diberikan.",
@@ -103,6 +106,45 @@ function ApresiasiSetting() {
         <strong className="text-foreground">E-Sertifikat</strong>, dan{" "}
         <strong className="text-foreground">Akses Rekaman</strong>. Bila link dikosongkan, akan
         tampil sebagai <em>Coming Soon</em> di halaman Kontribusi &amp; Cek Tahapan.
+      </div>
+
+      <div className="bg-card border-2 border-amber-300 rounded-2xl p-5 max-w-3xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div
+            className={`size-11 rounded-xl grid place-items-center shrink-0 ${v.cek_pengumuman_public_enabled === "true" ? "bg-emerald text-white" : "bg-amber-100 text-amber-700"}`}
+          >
+            {v.cek_pengumuman_public_enabled === "true" ? (
+              <Eye className="size-5" />
+            ) : (
+              <EyeOff className="size-5" />
+            )}
+          </div>
+          <div>
+            <div className="font-display text-lg font-semibold">Akses Publik Cek Pengumuman</div>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+              {v.cek_pengumuman_public_enabled === "true"
+                ? "Halaman /cek-pengumuman dapat dibuka peserta."
+                : "Halaman masih tertutup untuk peserta. Admin yang sedang login tetap dapat membukanya sebagai preview."}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <span
+            className={`text-xs font-bold uppercase ${v.cek_pengumuman_public_enabled === "true" ? "text-emerald" : "text-amber-700"}`}
+          >
+            {v.cek_pengumuman_public_enabled === "true" ? "Publik Aktif" : "Publik Nonaktif"}
+          </span>
+          <Switch
+            checked={v.cek_pengumuman_public_enabled === "true"}
+            onCheckedChange={(checked) =>
+              setV((state) => ({
+                ...state,
+                cek_pengumuman_public_enabled: checked ? "true" : "false",
+              }))
+            }
+            aria-label="Aktifkan akses publik halaman cek pengumuman"
+          />
+        </div>
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5 max-w-3xl">
