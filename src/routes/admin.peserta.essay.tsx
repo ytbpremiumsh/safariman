@@ -164,30 +164,11 @@ async function loadAllPendingEssayParticipants(): Promise<PendingRow[]> {
   return Array.from(new Map(allRows.map((row) => [row.id, row])).values());
 }
 
-async function loadAllContributedPendingEssayParticipants(): Promise<PendingRow[]> {
-  const allRows: PendingRow[] = [];
-
-  for (let from = 0; ; from += PENDING_PAGE_SIZE) {
-    const { data, error } = await (supabase.rpc as any)(
-      "list_contributed_pending_essay_participants",
-    ).range(from, from + PENDING_PAGE_SIZE - 1);
-
-    if (error) throw error;
-
-    const page = (data ?? []) as PendingRow[];
-    allRows.push(...page);
-    if (page.length < PENDING_PAGE_SIZE) break;
-  }
-
-  return Array.from(new Map(allRows.map((row) => [row.id, row])).values());
-}
-
 function PesertaEssayPage() {
   const ready = useAdminGuard();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
   const [pendingRows, setPendingRows] = useState<PendingRow[]>([]);
-  const [contributedPendingRows, setContributedPendingRows] = useState<PendingRow[]>([]);
   const [tab, setTab] = useState<"sent" | "pending" | "contributed_pending">("sent");
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
@@ -280,31 +261,22 @@ function PesertaEssayPage() {
 
   const reload = async () => {
     setLoading(true);
-    const [
-      { data, error },
-      pendingResult,
-      contributedPendingResult,
-      settingRes,
-      reviewRes,
-      staffReviewRes,
-    ] = await Promise.all([
-      supabase.rpc("list_essay_complete_participants"),
-      loadAllPendingEssayParticipants()
-        .then((data) => ({ data, error: null as Error | null }))
-        .catch((error: Error) => ({ data: [] as PendingRow[], error })),
-      loadAllContributedPendingEssayParticipants()
-        .then((data) => ({ data, error: null as Error | null }))
-        .catch((error: Error) => ({ data: [] as PendingRow[], error })),
-      supabase
-        .from("app_settings")
-        .select("value")
-        .eq("key", "essay_results_published")
-        .maybeSingle(),
-      supabase.from("admin_essay_reviews").select("participant_id,updated_at"),
-      supabase
-        .from("staff_essay_reviews")
-        .select("participant_id,decision,reviewer_name,reviewed_at,updated_at,scores"),
-    ]);
+    const [{ data, error }, pendingResult, settingRes, reviewRes, staffReviewRes] =
+      await Promise.all([
+        supabase.rpc("list_essay_complete_participants"),
+        loadAllPendingEssayParticipants()
+          .then((data) => ({ data, error: null as Error | null }))
+          .catch((error: Error) => ({ data: [] as PendingRow[], error })),
+        supabase
+          .from("app_settings")
+          .select("value")
+          .eq("key", "essay_results_published")
+          .maybeSingle(),
+        supabase.from("admin_essay_reviews").select("participant_id,updated_at"),
+        supabase
+          .from("staff_essay_reviews")
+          .select("participant_id,decision,reviewer_name,reviewed_at,updated_at,scores"),
+      ]);
     const staffReviews = (staffReviewRes.data ?? []) as StaffDecisionRow[];
     const staffReviewMap = new Map(staffReviews.map((review) => [review.participant_id, review]));
     const adminReviewMap = new Map(
@@ -338,8 +310,6 @@ function PesertaEssayPage() {
       );
     if (pendingResult.error) toast.error(pendingResult.error.message);
     else setPendingRows(pendingResult.data);
-    if (contributedPendingResult.error) toast.error(contributedPendingResult.error.message);
-    else setContributedPendingRows(contributedPendingResult.data);
     setPublished((settingRes.data?.value ?? "false") === "true");
     setLoading(false);
   };
@@ -365,6 +335,11 @@ function PesertaEssayPage() {
         return bt - at;
       });
   }, [rows, q, statusFilter, reviewInfo]);
+
+  const contributedPendingRows = useMemo(
+    () => pendingRows.filter((row) => row.donation_status === "paid"),
+    [pendingRows],
+  );
 
   const stats = useMemo(
     () => ({
