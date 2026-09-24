@@ -18,6 +18,12 @@ import {
 } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { AffiliateLink } from "@/components/AffiliateLink";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import heroImg from "@/assets/hero-jamaah-madinah.jpg";
 import madinahImg from "@/assets/madinah.jpg";
@@ -621,6 +627,11 @@ function Timeline() {
             const c = btnColors[idx % btnColors.length];
             const Icon = getIcon(s.icon);
             const selectorId = getTimelineSelectorId(s, idx);
+            const isEssayAnnouncement =
+              s.title.toLowerCase().includes("pengumuman") &&
+              (s.title.toLowerCase().includes("essay") || s.title.toLowerCase().includes("essai"));
+            const ctaLabel = isEssayAnnouncement ? "Lihat Pengumuman" : s.ctaLabel;
+            const ctaTo = isEssayAnnouncement ? "/cek-pengumuman" : s.ctaTo;
             return (
               <div
                 key={`${idx}-${s.title}`}
@@ -656,15 +667,15 @@ function Timeline() {
                     </div>
                     <h3 className="font-display text-2xl font-semibold mt-2">{s.title}</h3>
                     <p className="text-muted-foreground mt-1 text-sm">{s.desc}</p>
-                    {s.ctaLabel && s.ctaTo && (
+                    {ctaLabel && ctaTo && (
                       <AffiliateLink
                         selectorId={selectorId}
-                        to={s.ctaTo}
+                        to={ctaTo}
                         className={`mt-4 inline-flex items-center gap-1.5 rounded-full ${c.bg} ${c.text} px-4 py-2 text-xs font-semibold ${c.shadow} hover-lift ${
                           idx % 2 === 0 ? "sm:ml-auto" : ""
                         }`}
                       >
-                        {s.ctaLabel}<ArrowRight className="size-3.5" />
+                        {ctaLabel}<ArrowRight className="size-3.5" />
                       </AffiliateLink>
                     )}
                   </div>
@@ -696,7 +707,66 @@ function getTimelineSelectorId(step: TimelineStep, idx: number) {
   if (step.ctaTo === "/twibbon") return "timeline_twibbon";
   if (step.ctaTo === "/berkas") return "timeline_berkas";
   if (step.ctaTo === "/essay") return "timeline_essay";
+  if (
+    step.title.toLowerCase().includes("pengumuman") &&
+    (step.title.toLowerCase().includes("essay") || step.title.toLowerCase().includes("essai"))
+  ) return "timeline_pengumuman_essay";
   return `timeline_${idx + 1}`;
+}
+
+function EssayAnnouncementPopup() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const storageKey = "essay_announcement_seen_v1";
+    if (sessionStorage.getItem(storageKey)) return;
+    const timer = window.setTimeout(() => {
+      setOpen(true);
+      sessionStorage.setItem(storageKey, "true");
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="overflow-hidden border-0 bg-[#f9f5ec] p-0 shadow-2xl sm:max-w-md">
+        <div className="bg-emerald-deep px-6 pb-7 pt-8 text-center text-white">
+          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-accent text-emerald-deep shadow-gold">
+            <Megaphone className="size-7" />
+          </div>
+          <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-accent">
+            Pengumuman Tahap Seleksi
+          </div>
+          <DialogTitle className="mt-2 font-display text-2xl leading-tight sm:text-3xl">
+            Hasil Essay &amp; Studi Kasus
+          </DialogTitle>
+        </div>
+        <div className="px-6 pb-6 pt-5 text-center">
+          <DialogDescription className="text-sm leading-relaxed text-foreground/70">
+            Bismillah, hasil seleksi Essay dan Studi Kasus Safar Iman sudah dapat dilihat melalui
+            halaman pengumuman.
+          </DialogDescription>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            Siapkan kode pendaftaran untuk melihat hasil seleksi masing-masing peserta.
+          </p>
+          <Link
+            to="/cek-pengumuman"
+            onClick={() => setOpen(false)}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-gold px-5 py-3 text-sm font-bold text-emerald-deep shadow-gold hover-lift"
+          >
+            Lihat Pengumuman <ArrowRight className="size-4" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="mt-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Tutup, lihat nanti
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 
@@ -963,6 +1033,7 @@ function SectionHeading({
 function Landing() {
   return (
     <div className="min-h-screen">
+      <EssayAnnouncementPopup />
       <Nav />
       <main>
         <Hero />
