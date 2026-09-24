@@ -718,42 +718,52 @@ function EssayAnnouncementPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const storageKey = "essay_announcement_seen_until_v1";
-    const seenUntil = Number(localStorage.getItem(storageKey) ?? "0");
-    if (seenUntil > Date.now()) return;
+    const storageKey = "essay_announcement_active_until_v2";
+    let activeUntil = Number(localStorage.getItem(storageKey) ?? "0");
+    if (!activeUntil) {
+      activeUntil = Date.now() + 2 * 24 * 60 * 60 * 1000;
+      localStorage.setItem(storageKey, String(activeUntil));
+    }
+    if (Date.now() > activeUntil) return;
     const timer = window.setTimeout(() => {
       setOpen(true);
-      localStorage.setItem(storageKey, String(Date.now() + 2 * 24 * 60 * 60 * 1000));
-    }, 700);
+    }, 500);
     return () => window.clearTimeout(timer);
   }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="overflow-hidden border-0 bg-[#f9f5ec] p-0 shadow-2xl sm:max-w-md">
-        <div className="bg-emerald-deep px-6 pb-7 pt-8 text-center text-white">
-          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-accent text-emerald-deep shadow-gold">
-            <Megaphone className="size-7" />
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-3xl border border-accent/30 bg-[#fbf8f1] p-0 shadow-[0_30px_90px_-25px_rgba(0,45,32,0.65)]">
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-deep via-[#0b4d3b] to-[#073326] px-6 pb-8 pt-9 text-center text-white">
+          <div className="absolute -left-12 -top-12 size-40 rounded-full border border-white/10" />
+          <div className="absolute -right-10 bottom-0 size-32 rounded-full bg-accent/10 blur-2xl" />
+          <div className="relative mx-auto grid size-16 place-items-center rounded-2xl border border-white/20 bg-white/10 text-accent shadow-lg backdrop-blur">
+            <Megaphone className="size-8" />
           </div>
-          <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.25em] text-accent">
+          <div className="relative mt-5 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            <Sparkles className="size-3" />
             Pengumuman Tahap Seleksi
           </div>
-          <DialogTitle className="mt-2 font-display text-2xl leading-tight sm:text-3xl">
+          <DialogTitle className="relative mt-3 font-display text-3xl leading-tight">
             Hasil Essay &amp; Studi Kasus
           </DialogTitle>
+          <p className="relative mt-2 text-xs font-medium text-white/65">Safar Iman 2026</p>
         </div>
-        <div className="px-6 pb-6 pt-5 text-center">
-          <DialogDescription className="text-sm leading-relaxed text-foreground/70">
+        <div className="px-6 pb-7 pt-6 text-center sm:px-8">
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-deep/8 px-3 py-1.5 text-[11px] font-bold text-emerald-deep">
+            <span className="size-2 animate-pulse rounded-full bg-emerald" /> Sudah dapat diakses
+          </div>
+          <DialogDescription className="text-sm leading-6 text-foreground/75">
             Bismillah, hasil seleksi Essay dan Studi Kasus Safar Iman sudah dapat dilihat melalui
             halaman pengumuman.
           </DialogDescription>
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          <p className="mt-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-xs leading-relaxed text-muted-foreground shadow-sm">
             Siapkan kode pendaftaran untuk melihat hasil seleksi masing-masing peserta.
           </p>
           <Link
             to="/cek-pengumuman"
             onClick={() => setOpen(false)}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-gold px-5 py-3 text-sm font-bold text-emerald-deep shadow-gold hover-lift"
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold px-5 py-3.5 text-sm font-bold text-emerald-deep shadow-gold hover-lift"
           >
             Lihat Pengumuman <ArrowRight className="size-4" />
           </Link>
