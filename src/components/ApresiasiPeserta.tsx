@@ -1,40 +1,99 @@
 import { useEffect, useState } from "react";
-import { Sparkles, GraduationCap, MapPin, CheckCircle2, Award, PlayCircle, Calendar, ExternalLink, Clock } from "lucide-react";
+import {
+  Sparkles,
+  GraduationCap,
+  MapPin,
+  CheckCircle2,
+  Award,
+  PlayCircle,
+  Calendar,
+  ExternalLink,
+  Clock,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import apresiasiKelasUrl from "@/assets/apresiasi-kelas-online.jpg";
 import apresiasiSirahUrl from "@/assets/apresiasi-kajian-sirah.jpg";
 
 type Settings = {
+  heading: string;
+  description: string;
   kelas_link: string;
   kelas_tanggal: string;
+  kelas_title: string;
+  kelas_speaker: string;
+  kelas_speaker_desc: string;
   kajian_link: string;
   kajian_tanggal: string;
+  kajian_title: string;
+  kajian_speaker: string;
+  kajian_speaker_desc: string;
   sertifikat_link: string;
+  sertifikat_title: string;
+  sertifikat_desc: string;
   rekaman_link: string;
+  rekaman_title: string;
+  rekaman_desc: string;
 };
 
 export const APRESIASI_KEYS = [
+  "apresiasi_heading",
+  "apresiasi_description",
   "apresiasi_kelas_link",
   "apresiasi_kelas_tanggal",
+  "apresiasi_kelas_title",
+  "apresiasi_kelas_speaker",
+  "apresiasi_kelas_speaker_desc",
   "apresiasi_kajian_link",
   "apresiasi_kajian_tanggal",
+  "apresiasi_kajian_title",
+  "apresiasi_kajian_speaker",
+  "apresiasi_kajian_speaker_desc",
   "apresiasi_sertifikat_link",
+  "apresiasi_sertifikat_title",
+  "apresiasi_sertifikat_desc",
   "apresiasi_rekaman_link",
+  "apresiasi_rekaman_title",
+  "apresiasi_rekaman_desc",
 ] as const;
 
 export function useApresiasiSettings() {
   const [s, setS] = useState<Settings | null>(null);
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("app_settings").select("key,value").in("key", APRESIASI_KEYS as unknown as string[]);
-      const map = Object.fromEntries((data ?? []).map((r: any) => [r.key, r.value ?? ""]));
+      const { data } = await supabase
+        .from("app_settings")
+        .select("key,value")
+        .in("key", APRESIASI_KEYS as unknown as string[]);
+      const map = Object.fromEntries(
+        (data ?? []).map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]),
+      );
       setS({
+        heading: map.apresiasi_heading || "Apresiasi & Benefit untuk Peserta",
+        description:
+          map.apresiasi_description ||
+          "Tidak ada proses yang sia-sia. Walaupun belum lolos ke tahap berikutnya, Anda tetap mendapatkan kelas online, kajian, akses rekaman, dan E-Sertifikat sebagai bentuk apresiasi atas usaha yang telah diberikan.",
         kelas_link: map.apresiasi_kelas_link ?? "",
         kelas_tanggal: map.apresiasi_kelas_tanggal ?? "",
+        kelas_title:
+          map.apresiasi_kelas_title ||
+          "Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur",
+        kelas_speaker: map.apresiasi_kelas_speaker || "Ustadz Ahmad Fauzan, Lc.",
+        kelas_speaker_desc:
+          map.apresiasi_kelas_speaker_desc || "Pembimbing Manasik & Praktisi Umrah",
         kajian_link: map.apresiasi_kajian_link ?? "",
         kajian_tanggal: map.apresiasi_kajian_tanggal ?? "",
+        kajian_title:
+          map.apresiasi_kajian_title || "Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah",
+        kajian_speaker: map.apresiasi_kajian_speaker || "Ustadz Hilman Al Hazmi, Lc.",
+        kajian_speaker_desc:
+          map.apresiasi_kajian_speaker_desc || "Alumni Syariah Islamiyyah Al Azhar University",
         sertifikat_link: map.apresiasi_sertifikat_link ?? "",
+        sertifikat_title: map.apresiasi_sertifikat_title || "E-Sertifikat Resmi",
+        sertifikat_desc:
+          map.apresiasi_sertifikat_desc || "Sertifikat digital setelah menyelesaikan kelas",
         rekaman_link: map.apresiasi_rekaman_link ?? "",
+        rekaman_title: map.apresiasi_rekaman_title || "Akses Rekaman",
+        rekaman_desc: map.apresiasi_rekaman_desc || "Tonton ulang kapan saja.",
       });
     })();
   }, []);
@@ -48,7 +107,15 @@ function formatDate(iso: string) {
   return d.toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" });
 }
 
-export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: { compact?: boolean; hidePlaceholder?: boolean }) {
+export function ApresiasiPeserta({
+  compact = false,
+  hidePlaceholder = false,
+  announcement = false,
+}: {
+  compact?: boolean;
+  hidePlaceholder?: boolean;
+  announcement?: boolean;
+}) {
   const s = useApresiasiSettings();
 
   return (
@@ -59,10 +126,25 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
             <Sparkles className="size-3.5" /> Apresiasi Peserta
           </span>
           <h3 className="mt-5 font-display text-2xl sm:text-3xl font-bold leading-tight max-w-2xl mx-auto">
-            Akses Eksklusif untuk peserta yang berkontribusi
+            {s?.heading || "Apresiasi & Benefit untuk Peserta"}
           </h3>
           <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
-            Ikuti Kelas Online &amp; Kajian Sirah bersama pembimbing terpilih.
+            {s?.description || "Ikuti Kelas Online & Kajian Sirah bersama pembimbing terpilih."}
+          </p>
+        </div>
+      )}
+
+      {announcement && (
+        <div className="mb-5 rounded-xl bg-emerald-deep text-white px-5 py-4">
+          <div className="text-[10px] uppercase tracking-[0.22em] text-accent font-bold">
+            Benefit Tetap Diterima
+          </div>
+          <h3 className="font-display text-xl sm:text-2xl font-bold mt-1">
+            {s?.heading || "Apresiasi & Benefit untuk Peserta"}
+          </h3>
+          <p className="text-sm text-white/80 leading-relaxed mt-2">
+            {s?.description ||
+              "Tidak ada proses yang sia-sia. Benefit apresiasi tetap Anda terima."}
           </p>
         </div>
       )}
@@ -70,7 +152,12 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
       <div className="grid sm:grid-cols-2 gap-5">
         <div className="bg-card border-2 border-emerald/30 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
           <div className="relative aspect-[4/3] overflow-hidden bg-emerald/5">
-            <img src={apresiasiKelasUrl} alt="Kelas Online" loading="lazy" className="absolute inset-0 size-full object-cover" />
+            <img
+              src={apresiasiKelasUrl}
+              alt="Kelas Online"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover"
+            />
             <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-emerald text-white pl-1.5 pr-2.5 py-1 rounded-full shadow-emerald">
               <Sparkles className="size-2.5" /> Eksklusif
             </span>
@@ -79,22 +166,40 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
             </div>
           </div>
           <div className="p-5 flex flex-col flex-1">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kelas Online</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">
+              Kelas Online
+            </div>
             <h4 className="text-base sm:text-lg font-semibold mt-1.5 leading-snug">
-              Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur
+              {s?.kelas_title ||
+                "Sekolah Tamu Allah: Bedah Persiapan Umrohmu, Kembali dengan Mabrur"}
             </h4>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-              Bersama <span className="font-semibold text-foreground">Ustadz Ahmad Fauzan, Lc.</span>
+              Bersama{" "}
+              <span className="font-semibold text-foreground">
+                {s?.kelas_speaker || "Ustadz Ahmad Fauzan, Lc."}
+              </span>
               <br />
-              <span className="text-xs">Pembimbing Manasik &amp; Praktisi Umrah</span>
+              <span className="text-xs">
+                {s?.kelas_speaker_desc || "Pembimbing Manasik & Praktisi Umrah"}
+              </span>
             </p>
-            <ScheduleRow date={s?.kelas_tanggal ?? ""} link={s?.kelas_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
+            <ScheduleRow
+              date={s?.kelas_tanggal ?? ""}
+              link={s?.kelas_link ?? ""}
+              loading={!s}
+              hidePlaceholder={hidePlaceholder}
+            />
           </div>
         </div>
 
         <div className="bg-card border-2 border-accent/40 rounded-2xl overflow-hidden hover-lift flex flex-col relative shadow-soft">
           <div className="relative aspect-[4/3] overflow-hidden bg-accent/5">
-            <img src={apresiasiSirahUrl} alt="Kajian Sirah" loading="lazy" className="absolute inset-0 size-full object-cover" />
+            <img
+              src={apresiasiSirahUrl}
+              alt="Kajian Sirah"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover"
+            />
             <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold bg-gradient-gold text-emerald-deep pl-1.5 pr-2.5 py-1 rounded-full shadow-gold">
               <Sparkles className="size-2.5" /> Eksklusif
             </span>
@@ -103,16 +208,28 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
             </div>
           </div>
           <div className="p-5 flex flex-col flex-1">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">Kajian</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">
+              Kajian
+            </div>
             <h4 className="text-base sm:text-lg font-semibold mt-1.5 leading-snug">
-              Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah
+              {s?.kajian_title || "Mengenal Sirah Haramain: Bekal Sebelum ke Baitullah"}
             </h4>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-              Bersama <span className="font-semibold text-foreground">Ustadz Hilman Al Hazmi, Lc.</span>
+              Bersama{" "}
+              <span className="font-semibold text-foreground">
+                {s?.kajian_speaker || "Ustadz Hilman Al Hazmi, Lc."}
+              </span>
               <br />
-              <span className="text-xs">Alumni Syariah Islamiyyah Al Azhar University</span>
+              <span className="text-xs">
+                {s?.kajian_speaker_desc || "Alumni Syariah Islamiyyah Al Azhar University"}
+              </span>
             </p>
-            <ScheduleRow date={s?.kajian_tanggal ?? ""} link={s?.kajian_link ?? ""} loading={!s} hidePlaceholder={hidePlaceholder} />
+            <ScheduleRow
+              date={s?.kajian_tanggal ?? ""}
+              link={s?.kajian_link ?? ""}
+              loading={!s}
+              hidePlaceholder={hidePlaceholder}
+            />
           </div>
         </div>
       </div>
@@ -120,16 +237,16 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
       <div className="mt-5 grid sm:grid-cols-2 gap-3">
         <BenefitButton
           icon={Award}
-          title="E-Sertifikat Resmi"
-          desc="Sertifikat digital setelah menyelesaikan kelas"
+          title={s?.sertifikat_title || "E-Sertifikat Resmi"}
+          desc={s?.sertifikat_desc || "Sertifikat digital setelah menyelesaikan kelas"}
           link={s?.sertifikat_link ?? ""}
           loading={!s}
           hidePlaceholder={hidePlaceholder}
         />
         <BenefitButton
           icon={PlayCircle}
-          title="Akses Rekaman"
-          desc="Tonton ulang kapan saja."
+          title={s?.rekaman_title || "Akses Rekaman"}
+          desc={s?.rekaman_desc || "Tonton ulang kapan saja."}
           link={s?.rekaman_link ?? ""}
           loading={!s}
           hidePlaceholder={hidePlaceholder}
@@ -139,7 +256,17 @@ export function ApresiasiPeserta({ compact = false, hidePlaceholder = false }: {
   );
 }
 
-function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
+function ScheduleRow({
+  date,
+  link,
+  loading,
+  hidePlaceholder = false,
+}: {
+  date: string;
+  link: string;
+  loading: boolean;
+  hidePlaceholder?: boolean;
+}) {
   // When hidePlaceholder is true and there is neither a date nor a link, hide the row entirely.
   if (hidePlaceholder && !loading && !date && !link) return null;
   return (
@@ -149,7 +276,13 @@ function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: s
           <Calendar className="size-3.5 text-emerald shrink-0" />
           <span className="text-muted-foreground">Tanggal Pelaksanaan:</span>
           <span className="font-semibold text-foreground">
-            {loading ? "…" : date ? formatDate(date) : <span className="text-amber-600">Coming Soon</span>}
+            {loading ? (
+              "…"
+            ) : date ? (
+              formatDate(date)
+            ) : (
+              <span className="text-amber-600">Coming Soon</span>
+            )}
           </span>
         </div>
       )}
@@ -174,10 +307,21 @@ function ScheduleRow({ date, link, loading, hidePlaceholder = false }: { date: s
   );
 }
 
-
 function BenefitButton({
-  icon: Icon, title, desc, link, loading, hidePlaceholder = false,
-}: { icon: typeof Award; title: string; desc: string; link: string; loading: boolean; hidePlaceholder?: boolean }) {
+  icon: Icon,
+  title,
+  desc,
+  link,
+  loading,
+  hidePlaceholder = false,
+}: {
+  icon: typeof Award;
+  title: string;
+  desc: string;
+  link: string;
+  loading: boolean;
+  hidePlaceholder?: boolean;
+}) {
   const disabled = !link;
   const inner = (
     <>
@@ -187,10 +331,16 @@ function BenefitButton({
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-sm flex items-center gap-1.5">
           {title}
-          {!loading && (disabled
-            ? (hidePlaceholder ? null : <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950/40">Coming Soon</span>)
-            : <ExternalLink className="size-3 text-emerald" />
-          )}
+          {!loading &&
+            (disabled ? (
+              hidePlaceholder ? null : (
+                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950/40">
+                  Coming Soon
+                </span>
+              )
+            ) : (
+              <ExternalLink className="size-3 text-emerald" />
+            ))}
         </div>
         <div className="text-xs text-muted-foreground leading-relaxed">{desc}</div>
       </div>
