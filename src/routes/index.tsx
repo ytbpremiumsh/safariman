@@ -718,13 +718,9 @@ function EssayAnnouncementPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const storageKey = "essay_announcement_active_until_v2";
-    let activeUntil = Number(localStorage.getItem(storageKey) ?? "0");
-    if (!activeUntil) {
-      activeUntil = Date.now() + 2 * 24 * 60 * 60 * 1000;
-      localStorage.setItem(storageKey, String(activeUntil));
-    }
-    if (Date.now() > activeUntil) return;
+    // Aktif sampai akhir 26 September 2026 WIB (periode pengumuman 2 hari).
+    const announcementEndsAt = Date.parse("2026-09-27T00:00:00+07:00");
+    if (Date.now() >= announcementEndsAt) return;
     const timer = window.setTimeout(() => {
       setOpen(true);
     }, 500);
