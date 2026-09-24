@@ -718,11 +718,12 @@ function EssayAnnouncementPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const storageKey = "essay_announcement_seen_v1";
-    if (sessionStorage.getItem(storageKey)) return;
+    const storageKey = "essay_announcement_seen_until_v1";
+    const seenUntil = Number(localStorage.getItem(storageKey) ?? "0");
+    if (seenUntil > Date.now()) return;
     const timer = window.setTimeout(() => {
       setOpen(true);
-      sessionStorage.setItem(storageKey, "true");
+      localStorage.setItem(storageKey, String(Date.now() + 2 * 24 * 60 * 60 * 1000));
     }, 700);
     return () => window.clearTimeout(timer);
   }, []);
