@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Award,
   BookOpenCheck,
   CheckCircle2,
   Clock,
+  Eye,
+  EyeOff,
   FileCheck2,
   HandCoins,
   KeyRound,
@@ -52,10 +54,41 @@ type LookupRow = {
 };
 
 function CekPengumumanPage() {
+  const [accessChecking, setAccessChecking] = useState(true);
+  const [publicEnabled, setPublicEnabled] = useState(false);
+  const [adminPreview, setAdminPreview] = useState(false);
   const [code, setCode] = useState("");
   const [searching, setSearching] = useState(false);
   const [data, setData] = useState<LookupRow | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const [{ data: setting }, { data: sessionData }] = await Promise.all([
+        supabase
+          .from("app_settings")
+          .select("value")
+          .eq("key", "cek_pengumuman_public_enabled")
+          .maybeSingle(),
+        supabase.auth.getSession(),
+      ]);
+      const isPublic = setting?.value === "true";
+      let isAdmin = false;
+      const userId = sessionData.session?.user.id;
+      if (userId) {
+        const roleResult = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+        isAdmin = roleResult.data === true;
+      }
+      if (!active) return;
+      setPublicEnabled(isPublic);
+      setAdminPreview(!isPublic && isAdmin);
+      setAccessChecking(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -77,6 +110,49 @@ function CekPengumumanPage() {
     }
     setData(participant);
   };
+
+  if (accessChecking) {
+    return (
+      <div className="min-h-screen bg-[#f6f1e7] grid place-items-center">
+        <div className="text-center text-[#0d392e]">
+          <Loader2 className="size-7 animate-spin mx-auto" />
+          <p className="text-sm mt-3 text-[#61756e]">Memeriksa akses pengumuman…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!publicEnabled && !adminPreview) {
+    return (
+      <div className="min-h-screen bg-[#f6f1e7] text-[#0d392e]">
+        <header className="border-b border-[#dfd4bd] bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 h-17 flex items-center justify-between">
+            <Link to="/">
+              <img src={logoSafarIman} alt="Safar Iman" className="h-10 w-auto object-contain" />
+            </Link>
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold">
+              <ArrowLeft className="size-3.5" /> Beranda
+            </Link>
+          </div>
+        </header>
+        <main className="max-w-2xl mx-auto px-4 py-20 sm:py-28 text-center">
+          <div className="size-16 rounded-2xl bg-[#0d4739] text-[#e8c66e] grid place-items-center mx-auto">
+            <EyeOff className="size-8" />
+          </div>
+          <div className="text-[10px] uppercase tracking-[0.24em] font-bold text-[#9a741f] mt-6">
+            Pengumuman Belum Dibuka
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold mt-2">
+            Halaman Cek Pengumuman Belum Tersedia
+          </h1>
+          <p className="text-sm sm:text-base text-[#61756e] leading-relaxed mt-4">
+            Hasil seleksi masih dipersiapkan. Silakan kembali lagi setelah pengumuman resmi dibuka
+            oleh panitia Safar Iman.
+          </p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f6f1e7] text-[#0d392e]">
@@ -113,6 +189,12 @@ function CekPengumumanPage() {
       </section>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-14 -mt-5 relative z-10">
+        {adminPreview && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 flex items-center gap-2">
+            <Eye className="size-4 shrink-0" /> Mode preview admin — halaman ini masih tertutup
+            untuk publik.
+          </div>
+        )}
         <form
           onSubmit={submit}
           className="rounded-2xl border border-[#dfd4bd] bg-white p-4 sm:p-5 shadow-lg shadow-black/5"
