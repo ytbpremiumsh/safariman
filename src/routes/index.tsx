@@ -87,6 +87,7 @@ function Nav() {
   const links = [
     { href: "#program", label: "Program" },
     { href: "#timeline", label: "Timeline" },
+    { href: "/peserta", label: "Dashboard Peserta" },
     { href: "/cek-tahapan", label: "Cek Tahapan" },
     { href: "/tentang", label: "Tentang" },
   ];
