@@ -394,12 +394,7 @@ function Benefits() {
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/30 to-background" />
       <IslamicPattern className="absolute inset-0 size-full text-accent/[0.04]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeading
-          eyebrow="Program Benefit"
-          title={<>Lebih dari sekadar <span className="text-gradient-emerald">perjalanan</span></>}
-          subtitle="Sebuah pengalaman transformatif yang menggabungkan ibadah, ilmu, dan kontribusi."
-        />
-        <div className="mx-auto mt-10 flex max-w-3xl flex-col items-center gap-5 rounded-3xl border border-accent/30 bg-card px-6 py-6 text-center shadow-soft sm:flex-row sm:justify-between sm:px-8 sm:text-left">
+        <div className="mx-auto mb-14 flex max-w-3xl flex-col items-center gap-5 rounded-3xl border border-accent/30 bg-card px-6 py-6 text-center shadow-soft sm:flex-row sm:justify-between sm:px-8 sm:text-left">
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:text-left">
             <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-deep text-accent shadow-emerald">
               <BadgeCheck className="size-6" />
@@ -423,6 +418,11 @@ function Benefits() {
             Cek Pengumuman <ArrowRight className="size-4" />
           </Link>
         </div>
+        <SectionHeading
+          eyebrow="Program Benefit"
+          title={<>Lebih dari sekadar <span className="text-gradient-emerald">perjalanan</span></>}
+          subtitle="Sebuah pengalaman transformatif yang menggabungkan ibadah, ilmu, dan kontribusi."
+        />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-16">
           {items.map((b, idx) => {
             const isEmerald = b.variant === "emerald";
