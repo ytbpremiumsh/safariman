@@ -399,6 +399,30 @@ function Benefits() {
           title={<>Lebih dari sekadar <span className="text-gradient-emerald">perjalanan</span></>}
           subtitle="Sebuah pengalaman transformatif yang menggabungkan ibadah, ilmu, dan kontribusi."
         />
+        <div className="mx-auto mt-10 flex max-w-3xl flex-col items-center gap-5 rounded-3xl border border-accent/30 bg-card px-6 py-6 text-center shadow-soft sm:flex-row sm:justify-between sm:px-8 sm:text-left">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:text-left">
+            <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-deep text-accent shadow-emerald">
+              <BadgeCheck className="size-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                Lolos Essay &amp; Studi Kasus
+              </p>
+              <h3 className="mt-1 font-display text-xl font-semibold text-emerald-deep">
+                Akses Dashboard Peserta
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Lihat informasi tahapan selanjutnya melalui halaman pengumuman.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/cek-pengumuman"
+            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-gold px-5 py-3 text-sm font-bold text-emerald-deep shadow-gold transition-transform hover:-translate-y-0.5 sm:w-auto"
+          >
+            Cek Pengumuman <ArrowRight className="size-4" />
+          </Link>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-16">
           {items.map((b, idx) => {
             const isEmerald = b.variant === "emerald";
@@ -718,8 +742,8 @@ function EssayAnnouncementPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Aktif sampai akhir 26 September 2026 WIB (periode pengumuman 2 hari).
-    const announcementEndsAt = Date.parse("2026-09-27T00:00:00+07:00");
+    // Diperpanjang 1 hari: aktif sampai akhir 27 September 2026 WIB.
+    const announcementEndsAt = Date.parse("2026-09-28T00:00:00+07:00");
     if (Date.now() >= announcementEndsAt) return;
     const timer = window.setTimeout(() => {
       setOpen(true);
