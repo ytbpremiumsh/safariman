@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as CekHasilRouteImport } from './routes/cek-hasil'
+import { Route as CekPengumumanRouteImport } from './routes/cek-pengumuman'
 import { Route as CekTahapanRouteImport } from './routes/cek-tahapan'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as DaftarGelombang1RouteImport } from './routes/daftar-gelombang-1'
@@ -20,11 +21,13 @@ import { Route as DaftarMandiriRouteImport } from './routes/daftar-mandiri'
 import { Route as EssayRouteImport } from './routes/essay'
 import { Route as EssaySuksesRouteImport } from './routes/essay-sukses'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as InterviewRouteImport } from './routes/interview'
 import { Route as KontribusiRouteImport } from './routes/kontribusi'
 import { Route as KontribusiSuksesRouteImport } from './routes/kontribusi-sukses'
 import { Route as PanduanRouteImport } from './routes/panduan'
 import { Route as PendaftaranRouteImport } from './routes/pendaftaran'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran-sukses'
+import { Route as PesertaRouteImport } from './routes/peserta'
 import { Route as StatistikRouteImport } from './routes/statistik'
 import { Route as SuksesRouteImport } from './routes/sukses'
 import { Route as TentangRouteImport } from './routes/tentang'
@@ -92,6 +95,11 @@ const CekHasilRoute = CekHasilRouteImport.update({
   path: '/cek-hasil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CekPengumumanRoute = CekPengumumanRouteImport.update({
+  id: '/cek-pengumuman',
+  path: '/cek-pengumuman',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CekTahapanRoute = CekTahapanRouteImport.update({
   id: '/cek-tahapan',
   path: '/cek-tahapan',
@@ -132,6 +140,11 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InterviewRoute = InterviewRouteImport.update({
+  id: '/interview',
+  path: '/interview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KontribusiRoute = KontribusiRouteImport.update({
   id: '/kontribusi',
   path: '/kontribusi',
@@ -155,6 +168,11 @@ const PendaftaranRoute = PendaftaranRouteImport.update({
 const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
   id: '/pendaftaran-sukses',
   path: '/pendaftaran-sukses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesertaRoute = PesertaRouteImport.update({
+  id: '/peserta',
+  path: '/peserta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatistikRoute = StatistikRouteImport.update({
@@ -436,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-pengumuman': typeof CekPengumumanRoute
   '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
@@ -444,11 +463,13 @@ export interface FileRoutesByFullPath {
   '/essay': typeof EssayRoute
   '/essay-sukses': typeof EssaySuksesRoute
   '/faq': typeof FaqRoute
+  '/interview': typeof InterviewRoute
   '/kontribusi': typeof KontribusiRoute
   '/kontribusi-sukses': typeof KontribusiSuksesRoute
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/peserta': typeof PesertaRoute
   '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
@@ -505,6 +526,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-pengumuman': typeof CekPengumumanRoute
   '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
@@ -513,11 +535,13 @@ export interface FileRoutesByTo {
   '/essay': typeof EssayRoute
   '/essay-sukses': typeof EssaySuksesRoute
   '/faq': typeof FaqRoute
+  '/interview': typeof InterviewRoute
   '/kontribusi': typeof KontribusiRoute
   '/kontribusi-sukses': typeof KontribusiSuksesRoute
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/peserta': typeof PesertaRoute
   '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
@@ -573,6 +597,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
+  '/cek-pengumuman': typeof CekPengumumanRoute
   '/cek-tahapan': typeof CekTahapanRoute
   '/daftar': typeof DaftarRoute
   '/daftar-gelombang-1': typeof DaftarGelombang1Route
@@ -581,11 +606,13 @@ export interface FileRoutesById {
   '/essay': typeof EssayRoute
   '/essay-sukses': typeof EssaySuksesRoute
   '/faq': typeof FaqRoute
+  '/interview': typeof InterviewRoute
   '/kontribusi': typeof KontribusiRoute
   '/kontribusi-sukses': typeof KontribusiSuksesRoute
   '/panduan': typeof PanduanRoute
   '/pendaftaran': typeof PendaftaranRoute
   '/pendaftaran-sukses': typeof PendaftaranSuksesRoute
+  '/peserta': typeof PesertaRoute
   '/statistik': typeof StatistikRoute
   '/sukses': typeof SuksesRoute
   '/tentang': typeof TentangRoute
@@ -644,6 +671,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-pengumuman'
     | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
@@ -652,11 +680,13 @@ export interface FileRouteTypes {
     | '/essay'
     | '/essay-sukses'
     | '/faq'
+    | '/interview'
     | '/kontribusi'
     | '/kontribusi-sukses'
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/peserta'
     | '/statistik'
     | '/sukses'
     | '/tentang'
@@ -713,6 +743,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-pengumuman'
     | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
@@ -721,11 +752,13 @@ export interface FileRouteTypes {
     | '/essay'
     | '/essay-sukses'
     | '/faq'
+    | '/interview'
     | '/kontribusi'
     | '/kontribusi-sukses'
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/peserta'
     | '/statistik'
     | '/sukses'
     | '/tentang'
@@ -780,6 +813,7 @@ export interface FileRouteTypes {
     | '/'
     | '/berkas'
     | '/cek-hasil'
+    | '/cek-pengumuman'
     | '/cek-tahapan'
     | '/daftar'
     | '/daftar-gelombang-1'
@@ -788,11 +822,13 @@ export interface FileRouteTypes {
     | '/essay'
     | '/essay-sukses'
     | '/faq'
+    | '/interview'
     | '/kontribusi'
     | '/kontribusi-sukses'
     | '/panduan'
     | '/pendaftaran'
     | '/pendaftaran-sukses'
+    | '/peserta'
     | '/statistik'
     | '/sukses'
     | '/tentang'
@@ -850,6 +886,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BerkasRoute: typeof BerkasRoute
   CekHasilRoute: typeof CekHasilRoute
+  CekPengumumanRoute: typeof CekPengumumanRoute
   CekTahapanRoute: typeof CekTahapanRoute
   DaftarRoute: typeof DaftarRoute
   DaftarGelombang1Route: typeof DaftarGelombang1Route
@@ -858,11 +895,13 @@ export interface RootRouteChildren {
   EssayRoute: typeof EssayRoute
   EssaySuksesRoute: typeof EssaySuksesRoute
   FaqRoute: typeof FaqRoute
+  InterviewRoute: typeof InterviewRoute
   KontribusiRoute: typeof KontribusiRoute
   KontribusiSuksesRoute: typeof KontribusiSuksesRoute
   PanduanRoute: typeof PanduanRoute
   PendaftaranRoute: typeof PendaftaranRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
+  PesertaRoute: typeof PesertaRoute
   StatistikRoute: typeof StatistikRoute
   SuksesRoute: typeof SuksesRoute
   TentangRoute: typeof TentangRoute
@@ -934,6 +973,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CekHasilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cek-pengumuman': {
+      id: '/cek-pengumuman'
+      path: '/cek-pengumuman'
+      fullPath: '/cek-pengumuman'
+      preLoaderRoute: typeof CekPengumumanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cek-tahapan': {
       id: '/cek-tahapan'
       path: '/cek-tahapan'
@@ -990,6 +1036,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/interview': {
+      id: '/interview'
+      path: '/interview'
+      fullPath: '/interview'
+      preLoaderRoute: typeof InterviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kontribusi': {
       id: '/kontribusi'
       path: '/kontribusi'
@@ -1023,6 +1076,13 @@ declare module '@tanstack/react-router' {
       path: '/pendaftaran-sukses'
       fullPath: '/pendaftaran-sukses'
       preLoaderRoute: typeof PendaftaranSuksesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/peserta': {
+      id: '/peserta'
+      path: '/peserta'
+      fullPath: '/peserta'
+      preLoaderRoute: typeof PesertaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/statistik': {
@@ -1421,6 +1481,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BerkasRoute: BerkasRoute,
   CekHasilRoute: CekHasilRoute,
+  CekPengumumanRoute: CekPengumumanRoute,
   CekTahapanRoute: CekTahapanRoute,
   DaftarRoute: DaftarRoute,
   DaftarGelombang1Route: DaftarGelombang1Route,
@@ -1429,11 +1490,13 @@ const rootRouteChildren: RootRouteChildren = {
   EssayRoute: EssayRoute,
   EssaySuksesRoute: EssaySuksesRoute,
   FaqRoute: FaqRoute,
+  InterviewRoute: InterviewRoute,
   KontribusiRoute: KontribusiRoute,
   KontribusiSuksesRoute: KontribusiSuksesRoute,
   PanduanRoute: PanduanRoute,
   PendaftaranRoute: PendaftaranRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
+  PesertaRoute: PesertaRoute,
   StatistikRoute: StatistikRoute,
   SuksesRoute: SuksesRoute,
   TentangRoute: TentangRoute,
