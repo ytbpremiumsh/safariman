@@ -4,7 +4,7 @@ import {
   ArrowLeft, LayoutDashboard, Users, UserCheck, FileText, Settings, LogOut, Loader2,
   Route as RouteIcon, ClipboardList, MessageSquare, ChevronDown,
   Layers, Image as ImageIcon, Clock, BookOpen, HeartHandshake, Megaphone,
-  Search, MessageSquareText, FolderOpen, BarChart3, ShieldCheck
+  Search, MessageSquareText, FolderOpen, BarChart3, ShieldCheck, UsersRound
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -39,6 +39,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/admin/peserta/essay", label: "Essay & Studi Kasus", icon: FileText, keywords: "essay tulisan studi kasus nilai grading ai" },
       { to: "/admin/peserta/kontribusi", label: "Kontribusi Valid", icon: HeartHandshake, keywords: "donasi kontribusi pembayaran valid mayar" },
       { to: "/admin/peserta/tahapan", label: "Tahapan TKA & Interview", icon: Layers, keywords: "tka test kesiapan awal interview wawancara tahap seleksi hasil" },
+      { to: "/interview", label: "10 Peserta Interview", icon: UsersRound, keywords: "kandidat interview identitas pendaftaran essay studi kasus pertimbangan wawancara" },
     ],
   },
 
