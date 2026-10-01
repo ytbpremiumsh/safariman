@@ -140,7 +140,7 @@ function valueOrDash(value: string | null | undefined) {
 }
 
 async function fetchInterviewParticipants(password: string) {
-  const rpc = supabase.rpc as unknown as (
+  const rpc = supabase.rpc.bind(supabase) as unknown as (
     functionName: string,
     args: { _password: string },
   ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
@@ -161,32 +161,42 @@ function InterviewPage() {
     const cleanPassword = value.trim();
     if (!cleanPassword) return;
     if (!silent) setChecking(true);
-    const { data, error } = await fetchInterviewParticipants(cleanPassword);
-    if (!silent) setChecking(false);
+    try {
+      const { data, error } = await Promise.race([
+        fetchInterviewParticipants(cleanPassword),
+        new Promise<never>((_, reject) =>
+          window.setTimeout(() => reject(new Error("request_timeout")), 15000),
+        ),
+      ]);
 
-    if (error) {
-      if (!silent) setErrorMessage("Gagal menghubungi server. Silakan coba lagi.");
-      return;
-    }
-
-    const response = data as InterviewResponse;
-    if (!response?.ok) {
-      localStorage.removeItem(PASSWORD_STORAGE_KEY);
-      setUnlocked(false);
-      if (!silent) {
-        setErrorMessage(
-          response?.error === "not_configured"
-            ? "Password statistik belum diatur oleh admin."
-            : "Password salah.",
-        );
+      if (error) {
+        if (!silent) setErrorMessage("Gagal menghubungi server. Silakan coba lagi.");
+        return;
       }
-      return;
-    }
 
-    localStorage.setItem(PASSWORD_STORAGE_KEY, cleanPassword);
-    setParticipants(response.participants ?? []);
-    setUnlocked(true);
-    setErrorMessage("");
+      const response = data as InterviewResponse;
+      if (!response?.ok) {
+        localStorage.removeItem(PASSWORD_STORAGE_KEY);
+        setUnlocked(false);
+        if (!silent) {
+          setErrorMessage(
+            response?.error === "not_configured"
+              ? "Password statistik belum diatur oleh admin."
+              : "Password salah.",
+          );
+        }
+        return;
+      }
+
+      localStorage.setItem(PASSWORD_STORAGE_KEY, cleanPassword);
+      setParticipants(response.participants ?? []);
+      setUnlocked(true);
+      setErrorMessage("");
+    } catch {
+      if (!silent) setErrorMessage("Server tidak merespons. Silakan coba lagi.");
+    } finally {
+      if (!silent) setChecking(false);
+    }
   };
 
   useEffect(() => {
