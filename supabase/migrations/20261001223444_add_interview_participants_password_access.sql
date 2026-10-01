@@ -1,4 +1,4 @@
-+-- Password-protected, read-only dataset for the external interview panel.
+-- Password-protected, read-only dataset for the external interview panel.
 -- The password deliberately follows the existing stats_password setting.
 create or replace function public.get_interview_participants_with_password(_password text)
 returns jsonb
