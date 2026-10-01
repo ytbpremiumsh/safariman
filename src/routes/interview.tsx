@@ -9,15 +9,18 @@ import {
   FileText,
   GraduationCap,
   IdCard,
+  Loader2,
+  Lock,
+  LogOut,
   Mail,
   MapPin,
   Phone,
   Search,
+  ShieldCheck,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import { toast } from "sonner";
-import { AdminLoading, AdminShell, useAdminGuard } from "@/components/AdminShell";
 import {
   Dialog,
   DialogContent,
@@ -28,9 +31,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import logoSafarIman from "@/assets/logo-safar-iman.png";
 
 export const Route = createFileRoute("/interview")({
-  head: () => ({ meta: [{ title: "Peserta Interview — Safar Iman Admin" }] }),
+  head: () => ({
+    meta: [
+      { title: "Peserta Interview — Safar Iman" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: InterviewPage,
 });
 
@@ -85,6 +94,9 @@ const PARTICIPANT_FIELDS = [
 type Participant = Pick<Tables<"participants">, (typeof PARTICIPANT_FIELDS)[number]>;
 type CandidateRow = (typeof INTERVIEW_CANDIDATES)[number] & { participant: Participant | null };
 type DetailMode = "identity" | "essay";
+type InterviewResponse = { ok: boolean; error?: string; participants?: Participant[] };
+
+const PASSWORD_STORAGE_KEY = "safar_stats_pw";
 
 const CATEGORY_LABEL: Record<string, string> = {
   fully_funded: "Fully Funded",
@@ -127,39 +139,68 @@ function valueOrDash(value: string | null | undefined) {
   return value?.trim() || "—";
 }
 
+async function fetchInterviewParticipants(password: string) {
+  const rpc = supabase.rpc as unknown as (
+    functionName: string,
+    args: { _password: string },
+  ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  return rpc("get_interview_participants_with_password", { _password: password });
+}
+
 function InterviewPage() {
-  const ready = useAdminGuard();
-  const [loading, setLoading] = useState(true);
+  const [password, setPassword] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<CandidateRow | null>(null);
   const [mode, setMode] = useState<DetailMode>("identity");
 
-  useEffect(() => {
-    if (!ready) return;
-    let cancelled = false;
-    void (async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("participants")
-        .select(PARTICIPANT_FIELDS.join(","))
-        .in(
-          "registration_code",
-          INTERVIEW_CANDIDATES.map((candidate) => candidate.code),
+  const unlock = async (value: string, silent = false) => {
+    const cleanPassword = value.trim();
+    if (!cleanPassword) return;
+    if (!silent) setChecking(true);
+    const { data, error } = await fetchInterviewParticipants(cleanPassword);
+    if (!silent) setChecking(false);
+
+    if (error) {
+      if (!silent) setErrorMessage("Gagal menghubungi server. Silakan coba lagi.");
+      return;
+    }
+
+    const response = data as InterviewResponse;
+    if (!response?.ok) {
+      localStorage.removeItem(PASSWORD_STORAGE_KEY);
+      setUnlocked(false);
+      if (!silent) {
+        setErrorMessage(
+          response?.error === "not_configured"
+            ? "Password statistik belum diatur oleh admin."
+            : "Password salah.",
         );
-      if (cancelled) return;
-      if (error) {
-        toast.error(`Data peserta interview belum dapat dimuat: ${error.message}`);
-        setParticipants([]);
-      } else {
-        setParticipants((data ?? []) as unknown as Participant[]);
       }
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [ready]);
+      return;
+    }
+
+    localStorage.setItem(PASSWORD_STORAGE_KEY, cleanPassword);
+    setParticipants(response.participants ?? []);
+    setUnlocked(true);
+    setErrorMessage("");
+  };
+
+  useEffect(() => {
+    const savedPassword = localStorage.getItem(PASSWORD_STORAGE_KEY);
+    if (savedPassword) void unlock(savedPassword, true);
+  }, []);
+
+  const lockPage = () => {
+    localStorage.removeItem(PASSWORD_STORAGE_KEY);
+    setParticipants([]);
+    setPassword("");
+    setUnlocked(false);
+    setSelected(null);
+  };
 
   const rows = useMemo<CandidateRow[]>(() => {
     const participantMap = new Map(
@@ -190,125 +231,197 @@ function InterviewPage() {
     setMode(nextMode);
   };
 
-  if (!ready || loading) return <AdminLoading />;
+  if (!unlocked) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-secondary/30 px-4 py-16">
+        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-7 shadow-soft">
+          <img src={logoSafarIman} alt="Safar Iman" className="mb-5 h-12 w-auto" />
+          <div className="mb-4 grid size-12 place-items-center rounded-xl bg-emerald/10 text-emerald">
+            <Lock className="size-5" />
+          </div>
+          <h1 className="font-display text-xl font-semibold">Akses Interviewer</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Gunakan password yang sama dengan halaman Statistik Internal untuk melihat data 10
+            kandidat interview.
+          </p>
+          <form
+            className="mt-5 space-y-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void unlock(password);
+            }}
+          >
+            <Input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              autoFocus
+            />
+            {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
+            <button
+              type="submit"
+              disabled={checking || !password.trim()}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {checking ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="size-4" />
+              )}
+              Buka Data Interview
+            </button>
+          </form>
+        </div>
+      </main>
+    );
+  }
 
   const foundCount = rows.filter((row) => row.participant).length;
 
   return (
-    <AdminShell title="Peserta Interview">
-      <section className="overflow-hidden rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald-deep via-emerald to-emerald-light p-5 text-white shadow-emerald sm:p-6">
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-          <div className="max-w-2xl">
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">
-              <UsersRound className="size-3.5" /> 10 Kandidat Interview
+    <main className="min-h-screen bg-secondary/30">
+      <header className="sticky top-0 z-20 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 py-2">
+          <div className="flex items-center gap-3">
+            <img src={logoSafarIman} alt="Safar Iman" className="h-10 w-auto sm:h-11" />
+            <div className="hidden h-8 w-px bg-border sm:block" />
+            <div className="hidden sm:block">
+              <div className="text-sm font-semibold">Panel Interviewer</div>
+              <div className="text-[10px] text-muted-foreground">Data kandidat Safar Iman</div>
             </div>
-            <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-              Bahan Pertimbangan Interview
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/80">
-              Lihat identitas pendaftaran serta jawaban Essay dan Studi Kasus setiap kandidat
-              sebelum sesi interview berlangsung.
-            </p>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:min-w-56">
-            <Summary label="Data ditemukan" value={foundCount} />
-            <Summary label="Belum ditemukan" value={10 - foundCount} warning={foundCount !== 10} />
+          <button
+            type="button"
+            onClick={lockPage}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-semibold transition hover:border-red-300 hover:text-red-600"
+          >
+            <LogOut className="size-3.5" /> Kunci Halaman
+          </button>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:py-8">
+        <section className="overflow-hidden rounded-2xl border border-emerald/20 bg-gradient-to-br from-emerald-deep via-emerald to-emerald-light p-5 text-white shadow-emerald sm:p-6">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+            <div className="max-w-2xl">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">
+                <UsersRound className="size-3.5" /> 10 Kandidat Interview
+              </div>
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+                Bahan Pertimbangan Interview
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/80">
+                Lihat identitas pendaftaran serta jawaban Essay dan Studi Kasus setiap kandidat
+                sebelum sesi interview berlangsung.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:min-w-56">
+              <Summary label="Data ditemukan" value={foundCount} />
+              <Summary
+                label="Belum ditemukan"
+                value={10 - foundCount}
+                warning={foundCount !== 10}
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Cari nama, kode pendaftaran, pekerjaan, atau kota…"
+              className="pl-9"
+            />
           </div>
         </div>
-      </section>
 
-      <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-        <div className="relative max-w-xl">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Cari nama, kode pendaftaran, pekerjaan, atau kota…"
-            className="pl-9"
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-2">
-        {filtered.map((row, index) => {
-          const participant = row.participant;
-          return (
-            <article
-              key={row.code}
-              className="rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-accent/40 hover:shadow-md"
-            >
-              <div className="flex items-start gap-3">
-                <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-accent/10 text-sm font-bold text-accent">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <h3 className="font-semibold leading-snug text-foreground">
-                        {participant?.full_name || row.name}
-                      </h3>
-                      <div className="mt-1 font-mono text-xs text-muted-foreground">{row.code}</div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          {filtered.map((row, index) => {
+            const participant = row.participant;
+            return (
+              <article
+                key={row.code}
+                className="rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-accent/40 hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-accent/10 text-sm font-bold text-accent">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-semibold leading-snug text-foreground">
+                          {participant?.full_name || row.name}
+                        </h3>
+                        <div className="mt-1 font-mono text-xs text-muted-foreground">
+                          {row.code}
+                        </div>
+                      </div>
+                      {participant ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald/20 bg-emerald/10 px-2 py-1 text-[10px] font-semibold text-emerald">
+                          <CheckCircle2 className="size-3" /> Data lengkap
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-semibold text-red-600">
+                          Data belum ditemukan
+                        </span>
+                      )}
                     </div>
-                    {participant ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald/20 bg-emerald/10 px-2 py-1 text-[10px] font-semibold text-emerald">
-                        <CheckCircle2 className="size-3" /> Data lengkap
-                      </span>
-                    ) : (
-                      <span className="rounded-full border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-semibold text-red-600">
-                        Data belum ditemukan
-                      </span>
-                    )}
-                  </div>
 
-                  <div className="mt-3 grid gap-1.5 text-xs text-muted-foreground sm:grid-cols-2">
-                    <span className="inline-flex items-center gap-1.5">
-                      <BriefcaseBusiness className="size-3.5" />
-                      {valueOrDash(participant?.occupation)}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="size-3.5" />
-                      {valueOrDash(participant?.city)}
-                    </span>
+                    <div className="mt-3 grid gap-1.5 text-xs text-muted-foreground sm:grid-cols-2">
+                      <span className="inline-flex items-center gap-1.5">
+                        <BriefcaseBusiness className="size-3.5" />
+                        {valueOrDash(participant?.occupation)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="size-3.5" />
+                        {valueOrDash(participant?.city)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  disabled={!participant}
-                  onClick={() => openDetail(row, "identity")}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold transition hover:border-accent/50 hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <IdCard className="size-4 text-accent" /> Identitas Pendaftaran
-                </button>
-                <button
-                  type="button"
-                  disabled={!participant}
-                  onClick={() => openDetail(row, "essay")}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-gold px-3 py-2 text-xs font-semibold text-emerald-deep shadow-gold transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <BookOpenCheck className="size-4" /> Essay &amp; Studi Kasus
-                </button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-
-      {filtered.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border bg-card py-12 text-center text-sm text-muted-foreground">
-          Tidak ada peserta yang sesuai dengan pencarian.
+                <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    disabled={!participant}
+                    onClick={() => openDetail(row, "identity")}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold transition hover:border-accent/50 hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <IdCard className="size-4 text-accent" /> Identitas Pendaftaran
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!participant}
+                    onClick={() => openDetail(row, "essay")}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-gold px-3 py-2 text-xs font-semibold text-emerald-deep shadow-gold transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <BookOpenCheck className="size-4" /> Essay &amp; Studi Kasus
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
-      )}
 
-      <ParticipantDialog
-        row={selected}
-        mode={mode}
-        onModeChange={setMode}
-        onClose={() => setSelected(null)}
-      />
-    </AdminShell>
+        {filtered.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-border bg-card py-12 text-center text-sm text-muted-foreground">
+            Tidak ada peserta yang sesuai dengan pencarian.
+          </div>
+        )}
+
+        <ParticipantDialog
+          row={selected}
+          mode={mode}
+          onModeChange={setMode}
+          onClose={() => setSelected(null)}
+        />
+      </div>
+    </main>
   );
 }
 
