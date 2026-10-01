@@ -5,7 +5,6 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
-  ExternalLink,
   FileText,
   GraduationCap,
   IdCard,
@@ -541,8 +540,7 @@ function DialogTab({
 
 function IdentityDetail({ participant }: { participant: Participant }) {
   return (
-    <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <IdentityItem icon={<UserRound />} label="Nama Lengkap" value={participant.full_name} />
         <IdentityItem icon={<Mail />} label="Email" value={participant.email} />
         <IdentityItem icon={<Phone />} label="WhatsApp" value={participant.whatsapp} />
@@ -583,28 +581,6 @@ function IdentityDetail({ participant }: { participant: Participant }) {
           label="Tanggal Pendaftaran"
           value={formatDate(participant.created_at, true)}
         />
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-2">
-        <LongAnswer title="Alasan mengikuti program" value={participant.reason} />
-        <LongAnswer title="Prestasi" value={participant.achievements} />
-        <LongAnswer title="Pengalaman organisasi" value={participant.organization_experience} />
-        <div className="rounded-xl border border-border bg-secondary/25 p-4">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Dokumen Pendaftaran
-          </h4>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {participant.cv_url ? (
-              <DocumentLink href={participant.cv_url} label="Buka CV" />
-            ) : (
-              <span className="text-sm text-muted-foreground">CV belum tersedia</span>
-            )}
-            {participant.photo_url && (
-              <DocumentLink href={participant.photo_url} label="Buka Foto" />
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -628,20 +604,6 @@ function IdentityItem({
         {valueOrDash(value)}
       </div>
     </div>
-  );
-}
-
-function DocumentLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-xs font-semibold text-accent hover:bg-accent/10"
-    >
-      <ExternalLink className="size-3.5" />
-      {label}
-    </a>
   );
 }
 
@@ -692,19 +654,6 @@ function AnswerCard({ title, value }: { title: string; value: string | null }) {
     <div className="rounded-xl border border-border bg-card p-4">
       <h4 className="text-sm font-semibold text-accent">{title}</h4>
       <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-foreground/85">
-        {valueOrDash(value)}
-      </p>
-    </div>
-  );
-}
-
-function LongAnswer({ title, value }: { title: string; value: string | null }) {
-  return (
-    <div className="rounded-xl border border-border bg-secondary/25 p-4">
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {title}
-      </h4>
-      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground/85">
         {valueOrDash(value)}
       </p>
     </div>
