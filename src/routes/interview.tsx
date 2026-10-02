@@ -266,6 +266,14 @@ const SCORE_GUIDE = [
   "Sangat Baik — kuat, matang, konsisten, serta menunjukkan dampak nyata",
 ] as const;
 
+const EXTRA_INTERVIEW_REMINDER = {
+  condition: "Jika peserta cukup komunikatif, gali lebih jauh:",
+  questions: [
+    "Kalau kamu benar-benar diberi kesempatan berangkat ke Baitullah melalui Safar Iman, perubahan apa yang paling ingin kamu bawa pulang dari perjalanan tersebut?",
+    "Menurutmu, apa yang harus kamu lakukan mulai sekarang supaya perubahan itu benar-benar terjadi?",
+  ],
+} as const;
+
 function formatDate(value: string | null | undefined, withTime = false) {
   if (!value) return "Belum tersedia";
   const date = new Date(value);
@@ -1340,6 +1348,33 @@ function AssessmentForm({
           </section>
         );
       })}
+
+      <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-400/20 text-amber-700">
+            <Star className="size-5" />
+          </div>
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
+              Extras · Pengingat Interviewer
+            </div>
+            <h3 className="mt-1 font-display text-lg font-semibold text-amber-950">
+              {EXTRA_INTERVIEW_REMINDER.condition}
+            </h3>
+          </div>
+        </div>
+        <ol className="mt-4 space-y-2 pl-5 text-sm leading-relaxed text-amber-950">
+          {EXTRA_INTERVIEW_REMINDER.questions.map((question) => (
+            <li key={question} className="list-decimal pl-1">
+              {question}
+            </li>
+          ))}
+        </ol>
+        <p className="mt-3 text-xs text-amber-800">
+          Pertanyaan tambahan ini tidak memiliki bobot tersendiri. Gunakan jawabannya sebagai
+          pertimbangan saat memberi skor pada aspek terkait.
+        </p>
+      </section>
 
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <label className="block space-y-1.5 text-xs font-semibold">
