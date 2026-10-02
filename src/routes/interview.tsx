@@ -19,6 +19,7 @@ import {
   Save,
   ShieldCheck,
   Star,
+  Trash2,
   Trophy,
   UserRound,
   UsersRound,
@@ -333,6 +334,17 @@ async function autosaveInterviewScore(
   });
 }
 
+async function deleteInterviewEvaluation(password: string, participantId: string) {
+  const rpc = supabase.rpc.bind(supabase) as unknown as (
+    functionName: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  return rpc("delete_interview_evaluation_with_password", {
+    _password: password,
+    _participant_id: participantId,
+  });
+}
+
 function isEvaluationComplete(evaluation: InterviewEvaluation) {
   return ASSESSMENT_ASPECTS.every((aspect) => evaluation[aspect.scoreKey] != null);
 }
@@ -467,6 +479,12 @@ function InterviewPage() {
         ...current.filter((item) => item.participant_id !== evaluation.participant_id),
         evaluation,
       ].sort((a, b) => Number(b.total_score) - Number(a.total_score)),
+    );
+  };
+
+  const handleEvaluationDeleted = (participantId: string) => {
+    setEvaluations((current) =>
+      current.filter((evaluation) => evaluation.participant_id !== participantId),
     );
   };
 
@@ -692,7 +710,11 @@ function InterviewPage() {
             )}
           </>
         ) : (
-          <EvaluationResults evaluations={evaluations} />
+          <EvaluationResults
+            evaluations={evaluations}
+            accessPassword={accessPassword}
+            onDeleted={handleEvaluationDeleted}
+          />
         )}
 
         <ParticipantDialog
@@ -742,12 +764,47 @@ function PageTabButton({
   );
 }
 
-function EvaluationResults({ evaluations }: { evaluations: InterviewEvaluation[] }) {
+function EvaluationResults({
+  evaluations,
+  accessPassword,
+  onDeleted,
+}: {
+  evaluations: InterviewEvaluation[];
+  accessPassword: string;
+  onDeleted: (participantId: string) => void;
+}) {
+  const [deletingParticipantId, setDeletingParticipantId] = useState<string | null>(null);
   const sorted = [...evaluations].sort(
     (a, b) =>
       Number(isEvaluationComplete(b)) - Number(isEvaluationComplete(a)) ||
       Number(b.total_score) - Number(a.total_score),
   );
+
+  const handleDelete = async (evaluation: InterviewEvaluation) => {
+    const confirmed = window.confirm(
+      `Hapus seluruh riwayat penilaian ${evaluation.full_name}?\n\nSkor, catatan, keputusan, dan total nilai akan dihapus permanen.`,
+    );
+    if (!confirmed) return;
+
+    setDeletingParticipantId(evaluation.participant_id);
+    try {
+      const { data, error } = await deleteInterviewEvaluation(
+        accessPassword,
+        evaluation.participant_id,
+      );
+      if (error) throw new Error(error.message);
+      const response = data as { ok: boolean; error?: string };
+      if (!response?.ok) throw new Error(response?.error || "delete_failed");
+
+      onDeleted(evaluation.participant_id);
+      toast.success(`Riwayat penilaian ${evaluation.full_name} telah dihapus.`);
+    } catch (error) {
+      console.error("Failed to delete interview evaluation", error);
+      toast.error("Riwayat penilaian belum berhasil dihapus. Silakan coba lagi.");
+    } finally {
+      setDeletingParticipantId(null);
+    }
+  };
 
   if (!sorted.length) {
     return (
@@ -838,6 +895,19 @@ function EvaluationResults({ evaluations }: { evaluations: InterviewEvaluation[]
                   <span className="mt-2 inline-flex rounded-full border border-border bg-secondary px-2 py-1 text-[10px] font-semibold">
                     {evaluation.decision}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete(evaluation)}
+                    disabled={deletingParticipantId === evaluation.participant_id}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deletingParticipantId === evaluation.participant_id ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      <Trash2 className="size-3" />
+                    )}
+                    Hapus Riwayat
+                  </button>
                 </td>
               </tr>
             ))}
