@@ -4,6 +4,7 @@ import {
   BookOpenCheck,
   BarChart3,
   BriefcaseBusiness,
+  CalendarClock,
   CalendarDays,
   CheckCircle2,
   FileText,
@@ -99,7 +100,7 @@ const PARTICIPANT_FIELDS = [
 type Participant = Pick<Tables<"participants">, (typeof PARTICIPANT_FIELDS)[number]>;
 type CandidateRow = (typeof INTERVIEW_CANDIDATES)[number] & { participant: Participant | null };
 type DetailMode = "identity" | "essay" | "assessment";
-type PageTab = "participants" | "results";
+type PageTab = "participants" | "schedule" | "results";
 type InterviewResponse = { ok: boolean; error?: string; participants?: Participant[] };
 type ScoreKey =
   | "motivation_score"
@@ -131,6 +132,18 @@ type InterviewEvaluation = {
   updated_at: string;
 };
 type EvaluationResponse = { ok: boolean; error?: string; evaluations?: InterviewEvaluation[] };
+type InterviewSchedule = {
+  id: string;
+  participant_id: string;
+  registration_code: string;
+  full_name: string;
+  email: string;
+  schedule_date: string;
+  start_time: string;
+  end_time: string;
+  updated_at: string;
+};
+type ScheduleResponse = { ok: boolean; error?: string; schedules?: InterviewSchedule[] };
 
 const PASSWORD_STORAGE_KEY = "safar_stats_pw";
 
@@ -308,6 +321,34 @@ async function fetchInterviewEvaluations(password: string) {
   return rpc("get_interview_evaluations_with_password", { _password: password });
 }
 
+async function fetchInterviewSchedules(password: string) {
+  const rpc = supabase.rpc.bind(supabase) as unknown as (
+    functionName: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  return rpc("get_interview_schedules_with_password", { _password: password });
+}
+
+async function saveInterviewSchedule(
+  password: string,
+  participantId: string,
+  scheduleDate: string,
+  startTime: string,
+  endTime: string,
+) {
+  const rpc = supabase.rpc.bind(supabase) as unknown as (
+    functionName: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  return rpc("save_interview_schedule_with_password", {
+    _password: password,
+    _participant_id: participantId,
+    _schedule_date: scheduleDate,
+    _start_time: startTime,
+    _end_time: endTime,
+  });
+}
+
 async function saveInterviewEvaluation(password: string, values: Record<string, unknown>) {
   const rpc = supabase.rpc.bind(supabase) as unknown as (
     functionName: string,
@@ -370,6 +411,7 @@ function InterviewPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [evaluations, setEvaluations] = useState<InterviewEvaluation[]>([]);
+  const [schedules, setSchedules] = useState<InterviewSchedule[]>([]);
   const [accessPassword, setAccessPassword] = useState("");
   const [pageTab, setPageTab] = useState<PageTab>("participants");
   const [query, setQuery] = useState("");
@@ -381,23 +423,25 @@ function InterviewPage() {
     if (!cleanPassword) return;
     if (!silent) setChecking(true);
     try {
-      const [participantResult, evaluationResult] = await Promise.race([
+      const [participantResult, evaluationResult, scheduleResult] = await Promise.race([
         Promise.all([
           fetchInterviewParticipants(cleanPassword),
           fetchInterviewEvaluations(cleanPassword),
+          fetchInterviewSchedules(cleanPassword),
         ]),
         new Promise<never>((_, reject) =>
           window.setTimeout(() => reject(new Error("request_timeout")), 15000),
         ),
       ]);
 
-      if (participantResult.error || evaluationResult.error) {
+      if (participantResult.error || evaluationResult.error || scheduleResult.error) {
         if (!silent) setErrorMessage("Gagal menghubungi server. Silakan coba lagi.");
         return;
       }
 
       const response = participantResult.data as InterviewResponse;
       const evaluationResponse = evaluationResult.data as EvaluationResponse;
+      const scheduleResponse = scheduleResult.data as ScheduleResponse;
       if (!response?.ok) {
         localStorage.removeItem(PASSWORD_STORAGE_KEY);
         setUnlocked(false);
@@ -414,6 +458,7 @@ function InterviewPage() {
       localStorage.setItem(PASSWORD_STORAGE_KEY, cleanPassword);
       setParticipants(response.participants ?? []);
       setEvaluations(evaluationResponse?.ok ? (evaluationResponse.evaluations ?? []) : []);
+      setSchedules(scheduleResponse?.ok ? (scheduleResponse.schedules ?? []) : []);
       setAccessPassword(cleanPassword);
       setUnlocked(true);
       setErrorMessage("");
@@ -433,6 +478,7 @@ function InterviewPage() {
     localStorage.removeItem(PASSWORD_STORAGE_KEY);
     setParticipants([]);
     setEvaluations([]);
+    setSchedules([]);
     setAccessPassword("");
     setPassword("");
     setUnlocked(false);
@@ -486,6 +532,13 @@ function InterviewPage() {
     setEvaluations((current) =>
       current.filter((evaluation) => evaluation.participant_id !== participantId),
     );
+  };
+
+  const handleScheduleSaved = (schedule: InterviewSchedule) => {
+    setSchedules((current) => [
+      ...current.filter((item) => item.participant_id !== schedule.participant_id),
+      schedule,
+    ]);
   };
 
   if (!unlocked) {
@@ -584,13 +637,20 @@ function InterviewPage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border bg-card p-1.5 sm:w-fit">
+        <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border bg-card p-1.5 sm:w-fit">
           <PageTabButton
             active={pageTab === "participants"}
             onClick={() => setPageTab("participants")}
             icon={<UsersRound className="size-4" />}
             label="Peserta Interview"
             count={rows.length}
+          />
+          <PageTabButton
+            active={pageTab === "schedule"}
+            onClick={() => setPageTab("schedule")}
+            icon={<CalendarClock className="size-4" />}
+            label="Jadwal Interview"
+            count={schedules.length}
           />
           <PageTabButton
             active={pageTab === "results"}
@@ -709,6 +769,13 @@ function InterviewPage() {
               </div>
             )}
           </>
+        ) : pageTab === "schedule" ? (
+          <InterviewScheduleEditor
+            rows={rows}
+            schedules={schedules}
+            accessPassword={accessPassword}
+            onSaved={handleScheduleSaved}
+          />
         ) : (
           <EvaluationResults
             evaluations={evaluations}
@@ -761,6 +828,201 @@ function PageTabButton({
         {count}
       </span>
     </button>
+  );
+}
+
+type ScheduleDraft = { scheduleDate: string; startTime: string; endTime: string };
+
+function InterviewScheduleEditor({
+  rows,
+  schedules,
+  accessPassword,
+  onSaved,
+}: {
+  rows: CandidateRow[];
+  schedules: InterviewSchedule[];
+  accessPassword: string;
+  onSaved: (schedule: InterviewSchedule) => void;
+}) {
+  const [drafts, setDrafts] = useState<Record<string, ScheduleDraft>>({});
+  const [savingParticipantId, setSavingParticipantId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const scheduleByParticipant = new Map(
+      schedules.map((schedule) => [schedule.participant_id, schedule]),
+    );
+    setDrafts((current) => {
+      const next = { ...current };
+      for (const row of rows) {
+        if (!row.participant) continue;
+        const schedule = scheduleByParticipant.get(row.participant.id);
+        if (schedule) {
+          next[row.participant.id] = {
+            scheduleDate: schedule.schedule_date,
+            startTime: schedule.start_time.slice(0, 5),
+            endTime: schedule.end_time.slice(0, 5),
+          };
+        } else if (!next[row.participant.id]) {
+          next[row.participant.id] = { scheduleDate: "", startTime: "", endTime: "" };
+        }
+      }
+      return next;
+    });
+  }, [rows, schedules]);
+
+  const updateDraft = (participantId: string, field: keyof ScheduleDraft, value: string) => {
+    setDrafts((current) => ({
+      ...current,
+      [participantId]: {
+        ...(current[participantId] ?? { scheduleDate: "", startTime: "", endTime: "" }),
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleSave = async (row: CandidateRow) => {
+    const participant = row.participant;
+    if (!participant) return;
+    const draft = drafts[participant.id];
+    if (!draft?.scheduleDate || !draft.startTime || !draft.endTime) {
+      toast.error("Tanggal, jam mulai, dan jam selesai wajib diisi.");
+      return;
+    }
+    if (draft.endTime <= draft.startTime) {
+      toast.error("Jam selesai harus lebih besar dari jam mulai.");
+      return;
+    }
+
+    setSavingParticipantId(participant.id);
+    try {
+      const { data, error } = await saveInterviewSchedule(
+        accessPassword,
+        participant.id,
+        draft.scheduleDate,
+        draft.startTime,
+        draft.endTime,
+      );
+      if (error) throw new Error(error.message);
+      const response = data as { ok: boolean; error?: string; schedule?: InterviewSchedule };
+      if (!response?.ok || !response.schedule) {
+        throw new Error(response?.error || "save_failed");
+      }
+      onSaved(response.schedule);
+      toast.success(`Jadwal ${participant.full_name} berhasil disimpan.`);
+    } catch (error) {
+      console.error("Failed to save interview schedule", error);
+      toast.error("Jadwal belum berhasil disimpan. Silakan coba lagi.");
+    } finally {
+      setSavingParticipantId(null);
+    }
+  };
+
+  return (
+    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="border-b border-border px-4 py-4 sm:px-5">
+        <h3 className="flex items-center gap-2 font-display text-lg font-semibold">
+          <CalendarClock className="size-5 text-accent" /> Jadwal Interview Peserta
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Atur tanggal, jam mulai, dan jam selesai untuk masing-masing peserta. Simpan setiap baris
+          setelah melakukan perubahan.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[940px] text-left text-sm">
+          <thead className="bg-secondary/60 text-[10px] uppercase tracking-wide text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3">Peserta</th>
+              <th className="px-4 py-3">Kode Pendaftaran</th>
+              <th className="px-4 py-3">Tanggal</th>
+              <th className="px-4 py-3">Jam Mulai</th>
+              <th className="px-4 py-3">Jam Selesai</th>
+              <th className="px-4 py-3 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {rows.map((row) => {
+              const participant = row.participant;
+              const participantId = participant?.id;
+              const draft = participantId
+                ? (drafts[participantId] ?? {
+                    scheduleDate: "",
+                    startTime: "",
+                    endTime: "",
+                  })
+                : { scheduleDate: "", startTime: "", endTime: "" };
+              const isSaving = participantId === savingParticipantId;
+              return (
+                <tr key={row.code} className="align-middle hover:bg-secondary/20">
+                  <td className="px-4 py-4">
+                    <div className="min-w-52 font-semibold">
+                      {participant?.full_name || row.name}
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {participant?.email || "Data peserta belum ditemukan"}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className="inline-flex rounded-full bg-indigo-50 px-3 py-1.5 font-mono text-xs font-semibold text-indigo-600">
+                      {row.code}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4">
+                    <Input
+                      type="date"
+                      value={draft.scheduleDate}
+                      disabled={!participant || isSaving}
+                      onChange={(event) =>
+                        participantId &&
+                        updateDraft(participantId, "scheduleDate", event.target.value)
+                      }
+                      className="min-w-40"
+                    />
+                  </td>
+                  <td className="px-4 py-4">
+                    <Input
+                      type="time"
+                      value={draft.startTime}
+                      disabled={!participant || isSaving}
+                      onChange={(event) =>
+                        participantId && updateDraft(participantId, "startTime", event.target.value)
+                      }
+                      className="min-w-32"
+                    />
+                  </td>
+                  <td className="px-4 py-4">
+                    <Input
+                      type="time"
+                      value={draft.endTime}
+                      disabled={!participant || isSaving}
+                      onChange={(event) =>
+                        participantId && updateDraft(participantId, "endTime", event.target.value)
+                      }
+                      className="min-w-32"
+                    />
+                  </td>
+                  <td className="px-4 py-4 text-right">
+                    <button
+                      type="button"
+                      disabled={!participant || isSaving}
+                      onClick={() => void handleSave(row)}
+                      className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg bg-emerald px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-light disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isSaving ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Save className="size-3.5" />
+                      )}
+                      Simpan
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
