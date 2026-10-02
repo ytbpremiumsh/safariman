@@ -114,18 +114,18 @@ type InterviewEvaluation = {
   participant_id: string;
   registration_code: string;
   full_name: string;
-  interviewer_name: string;
+  interviewer_name: string | null;
   interview_date: string;
-  motivation_score: number;
-  spirituality_score: number;
-  character_score: number;
-  commitment_score: number;
-  contribution_score: number;
-  adaptability_score: number;
+  motivation_score: number | null;
+  spirituality_score: number | null;
+  character_score: number | null;
+  commitment_score: number | null;
+  contribution_score: number | null;
+  adaptability_score: number | null;
   aspect_notes: Partial<Record<NoteKey, string>>;
   general_notes: string | null;
   decision: string;
-  total_score: number;
+  total_score: number | null;
   recommendation: string;
   updated_at: string;
 };
@@ -305,6 +305,28 @@ async function saveInterviewEvaluation(password: string, values: Record<string, 
     args: Record<string, unknown>,
   ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
   return rpc("save_interview_evaluation_with_password", { _password: password, ...values });
+}
+
+async function autosaveInterviewScore(
+  password: string,
+  participantId: string,
+  scoreKey: ScoreKey,
+  score: number | null,
+) {
+  const rpc = supabase.rpc.bind(supabase) as unknown as (
+    functionName: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  return rpc("autosave_interview_score_with_password", {
+    _password: password,
+    _participant_id: participantId,
+    _score_key: scoreKey,
+    _score: score,
+  });
+}
+
+function isEvaluationComplete(evaluation: InterviewEvaluation) {
+  return ASSESSMENT_ASPECTS.every((aspect) => evaluation[aspect.scoreKey] != null);
 }
 
 function calculateTotal(scores: Record<ScoreKey, number>) {
@@ -594,8 +616,10 @@ function InterviewPage() {
                           </div>
                           {evaluation ? (
                             <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-1 text-[10px] font-semibold text-accent">
-                              <Star className="size-3" /> Dinilai{" "}
-                              {Number(evaluation.total_score).toFixed(0)}/100
+                              <Star className="size-3" />
+                              {isEvaluationComplete(evaluation)
+                                ? `Dinilai ${Number(evaluation.total_score).toFixed(0)}/100`
+                                : "Draft tersimpan"}
                             </span>
                           ) : participant ? (
                             <span className="inline-flex items-center gap-1 rounded-full border border-emerald/20 bg-emerald/10 px-2 py-1 text-[10px] font-semibold text-emerald">
@@ -711,7 +735,11 @@ function PageTabButton({
 }
 
 function EvaluationResults({ evaluations }: { evaluations: InterviewEvaluation[] }) {
-  const sorted = [...evaluations].sort((a, b) => Number(b.total_score) - Number(a.total_score));
+  const sorted = [...evaluations].sort(
+    (a, b) =>
+      Number(isEvaluationComplete(b)) - Number(isEvaluationComplete(a)) ||
+      Number(b.total_score) - Number(a.total_score),
+  );
 
   if (!sorted.length) {
     return (
@@ -768,15 +796,17 @@ function EvaluationResults({ evaluations }: { evaluations: InterviewEvaluation[]
                     {evaluation.registration_code}
                   </div>
                   <div className="mt-2 text-[10px] text-muted-foreground">
-                    {evaluation.interviewer_name} · {formatDate(evaluation.interview_date)}
+                    {evaluation.interviewer_name || "Interviewer belum diisi"} ·{" "}
+                    {formatDate(evaluation.interview_date)}
                   </div>
                 </td>
                 {ASSESSMENT_ASPECTS.map((aspect) => {
-                  const score = Number(evaluation[aspect.scoreKey]);
+                  const rawScore = evaluation[aspect.scoreKey];
+                  const score = Number(rawScore || 0);
                   const weighted = (score / 5) * aspect.weight;
                   return (
                     <td key={aspect.key} className="px-3 py-4 text-center">
-                      <div className="font-semibold">{score}/5</div>
+                      <div className="font-semibold">{rawScore == null ? "—" : `${score}/5`}</div>
                       <div className="mt-1 text-[10px] text-muted-foreground">
                         {weighted.toFixed(0)}/{aspect.weight}
                       </div>
@@ -785,13 +815,17 @@ function EvaluationResults({ evaluations }: { evaluations: InterviewEvaluation[]
                 })}
                 <td className="px-4 py-4 text-center">
                   <div className="text-lg font-bold text-emerald">
-                    {Number(evaluation.total_score).toFixed(0)}
+                    {isEvaluationComplete(evaluation)
+                      ? Number(evaluation.total_score).toFixed(0)
+                      : "—"}
                   </div>
                   <div className="text-[10px] text-muted-foreground">/100</div>
                 </td>
                 <td className="px-4 py-4">
                   <div className="min-w-40 font-semibold text-emerald">
-                    {evaluation.recommendation}
+                    {isEvaluationComplete(evaluation)
+                      ? evaluation.recommendation
+                      : "Draft Belum Lengkap"}
                   </div>
                   <span className="mt-2 inline-flex rounded-full border border-border bg-secondary px-2 py-1 text-[10px] font-semibold">
                     {evaluation.decision}
@@ -1070,6 +1104,8 @@ function AssessmentForm({
   const [generalNotes, setGeneralNotes] = useState("");
   const [decision, setDecision] = useState("Belum Diputuskan");
   const [saving, setSaving] = useState(false);
+  const [savingScore, setSavingScore] = useState<ScoreKey | null>(null);
+  const [lastSavedScore, setLastSavedScore] = useState<ScoreKey | null>(null);
 
   useEffect(() => {
     setScores(
@@ -1094,6 +1130,40 @@ function AssessmentForm({
 
   const total = calculateTotal(scores);
   const complete = ASSESSMENT_ASPECTS.every((aspect) => scores[aspect.scoreKey] >= 1);
+
+  const handleScoreToggle = async (scoreKey: ScoreKey, value: number) => {
+    const previousValue = scores[scoreKey];
+    const nextValue = previousValue === value ? 0 : value;
+    setScores((current) => ({ ...current, [scoreKey]: nextValue }));
+    setSavingScore(scoreKey);
+    setLastSavedScore(null);
+
+    try {
+      const { data, error } = await autosaveInterviewScore(
+        accessPassword,
+        participant.id,
+        scoreKey,
+        nextValue || null,
+      );
+      if (error) throw new Error(error.message);
+      const response = data as { ok: boolean; error?: string; evaluation?: InterviewEvaluation };
+      if (!response?.ok || !response.evaluation)
+        throw new Error(response?.error || "autosave_failed");
+
+      onSaved({
+        ...response.evaluation,
+        registration_code: participant.registration_code,
+        full_name: participant.full_name,
+      });
+      setLastSavedScore(scoreKey);
+    } catch (error) {
+      console.error("Failed to autosave interview score", error);
+      setScores((current) => ({ ...current, [scoreKey]: previousValue }));
+      toast.error("Skor belum tersimpan. Periksa internet lalu coba lagi.");
+    } finally {
+      setSavingScore((current) => (current === scoreKey ? null : current));
+    }
+  };
 
   const handleSave = async () => {
     if (!complete) {
@@ -1230,15 +1300,24 @@ function AssessmentForm({
             </div>
 
             <div className="mt-4">
-              <div className="mb-2 text-xs font-semibold">Pilih skor</div>
+              <div className="mb-2 flex items-center justify-between gap-3 text-xs font-semibold">
+                <span>Pilih skor · klik kembali untuk membatalkan</span>
+                {savingScore === aspect.scoreKey ? (
+                  <span className="inline-flex items-center gap-1 font-normal text-muted-foreground">
+                    <Loader2 className="size-3 animate-spin" /> Menyimpan…
+                  </span>
+                ) : lastSavedScore === aspect.scoreKey ? (
+                  <span className="inline-flex items-center gap-1 font-normal text-emerald">
+                    <CheckCircle2 className="size-3" /> Tersimpan otomatis
+                  </span>
+                ) : null}
+              </div>
               <div className="grid grid-cols-5 gap-2">
                 {[1, 2, 3, 4, 5].map((value) => (
                   <button
                     key={value}
                     type="button"
-                    onClick={() =>
-                      setScores((current) => ({ ...current, [aspect.scoreKey]: value }))
-                    }
+                    onClick={() => void handleScoreToggle(aspect.scoreKey, value)}
                     className={`rounded-xl border px-2 py-2.5 text-sm font-bold transition ${score === value ? "border-emerald bg-emerald text-white shadow-sm" : "border-border bg-background hover:border-emerald/40"}`}
                     aria-label={`Nilai ${value} untuk ${aspect.title}`}
                   >
