@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      short_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          slug: string
+          target_url: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          slug: string
+          target_url: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          slug?: string
+          target_url?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_essay_reviews: {
         Row: {
           decision: string

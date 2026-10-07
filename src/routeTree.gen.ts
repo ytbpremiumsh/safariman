@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as BerkasRouteImport } from './routes/berkas'
 import { Route as CekHasilRouteImport } from './routes/cek-hasil'
 import { Route as CekPengumumanRouteImport } from './routes/cek-pengumuman'
@@ -61,6 +62,7 @@ import { Route as AdminPengaturanPanduanRouteImport } from './routes/admin.penga
 import { Route as AdminPengaturanPengingatPembayaranRouteImport } from './routes/admin.pengaturan.pengingat-pembayaran'
 import { Route as AdminPengaturanPenutupanRouteImport } from './routes/admin.pengaturan.penutupan'
 import { Route as AdminPengaturanSeleksiPrivateRouteImport } from './routes/admin.pengaturan.seleksi-private'
+import { Route as AdminPengaturanShortlinkRouteImport } from './routes/admin.pengaturan.shortlink'
 import { Route as AdminPengaturanStaffRouteImport } from './routes/admin.pengaturan.staff'
 import { Route as AdminPengaturanStatistikRouteImport } from './routes/admin.pengaturan.statistik'
 import { Route as AdminPengaturanTimelineRouteImport } from './routes/admin.pengaturan.timeline'
@@ -83,6 +85,11 @@ import { Route as AdminPesertaSelfFundedPendaftaranRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlugRoute = SlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasRoute = BerkasRouteImport.update({
@@ -351,6 +358,12 @@ const AdminPengaturanSeleksiPrivateRoute =
     path: '/admin/pengaturan/seleksi-private',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminPengaturanShortlinkRoute =
+  AdminPengaturanShortlinkRouteImport.update({
+    id: '/admin/pengaturan/shortlink',
+    path: '/admin/pengaturan/shortlink',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminPengaturanStaffRoute = AdminPengaturanStaffRouteImport.update({
   id: '/admin/pengaturan/staff',
   path: '/admin/pengaturan/staff',
@@ -452,6 +465,7 @@ const AdminPesertaSelfFundedPendaftaranRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
   '/cek-pengumuman': typeof CekPengumumanRoute
@@ -502,6 +516,7 @@ export interface FileRoutesByFullPath {
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/shortlink': typeof AdminPengaturanShortlinkRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
@@ -524,6 +539,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
   '/cek-pengumuman': typeof CekPengumumanRoute
@@ -574,6 +590,7 @@ export interface FileRoutesByTo {
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/shortlink': typeof AdminPengaturanShortlinkRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
@@ -595,6 +612,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$slug': typeof SlugRoute
   '/berkas': typeof BerkasRoute
   '/cek-hasil': typeof CekHasilRoute
   '/cek-pengumuman': typeof CekPengumumanRoute
@@ -645,6 +663,7 @@ export interface FileRoutesById {
   '/admin/pengaturan/pengingat-pembayaran': typeof AdminPengaturanPengingatPembayaranRoute
   '/admin/pengaturan/penutupan': typeof AdminPengaturanPenutupanRoute
   '/admin/pengaturan/seleksi-private': typeof AdminPengaturanSeleksiPrivateRoute
+  '/admin/pengaturan/shortlink': typeof AdminPengaturanShortlinkRoute
   '/admin/pengaturan/staff': typeof AdminPengaturanStaffRoute
   '/admin/pengaturan/statistik': typeof AdminPengaturanStatistikRoute
   '/admin/pengaturan/timeline': typeof AdminPengaturanTimelineRoute
@@ -669,6 +688,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$slug'
     | '/berkas'
     | '/cek-hasil'
     | '/cek-pengumuman'
@@ -719,6 +739,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/shortlink'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
@@ -741,6 +762,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$slug'
     | '/berkas'
     | '/cek-hasil'
     | '/cek-pengumuman'
@@ -791,6 +813,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/shortlink'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
@@ -811,6 +834,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$slug'
     | '/berkas'
     | '/cek-hasil'
     | '/cek-pengumuman'
@@ -861,6 +885,7 @@ export interface FileRouteTypes {
     | '/admin/pengaturan/pengingat-pembayaran'
     | '/admin/pengaturan/penutupan'
     | '/admin/pengaturan/seleksi-private'
+    | '/admin/pengaturan/shortlink'
     | '/admin/pengaturan/staff'
     | '/admin/pengaturan/statistik'
     | '/admin/pengaturan/timeline'
@@ -884,6 +909,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SlugRoute: typeof SlugRoute
   BerkasRoute: typeof BerkasRoute
   CekHasilRoute: typeof CekHasilRoute
   CekPengumumanRoute: typeof CekPengumumanRoute
@@ -934,6 +960,7 @@ export interface RootRouteChildren {
   AdminPengaturanPengingatPembayaranRoute: typeof AdminPengaturanPengingatPembayaranRoute
   AdminPengaturanPenutupanRoute: typeof AdminPengaturanPenutupanRoute
   AdminPengaturanSeleksiPrivateRoute: typeof AdminPengaturanSeleksiPrivateRoute
+  AdminPengaturanShortlinkRoute: typeof AdminPengaturanShortlinkRoute
   AdminPengaturanStaffRoute: typeof AdminPengaturanStaffRoute
   AdminPengaturanStatistikRoute: typeof AdminPengaturanStatistikRoute
   AdminPengaturanTimelineRoute: typeof AdminPengaturanTimelineRoute
@@ -957,6 +984,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$slug': {
+      id: '/$slug'
+      path: '/$slug'
+      fullPath: '/$slug'
+      preLoaderRoute: typeof SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berkas': {
@@ -1316,6 +1350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPengaturanSeleksiPrivateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan/shortlink': {
+      id: '/admin/pengaturan/shortlink'
+      path: '/admin/pengaturan/shortlink'
+      fullPath: '/admin/pengaturan/shortlink'
+      preLoaderRoute: typeof AdminPengaturanShortlinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pengaturan/staff': {
       id: '/admin/pengaturan/staff'
       path: '/admin/pengaturan/staff'
@@ -1479,6 +1520,7 @@ const AdminPesertaSelfFundedRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SlugRoute: SlugRoute,
   BerkasRoute: BerkasRoute,
   CekHasilRoute: CekHasilRoute,
   CekPengumumanRoute: CekPengumumanRoute,
@@ -1530,6 +1572,7 @@ const rootRouteChildren: RootRouteChildren = {
     AdminPengaturanPengingatPembayaranRoute,
   AdminPengaturanPenutupanRoute: AdminPengaturanPenutupanRoute,
   AdminPengaturanSeleksiPrivateRoute: AdminPengaturanSeleksiPrivateRoute,
+  AdminPengaturanShortlinkRoute: AdminPengaturanShortlinkRoute,
   AdminPengaturanStaffRoute: AdminPengaturanStaffRoute,
   AdminPengaturanStatistikRoute: AdminPengaturanStatistikRoute,
   AdminPengaturanTimelineRoute: AdminPengaturanTimelineRoute,

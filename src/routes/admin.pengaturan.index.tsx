@@ -9,6 +9,12 @@ export const Route = createFileRoute("/admin/pengaturan/")({
 
 const ITEMS = [
   {
+    to: "/admin/pengaturan/shortlink",
+    icon: ArrowRight,
+    title: "Shortlink & Redirect",
+    desc: "Buat safariman.id/nama-link menuju Google Drive atau URL eksternal lainnya.",
+  },
+  {
     to: "/admin/pengaturan/penutupan",
     icon: CalendarX2,
     title: "Penutupan Tahapan",

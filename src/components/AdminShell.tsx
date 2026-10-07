@@ -52,6 +52,7 @@ const NAV_GROUPS: NavGroup[] = [
         icon: Settings,
         keywords: "settings konfigurasi",
         children: [
+          { to: "/admin/pengaturan/shortlink", label: "Shortlink", keywords: "redirect url link pendek google drive" },
           { to: "/admin/pengaturan/penutupan", label: "Penutupan Tahapan", keywords: "tutup buka pendaftaran form berkas essay studi kasus pengiriman" },
           { to: "/admin/pengaturan/gelombang", label: "Daftar Gelombang", keywords: "gelombang batch pendaftaran periode kuota" },
           { to: "/admin/pengaturan/twibbon", label: "Twibbon & Poster", keywords: "twibbon frame poster caption instagram whatsapp share bagikan sosial media" },
