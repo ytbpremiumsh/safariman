@@ -46,7 +46,7 @@ function ShortLinkRedirect() {
 
       try {
         const destination = new URL(data.target_url);
-        if (!validDestination(data.target_url)) {
+        if (!validDestination(data.target_url, slug)) {
           throw new Error("Protokol URL tidak didukung");
         }
         window.location.replace(destination.toString());

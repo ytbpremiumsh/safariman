@@ -6,12 +6,15 @@ export const reservedSlugs = new Set([
   "storage", "robots", "sitemap", "favicon", "www",
 ]);
 
-export function validDestination(value: string): boolean {
+export function validDestination(value: string, slug?: string): boolean {
   try {
     const url = new URL(value.trim());
+    const internal = ["safariman.id", "www.safariman.id",
+      ...(typeof window !== "undefined" ? [window.location.hostname] : []),
+    ].includes(url.hostname.toLowerCase());
+    const self = internal && slug && decodeURIComponent(url.pathname).replace(/^\/+|\/+$/g, "").toLowerCase() === slug.toLowerCase();
     return ["http:", "https:"].includes(url.protocol) && !!url.hostname &&
-      !url.username && !url.password &&
-      !["safariman.id", "www.safariman.id", window.location.hostname].includes(url.hostname.toLowerCase());
+      !url.username && !url.password && !self;
   } catch {
     return false;
   }

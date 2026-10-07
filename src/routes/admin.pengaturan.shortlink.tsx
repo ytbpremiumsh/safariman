@@ -87,7 +87,7 @@ function ShortLinkSettings() {
     const slug = normalizeSlug(form.slug);
     if (slug.length < 2) return toast.error("Slug minimal 2 karakter.");
     if (reservedSlugs.has(slug)) return toast.error("Nama ini digunakan halaman website. Pilih nama lain.");
-    if (!validDestination(form.target_url)) return toast.error("Gunakan URL eksternal http/https tanpa username atau password. Tujuan tidak boleh kembali ke domain ini.");
+    if (!validDestination(form.target_url, slug)) return toast.error("Gunakan URL lengkap http/https tanpa username atau password. Tujuan boleh ke Safar Iman, tetapi tidak boleh ke shortlink itu sendiri.");
 
     setSaving(true);
     try {
@@ -146,7 +146,7 @@ function ShortLinkSettings() {
             <div className="grid size-11 place-items-center rounded-xl bg-emerald/10 text-emerald"><Link2 className="size-5" /></div>
             <div>
               <h2 className="font-display text-xl font-semibold">{editingId ? "Edit Shortlink" : "Buat Shortlink"}</h2>
-              <p className="text-xs text-muted-foreground">Arahkan URL Safar Iman ke website eksternal.</p>
+              <p className="text-xs text-muted-foreground">Arahkan ke halaman Safar Iman atau website eksternal.</p>
             </div>
           </div>
 
@@ -161,7 +161,7 @@ function ShortLinkSettings() {
               <p className="break-all rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">{preview}</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="short-target">URL tujuan eksternal</Label>
+              <Label htmlFor="short-target">URL tujuan (internal atau eksternal)</Label>
               <Input id="short-target" type="url" value={form.target_url} onChange={(e) => setForm((v) => ({ ...v, target_url: e.target.value }))} placeholder="https://contoh.com/halaman" />
             </div>
             <div className="flex items-center justify-between rounded-xl border border-border p-3">

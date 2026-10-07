@@ -1,4 +1,5 @@
 begin;
+insert into public.short_links (slug,target_url) values ('qa-internal-home','https://safariman.id'), ('qa-internal-page','https://www.safariman.id/peserta?from=shortlink');
 insert into public.short_links (slug,target_url,is_active) values ('qa-shortlink-active','https://drive.google.com/file/d/test/view',true),('qa-shortlink-inactive','https://drive.google.com/file/d/test/view',false);
 set local role anon;
 do $$ begin
